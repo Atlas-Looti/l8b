@@ -1,0 +1,25 @@
+{
+	"name": "@l8b/audio",
+	"version": "0.0.1",
+	"sideEffects": [
+		"./dist/**/*.mjs",
+		"./dist/**/*.js"
+	],
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"dependencies": {},
+	"keywords": [
+		"audio"
+	]
+}

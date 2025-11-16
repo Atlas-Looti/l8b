@@ -1,0 +1,23 @@
+{
+	"name": "@l8b/lootiscript",
+	"version": "0.0.1",
+	"sideEffects": false,
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests",
+		"check-types": "tsc --noEmit"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"dependencies": {},
+	"keywords": [
+		"lootiscript"
+	]
+}

@@ -1,0 +1,47 @@
+{
+	"name": "@l8b/assets",
+	"version": "0.0.1",
+	"description": "Asset management system for loading and managing game assets",
+	"sideEffects": false,
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+	"dependencies": {
+		"@l8b/sprites": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"@vitest/coverage-v8": "^4.0.7",
+		"jsdom": "^24.0.0",
+		"vitest": "^4.0.7"
+	},
+	"keywords": [
+		"assets",
+		"asset-management",
+		"game-engine",
+		"loader"
+	],
+	"engines": {
+		"node": ">=18"
+	},
+	"license": "MIT"
+}

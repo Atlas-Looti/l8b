@@ -1,0 +1,67 @@
+clear = 1
+touching = 0
+last_tap = 0
+x = 0
+y = 0
+size = 4
+pointer_x = 0
+pointer_y = 0
+
+init = function()
+  screen.fillRect(0,0,screen.width,screen.height,"#000")
+end
+
+update = function()
+  local active = 0
+  local input_x = pointer_x
+  local input_y = pointer_y
+
+  if touch.touching then
+    active = 1
+    input_x = touch.x
+    input_y = touch.y
+  elsif mouse.left then
+    active = 1
+    input_x = mouse.x
+    input_y = mouse.y
+  end
+
+  if active then
+    if not touching then
+      if system.time()-last_tap<100 then
+        clear = 1
+        return
+      else
+        x = input_x
+        y = input_y
+        size = 0
+        print("Touch start at (" + input_x + ", " + input_y + ")")
+      end
+    end
+    last_tap = system.time()
+    touching = 1
+    pointer_x = input_x
+    pointer_y = input_y
+  else
+    touching = 0
+  end
+end
+
+draw = function()
+  if clear then
+    clear = 0
+    screen.fillRect(0,0,screen.width,screen.height,"#000")
+  elsif touching and (pointer_x != x or pointer_y != y) then
+    local dx = pointer_x-x
+    local dy = pointer_y-y
+    local d = sqrt(dx*dx+dy*dy)
+    local s = max(1,10-d)*0.1+size*0.9
+    local ds = s-size
+    for i=0 to d by 1
+      screen.fillRound(x+dx*i/d,y+dy*i/d,size+ds*i/d,size+ds*i/d,"#FFF")
+    end
+    x = touch.x
+    y = touch.y
+    size = s
+  end
+end

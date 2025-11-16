@@ -1,0 +1,42 @@
+{
+	"name": "l8b",
+	"version": "0.0.1",
+	"description": "Looti Engine",
+	"private": true,
+	"scripts": {
+		"build": "turbo run build ",
+		"dev": "turbo run dev",
+		"lint": "biome check --write .",
+		"lint:check": "biome check .",
+		"format": "biome format --write .",
+		"format:check": "biome format --check .",
+		"check-types": "turbo run check-types",
+		"test": "turbo run test",
+		"test:watch": "turbo run test:watch",
+		"test:coverage": "turbo run test:coverage",
+		"new": "node scripts/new-package.mjs",
+		"clean": "node scripts/clean.mjs --all",
+		"ci": "bun run lint:check && bun run format:check && bun run check-types && bun run build && bun run test"
+	},
+	"devDependencies": {
+		"@vitest/ui": "^4.0.7",
+		"jsdom": "^27.1.0",
+		"prettier": "^3.6.2",
+		"turbo": "^2.5.8",
+		"typescript": "5.9.2"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"packageManager": "bun@1.2.18",
+	"workspaces": [
+		"examples/*",
+		"packages/*"
+
+	],
+	"dependencies": {
+		"@swc/core": "^1.15.0",
+		"tsup": "^8.5.0",
+		"vitest": "^4.0.7"
+	}
+}
