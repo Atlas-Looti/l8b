@@ -1,5 +1,5 @@
 {
-	"name": "hello",
+	"name": "hello-l8b",
 	"version": "0.0.1",
 	"description": "hello world example",
 	"type": "module",
@@ -10,6 +10,6 @@
 		"lint": "looti lint"
 	},
 	"devDependencies": {
-		"@l8b/lootiscript-cli": "workspace:*"
+		
 	}
 }

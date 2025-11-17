@@ -1,5 +1,3 @@
-
-
 import { Runtime } from "@l8b/runtime";
 
 import mainLootiScript from "./scipts/main.ls?raw";
