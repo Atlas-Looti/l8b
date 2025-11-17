@@ -221,4 +221,3 @@ export interface ScreenInterface {
 		useDepth?: boolean,
 	) => void;
 }
-

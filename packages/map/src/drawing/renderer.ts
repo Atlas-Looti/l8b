@@ -133,4 +133,3 @@ export const renderAnimatedTiles = (
 	}
 	return state.buffer;
 };
-

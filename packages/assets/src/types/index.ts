@@ -26,4 +26,3 @@ export interface TextLoaderResult extends LoaderResult {
 export interface AssetManagerOptions {
 	runtime: Runtime;
 }
-

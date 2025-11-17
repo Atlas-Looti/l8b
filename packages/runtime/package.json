@@ -1,20 +1,20 @@
 {
-    "name": "@l8b/runtime",
-    "version": "0.0.1",
-    "sideEffects": false,
-    "files": [
-        "dist/**/*",
-        "README.md",
-        "package.json"
-    ],
-    "scripts": {
-        "build": "tsup",
-        "clean": "rm -rf dist",
-        "test": "vitest run --passWithNoTests"
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
+	"name": "@l8b/runtime",
+	"version": "0.0.1",
+	"sideEffects": false,
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
 	"dependencies": {
 		"@l8b/lootiscript": "workspace:*",
 		"@l8b/screen": "workspace:*",
@@ -24,10 +24,10 @@
 		"@l8b/sprites": "workspace:*",
 		"@l8b/map": "workspace:*"
 	},
-    "keywords": [
+	"keywords": [
 		"runtime",
 		"game-engine",
 		"game-loop",
 		"vm"
-    ]
+	]
 }

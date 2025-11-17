@@ -3,19 +3,19 @@
  */
 
 import type { Sprite } from "@l8b/sprites";
+import type { MapData, SpriteDictionary } from "../data/types";
 import {
 	drawTile,
 	ensureCanvas,
 	queueAnimatedTile,
-	renderAnimatedTiles,
 	type RenderState,
+	renderAnimatedTiles,
 } from "../drawing/renderer";
-import type { MapData, SpriteDictionary } from "../data/types";
-import { getDefaultSprites } from "../shared/sprites";
 import {
 	normalizeRefForStorage,
 	normalizeRefForUsage,
 } from "../shared/references";
+import { getDefaultSprites } from "../shared/sprites";
 
 export class TileMap {
 	public width: number;
@@ -309,4 +309,3 @@ export const loadMap = LoadMap;
 export const updateMap = UpdateMap;
 export const saveMap = SaveMap;
 export default TileMap;
-

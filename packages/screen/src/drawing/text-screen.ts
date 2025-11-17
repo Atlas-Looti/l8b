@@ -67,4 +67,3 @@ export class TextScreen extends SpriteScreen {
 		}
 	}
 }
-

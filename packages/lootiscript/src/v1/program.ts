@@ -4,8 +4,8 @@
  * Abstract Syntax Tree node definitions for the language.
  */
 
-import type { Token } from "./token";
 import { Routine } from "./routine";
+import type { Token } from "./token";
 
 /**
  * Base class for all AST expressions

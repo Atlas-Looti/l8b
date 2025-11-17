@@ -2,6 +2,5 @@
  * Core module exports
  */
 
-export { TimeMachine } from "./machine";
 export type { TimeMachineRuntime } from "./machine";
-
+export { TimeMachine } from "./machine";

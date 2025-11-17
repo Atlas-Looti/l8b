@@ -2,5 +2,5 @@
  * Asset management exports
  */
 
+export { createSoundClass, Image, Map, Sound, Sprite } from "./constructors";
 export { AssetLoader } from "./loader";
-export { Image, Map, Sound, Sprite, createSoundClass } from "./constructors";

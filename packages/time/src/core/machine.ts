@@ -9,10 +9,7 @@
 
 import { StatePlayer } from "../playback";
 import { StateRecorder } from "../recording";
-import type {
-	TimeMachineMessage,
-	TimeMachineStatus,
-} from "../types";
+import type { TimeMachineMessage, TimeMachineStatus } from "../types";
 
 export interface TimeMachineRuntime {
 	vm?: {
@@ -78,9 +75,8 @@ export class TimeMachine {
 			if (this.replayPosition !== 0) {
 				this.recorder.trimTo(this.replayPosition);
 				if (this.player.isLooping()) {
-					this.player.startLoop(
-						this.recorder.getLength(),
-						() => this.loopCallback(),
+					this.player.startLoop(this.recorder.getLength(), () =>
+						this.loopCallback(),
 					);
 				}
 				this.replayPosition = 0;
@@ -299,4 +295,3 @@ export class TimeMachine {
 		return this.player.isLooping();
 	}
 }
-

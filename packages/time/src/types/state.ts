@@ -40,4 +40,3 @@ export interface TimeMachineStatus {
 	length: number;
 	max: number;
 }
-

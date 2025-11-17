@@ -4,7 +4,9 @@ import type { Sprite } from "@l8b/sprites";
 import { PrimitiveScreen } from "./primitives-screen";
 
 export class SpriteScreen extends PrimitiveScreen {
-	protected getSpriteFrame(sprite: Sprite | string | any): HTMLCanvasElement | null {
+	protected getSpriteFrame(
+		sprite: Sprite | string | any,
+	): HTMLCanvasElement | null {
 		let frame: number | null = null;
 		let spriteObj: Sprite | null = null;
 
@@ -204,4 +206,3 @@ export class SpriteScreen extends PrimitiveScreen {
 		}
 	}
 }
-

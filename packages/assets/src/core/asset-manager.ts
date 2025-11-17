@@ -205,4 +205,3 @@ export class AssetManager {
 		return this.loadText(path, callback, "md");
 	}
 }
-

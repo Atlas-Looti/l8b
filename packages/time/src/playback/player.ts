@@ -88,17 +88,14 @@ export class StatePlayer {
 
 		// Clear existing properties (except protected ones)
 		for (const key in target) {
-			if (
-				Object.prototype.hasOwnProperty.call(target, key) &&
-				!this.isProtectedKey(key)
-			) {
+			if (Object.hasOwn(target, key) && !this.isProtectedKey(key)) {
 				delete target[key];
 			}
 		}
 
 		// Restore snapshot properties
 		for (const key in snapshot) {
-			if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+			if (Object.hasOwn(snapshot, key)) {
 				target[key] = this.deepCopy(snapshot[key]);
 			}
 		}
@@ -150,7 +147,7 @@ export class StatePlayer {
 		if (typeof value === "object") {
 			const result: any = {};
 			for (const key in value) {
-				if (Object.prototype.hasOwnProperty.call(value, key)) {
+				if (Object.hasOwn(value, key)) {
 					result[key] = this.deepCopy(value[key]);
 				}
 			}
@@ -160,4 +157,3 @@ export class StatePlayer {
 		return value;
 	}
 }
-

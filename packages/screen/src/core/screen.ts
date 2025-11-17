@@ -1,8 +1,8 @@
-import type { ScreenInterface } from "../types";
-import { TriangleScreen } from "../tri/triangle-screen";
 import type { Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 import type { TextureSource } from "../tri";
+import { TriangleScreen } from "../tri/triangle-screen";
+import type { ScreenInterface } from "../types";
 
 export class Screen extends TriangleScreen {
 	getInterface(): ScreenInterface {
@@ -247,4 +247,3 @@ export class Screen extends TriangleScreen {
 }
 
 export default Screen;
-

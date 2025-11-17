@@ -1,7 +1,7 @@
 import { TOUCH_MOUSE_ID } from "../shared/constants";
-import type { MouseInput } from "./mouse";
-import type { PointerIdentifier, TouchPoint, TouchState } from "../types";
 import { computeRelativePosition, hasDocument } from "../shared/utils";
+import type { PointerIdentifier, TouchPoint, TouchState } from "../types";
+import type { MouseInput } from "./mouse";
 
 type TouchListener = (event: TouchEvent) => void;
 
@@ -138,7 +138,6 @@ export class TouchInput {
 			const t = event.changedTouches[i];
 			this.touches.delete(t.identifier);
 		}
-			this.mouse.syncFromTouch(this.state.x, this.state.y, false);
+		this.mouse.syncFromTouch(this.state.x, this.state.y, false);
 	}
 }
-

@@ -44,4 +44,3 @@ export interface TouchState {
 }
 
 export type PointerIdentifier = number | string;
-

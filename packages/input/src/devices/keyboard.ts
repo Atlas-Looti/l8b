@@ -1,6 +1,6 @@
 import { PREVENT_DEFAULT_REGEX } from "../shared/constants";
-import type { KeyboardState } from "../types";
 import { hasDocument } from "../shared/utils";
+import type { KeyboardState } from "../types";
 
 export class KeyboardInput {
 	public readonly state: KeyboardState = {
@@ -110,4 +110,3 @@ export class KeyboardInput {
 		}
 	}
 }
-

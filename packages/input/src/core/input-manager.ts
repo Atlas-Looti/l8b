@@ -51,4 +51,3 @@ export class Input {
 		this.touch.setCanvas(canvas);
 	}
 }
-

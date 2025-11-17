@@ -347,4 +347,3 @@ export function drawTriangleOutline(
 	context.closePath();
 	context.stroke();
 }
-

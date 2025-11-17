@@ -62,9 +62,7 @@ export class SourceUpdater {
 			// Handle error object properly
 			console.error("Parse/Runtime error:", err);
 
-			const vmError = this.vm.error_info
-				? { ...this.vm.error_info }
-				: null;
+			const vmError = this.vm.error_info ? { ...this.vm.error_info } : null;
 
 			const getMessage = (): string => {
 				if (typeof err === "string") return err;

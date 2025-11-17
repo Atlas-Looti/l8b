@@ -8,4 +8,3 @@ export const getDefaultSprites = (): SpriteDictionary => {
 	const runtimeSprites = player?.runtime?.sprites;
 	return runtimeSprites ?? {};
 };
-

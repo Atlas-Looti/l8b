@@ -8,7 +8,6 @@
  * - types/: Shared interfaces
  */
 
-export * from "./types";
 export { Screen, Screen as default } from "./core";
 export {
 	type TextureSource,
@@ -17,3 +16,4 @@ export {
 	type Vec3,
 	ZBuffer,
 } from "./tri";
+export * from "./types";

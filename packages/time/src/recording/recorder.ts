@@ -134,7 +134,7 @@ export class StateRecorder {
 		if (typeof value === "object") {
 			const result: any = {};
 			for (const key in value) {
-				if (Object.prototype.hasOwnProperty.call(value, key)) {
+				if (Object.hasOwn(value, key)) {
 					result[key] = this.makeStorableState(value[key]);
 				}
 			}
@@ -145,4 +145,3 @@ export class StateRecorder {
 		return null;
 	}
 }
-

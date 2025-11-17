@@ -16,4 +16,3 @@ export interface PaletteData {
 	author?: string;
 	url?: string;
 }
-

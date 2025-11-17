@@ -53,8 +53,8 @@ export class AssetLoader {
 		const promises = this.resources.images.map(
 			(img) =>
 				new Promise<void>((resolve) => {
-			const name = img.file.split(".")[0].replace(/-/g, "/");
-			const url = `${this.url}sprites/${img.file}?v=${img.version || 0}`;
+					const name = img.file.split(".")[0].replace(/-/g, "/");
+					const url = `${this.url}sprites/${img.file}?v=${img.version || 0}`;
 
 					try {
 						// Load sprite using @l8b/sprites
@@ -65,8 +65,8 @@ export class AssetLoader {
 					} catch (err) {
 						console.error(`Failed to load sprite ${name}:`, err);
 						// Create placeholder on error
-			this.collections.sprites[name] = {
-				name,
+						this.collections.sprites[name] = {
+							name,
 							ready: false,
 							frames: [],
 							fps: (img.properties as any)?.frames || 5,
@@ -74,7 +74,7 @@ export class AssetLoader {
 							height: 0,
 						} as any;
 						resolve();
-		}
+					}
 				}),
 		);
 
@@ -102,8 +102,8 @@ export class AssetLoader {
 					} catch (err) {
 						console.error(`Failed to load map ${name}:`, err);
 						// Create placeholder on error
-			this.collections.maps[name] = {
-				name,
+						this.collections.maps[name] = {
+							name,
 							ready: false,
 							width: 0,
 							height: 0,
@@ -112,7 +112,7 @@ export class AssetLoader {
 							data: [],
 						} as any;
 						resolve();
-		}
+					}
 				}),
 		);
 
@@ -141,12 +141,12 @@ export class AssetLoader {
 					audio.load();
 				});
 
-			this.collections.sounds[name] = {
-				name,
-				url,
+				this.collections.sounds[name] = {
+					name,
+					url,
 					audio,
-				ready: true,
-			};
+					ready: true,
+				};
 			} catch (err) {
 				console.error(`Failed to load sound ${name}:`, err);
 				this.collections.sounds[name] = {
@@ -183,12 +183,12 @@ export class AssetLoader {
 					audio.load();
 				});
 
-			this.collections.music[name] = {
-				name,
-				url,
+				this.collections.music[name] = {
+					name,
+					url,
 					audio,
-				ready: true,
-			};
+					ready: true,
+				};
 			} catch (err) {
 				console.error(`Failed to load music ${name}:`, err);
 				this.collections.music[name] = {

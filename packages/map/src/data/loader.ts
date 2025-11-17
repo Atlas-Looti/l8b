@@ -1,6 +1,6 @@
 import type { Sprite } from "@l8b/sprites";
-import type { MapData } from "./types";
 import { getDefaultSprites } from "../shared/sprites";
+import type { MapData } from "./types";
 
 export const loadMapData = (
 	data: string,
@@ -27,4 +27,3 @@ export const populateMapFromData = (cells: MapCells, data: MapData): void => {
 		}
 	}
 };
-

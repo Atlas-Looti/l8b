@@ -1,6 +1,6 @@
 import { OUT_OF_BOUNDS } from "../shared/constants";
-import type { MouseState } from "../types";
 import { computeRelativePosition, hasDocument } from "../shared/utils";
+import type { MouseState } from "../types";
 
 type MouseListener = (event: MouseEvent) => void;
 type WheelListener = (event: WheelEvent | Event) => void;
@@ -197,4 +197,3 @@ export class MouseInput {
 		event.preventDefault();
 	}
 }
-

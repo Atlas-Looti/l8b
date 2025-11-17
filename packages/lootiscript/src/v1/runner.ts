@@ -507,7 +507,11 @@ export class Runner {
 		return;
 	}
 
-	createThread(routine: Routine, delay: number, repeat: boolean): ThreadInterface {
+	createThread(
+		routine: Routine,
+		delay: number,
+		repeat: boolean,
+	): ThreadInterface {
 		let i: number;
 		let t: Thread;
 		t = new Thread(this);

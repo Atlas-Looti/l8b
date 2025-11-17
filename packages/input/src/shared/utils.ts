@@ -28,4 +28,3 @@ export const addEventListener = <K extends keyof DocumentEventMap>(
 ): void => {
 	target.addEventListener(type, listener as EventListener, { passive: false });
 };
-

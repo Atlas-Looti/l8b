@@ -4,11 +4,10 @@
  * Record, replay, and loop game state for debugging.
  */
 
-export { TimeMachine } from "./core";
 export type { TimeMachineRuntime } from "./core";
-
-export { StateRecorder } from "./recording";
+export { TimeMachine } from "./core";
 export { StatePlayer } from "./playback";
+export { StateRecorder } from "./recording";
 
 export type {
 	StateSnapshot,
@@ -16,4 +15,3 @@ export type {
 	TimeMachineMessage,
 	TimeMachineStatus,
 } from "./types";
-

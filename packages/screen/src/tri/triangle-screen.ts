@@ -105,4 +105,3 @@ export class TriangleScreen extends TextScreen {
 		);
 	}
 }
-

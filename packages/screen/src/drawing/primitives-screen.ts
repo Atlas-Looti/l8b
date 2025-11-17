@@ -42,10 +42,8 @@ export class PrimitiveScreen extends BaseScreen {
 		if (color) this.setColor(color);
 		this.context.globalAlpha = this.alpha;
 		const transform = this.initDrawOp(x, -y);
-		const rx =
-			(transform ? -w / 2 : x - w / 2) - (this.anchor_x * w) / 2;
-		const ry =
-			(transform ? -h / 2 : -y - h / 2) + (this.anchor_y * h) / 2;
+		const rx = (transform ? -w / 2 : x - w / 2) - (this.anchor_x * w) / 2;
+		const ry = (transform ? -h / 2 : -y - h / 2) + (this.anchor_y * h) / 2;
 
 		this.context.beginPath();
 		if (this.context.roundRect) {
@@ -148,10 +146,8 @@ export class PrimitiveScreen extends BaseScreen {
 		this.context.globalAlpha = this.alpha;
 		this.context.lineWidth = this.line_width;
 		const transform = this.initDrawOp(x, -y);
-		const rx =
-			(transform ? -w / 2 : x - w / 2) - (this.anchor_x * w) / 2;
-		const ry =
-			(transform ? -h / 2 : -y - h / 2) + (this.anchor_y * h) / 2;
+		const rx = (transform ? -w / 2 : x - w / 2) - (this.anchor_x * w) / 2;
+		const ry = (transform ? -h / 2 : -y - h / 2) + (this.anchor_y * h) / 2;
 
 		this.context.beginPath();
 		if (this.context.roundRect) {
@@ -445,4 +441,3 @@ export class PrimitiveScreen extends BaseScreen {
 		return { color, points };
 	}
 }
-

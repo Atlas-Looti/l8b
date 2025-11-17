@@ -15,13 +15,7 @@ import { AudioCore } from "@l8b/audio";
 import { Random } from "@l8b/lootiscript";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
-import {
-	AssetLoader,
-	Image,
-	Map,
-	Sprite,
-	createSoundClass,
-} from "../assets";
+import { AssetLoader, createSoundClass, Image, Map, Sprite } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
 import { GameLoop } from "../loop";
@@ -382,14 +376,12 @@ export class RuntimeOrchestrator {
 		});
 	}
 
-	private createInputSnapshot():
-		| {
-				keyboard?: any;
-				mouse?: any;
-				touch?: any;
-				gamepad?: any;
-		  }
-		| null {
+	private createInputSnapshot(): {
+		keyboard?: any;
+		mouse?: any;
+		touch?: any;
+		gamepad?: any;
+	} | null {
 		const inputDebug = this.options.debug?.input;
 		if (!inputDebug) {
 			return null;
@@ -458,9 +450,7 @@ export class RuntimeOrchestrator {
 		setting: NonNullable<RuntimeDebugOptions["input"]>,
 	): Array<"keyboard" | "mouse" | "touch" | "gamepad"> {
 		if (typeof setting === "boolean") {
-			return setting
-				? ["keyboard", "mouse", "touch", "gamepad"]
-				: [];
+			return setting ? ["keyboard", "mouse", "touch", "gamepad"] : [];
 		}
 		const channels: Array<"keyboard" | "mouse" | "touch" | "gamepad"> = [];
 		if (setting.keyboard) channels.push("keyboard");
@@ -604,9 +594,7 @@ export class RuntimeOrchestrator {
 		if (this.listener.log) {
 			try {
 				const serialized =
-					payload === undefined
-						? ""
-						: ` ${JSON.stringify(payload)}`;
+					payload === undefined ? "" : ` ${JSON.stringify(payload)}`;
 				this.listener.log(`${prefix} ${message}${serialized}`);
 			} catch {
 				this.listener.log(`${prefix} ${message}`);

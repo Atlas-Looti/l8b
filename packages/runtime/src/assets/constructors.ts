@@ -19,4 +19,3 @@ export function createSoundClass(_audio: any): typeof Sound {
  * Export constructors for game code
  */
 export { Image, Sprite, TileMap as Map, Sound };
-

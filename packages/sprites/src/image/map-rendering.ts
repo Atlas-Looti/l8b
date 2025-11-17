@@ -25,7 +25,9 @@ const resolveStringMap = (name: string): MapSource | null => {
 
 	// Resolved maps are stored under runtime.maps; fall back to
 	// screen.runtime.maps if provided by host environments.
-	const directMaps = playerRuntime.maps as Record<string, MapSource> | undefined;
+	const directMaps = playerRuntime.maps as
+		| Record<string, MapSource>
+		| undefined;
 	if (directMaps && directMaps[name]) {
 		return directMaps[name];
 	}
@@ -50,7 +52,7 @@ export function drawMap(
 	h: number,
 ): void {
 	const resolvedMap: MapSource | null =
-		typeof map === "string" ? resolveStringMap(map) : map ?? null;
+		typeof map === "string" ? resolveStringMap(map) : (map ?? null);
 
 	if (!resolvedMap || !resolvedMap.ready || !resolvedMap.draw) {
 		return;

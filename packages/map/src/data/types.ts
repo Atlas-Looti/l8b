@@ -22,4 +22,3 @@ export interface AnimatedTile {
 export interface SpriteDictionary {
 	[key: string]: Sprite;
 }
-
