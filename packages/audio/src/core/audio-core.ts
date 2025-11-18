@@ -156,12 +156,12 @@ export class AudioCore {
 	 * Create audio processor node
 	 */
 	private createProcessorNode(): any {
-		return {
+		const node = {
 			port: {
 				onmessage: null as any,
 				postMessage: (data: string) => {
-					if (this.node.port.onmessage) {
-						this.node.port.onmessage({ data });
+					if (node.port.onmessage) {
+						node.port.onmessage({ data });
 					}
 				},
 			},
@@ -171,6 +171,41 @@ export class AudioCore {
 				return this.processAudio(outputs);
 			},
 		};
+
+		// Setup message handler for beep commands
+		node.port.onmessage = (event: any) => {
+			const data = JSON.parse(event.data);
+			
+			if (data.name === "cancel_beeps") {
+				node.beeps = [];
+			} else if (data.name === "beep") {
+				const seq = data.sequence;
+				
+				// Link sequence notes together
+				for (let i = 0; i < seq.length; i++) {
+					const note = seq[i];
+					if (i > 0) {
+						seq[i - 1].next = note;
+					}
+					
+					// Resolve loopto index to actual note reference
+					if (note.loopto != null) {
+						note.loopto = seq[note.loopto];
+					}
+					
+					// Initialize phase and time
+					note.phase = 0;
+					note.time = 0;
+				}
+				
+				// Add first note to beeps queue
+				if (seq.length > 0) {
+					node.beeps.push(seq[0]);
+				}
+			}
+		};
+
+		return node;
 	}
 
 	/**
