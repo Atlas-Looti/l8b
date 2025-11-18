@@ -1,19 +1,19 @@
 import { Runtime } from "@l8b/runtime";
 
 // Import all lootiscript files
-import mainLootiScript from "./l8b/ls/main.ls?raw";
-import animalsLootiScript from "./l8b/ls/animals.ls?raw";
-import audioLootiScript from "./l8b/ls/audio.ls?raw";
-import crabsLootiScript from "./l8b/ls/crabs.ls?raw";
-import drawLootiScript from "./l8b/ls/draw.ls?raw";
-import fishLootiScript from "./l8b/ls/fish.ls?raw";
-import gamepadLootiScript from "./l8b/ls/gamepad.ls?raw";
-import gestureLootiScript from "./l8b/ls/gesture.ls?raw";
-import keyboardLootiScript from "./l8b/ls/keyboard.ls?raw";
-import levelsLootiScript from "./l8b/ls/levels.ls?raw";
-import messageLootiScript from "./l8b/ls/message.ls?raw";
-import musicLootiScript from "./l8b/ls/music.ls?raw";
-import physicsLootiScript from "./l8b/ls/physics.ls?raw";
+import mainLootiScript from "./l8b/ls/main.loot?raw";
+import animalsLootiScript from "./l8b/ls/animals.loot?raw";
+import audioLootiScript from "./l8b/ls/audio.loot?raw";
+import crabsLootiScript from "./l8b/ls/crabs.loot?raw";
+import drawLootiScript from "./l8b/ls/draw.loot?raw";
+import fishLootiScript from "./l8b/ls/fish.loot?raw";
+import gamepadLootiScript from "./l8b/ls/gamepad.loot?raw";
+import gestureLootiScript from "./l8b/ls/gesture.loot?raw";
+import keyboardLootiScript from "./l8b/ls/keyboard.loot?raw";
+import levelsLootiScript from "./l8b/ls/levels.loot?raw";
+import messageLootiScript from "./l8b/ls/message.loot?raw";
+import musicLootiScript from "./l8b/ls/music.loot?raw";
+import physicsLootiScript from "./l8b/ls/physics.loot?raw";
 
 // Generate resources from files
 const sprites = [
