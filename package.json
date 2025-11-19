@@ -32,8 +32,11 @@
 	"workspaces": [
 		"examples/**/*",
 		"packages/**/*",
+		"scripts/**/*",
+		"apps/**/*",
 		"!next/**/*",
-		"!dist/**/*"
+		"!dist/**/*",
+		"!l8b/**/*"
 	],
 	"dependencies": {
 		"@swc/core": "^1.15.0",
