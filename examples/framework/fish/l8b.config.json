@@ -1,5 +1,9 @@
 {
     "name": "fish",
     "orientation": "any",
-    "aspect": "free"
+    "aspect": "free",
+    "logging": {
+        "browser": { "lifecycle": false, "canvas": false },
+        "terminal": { "listener": true, "errors": true }
+    }
 }
