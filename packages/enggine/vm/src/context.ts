@@ -3,7 +3,7 @@
  */
 
 import { Random } from "@l8b/lootiscript";
-import type { GlobalAPI, MetaFunctions, VMContext } from "../types";
+import type { GlobalAPI, MetaFunctions, VMContext } from "./types";
 
 /**
  * Create meta functions (built-in functions)
@@ -73,3 +73,4 @@ export function createVMContext(
 		},
 	};
 }
+

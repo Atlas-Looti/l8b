@@ -2,9 +2,10 @@
  * Runtime type definitions
  */
 
+import type { ErrorInfo } from "@l8b/vm";
 import type { Resources } from "./assets";
 
-export type { Resources };
+export type { ErrorInfo, Resources };
 
 /**
  * Runtime configuration options
@@ -64,24 +65,6 @@ export interface RuntimeListener {
 	codePaused?: () => void;
 	/** Post message to parent (for iframe communication) */
 	postMessage?: (message: any) => void;
-}
-
-/**
- * Error information
- */
-export interface ErrorInfo {
-	/** Error message */
-	error: string;
-	/** Error type (compile, init, update, draw) */
-	type?: string;
-	/** Line number */
-	line?: number;
-	/** Column number */
-	column?: number;
-	/** File name */
-	file?: string;
-	/** Stack trace */
-	stack?: string;
 }
 
 /**

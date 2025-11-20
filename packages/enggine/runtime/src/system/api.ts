@@ -2,7 +2,8 @@
  * System API - System information and control
  */
 
-import type { RuntimeListener, SystemAPI } from "../types";
+import type { SystemAPI } from "@l8b/vm";
+import type { RuntimeListener } from "../types";
 
 export class System {
 	private listener: RuntimeListener;

@@ -13,6 +13,7 @@
 
 import { AudioCore } from "@l8b/audio";
 import { Random } from "@l8b/lootiscript";
+import { L8BVM, type GlobalAPI, type MetaFunctions } from "@l8b/vm";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
 import { AssetLoader, createSoundClass, Image, Map, Sprite } from "../assets";
@@ -21,13 +22,10 @@ import { InputManager } from "../input";
 import { GameLoop } from "../loop";
 import { System } from "../system";
 import type {
-	GlobalAPI,
-	MetaFunctions,
 	RuntimeDebugOptions,
 	RuntimeListener,
 	RuntimeOptions,
 } from "../types";
-import { L8BVM } from "../vm";
 
 export class RuntimeOrchestrator {
 	// Configuration

@@ -35,14 +35,26 @@ export async function bundleRuntime(distDir: string, projectPath: string): Promi
         
         // Try workspace first (monorepo)
         if (workspaceRoot) {
-            const workspaceRuntime = path.join(workspaceRoot, 'packages', 'runtime', 'dist', 'index.js');
-            const workspaceLootiscript = path.join(workspaceRoot, 'packages', 'lootiscript', 'dist', 'index.js');
-            
-            if (await fs.pathExists(workspaceRuntime)) {
-                runtimeEntryPath = workspaceRuntime;
+            const runtimeCandidates = [
+                path.join(workspaceRoot, 'packages', 'runtime', 'dist', 'index.js'),
+                path.join(workspaceRoot, 'packages', 'enggine', 'runtime', 'dist', 'index.js'),
+            ];
+            const lootiscriptCandidates = [
+                path.join(workspaceRoot, 'packages', 'lootiscript', 'dist', 'index.js'),
+            ];
+
+            for (const candidate of runtimeCandidates) {
+                if (await fs.pathExists(candidate)) {
+                    runtimeEntryPath = candidate;
+                    break;
+                }
             }
-            if (await fs.pathExists(workspaceLootiscript)) {
-                lootiscriptEntryPath = workspaceLootiscript;
+
+            for (const candidate of lootiscriptCandidates) {
+                if (await fs.pathExists(candidate)) {
+                    lootiscriptEntryPath = candidate;
+                    break;
+                }
             }
         }
         
@@ -67,6 +79,7 @@ export async function bundleRuntime(distDir: string, projectPath: string): Promi
             if (workspaceRoot) {
                 triedPaths.push(
                     path.join(workspaceRoot, 'packages', 'runtime', 'dist', 'index.js'),
+                    path.join(workspaceRoot, 'packages', 'enggine', 'runtime', 'dist', 'index.js'),
                     path.join(workspaceRoot, 'packages', 'lootiscript', 'dist', 'index.js')
                 );
             }

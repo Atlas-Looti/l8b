@@ -3,8 +3,8 @@
  */
 
 import { Compiler, Processor, Program, Runner, Routine } from "@l8b/lootiscript";
-import { StorageService } from "../storage";
-import type { ErrorInfo, GlobalAPI, MetaFunctions, VMContext } from "../types";
+import { StorageService } from "./storage";
+import type { ErrorInfo, GlobalAPI, MetaFunctions, VMContext } from "./types";
 import { createVMContext } from "./context";
 import { setupArrayExtensions } from "./extensions";
 
@@ -187,3 +187,4 @@ export class L8BVM {
 		return this.runner.toString(value);
 	}
 }
+

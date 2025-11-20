@@ -1,5 +1,1 @@
-/**
- * Storage service exports
- */
-
-export { StorageService } from "./service";
+export { StorageService } from "@l8b/vm";

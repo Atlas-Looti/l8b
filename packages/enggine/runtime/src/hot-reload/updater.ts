@@ -2,8 +2,8 @@
  * Source code updater for hot reload
  */
 
+import type { L8BVM } from "@l8b/vm";
 import type { RuntimeListener } from "../types";
-import type { L8BVM } from "../vm";
 
 export class SourceUpdater {
 	private updateMemory: Record<string, string> = {};
