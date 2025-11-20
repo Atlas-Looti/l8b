@@ -3,7 +3,7 @@
  */
 
 import { Compiler, Processor, Program, Runner, Routine } from "@l8b/lootiscript";
-import { StorageService } from "./storage";
+import { StorageService } from "@l8b/io";
 import type { ErrorInfo, GlobalAPI, MetaFunctions, VMContext } from "./types";
 import { createVMContext } from "./context";
 import { setupArrayExtensions } from "./extensions";
@@ -65,9 +65,9 @@ export class L8BVM {
 		} catch (err: any) {
 			const errorMessage =
 				(typeof err === "object" &&
-				err !== null &&
-				"error" in err &&
-				typeof err.error === "string"
+					err !== null &&
+					"error" in err &&
+					typeof err.error === "string"
 					? err.error
 					: err.message) || String(err);
 
@@ -98,9 +98,9 @@ export class L8BVM {
 		} catch (err: any) {
 			const errorMessage =
 				(typeof err === "object" &&
-				err !== null &&
-				"error" in err &&
-				typeof err.error === "string"
+					err !== null &&
+					"error" in err &&
+					typeof err.error === "string"
 					? err.error
 					: err.message) || String(err);
 
@@ -123,10 +123,10 @@ export class L8BVM {
 	 */
 	loadRoutine(routineData: any, filename: string = ""): void {
 		this.error_info = null;
-		
+
 		try {
 			let routine: Routine;
-			
+
 			// If routineData is already a Routine instance, use it directly
 			// Otherwise, import it from serialized data
 			if (routineData instanceof Routine) {
@@ -135,16 +135,16 @@ export class L8BVM {
 				// Import from serialized data
 				routine = new Routine(0).import(routineData);
 			}
-			
+
 			// Add to main thread for execution
 			this.runner.main_thread.addCall(routine);
 			this.runner.tick();
 		} catch (err: any) {
 			const errorMessage =
 				(typeof err === "object" &&
-				err !== null &&
-				"error" in err &&
-				typeof err.error === "string"
+					err !== null &&
+					"error" in err &&
+					typeof err.error === "string"
 					? err.error
 					: err.message) || String(err);
 
@@ -187,4 +187,5 @@ export class L8BVM {
 		return this.runner.toString(value);
 	}
 }
+
 

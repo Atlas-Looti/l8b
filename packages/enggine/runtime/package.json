@@ -17,6 +17,7 @@
 	"types": "./dist/index.d.ts",
 	"dependencies": {
 		"@l8b/vm": "workspace:*",
+		"@l8b/io": "workspace:*",
 		"@l8b/lootiscript": "workspace:*",
 		"@l8b/screen": "workspace:*",
 		"@l8b/audio": "workspace:*",

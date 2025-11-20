@@ -68,6 +68,7 @@
         "l8b": "./dist/cli.js",
       },
       "dependencies": {
+        "@l8b/compiler": "workspace:*",
         "@l8b/lootiscript": "workspace:*",
         "@l8b/runtime": "workspace:*",
         "cac": "^6.7.14",
@@ -145,6 +146,20 @@
       "dependencies": {
         "@l8b/lootiscript": "workspace:*",
       },
+      "devDependencies": {
+        "@types/node": "^20.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+      },
+    },
+    "packages/enggine/io": {
+      "name": "@l8b/io",
+      "version": "0.0.1",
+      "devDependencies": {
+        "@types/node": "^20.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+      },
     },
     "packages/enggine/runtime": {
       "name": "@l8b/runtime",
@@ -152,6 +167,7 @@
       "dependencies": {
         "@l8b/audio": "workspace:*",
         "@l8b/input": "workspace:*",
+        "@l8b/io": "workspace:*",
         "@l8b/lootiscript": "workspace:*",
         "@l8b/map": "workspace:*",
         "@l8b/screen": "workspace:*",
@@ -164,6 +180,7 @@
       "name": "@l8b/vm",
       "version": "0.0.1",
       "dependencies": {
+        "@l8b/io": "workspace:*",
         "@l8b/lootiscript": "workspace:*",
       },
     },
@@ -274,6 +291,8 @@
     "@l8b/compiler": ["@l8b/compiler@workspace:packages/enggine/compiler"],
 
     "@l8b/input": ["@l8b/input@workspace:packages/core/input"],
+
+    "@l8b/io": ["@l8b/io@workspace:packages/enggine/io"],
 
     "@l8b/lootiscript": ["@l8b/lootiscript@workspace:packages/lootiscript"],
 
@@ -850,6 +869,10 @@
     "@l8b/assets/vitest": ["vitest@4.0.9", "", { "dependencies": { "@vitest/expect": "4.0.9", "@vitest/mocker": "4.0.9", "@vitest/pretty-format": "4.0.9", "@vitest/runner": "4.0.9", "@vitest/snapshot": "4.0.9", "@vitest/spy": "4.0.9", "@vitest/utils": "4.0.9", "debug": "^4.4.3", "es-module-lexer": "^1.7.0", "expect-type": "^1.2.2", "magic-string": "^0.30.21", "pathe": "^2.0.3", "picomatch": "^4.0.3", "std-env": "^3.10.0", "tinybench": "^2.9.0", "tinyexec": "^0.3.2", "tinyglobby": "^0.2.15", "tinyrainbow": "^3.0.3", "vite": "^6.0.0 || ^7.0.0", "why-is-node-running": "^2.3.0" }, "peerDependencies": { "@edge-runtime/vm": "*", "@types/debug": "^4.1.12", "@types/node": "^20.0.0 || ^22.0.0 || >=24.0.0", "@vitest/browser-playwright": "4.0.9", "@vitest/browser-preview": "4.0.9", "@vitest/browser-webdriverio": "4.0.9", "@vitest/ui": "4.0.9", "happy-dom": "*", "jsdom": "*" }, "optionalPeers": ["@edge-runtime/vm", "@types/debug", "@types/node", "@vitest/browser-playwright", "@vitest/browser-preview", "@vitest/browser-webdriverio", "@vitest/ui", "happy-dom", "jsdom"], "bin": { "vitest": "vitest.mjs" } }, "sha512-E0Ja2AX4th+CG33yAFRC+d1wFx2pzU5r6HtG6LiPSE04flaE0qB6YyjSw9ZcpJAtVPfsvZGtJlKWZpuW7EHRxg=="],
 
     "@l8b/cli/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+
+    "@l8b/compiler/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+
+    "@l8b/io/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
 
     "@l8b/sprites/@vitest/ui": ["@vitest/ui@4.0.9", "", { "dependencies": { "@vitest/utils": "4.0.9", "fflate": "^0.8.2", "flatted": "^3.3.3", "pathe": "^2.0.3", "sirv": "^3.0.2", "tinyglobby": "^0.2.15", "tinyrainbow": "^3.0.3" }, "peerDependencies": { "vitest": "4.0.9" } }, "sha512-6HV2HHl9aRJ09TlYj/WAQxaa797Ezb5u0LpgabthlASAUAWKgw/W1DSPX7t848mMZmIUvzZgnUHGIylAoYHP0w=="],
 

@@ -3,11 +3,11 @@
     "version": "0.0.0",
     "description": "LootiScript CLI and Dev Server",
     "type": "module",
-	"files": [
-		"dist/**/*",
-		"package.json",
-		"README.md"
-	],
+    "files": [
+        "dist/**/*",
+        "package.json",
+        "README.md"
+    ],
     "bin": {
         "l8b": "./dist/cli.js"
     },
@@ -21,7 +21,8 @@
     },
     "dependencies": {
         "@l8b/runtime": "workspace:*",
-		"@l8b/lootiscript": "workspace:*",
+        "@l8b/lootiscript": "workspace:*",
+        "@l8b/compiler": "workspace:*",
         "cac": "^6.7.14",
         "chokidar": "^3.5.3",
         "esbuild": "^0.19.0",

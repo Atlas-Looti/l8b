@@ -1,1 +1,1 @@
-export { StorageService } from "@l8b/vm";
+export { StorageService } from "@l8b/io";

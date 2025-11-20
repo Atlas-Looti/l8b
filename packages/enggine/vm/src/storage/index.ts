@@ -1,2 +1,0 @@
-export { StorageService } from "./service";
-

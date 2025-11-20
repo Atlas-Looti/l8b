@@ -7,7 +7,7 @@ declare const process: {
 };
 
 export const treeShakableConfig: Options = {
-	splitting: true,
+	splitting: false,
 	clean: true,
 	format: ["esm", "cjs"],
 	bundle: true,
