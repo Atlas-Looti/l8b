@@ -1,22 +1,19 @@
 /**
  * Source file loader for LootiScript projects
  * 
- * Recursively finds and loads all .loot source files from standard locations.
+ * Discovers and loads all .loot source files from standard project locations.
  */
 
 import fs from 'fs-extra';
 import path from 'path';
 
-// Standard source directories
-const SOURCE_DIRECTORIES = ['scripts', 'src/l8b/ls'];
+import { DEFAULT_DIRS } from '../utils/paths';
 
 /**
  * Recursively find all .loot files in a directory
  * 
- * Uses parallel reads for better performance.
- * 
- * @param dir - Directory to scan
- * @returns Array of full file paths
+ * @param dir - Directory to search
+ * @returns Array of absolute file paths
  */
 async function findLootFiles(dir: string): Promise<string[]> {
     if (!await fs.pathExists(dir)) {
@@ -60,17 +57,20 @@ async function findLootFiles(dir: string): Promise<string[]> {
 /**
  * Load all .loot source files and return as Record<moduleName, filePath>
  * 
- * For Vite dev server, returns paths with leading / so they can be imported with ?raw.
- * Module names are relative paths without .loot extension (e.g., 'main', 'scenes/level1').
+ * For Vite dev server, paths are returned with leading `/` so they can be
+ * imported with `?raw` query parameter.
  * 
- * @param projectPath - Root path of the project
- * @returns Map of module names to file paths (relative to project root with leading /)
+ * @param projectPath - Absolute path to project root
+ * @returns Map of module names to file paths (relative to project root with leading `/`)
  */
 export async function loadSources(projectPath: string = process.cwd()): Promise<Record<string, string>> {
     const sources: Record<string, string> = {};
 
     // Check for standard locations
-    const locations = SOURCE_DIRECTORIES.map(dir => path.join(projectPath, ...dir.split('/')));
+    const locations = [
+        path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
+        path.join(projectPath, DEFAULT_DIRS.SRC_L8B_LS),
+    ];
 
     // Scan all locations in parallel
     const scanTasks = locations.map(dir => findLootFiles(dir));
@@ -106,8 +106,9 @@ export async function loadSources(projectPath: string = process.cwd()): Promise<
 /**
  * Read source file content
  * 
- * @param filePath - Path to the source file
+ * @param filePath - Absolute path to source file
  * @returns File content as string
+ * @throws {Error} If file cannot be read
  */
 export async function readSourceContent(filePath: string): Promise<string> {
     return await fs.readFile(filePath, 'utf-8');

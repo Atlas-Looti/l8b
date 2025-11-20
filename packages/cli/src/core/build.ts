@@ -1,8 +1,8 @@
 /**
- * Production build for LootiScript projects
+ * Build process for LootiScript projects
  * 
- * Compiles LootiScript sources, bundles runtime, and generates
- * optimized production-ready output.
+ * Compiles LootiScript sources, bundles runtime dependencies,
+ * and generates production-ready output.
  */
 
 import path from 'path';
@@ -15,44 +15,26 @@ import { loadSources } from '../loader/source-loader';
 import { generateHTML } from '../generator/html-generator';
 import { compileSources, saveCompiled } from '../compiler';
 import { bundleRuntime } from '../bundler/runtime-bundler';
-import {
-    getCliPackageRoot,
-    getBitCellFontPaths,
-    BUILD_OUTPUT_DIR,
-    FONT_BITCELL,
-} from '../utils';
+import { 
+    getCliPackageRoot, 
+    getBitCellFontPaths, 
+    DEFAULT_DIRS,
+    DEFAULT_FILES,
+} from '../utils/paths';
+import { CompilationError } from '../utils/errors';
 
-/**
- * Get CLI package root directory
- */
 const cliPackageRoot = getCliPackageRoot();
-
-/**
- * Copy .loot files recursively from source to destination
- */
-async function copyLootFiles(srcDir: string, destDir: string): Promise<void> {
-    const entries = await fs.readdir(srcDir, { withFileTypes: true });
-    for (const entry of entries) {
-        const srcPath = path.join(srcDir, entry.name);
-        const destPath = path.join(destDir, entry.name);
-        
-        if (entry.isDirectory()) {
-            await fs.ensureDir(destPath);
-            await copyLootFiles(srcPath, destPath);
-        } else if (entry.name.endsWith('.loot')) {
-            await fs.copy(srcPath, destPath);
-        }
-    }
-}
 
 /**
  * Build project for production
  * 
- * @param projectPath - Root path of the project
+ * @param projectPath - Absolute path to project root
+ * @throws {CompilationError} If LootiScript compilation fails
  */
 export async function build(projectPath: string = process.cwd()): Promise<void> {
     const config = await loadConfig(projectPath);
-    const distDir = path.join(projectPath, BUILD_OUTPUT_DIR);
+    
+    const distDir = path.join(projectPath, DEFAULT_DIRS.BUILD_OUTPUT);
     
     console.log(pc.cyan('\n  🏗️  Building for production...\n'));
     console.log(pc.gray(`  Project: ${projectPath}\n`));
@@ -69,8 +51,18 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
     const compileResult = await compileSources(sources, projectPath);
     
     if (compileResult.errors.length > 0) {
-        console.error(pc.red('\n✗ Build failed due to compilation errors\n'));
-        process.exit(1);
+        // Format and throw compilation errors
+        const firstError = compileResult.errors[0];
+        throw new CompilationError(
+            firstError.error,
+            firstError.file,
+            firstError.line,
+            firstError.column,
+            {
+                totalErrors: compileResult.errors.length,
+                errors: compileResult.errors,
+            }
+        );
     }
     
     // Clean dist directory
@@ -81,7 +73,7 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
     
     // Ensure dist directory exists
     await fs.ensureDir(distDir);
-    await fs.ensureDir(path.join(distDir, 'fonts'));
+    await fs.ensureDir(path.join(distDir, DEFAULT_DIRS.FONTS));
     
     // Save compiled routines
     console.log(pc.gray('  Saving compiled bytecode...'));
@@ -94,7 +86,7 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
     console.log(pc.green('  ✓ Bundled runtime'));
     
     // Copy public directory to dist
-    const publicDir = path.join(projectPath, 'public');
+    const publicDir = path.join(projectPath, DEFAULT_DIRS.PUBLIC);
     if (await fs.pathExists(publicDir)) {
         console.log(pc.gray('  Copying public assets...'));
         await fs.copy(publicDir, distDir, {
@@ -104,7 +96,7 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
                 const relative = path.relative(publicDir, src);
                 return !relative.includes('node_modules') && 
                        !relative.startsWith('.') &&
-                       relative !== 'index.html'; // We'll generate this
+                       relative !== DEFAULT_FILES.INDEX_HTML; // We'll generate this
             }
         });
         console.log(pc.green('  ✓ Copied public assets'));
@@ -113,14 +105,32 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
     // Copy source files (.loot) to dist for production
     console.log(pc.gray('  Copying source files...'));
     const scriptsDirs = [
-        path.join(projectPath, 'scripts'),
-        path.join(projectPath, 'src', 'l8b', 'ls')
+        path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
+        path.join(projectPath, DEFAULT_DIRS.SRC_L8B_LS),
     ];
     
     for (const scriptsDir of scriptsDirs) {
         if (await fs.pathExists(scriptsDir)) {
-            const scriptsDest = path.join(distDir, 'scripts');
+            const scriptsDest = path.join(distDir, DEFAULT_DIRS.SCRIPTS);
             await fs.ensureDir(scriptsDest);
+            
+            /**
+             * Copy .loot files recursively
+             */
+            async function copyLootFiles(srcDir: string, destDir: string): Promise<void> {
+                const entries = await fs.readdir(srcDir, { withFileTypes: true });
+                for (const entry of entries) {
+                    const srcPath = path.join(srcDir, entry.name);
+                    const destPath = path.join(destDir, entry.name);
+                    
+                    if (entry.isDirectory()) {
+                        await fs.ensureDir(destPath);
+                        await copyLootFiles(srcPath, destPath);
+                    } else if (entry.name.endsWith('.loot')) {
+                        await fs.copy(srcPath, destPath);
+                    }
+                }
+            }
             
             await copyLootFiles(scriptsDir, scriptsDest);
         }
@@ -129,7 +139,6 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
     
     // Copy BitCell font from CLI package to dist
     const fontPaths = getBitCellFontPaths(cliPackageRoot);
-    const fontDistPath = path.join(distDir, 'fonts', FONT_BITCELL);
     
     let fontSourcePath: string | null = null;
     if (await fs.pathExists(fontPaths.dist)) {
@@ -138,15 +147,17 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
         fontSourcePath = fontPaths.src;
     }
     
+    const fontDistPath = path.join(distDir, DEFAULT_DIRS.FONTS, DEFAULT_FILES.BITCELL_FONT);
+    
     if (fontSourcePath) {
         await fs.copy(fontSourcePath, fontDistPath);
         console.log(pc.green('  ✓ Copied BitCell font'));
     } else {
         // Only warn, don't fail - font might work from browser cache
-        console.warn(pc.yellow(`  ⚠ BitCell font not found. Tried:`));
+        console.warn(pc.yellow('  ⚠ BitCell font not found. Tried:'));
         console.warn(pc.yellow(`    ${fontPaths.dist}`));
         console.warn(pc.yellow(`    ${fontPaths.src}`));
-        console.warn(pc.gray(`  (Font may still work if cached)`));
+        console.warn(pc.gray('  (Font may still work if cached)'));
     }
     
     // Generate HTML for production (using pre-compiled routines)
@@ -154,8 +165,8 @@ export async function build(projectPath: string = process.cwd()): Promise<void> 
     const html = generateHTML(config, {}, resources, compileResult.compiled);
     
     // Write index.html
-    await fs.writeFile(path.join(distDir, 'index.html'), html);
-    console.log(pc.green('  ✓ Generated index.html'));
+    await fs.writeFile(path.join(distDir, DEFAULT_FILES.INDEX_HTML), html);
+    console.log(pc.green(`  ✓ Generated ${DEFAULT_FILES.INDEX_HTML}`));
     
     console.log(pc.green('\n  ✓ Build completed successfully!\n'));
     console.log(pc.gray(`  Output: ${distDir}\n`));

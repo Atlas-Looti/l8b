@@ -9,27 +9,18 @@ import { Parser, Compiler } from '@l8b/lootiscript';
 import path from 'path';
 import fs from 'fs-extra';
 import pc from 'picocolors';
-import { resolveProjectPath, formatCompileError, COMPILED_DIR, MANIFEST_FILE } from '../utils';
+
+import { resolveProjectPath } from '../utils/paths';
 
 /**
- * Serialized routine data from routine.export()
- */
-export interface RoutineExport {
-    num_args: number;
-    ops: number[];
-    args: unknown[];
-    import_refs: unknown[];
-    import_values: unknown[];
-    import_self: number;
-    locals_size?: number;
-}
-
-/**
- * Compiled module containing serialized routine data
+ * Compiled module result
  */
 export interface CompiledModule {
+    /** Module name (derived from file path) */
     name: string;
-    routine: RoutineExport;
+    /** Serialized Routine from routine.export() */
+    routine: any;
+    /** Source filename */
     filename: string;
 }
 
@@ -37,9 +28,13 @@ export interface CompiledModule {
  * Compilation error information
  */
 export interface CompileError {
+    /** File path where error occurred */
     file: string;
+    /** Error message */
     error: string;
+    /** Line number (if available) */
     line?: number;
+    /** Column number (if available) */
     column?: number;
 }
 
@@ -47,26 +42,33 @@ export interface CompileError {
  * Compilation warning information
  */
 export interface CompileWarning {
+    /** File path where warning occurred */
     file: string;
+    /** Warning message */
     warning: string;
+    /** Line number (if available) */
     line?: number;
+    /** Column number (if available) */
     column?: number;
 }
 
 /**
- * Result of compiling LootiScript sources
+ * Compilation result
  */
 export interface CompileResult {
+    /** Successfully compiled modules */
     compiled: CompiledModule[];
+    /** Compilation errors */
     errors: CompileError[];
+    /** Compilation warnings */
     warnings: CompileWarning[];
 }
 
 /**
- * Internal compile file result
+ * Internal compile result
  */
-interface CompileFileResult {
-    routine?: RoutineExport;
+interface InternalCompileResult {
+    routine?: any;
     error?: CompileError;
     warnings?: CompileWarning[];
 }
@@ -74,14 +76,14 @@ interface CompileFileResult {
 /**
  * Compile a single .loot file to bytecode
  * 
- * @param filePath - Full path to the .loot file
- * @param filename - Relative filename for error reporting
- * @returns Compilation result with routine, errors, or warnings
+ * @param filePath - Absolute path to .loot file
+ * @param filename - Filename for error reporting
+ * @returns Compilation result with routine or error
  */
 function compileFile(
     filePath: string,
     filename: string
-): CompileFileResult {
+): InternalCompileResult {
     try {
         const source = fs.readFileSync(filePath, 'utf-8');
         
@@ -90,14 +92,14 @@ function compileFile(
         parser.parse();
         
         // Check for parse errors
-        const parserError = (parser as { error_info?: CompileError }).error_info;
-        if (parserError) {
+        if ((parser as any).error_info) {
+            const err = (parser as any).error_info;
             return {
                 error: {
                     file: filename,
-                    error: parserError.error || 'Parse error',
-                    line: parserError.line,
-                    column: parserError.column,
+                    error: err.error || 'Parse error',
+                    line: err.line,
+                    column: err.column,
                 },
             };
         }
@@ -109,7 +111,7 @@ function compileFile(
         const routine = compiler.routine.export();
         
         // Collect warnings
-        const warnings: CompileWarning[] = parser.warnings.map((w) => ({
+        const warnings = parser.warnings.map((w) => ({
             file: filename,
             warning: w.type || 'Warning',
             line: w.line,
@@ -120,14 +122,13 @@ function compileFile(
             routine,
             warnings,
         };
-    } catch (error) {
-        const err = error as { message?: string; line?: number; column?: number };
+    } catch (error: any) {
         return {
             error: {
                 file: filename,
-                error: err.message || String(error),
-                line: err.line,
-                column: err.column,
+                error: error.message || String(error),
+                line: error.line,
+                column: error.column,
             },
         };
     }
@@ -137,7 +138,7 @@ function compileFile(
  * Compile all .loot source files to bytecode
  * 
  * @param sources - Map of module names to file paths
- * @param projectPath - Root path of the project
+ * @param projectPath - Absolute path to project root
  * @returns Compilation result with compiled modules, errors, and warnings
  */
 export async function compileSources(
@@ -151,30 +152,39 @@ export async function compileSources(
     console.log(pc.gray('  Compiling LootiScript sources...'));
     
     for (const [moduleName, filePath] of Object.entries(sources)) {
-        // Resolve full file path (handles paths starting with /)
+        // Resolve full file path
+        // loadSources() returns paths like /scripts/main.loot which are relative to project root
+        // So we use resolveProjectPath to handle this correctly
         const fullPath = resolveProjectPath(projectPath, filePath);
         
+        // Normalize the path (resolve .. and . components)
+        const normalizedPath = path.normalize(fullPath);
+        
         // Get relative filename for error reporting
-        const relativePath = path.relative(projectPath, fullPath);
-        const filename = relativePath || path.basename(fullPath);
+        const relativePath = path.relative(projectPath, normalizedPath);
+        const filename = relativePath || path.basename(normalizedPath);
         
         // Verify file exists before compiling
-        if (!fs.existsSync(fullPath)) {
-            const error: CompileError = {
+        if (!fs.existsSync(normalizedPath)) {
+            errors.push({
                 file: filename,
-                error: `File not found: ${fullPath}`,
-            };
-            errors.push(error);
-            console.error(pc.red(`    ✗ ${formatCompileError(moduleName, filename, error)}`));
+                error: `File not found: ${normalizedPath}`,
+            });
+            console.error(pc.red(`    ✗ ${moduleName} (${filename})`));
+            console.error(pc.red(`      File not found: ${normalizedPath}`));
             continue;
         }
         
         // Compile file
-        const result = compileFile(fullPath, filename);
+        const result = compileFile(normalizedPath, filename);
         
         if (result.error) {
             errors.push(result.error);
-            console.error(pc.red(`    ✗ ${formatCompileError(moduleName, filename, result.error)}`));
+            console.error(pc.red(`    ✗ ${moduleName} (${filename})`));
+            console.error(pc.red(`      ${result.error.error}`));
+            if (result.error.line !== undefined) {
+                console.error(pc.gray(`      Line ${result.error.line}, Column ${result.error.column || 0}`));
+            }
         } else if (result.routine) {
             compiled.push({
                 name: moduleName,
@@ -210,25 +220,26 @@ export async function compileSources(
 /**
  * Save compiled routines to disk as JS modules
  * 
- * @param compiled - Array of compiled modules
+ * @param compiled - Array of compiled modules to save
  * @param outputDir - Output directory for compiled files
  */
 export async function saveCompiled(
     compiled: CompiledModule[],
     outputDir: string
 ): Promise<void> {
-    const compiledDir = path.join(outputDir, COMPILED_DIR);
+    const { DEFAULT_DIRS } = await import('../utils/paths');
+    const compiledDir = path.join(outputDir, DEFAULT_DIRS.COMPILED);
     await fs.ensureDir(compiledDir);
     
     // Save each compiled module as JS file that exports the routine data
     for (const module of compiled) {
         const outputPath = path.join(compiledDir, `${module.name}.js`);
-        const moduleData = {
+        // Create JS module that exports the compiled routine data
+        const jsContent = `export default ${JSON.stringify({
             name: module.name,
             filename: module.filename,
             routine: module.routine,
-        };
-        const jsContent = `export default ${JSON.stringify(moduleData, null, 2)};`;
+        }, null, 2)};`;
         
         await fs.writeFile(outputPath, jsContent, 'utf-8');
     }
@@ -238,12 +249,12 @@ export async function saveCompiled(
         modules: compiled.map((m) => ({
             name: m.name,
             filename: m.filename,
-            path: `${COMPILED_DIR}/${m.name}.js`,
+            path: `${DEFAULT_DIRS.COMPILED}/${m.name}.js`,
         })),
     };
     
     await fs.writeJSON(
-        path.join(outputDir, MANIFEST_FILE),
+        path.join(outputDir, 'compiled-manifest.json'),
         manifest,
         { spaces: 2 }
     );

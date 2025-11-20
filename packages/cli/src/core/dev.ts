@@ -19,100 +19,109 @@ import { lootiScriptPlugin } from '../plugin/vite-plugin-lootiscript';
 import { 
     getCliPackageRoot, 
     getBitCellFontPaths, 
-    DEFAULT_PORT, 
-    DEFAULT_HOST, 
-    CACHE_TTL_MS,
-    FONT_BITCELL,
-    FONT_CONTENT_TYPE,
-    FONT_CACHE_CONTROL,
-} from '../utils';
+    DEFAULT_DIRS,
+    DEFAULT_FILES,
+} from '../utils/paths';
+import { DEFAULT_SERVER, CACHE, FONT } from '../utils/constants';
+import { ServerError } from '../utils/errors';
 import type { Resources } from '@l8b/runtime';
 
-// Cache for resources and sources to avoid re-scanning on every request
+/**
+ * Cache entry interface
+ */
 interface CacheEntry<T> {
     data: T;
     timestamp: number;
 }
 
+/**
+ * Development server options
+ */
+export interface DevOptions {
+    /** Port to run server on */
+    port?: number;
+    /** Host to bind to (false = localhost, true = 0.0.0.0, string = specific host) */
+    host?: string | boolean;
+}
+
+// Module-level cache for resources and sources
 let cachedResources: CacheEntry<Resources> | null = null;
 let cachedSources: CacheEntry<Record<string, string>> | null = null;
 
-/**
- * Get CLI package root directory
- */
 const cliPackageRoot = getCliPackageRoot();
-
-export interface DevOptions {
-    port?: number;
-    host?: string | boolean;
-}
 
 /**
  * Start development server for LootiScript project
  * 
- * @param projectPath - Root path of the project
- * @param options - Server options (port, host)
+ * @param projectPath - Absolute path to project root
+ * @param options - Server configuration options
  * @returns Vite dev server instance
+ * @throws {ServerError} If server fails to start
  */
 export async function dev(
     projectPath: string = process.cwd(), 
     options: DevOptions = {}
 ): Promise<ViteDevServer> {
-    const config = await loadConfig(projectPath);
-    
-    // Get port and host from config or options
-    const port = options.port || config.dev?.port || DEFAULT_PORT;
-    const host = options.host !== undefined ? options.host : (config.dev?.host ?? DEFAULT_HOST);
+    try {
+        const config = await loadConfig(projectPath);
+        
+        // Get port and host from config or options
+        const port = options.port || config.dev?.port || DEFAULT_SERVER.PORT;
+        const host = options.host !== undefined 
+            ? options.host 
+            : (config.dev?.host ?? DEFAULT_SERVER.HOST);
 
-    // Setup file watchers to invalidate cache on changes
-    const watcher = chokidar.watch([
-        path.join(projectPath, 'public'),
-        path.join(projectPath, 'scripts'),
-        path.join(projectPath, 'src', 'l8b', 'ls'),
-        path.join(projectPath, 'l8b.config.json'),
-    ], {
-        ignored: /(^|[\/\\])\../, // ignore dotfiles
-        persistent: true,
-        ignoreInitial: true,
-    });
+        // Setup file watchers to invalidate cache on changes
+        const watchPaths = [
+            path.join(projectPath, DEFAULT_DIRS.PUBLIC),
+            path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
+            path.join(projectPath, DEFAULT_DIRS.SRC_L8B_LS),
+            path.join(projectPath, DEFAULT_FILES.CONFIG),
+        ];
+        
+        const watcher = chokidar.watch(watchPaths, {
+            ignored: /(^|[\/\\])\../, // ignore dotfiles
+            persistent: true,
+            ignoreInitial: true,
+        });
 
-    // Clear cache on file changes
-    const clearCache = () => {
-        cachedResources = null;
-        cachedSources = null;
-    };
+        // Clear cache on file changes
+        const clearCache = () => {
+            cachedResources = null;
+            cachedSources = null;
+        };
 
-    watcher.on('change', clearCache);
-    watcher.on('add', clearCache);
-    watcher.on('unlink', clearCache);
+        watcher.on('change', clearCache);
+        watcher.on('add', clearCache);
+        watcher.on('unlink', clearCache);
 
-    /**
-     * Get or cache resources
-     */
-    const getResources = async (): Promise<Resources> => {
-        const now = Date.now();
-        if (cachedResources && (now - cachedResources.timestamp) < CACHE_TTL_MS) {
-            return cachedResources.data;
-        }
-        const resources = await detectResources(projectPath);
-        cachedResources = { data: resources, timestamp: now };
-        return resources;
-    };
+        /**
+         * Get or cache resources
+         */
+        const getResources = async (): Promise<Resources> => {
+            const now = Date.now();
+            if (cachedResources && (now - cachedResources.timestamp) < CACHE.TTL_MS) {
+                return cachedResources.data;
+            }
+            const resources = await detectResources(projectPath);
+            cachedResources = { data: resources, timestamp: now };
+            return resources;
+        };
 
-    /**
-     * Get or cache sources
-     */
-    const getSources = async (): Promise<Record<string, string>> => {
-        const now = Date.now();
-        if (cachedSources && (now - cachedSources.timestamp) < CACHE_TTL_MS) {
-            return cachedSources.data;
-        }
-        const sources = await loadSources(projectPath);
-        cachedSources = { data: sources, timestamp: now };
-        return sources;
-    };
+        /**
+         * Get or cache sources
+         */
+        const getSources = async (): Promise<Record<string, string>> => {
+            const now = Date.now();
+            if (cachedSources && (now - cachedSources.timestamp) < CACHE.TTL_MS) {
+                return cachedSources.data;
+            }
+            const sources = await loadSources(projectPath);
+            cachedSources = { data: sources, timestamp: now };
+            return sources;
+        };
 
-    const server = await createServer({
+        const server = await createServer({
         root: projectPath,
         server: {
             port,
@@ -121,43 +130,44 @@ export async function dev(
         },
         plugins: [
             lootiScriptPlugin(),
-            {
-                name: 'l8b-html-generator',
-                configureServer(server) {
-                    const fontPaths = getBitCellFontPaths(cliPackageRoot);
-                    const normalizedDistFontPath = path.normalize(fontPaths.dist);
-                    const normalizedSrcFontPath = path.normalize(fontPaths.src);
-                    
-                    // Place middleware BEFORE other middlewares to catch font requests early
-                    server.middlewares.use(async (req, res, next) => {
-                        // Serve BitCell font from CLI package
-                        const fontUrl = `/fonts/${FONT_BITCELL}`;
-                        if (req.url && (req.url === fontUrl || req.url.startsWith(fontUrl))) {
-                            // Try dist first, then src
-                            let fontPath = normalizedDistFontPath;
-                            if (!(await fs.pathExists(fontPath))) {
-                                fontPath = normalizedSrcFontPath;
+                {
+                    name: 'l8b-html-generator',
+                    configureServer(server) {
+                        // Get font paths
+                        const fontPaths = getBitCellFontPaths(cliPackageRoot);
+                        const normalizedDistFontPath = path.normalize(fontPaths.dist);
+                        const normalizedSrcFontPath = path.normalize(fontPaths.src);
+                        
+                        // Place middleware BEFORE other middlewares to catch font requests early
+                        server.middlewares.use(async (req, res, next) => {
+                            // Serve BitCell font from CLI package
+                            const fontUrl = `/fonts/${DEFAULT_FILES.BITCELL_FONT}`;
+                            if (req.url && (req.url === fontUrl || req.url.startsWith(fontUrl))) {
+                                // Try dist first, then src
+                                let fontPath = normalizedDistFontPath;
+                                if (!(await fs.pathExists(fontPath))) {
+                                    fontPath = normalizedSrcFontPath;
+                                }
+                                
+                                if (await fs.pathExists(fontPath)) {
+                                    try {
+                                        const fontData = await fs.readFile(fontPath);
+                                        res.setHeader('Content-Type', FONT.CONTENT_TYPE);
+                                        res.setHeader('Cache-Control', FONT.CACHE_CONTROL);
+                                        res.end(fontData);
+                                        return;
+                                    } catch (error) {
+                                        console.error('[L8B CLI] Error serving BitCell font:', error);
+                                    }
+                                } else {
+                                    console.warn(
+                                        `[L8B CLI] BitCell font not found. Tried:\n  ${normalizedDistFontPath}\n  ${normalizedSrcFontPath}`
+                                    );
+                                }
                             }
                             
-                            if (await fs.pathExists(fontPath)) {
-                                try {
-                                    const fontData = await fs.readFile(fontPath);
-                                    res.setHeader('Content-Type', FONT_CONTENT_TYPE);
-                                    res.setHeader('Cache-Control', FONT_CACHE_CONTROL);
-                                    res.end(fontData);
-                                    return;
-                                } catch (error) {
-                                    console.error('[L8B CLI] Error serving BitCell font:', error);
-                                }
-                            } else {
-                                console.warn(
-                                    `[L8B CLI] BitCell font not found. Tried:\n  ${normalizedDistFontPath}\n  ${normalizedSrcFontPath}`
-                                );
-                            }
-                        }
-                        
-                        // Only handle root/index.html requests
-                        if (req.url === '/' || req.url === '/index.html') {
+                            // Only handle root/index.html requests
+                            if (req.url === '/' || req.url === `/${DEFAULT_FILES.INDEX_HTML}`) {
                             try {
                                 // Use cached versions when possible
                                 const [currentSources, currentResources] = await Promise.all([
@@ -188,11 +198,7 @@ export async function dev(
                         next();
                     });
                 },
-                buildEnd() {
-                    // Cleanup watcher on build end
-                    watcher.close().catch(() => {});
-                }
-            }
+            },
         ],
         // Optimize dependencies for faster startup
         optimizeDeps: {
@@ -202,36 +208,47 @@ export async function dev(
             },
         },
         // Public directory for static assets
-        publicDir: path.join(projectPath, 'public'),
+        publicDir: path.join(projectPath, DEFAULT_DIRS.PUBLIC),
     });
 
-    await server.listen();
-    
-    console.log('\n🚀 L8B Dev Server running!\n');
-    server.printUrls();
-    
-    /**
-     * Cleanup function for graceful shutdown
-     */
-    const cleanup = async () => {
-        console.log('\n\nShutting down server...');
-        try {
-            await watcher.close();
-            await server.close();
-            process.exit(0);
-        } catch (error) {
-            console.error('Error during cleanup:', error);
-            process.exit(1);
+        await server.listen();
+        
+        console.log('\n🚀 L8B Dev Server running!\n');
+        server.printUrls();
+        
+        /**
+         * Cleanup function for graceful shutdown
+         */
+        const cleanup = async () => {
+            console.log('\n\nShutting down server...');
+            try {
+                await watcher.close();
+                await server.close();
+                process.exit(0);
+            } catch (error) {
+                console.error('Error during cleanup:', error);
+                process.exit(1);
+            }
+        };
+        
+        process.on('SIGTERM', cleanup);
+        process.on('SIGINT', cleanup);
+        
+        // Handle uncaught errors
+        process.on('unhandledRejection', (reason) => {
+            console.error('Unhandled rejection:', reason);
+        });
+        
+        return server;
+    } catch (error) {
+        if (error instanceof ServerError) {
+            throw error;
         }
-    };
-    
-    process.on('SIGTERM', cleanup);
-    process.on('SIGINT', cleanup);
-    
-    // Handle uncaught errors
-    process.on('unhandledRejection', (reason) => {
-        console.error('Unhandled rejection:', reason);
-    });
-    
-    return server;
-}
+        throw new ServerError(
+            'Failed to start development server',
+            {
+                error: error instanceof Error ? error.message : String(error),
+                projectPath,
+            }
+        );
+    }

@@ -11,49 +11,57 @@ import { preview } from 'vite';
 import type { PreviewServer } from 'vite';
 
 import { loadConfig } from './config-loader';
-import {
-    BUILD_OUTPUT_DIR,
-    DEFAULT_PORT,
-    DEFAULT_HOST,
-    FONT_BITCELL,
-    FONT_CONTENT_TYPE,
-    FONT_CACHE_CONTROL,
-} from '../utils';
+import { DEFAULT_DIRS, DEFAULT_FILES } from '../utils/paths';
+import { DEFAULT_SERVER, FONT } from '../utils/constants';
+import { BuildError, ServerError } from '../utils/errors';
 
+/**
+ * Production server options
+ */
 export interface StartOptions {
+    /** Port to run server on */
     port?: number;
+    /** Host to bind to (false = localhost, true = 0.0.0.0, string = specific host) */
     host?: string | boolean;
 }
 
 /**
  * Start production server for built project
  * 
- * @param projectPath - Root path of the project
- * @param options - Server options (port, host)
+ * @param projectPath - Absolute path to project root
+ * @param options - Server configuration options
  * @returns Vite preview server instance
+ * @throws {BuildError} If build output is missing
+ * @throws {ServerError} If server fails to start
  */
 export async function start(
     projectPath: string = process.cwd(), 
     options: StartOptions = {}
 ): Promise<PreviewServer> {
     const config = await loadConfig(projectPath);
-    const distDir = path.join(projectPath, BUILD_OUTPUT_DIR);
+    const distDir = path.join(projectPath, DEFAULT_DIRS.BUILD_OUTPUT);
     
     // Check if build exists
     if (!(await fs.pathExists(distDir))) {
-        console.error(pc.red('\n✗ No build found. Please run `l8b build` first.\n'));
-        process.exit(1);
+        throw new BuildError(
+            'No build found. Please run `l8b build` first.',
+            { projectPath, distDir }
+        );
     }
     
-    const indexHtml = path.join(distDir, 'index.html');
+    const indexHtml = path.join(distDir, DEFAULT_FILES.INDEX_HTML);
     if (!(await fs.pathExists(indexHtml))) {
-        console.error(pc.red('\n✗ No index.html found in build output. Please run `l8b build` first.\n'));
-        process.exit(1);
+        throw new BuildError(
+            'No index.html found in build output. Please run `l8b build` first.',
+            { projectPath, distDir, indexHtml }
+        );
     }
     
     // Get port and host from config or options
-    const port = options.port || config.dev?.port || DEFAULT_PORT;
-    const host = options.host !== undefined ? options.host : (config.dev?.host ?? DEFAULT_HOST);
+    const port = options.port || config.dev?.port || DEFAULT_SERVER.PORT;
+    const host = options.host !== undefined 
+        ? options.host 
+        : (config.dev?.host ?? DEFAULT_SERVER.HOST);
     
     console.log(pc.cyan('\n  🚀 Starting production server...\n'));
     console.log(pc.gray(`  Project: ${projectPath}\n`));
@@ -77,14 +85,14 @@ export async function start(
                         // Add middleware to serve fonts explicitly
                         server.middlewares.use(async (req, res, next) => {
                             // Handle font requests
-                            const fontUrl = `/fonts/${FONT_BITCELL}`;
+                            const fontUrl = `/fonts/${DEFAULT_FILES.BITCELL_FONT}`;
                             if (req.url && (req.url === fontUrl || req.url.startsWith(fontUrl))) {
-                                const fontPath = path.join(distDir, 'fonts', FONT_BITCELL);
+                                const fontPath = path.join(distDir, DEFAULT_DIRS.FONTS, DEFAULT_FILES.BITCELL_FONT);
                                 if (await fs.pathExists(fontPath)) {
                                     try {
                                         const fontData = await fs.readFile(fontPath);
-                                        res.setHeader('Content-Type', FONT_CONTENT_TYPE);
-                                        res.setHeader('Cache-Control', FONT_CACHE_CONTROL);
+                                        res.setHeader('Content-Type', FONT.CONTENT_TYPE);
+                                        res.setHeader('Cache-Control', FONT.CACHE_CONTROL);
                                         res.end(fontData);
                                         return;
                                     } catch (error) {
@@ -108,7 +116,7 @@ export async function start(
         const cleanup = async () => {
             console.log('\n\nShutting down server...');
             try {
-                // Vite preview returns a VitePreviewServer
+                // Vite preview returns a PreviewServer
                 // Close the underlying http server if available
                 if (server.httpServer) {
                     await new Promise<void>((resolve, reject) => {
@@ -135,9 +143,17 @@ export async function start(
         
         return server;
     } catch (error) {
-        console.error(pc.red('\n✗ Error starting server:\n'));
-        console.error(error);
-        throw error;
+        if (error instanceof BuildError || error instanceof ServerError) {
+            throw error;
+        }
+        throw new ServerError(
+            'Failed to start production server',
+            {
+                error: error instanceof Error ? error.message : String(error),
+                projectPath,
+                distDir,
+            }
+        );
     }
 }
 

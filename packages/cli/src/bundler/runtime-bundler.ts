@@ -6,112 +6,98 @@
  */
 
 import { build } from 'esbuild';
-import type { BuildOptions } from 'esbuild';
 import path from 'path';
 import fs from 'fs-extra';
 import pc from 'picocolors';
-import { findWorkspaceRoot, RUNTIME_BUNDLE, MAX_WORKSPACE_SEARCH_DEPTH } from '../utils';
 
-const RUNTIME_ENTRY = 'dist/index.js';
-const PACKAGE_RUNTIME = '@l8b/runtime';
-const PACKAGE_LOOTISCRIPT = '@l8b/lootiscript';
-
-/**
- * Find runtime and lootiscript entry points
- */
-async function findRuntimeEntries(
-    projectPath: string,
-    workspaceRoot: string | null
-): Promise<{ runtime: string; lootiscript: string }> {
-    let runtimeEntryPath: string | null = null;
-    let lootiscriptEntryPath: string | null = null;
-    
-    // Try workspace first (monorepo)
-    if (workspaceRoot) {
-        const workspaceRuntime = path.join(workspaceRoot, 'packages', 'runtime', RUNTIME_ENTRY);
-        const workspaceLootiscript = path.join(workspaceRoot, 'packages', 'lootiscript', RUNTIME_ENTRY);
-        
-        if (await fs.pathExists(workspaceRuntime)) {
-            runtimeEntryPath = workspaceRuntime;
-        }
-        if (await fs.pathExists(workspaceLootiscript)) {
-            lootiscriptEntryPath = workspaceLootiscript;
-        }
-    }
-    
-    // Fallback to node_modules
-    if (!runtimeEntryPath || !lootiscriptEntryPath) {
-        const nodeModulesPath = path.join(projectPath, 'node_modules');
-        if (await fs.pathExists(nodeModulesPath)) {
-            const runtimePkg = path.join(nodeModulesPath, PACKAGE_RUNTIME, RUNTIME_ENTRY);
-            const lootiscriptPkg = path.join(nodeModulesPath, PACKAGE_LOOTISCRIPT, RUNTIME_ENTRY);
-            
-            if (!runtimeEntryPath && await fs.pathExists(runtimePkg)) {
-                runtimeEntryPath = runtimePkg;
-            }
-            if (!lootiscriptEntryPath && await fs.pathExists(lootiscriptPkg)) {
-                lootiscriptEntryPath = lootiscriptPkg;
-            }
-        }
-    }
-    
-    if (!runtimeEntryPath || !lootiscriptEntryPath) {
-        const triedPaths: string[] = [];
-        if (workspaceRoot) {
-            triedPaths.push(
-                path.join(workspaceRoot, 'packages', 'runtime', RUNTIME_ENTRY),
-                path.join(workspaceRoot, 'packages', 'lootiscript', RUNTIME_ENTRY)
-            );
-        }
-        triedPaths.push(
-            path.join(projectPath, 'node_modules', PACKAGE_RUNTIME, RUNTIME_ENTRY),
-            path.join(projectPath, 'node_modules', PACKAGE_LOOTISCRIPT, RUNTIME_ENTRY)
-        );
-        
-        throw new Error(
-            `Could not find ${PACKAGE_RUNTIME} or ${PACKAGE_LOOTISCRIPT}.\n` +
-            `Tried:\n` +
-            triedPaths.map(p => `  ${p}`).join('\n')
-        );
-    }
-    
-    return {
-        runtime: runtimeEntryPath,
-        lootiscript: lootiscriptEntryPath,
-    };
-}
+import { findWorkspaceRoot, DEFAULT_FILES } from '../utils/paths';
+import { BUILD } from '../utils/constants';
+import { BuildError } from '../utils/errors';
 
 /**
  * Bundle runtime and lootiscript for browser
  * 
- * @param distDir - Output directory for bundled file
- * @param projectPath - Root path of the project
+ * @param distDir - Output directory for bundle
+ * @param projectPath - Absolute path to project root
+ * @throws {BuildError} If runtime packages cannot be found or bundling fails
  */
 export async function bundleRuntime(distDir: string, projectPath: string): Promise<void> {
-    const outputFile = path.join(distDir, RUNTIME_BUNDLE);
+    const outputFile = path.join(distDir, DEFAULT_FILES.RUNTIME_BUNDLE);
     
     console.log(pc.gray('  Bundling runtime dependencies...'));
     
     try {
         // Find workspace root
-        const workspaceRoot = await findWorkspaceRoot(projectPath, MAX_WORKSPACE_SEARCH_DEPTH);
+        const workspaceRoot = await findWorkspaceRoot(projectPath, BUILD.MAX_WORKSPACE_DEPTH);
         
-        // Find runtime entry points
-        const entries = await findRuntimeEntries(projectPath, workspaceRoot);
+        let runtimeEntryPath: string | null = null;
+        let lootiscriptEntryPath: string | null = null;
+        
+        // Try workspace first (monorepo)
+        if (workspaceRoot) {
+            const workspaceRuntime = path.join(workspaceRoot, 'packages', 'runtime', 'dist', 'index.js');
+            const workspaceLootiscript = path.join(workspaceRoot, 'packages', 'lootiscript', 'dist', 'index.js');
+            
+            if (await fs.pathExists(workspaceRuntime)) {
+                runtimeEntryPath = workspaceRuntime;
+            }
+            if (await fs.pathExists(workspaceLootiscript)) {
+                lootiscriptEntryPath = workspaceLootiscript;
+            }
+        }
+        
+        // Fallback to node_modules
+        if (!runtimeEntryPath || !lootiscriptEntryPath) {
+            const nodeModulesPath = path.join(projectPath, 'node_modules');
+            if (await fs.pathExists(nodeModulesPath)) {
+                const runtimePkg = path.join(nodeModulesPath, '@l8b', 'runtime', 'dist', 'index.js');
+                const lootiscriptPkg = path.join(nodeModulesPath, '@l8b', 'lootiscript', 'dist', 'index.js');
+                
+                if (!runtimeEntryPath && await fs.pathExists(runtimePkg)) {
+                    runtimeEntryPath = runtimePkg;
+                }
+                if (!lootiscriptEntryPath && await fs.pathExists(lootiscriptPkg)) {
+                    lootiscriptEntryPath = lootiscriptPkg;
+                }
+            }
+        }
+        
+        if (!runtimeEntryPath || !lootiscriptEntryPath) {
+            const triedPaths: string[] = [];
+            if (workspaceRoot) {
+                triedPaths.push(
+                    path.join(workspaceRoot, 'packages', 'runtime', 'dist', 'index.js'),
+                    path.join(workspaceRoot, 'packages', 'lootiscript', 'dist', 'index.js')
+                );
+            }
+            triedPaths.push(
+                path.join(projectPath, 'node_modules', '@l8b', 'runtime', 'dist', 'index.js'),
+                path.join(projectPath, 'node_modules', '@l8b', 'lootiscript', 'dist', 'index.js')
+            );
+            
+            throw new BuildError(
+                'Could not find @l8b/runtime or @l8b/lootiscript',
+                {
+                    triedPaths,
+                    workspaceRoot,
+                    projectPath,
+                }
+            );
+        }
         
         // Create a temporary entry file that imports both and re-exports
         const tempEntryPath = path.join(distDir, '.temp-entry.js');
         const tempEntryContent = `
 // Temporary entry file for bundling
-export { Runtime } from '${entries.runtime.replace(/\\/g, '/')}';
-export { Routine } from '${entries.lootiscript.replace(/\\/g, '/')}';
+export { Runtime } from '${runtimeEntryPath.replace(/\\/g, '/')}';
+export { Routine } from '${lootiscriptEntryPath.replace(/\\/g, '/')}';
 `;
         
         await fs.writeFile(tempEntryPath, tempEntryContent);
         
         try {
             // Bundle using esbuild
-            const buildOptions: BuildOptions = {
+            await build({
                 entryPoints: [tempEntryPath],
                 bundle: true,
                 format: 'esm',
@@ -119,15 +105,19 @@ export { Routine } from '${entries.lootiscript.replace(/\\/g, '/')}';
                 platform: 'browser',
                 target: 'es2022',
                 splitting: false,
+                // Bundle all dependencies
                 external: [],
+                // Tree shaking
                 treeShaking: true,
+                // Minify for production
                 minify: true,
+                // Source maps for debugging (optional)
                 sourcemap: false,
+                // Resolve extensions
                 resolveExtensions: ['.js', '.ts', '.json', '.mjs'],
+                // Preserve names for exports
                 keepNames: true,
-            };
-            
-            await build(buildOptions);
+            });
             
             console.log(pc.green(`  ✓ Bundled runtime to ${path.relative(distDir, outputFile)}`));
         } finally {
@@ -137,10 +127,17 @@ export { Routine } from '${entries.lootiscript.replace(/\\/g, '/')}';
             }
         }
     } catch (error) {
-        const err = error as { message?: string };
-        console.error(pc.red('  ✗ Failed to bundle runtime:'));
-        console.error(err.message || String(error));
-        throw error;
+        if (error instanceof BuildError) {
+            throw error;
+        }
+        throw new BuildError(
+            'Failed to bundle runtime',
+            {
+                error: error instanceof Error ? error.message : String(error),
+                distDir,
+                projectPath,
+            }
+        );
     }
 }
 

@@ -1,39 +1,109 @@
 /**
- * Error handling utilities
+ * Custom error classes for CLI
+ * 
+ * Provides structured error handling with context information.
  */
 
-import type { ErrorInfo } from '../compiler/build-compiler';
+import pc from 'picocolors';
 
 /**
- * Format error message with file location
+ * Base CLI error class
  */
-export function formatError(error: ErrorInfo): string {
-    let message = error.error;
-    if (error.file) {
-        message = `[${error.file}] ${message}`;
+export class CLIError extends Error {
+    constructor(
+        message: string,
+        public readonly code?: string,
+        public readonly context?: Record<string, unknown>
+    ) {
+        super(message);
+        this.name = 'CLIError';
+        Object.setPrototypeOf(this, CLIError.prototype);
     }
-    if (error.line !== undefined) {
-        message += ` (line ${error.line}`;
-        if (error.column !== undefined) {
-            message += `, col ${error.column}`;
+
+    /**
+     * Format error for console output
+     */
+    format(): string {
+        let output = pc.red(`\n✗ ${this.message}\n`);
+        
+        if (this.context && Object.keys(this.context).length > 0) {
+            output += pc.gray('\nContext:\n');
+            for (const [key, value] of Object.entries(this.context)) {
+                output += pc.gray(`  ${key}: ${String(value)}\n`);
+            }
         }
-        message += ')';
+        
+        return output;
     }
-    return message;
 }
 
 /**
- * Format compile error for display
+ * Configuration error
  */
-export function formatCompileError(
-    moduleName: string,
-    filename: string,
-    error: ErrorInfo
-): string {
-    let message = `${moduleName} (${filename})\n  ${error.error}`;
-    if (error.line !== undefined) {
-        message += `\n  Line ${error.line}, Column ${error.column || 0}`;
+export class ConfigError extends CLIError {
+    constructor(message: string, context?: Record<string, unknown>) {
+        super(message, 'CONFIG_ERROR', context);
+        this.name = 'ConfigError';
+        Object.setPrototypeOf(this, ConfigError.prototype);
     }
-    return message;
+}
+
+/**
+ * Build error
+ */
+export class BuildError extends CLIError {
+    constructor(message: string, context?: Record<string, unknown>) {
+        super(message, 'BUILD_ERROR', context);
+        this.name = 'BuildError';
+        Object.setPrototypeOf(this, BuildError.prototype);
+    }
+}
+
+/**
+ * Compilation error
+ */
+export class CompilationError extends CLIError {
+    constructor(
+        message: string,
+        public readonly file?: string,
+        public readonly line?: number,
+        public readonly column?: number,
+        context?: Record<string, unknown>
+    ) {
+        super(message, 'COMPILATION_ERROR', { file, line, column, ...context });
+        this.name = 'CompilationError';
+        Object.setPrototypeOf(this, CompilationError.prototype);
+    }
+
+    format(): string {
+        let output = pc.red(`\n✗ Compilation error`);
+        
+        if (this.file) {
+            output += pc.gray(` in ${this.file}`);
+        }
+        
+        if (this.line !== undefined) {
+            output += pc.gray(` (line ${this.line}`);
+            if (this.column !== undefined) {
+                output += pc.gray(`, column ${this.column}`);
+            }
+            output += pc.gray(')');
+        }
+        
+        output += pc.red(`\n  ${this.message}\n`);
+        
+        return output;
+    }
+}
+
+/**
+ * Server error
+ */
+export class ServerError extends CLIError {
+    constructor(message: string, context?: Record<string, unknown>) {
+        super(message, 'SERVER_ERROR', context);
+        this.name = 'ServerError';
+        Object.setPrototypeOf(this, ServerError.prototype);
+    }
 }
 

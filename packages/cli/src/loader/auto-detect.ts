@@ -1,7 +1,7 @@
 /**
- * Automatic asset detection for LootiScript projects
+ * Automatic resource detection for LootiScript projects
  * 
- * Scans public/ directory for game assets (sprites, maps, sounds, music)
+ * Scans project directories for assets (images, maps, sounds, music)
  * and returns them in the Resources format expected by @l8b/runtime.
  */
 
@@ -9,21 +9,33 @@ import fs from 'fs-extra';
 import path from 'path';
 import type { Resources, ResourceFile } from '@l8b/runtime';
 
-// Image file extensions
-const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
-// Map file extensions
-const MAP_EXTENSIONS = new Set(['.json', '.tmj']);
-// Audio file extensions
-const AUDIO_EXTENSIONS = new Set(['.mp3', '.wav', '.ogg']);
-// Known asset directories to skip when scanning root public/
-const KNOWN_DIRS = new Set(['sprites', 'maps', 'fonts', 'sounds', 'music', 'l8b']);
+import { DEFAULT_DIRS } from '../utils/paths';
+
+// Known asset subdirectories
+const ASSET_SUBDIRS = {
+    SPRITES: 'sprites',
+    MAPS: 'maps',
+    FONTS: 'fonts',
+    SOUNDS: 'sounds',
+    MUSIC: 'music',
+} as const;
+
+// Known directories to skip when scanning root public
+const KNOWN_DIRS = new Set([
+    ASSET_SUBDIRS.SPRITES,
+    ASSET_SUBDIRS.MAPS,
+    ASSET_SUBDIRS.FONTS,
+    ASSET_SUBDIRS.SOUNDS,
+    ASSET_SUBDIRS.MUSIC,
+    'l8b',
+]);
 
 /**
  * Scan a single directory for files with matching extensions
  * 
  * @param dirPath - Directory to scan
- * @param extensions - Set of file extensions to match
- * @returns Array of ResourceFile objects
+ * @param extensions - Set of file extensions to match (e.g., new Set(['.png', '.jpg']))
+ * @returns Array of resource files (filename only)
  */
 async function scanDirectory(dirPath: string, extensions: Set<string>): Promise<ResourceFile[]> {
     const files: ResourceFile[] = [];
@@ -58,12 +70,12 @@ async function scanDirectory(dirPath: string, extensions: Set<string>): Promise<
 }
 
 /**
- * Detect and collect all game resources from public/ directory
+ * Detect all resources (images, maps, sounds, music) in project
  * 
- * Scans for images, maps, sounds, music, and generic assets.
- * Checks both public/ and public/l8b/ directories for compatibility.
+ * Scans `public/` and `public/l8b/` directories for assets and returns
+ * them in the format expected by @l8b/runtime.
  * 
- * @param projectPath - Root path of the project
+ * @param projectPath - Absolute path to project root
  * @returns Resources object with detected assets
  */
 export async function detectResources(projectPath: string = process.cwd()): Promise<Resources> {
@@ -75,29 +87,35 @@ export async function detectResources(projectPath: string = process.cwd()): Prom
         assets: [],
     };
 
-    const publicDir = path.join(projectPath, 'public');
+    const publicDir = path.join(projectPath, DEFAULT_DIRS.PUBLIC);
 
     if (!await fs.pathExists(publicDir)) {
         return resources;
     }
 
+    // File extensions for each asset type
+    const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
+    const MAP_EXTENSIONS = new Set(['.json', '.tmj']);
+    const AUDIO_EXTENSIONS = new Set(['.mp3', '.wav', '.ogg']);
+
     // Scan multiple directories in parallel for better performance
+    // Check both public/subdir and public/l8b/subdir for compatibility
     const scanTasks = [
         // Images from sprites
-        scanDirectory(path.join(publicDir, 'sprites'), IMAGE_EXTENSIONS),
-        scanDirectory(path.join(publicDir, 'l8b', 'sprites'), IMAGE_EXTENSIONS),
+        scanDirectory(path.join(publicDir, ASSET_SUBDIRS.SPRITES), IMAGE_EXTENSIONS),
+        scanDirectory(path.join(publicDir, 'l8b', ASSET_SUBDIRS.SPRITES), IMAGE_EXTENSIONS),
         
         // Maps
-        scanDirectory(path.join(publicDir, 'maps'), MAP_EXTENSIONS),
-        scanDirectory(path.join(publicDir, 'l8b', 'maps'), MAP_EXTENSIONS),
+        scanDirectory(path.join(publicDir, ASSET_SUBDIRS.MAPS), MAP_EXTENSIONS),
+        scanDirectory(path.join(publicDir, 'l8b', ASSET_SUBDIRS.MAPS), MAP_EXTENSIONS),
         
         // Sounds
-        scanDirectory(path.join(publicDir, 'sounds'), AUDIO_EXTENSIONS),
-        scanDirectory(path.join(publicDir, 'l8b', 'sounds'), AUDIO_EXTENSIONS),
+        scanDirectory(path.join(publicDir, ASSET_SUBDIRS.SOUNDS), AUDIO_EXTENSIONS),
+        scanDirectory(path.join(publicDir, 'l8b', ASSET_SUBDIRS.SOUNDS), AUDIO_EXTENSIONS),
         
         // Music
-        scanDirectory(path.join(publicDir, 'music'), AUDIO_EXTENSIONS),
-        scanDirectory(path.join(publicDir, 'l8b', 'music'), AUDIO_EXTENSIONS),
+        scanDirectory(path.join(publicDir, ASSET_SUBDIRS.MUSIC), AUDIO_EXTENSIONS),
+        scanDirectory(path.join(publicDir, 'l8b', ASSET_SUBDIRS.MUSIC), AUDIO_EXTENSIONS),
     ];
 
     const [

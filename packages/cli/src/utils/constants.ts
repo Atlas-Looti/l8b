@@ -1,37 +1,51 @@
 /**
- * Constants used throughout the CLI
+ * CLI constants
+ * 
+ * Centralized constants for default values, cache settings, and other configurable parameters.
  */
 
-export const DEFAULT_PORT = 3000;
-export const DEFAULT_HOST = false;
-export const CACHE_TTL_MS = 100;
-export const MAX_WORKSPACE_SEARCH_DEPTH = 10;
+/**
+ * Default server configuration
+ */
+export const DEFAULT_SERVER = {
+    PORT: 3000,
+    HOST: false, // false = localhost, true or string = specific host
+} as const;
 
-export const DEFAULT_GAME_NAME = 'LootiScript Game';
-export const DEFAULT_CANVAS_ID = 'game';
-export const DEFAULT_ORIENTATION = 'any' as const;
-export const DEFAULT_ASPECT = 'free' as const;
+/**
+ * Cache settings
+ */
+export const CACHE = {
+    /** Cache TTL in milliseconds for resources and sources */
+    TTL_MS: 100,
+} as const;
 
-export const ASPECT_SIZES: Record<string, [number, number]> = {
-    'free': [1920, 1080],
-    '16x9': [1920, 1080],
-    '4x3': [1600, 1200],
-    '1x1': [1080, 1080],
-    '2x1': [2560, 1280],
-    '>16x9': [1920, 1080], // Minimum
-    '>4x3': [1600, 1200], // Minimum
-    '>1x1': [1080, 1080], // Minimum
-    '>2x1': [2560, 1280], // Minimum
-};
+/**
+ * Font serving configuration
+ */
+export const FONT = {
+    CONTENT_TYPE: 'font/ttf',
+    CACHE_CONTROL: 'public, max-age=31536000', // 1 year
+} as const;
 
-export const DEFAULT_CANVAS_SIZE: [number, number] = [1920, 1080];
+/**
+ * Build configuration
+ */
+export const BUILD = {
+    /** Maximum depth to traverse when finding workspace root */
+    MAX_WORKSPACE_DEPTH: 10,
+} as const;
 
-export const FONT_BITCELL = 'BitCell.ttf';
-export const FONT_CONTENT_TYPE = 'font/ttf';
-export const FONT_CACHE_CONTROL = 'public, max-age=31536000';
+/**
+ * Aspect ratio presets
+ */
+export const ASPECT_SIZES = {
+    '16:9': { width: 1920, height: 1080 },
+    '4:3': { width: 1600, height: 1200 },
+    '1:1': { width: 1080, height: 1080 },
+    '3:4': { width: 900, height: 1200 },
+    '9:16': { width: 1080, height: 1920 },
+} as const;
 
-export const BUILD_OUTPUT_DIR = '.l8b';
-export const COMPILED_DIR = 'compiled';
-export const RUNTIME_BUNDLE = 'runtime.js';
-export const MANIFEST_FILE = 'compiled-manifest.json';
+export type AspectRatio = keyof typeof ASPECT_SIZES;
 

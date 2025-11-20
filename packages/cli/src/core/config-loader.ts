@@ -1,32 +1,54 @@
+/**
+ * Configuration loader for LootiScript projects
+ * 
+ * Loads and validates `l8b.config.json` with sensible defaults.
+ */
+
 import fs from 'fs-extra';
 import path from 'path';
 import type { LootiConfig } from '../types/config';
-import {
-    DEFAULT_GAME_NAME,
-    DEFAULT_CANVAS_ID,
-    DEFAULT_ORIENTATION,
-    DEFAULT_ASPECT,
-    ASPECT_SIZES,
-    DEFAULT_CANVAS_SIZE,
-} from '../utils';
+import { DEFAULT_FILES } from '../utils/paths';
+import { ConfigError } from '../utils/errors';
 
+/**
+ * Default configuration values
+ */
 const DEFAULT_CONFIG: LootiConfig = {
-    name: DEFAULT_GAME_NAME,
-    orientation: DEFAULT_ORIENTATION,
-    aspect: DEFAULT_ASPECT,
+    name: 'LootiScript Game',
+    orientation: 'any',
+    aspect: 'free',
     canvas: {
-        id: DEFAULT_CANVAS_ID,
+        id: 'game',
     },
 };
 
 /**
- * Load and merge configuration from l8b.config.json
+ * Aspect ratio to size mapping
+ * Format: [width, height]
+ */
+const ASPECT_SIZES: Record<string, [number, number]> = {
+    'free': [1920, 1080],
+    '16x9': [1920, 1080],
+    '4x3': [1600, 1200],
+    '1x1': [1080, 1080],
+    '2x1': [2560, 1280],
+    '>16x9': [1920, 1080], // Minimum
+    '>4x3': [1600, 1200], // Minimum
+    '>1x1': [1080, 1080], // Minimum
+    '>2x1': [2560, 1280], // Minimum
+};
+
+const DEFAULT_DIMENSIONS = { width: 1920, height: 1080 };
+
+/**
+ * Load configuration from project directory
  * 
- * @param projectPath - Root path of the project
+ * @param projectPath - Absolute path to project root
  * @returns Merged configuration with defaults
+ * @throws {ConfigError} If config file exists but is invalid
  */
 export async function loadConfig(projectPath: string = process.cwd()): Promise<LootiConfig> {
-    const configPath = path.join(projectPath, 'l8b.config.json');
+    const configPath = path.join(projectPath, DEFAULT_FILES.CONFIG);
 
     let userConfig: Partial<LootiConfig> = {};
 
@@ -34,7 +56,13 @@ export async function loadConfig(projectPath: string = process.cwd()): Promise<L
         try {
             userConfig = await fs.readJson(configPath);
         } catch (error) {
-            console.warn('Failed to parse l8b.config.json, using defaults');
+            throw new ConfigError(
+                `Failed to parse ${DEFAULT_FILES.CONFIG}`,
+                {
+                    path: configPath,
+                    error: error instanceof Error ? error.message : String(error),
+                }
+            );
         }
     }
 
@@ -42,13 +70,18 @@ export async function loadConfig(projectPath: string = process.cwd()): Promise<L
 
     // Ensure canvas object exists
     if (!config.canvas) {
-        config.canvas = { id: DEFAULT_CANVAS_ID };
+        config.canvas = { id: 'game' };
     }
 
     // Calculate dimensions based on aspect ratio if not explicitly provided
     if (!config.width || !config.height) {
-        const aspect = config.aspect || DEFAULT_ASPECT;
-        const [w, h] = ASPECT_SIZES[aspect] || DEFAULT_CANVAS_SIZE;
+        const aspect = config.aspect || 'free';
+        const dimensions = ASPECT_SIZES[aspect] || [
+            DEFAULT_DIMENSIONS.width,
+            DEFAULT_DIMENSIONS.height,
+        ];
+        
+        const [w, h] = dimensions;
         
         // Apply orientation
         if (config.orientation === 'portrait' && w > h) {
@@ -67,15 +100,16 @@ export async function loadConfig(projectPath: string = process.cwd()): Promise<L
 }
 
 /**
- * Get canvas dimensions from config with fallbacks
+ * Get canvas size from configuration
  * 
- * @param config - Game configuration
- * @returns Canvas width and height
+ * Returns width and height, preferring explicit values over defaults.
+ * 
+ * @param config - LootiScript configuration
+ * @returns Canvas dimensions
  */
 export function getCanvasSize(config: LootiConfig): { width: number; height: number } {
-    const [defaultWidth, defaultHeight] = DEFAULT_CANVAS_SIZE;
-    const width = config.width || config.canvas?.width || defaultWidth;
-    const height = config.height || config.canvas?.height || defaultHeight;
+    const width = config.width || config.canvas?.width || DEFAULT_DIMENSIONS.width;
+    const height = config.height || config.canvas?.height || DEFAULT_DIMENSIONS.height;
     return { width, height };
 }
 

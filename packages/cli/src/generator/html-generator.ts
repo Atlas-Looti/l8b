@@ -1,34 +1,33 @@
 /**
  * HTML generator for LootiScript projects
  * 
- * Generates the index.html file with embedded game configuration,
- * source imports, and runtime initialization.
+ * Generates production and development HTML files with proper
+ * script loading and runtime initialization.
  */
 
 import type { LootiConfig } from '../types/config';
 import { getCanvasSize } from '../core/config-loader';
 import type { Resources } from '@l8b/runtime';
 import type { CompiledModule } from '../compiler';
-import { DEFAULT_CANVAS_ID } from '../utils';
 
 /**
- * Generate variable name from module name (sanitized for JS)
+ * Generate variable name from module name (sanitized for JavaScript)
  * 
- * @param name - Module name to sanitize
- * @returns Sanitized variable name safe for JavaScript
+ * @param name - Module name (may contain special characters)
+ * @returns Sanitized variable name safe for JavaScript identifiers
  */
 function sanitizeVarName(name: string): string {
     return name.replace(/[^a-zA-Z0-9]/g, '_');
 }
 
 /**
- * Generate HTML for the game
+ * Generate HTML file for LootiScript project
  * 
- * @param config - Game configuration
+ * @param config - LootiScript configuration
  * @param sources - Map of module names to source file paths (for development)
- * @param resources - Game resources (images, maps, sounds, music)
+ * @param resources - Detected resources (images, maps, sounds, music)
  * @param compiledModules - Pre-compiled modules (for production)
- * @returns Generated HTML string
+ * @returns Complete HTML string
  */
 export function generateHTML(
     config: LootiConfig,
@@ -37,7 +36,8 @@ export function generateHTML(
     compiledModules?: CompiledModule[]
 ): string {
     const { width, height } = getCanvasSize(config);
-    const canvasId = config.canvas?.id || DEFAULT_CANVAS_ID;
+    
+    const canvasId = config.canvas?.id || 'game';
     const isFreeAspect = config.aspect === 'free';
     const baseUrl = config.url || '/';
 
