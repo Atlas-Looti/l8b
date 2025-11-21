@@ -3,18 +3,15 @@
  * Manages audio context, beeper, and sound/music playback
  */
 import { Beeper } from "../devices/beeper";
-import { AUDIO_WORKLET_TODO } from "../shared/warnings";
+import { AUDIO_WORKLET_CODE } from "./audio-worklet";
 
 export class AudioCore {
 	public context!: AudioContext;
 	private buffer: string[] = [];
 	private playing: any[] = [];
 	private wakeupList: any[] = [];
-	// TODO: ScriptProcessorNode is deprecated, migrate to AudioWorklet
-	private scriptProcessor?: ScriptProcessorNode;
-	private node?: any;
+	private workletNode?: AudioWorkletNode;
 	private beeper?: any;
-	private bufferizer?: any;
 	private runtime: any;
 
 	constructor(runtime: any) {
@@ -136,184 +133,39 @@ export class AudioCore {
 
 	/**
 	 * Start audio processor
-	 * TODO: ScriptProcessorNode is deprecated, should migrate to AudioWorklet
-	 * @see https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode
-	 * @see https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet
 	 */
-	public start(): void {
-		console.warn(AUDIO_WORKLET_TODO);
-		// TODO: Use ScriptProcessorNode (deprecated, should migrate to AudioWorklet)
-		this.scriptProcessor = this.context.createScriptProcessor(4096, 2, 2);
-		this.scriptProcessor.onaudioprocess = (event) => this.onAudioProcess(event);
-		this.scriptProcessor.connect(this.context.destination);
+	public async start(): Promise<void> {
+		if (this.workletNode) return;
 
-		this.node = this.createProcessorNode();
-		this.flushBuffer();
-		this.bufferizer = new AudioBufferizer(this.node);
-	}
+		try {
+			const blob = new Blob([AUDIO_WORKLET_CODE], {
+				type: "application/javascript",
+			});
+			const url = URL.createObjectURL(blob);
 
-	/**
-	 * Create audio processor node
-	 */
-	private createProcessorNode(): any {
-		const node = {
-			port: {
-				onmessage: null as any,
-				postMessage: (data: string) => {
-					if (node.port.onmessage) {
-						node.port.onmessage({ data });
-					}
-				},
-			},
-			beeps: [] as any[],
-			last: 0,
-			process: (_inputs: any, outputs: any, _parameters: any) => {
-				return this.processAudio(outputs);
-			},
-		};
+			await this.context.audioWorklet.addModule(url);
 
-		// Setup message handler for beep commands
-		node.port.onmessage = (event: any) => {
-			const data = JSON.parse(event.data);
+			this.workletNode = new AudioWorkletNode(
+				this.context,
+				"l8b-audio-processor",
+			);
+			this.workletNode.connect(this.context.destination);
 
-			if (data.name === "cancel_beeps") {
-				node.beeps = [];
-			} else if (data.name === "beep") {
-				const seq = data.sequence;
-
-				// Link sequence notes together
-				for (let i = 0; i < seq.length; i++) {
-					const note = seq[i];
-					if (i > 0) {
-						seq[i - 1].next = note;
-					}
-
-					// Resolve loopto index to actual note reference
-					if (note.loopto != null) {
-						note.loopto = seq[note.loopto];
-					}
-
-					// Initialize phase and time
-					note.phase = 0;
-					note.time = 0;
-				}
-
-				// Add first note to beeps queue
-				if (seq.length > 0) {
-					node.beeps.push(seq[0]);
-				}
-			}
-		};
-
-		return node;
-	}
-
-	/**
-	 * Process audio samples
-	 */
-	private processAudio(outputs: any): boolean {
-		const output = outputs[0];
-
-		for (let i = 0; i < output.length; i++) {
-			const channel = output[i];
-
-			if (i > 0) {
-				// Copy first channel to other channels
-				for (let j = 0; j < channel.length; j++) {
-					channel[j] = output[0][j];
-				}
-			} else {
-				// Generate audio for first channel
-				for (let j = 0; j < channel.length; j++) {
-					let sig = 0;
-
-					for (let k = this.node.beeps.length - 1; k >= 0; k--) {
-						const b = this.node.beeps[k];
-						let volume = b.volume;
-
-						if (b.time / b.duration > b.span) {
-							volume = 0;
-						}
-
-						// Generate waveform
-						switch (b.waveform) {
-							case "square":
-								sig += b.phase > 0.5 ? volume : -volume;
-								break;
-							case "saw":
-								sig += (b.phase * 2 - 1) * volume;
-								break;
-							case "noise":
-								sig += (Math.random() * 2 - 1) * volume;
-								break;
-							default: // sine
-								sig += Math.sin(b.phase * Math.PI * 2) * volume;
-						}
-
-						b.phase = (b.phase + b.increment) % 1;
-						b.time += 1;
-
-						if (b.time >= b.duration) {
-							b.time = 0;
-
-							if (b.loopto != null) {
-								if (b.repeats != null && b.repeats > 0) {
-									if (b.loopcount == null) {
-										b.loopcount = 0;
-									}
-									b.loopcount++;
-
-									if (b.loopcount >= b.repeats) {
-										b.loopcount = 0;
-										if (b.next != null) {
-											b.next.phase = b.phase;
-											this.node.beeps[k] = b.next;
-										} else {
-											this.node.beeps.splice(k, 1);
-										}
-									} else {
-										b.loopto.phase = b.phase;
-										this.node.beeps[k] = b.loopto;
-									}
-								} else {
-									b.loopto.phase = b.phase;
-									this.node.beeps[k] = b.loopto;
-								}
-							} else if (b.next != null) {
-								b.next.phase = b.phase;
-								this.node.beeps[k] = b.next;
-							} else {
-								this.node.beeps.splice(k, 1);
-							}
-						}
-					}
-
-					this.node.last = this.node.last * 0.9 + sig * 0.1;
-					channel[j] = this.node.last;
-				}
-			}
+			this.flushBuffer();
+		} catch (e) {
+			console.error("Failed to start audio worklet", e);
 		}
-
-		return true;
 	}
 
 	/**
 	 * Flush buffered messages
 	 */
 	private flushBuffer(): void {
-		while (this.buffer.length > 0) {
-			this.node.port.postMessage(this.buffer.splice(0, 1)[0]);
-		}
-	}
+		if (!this.workletNode) return;
 
-	/**
-	 * Handle audio process event
-	 */
-	private onAudioProcess(event: AudioProcessingEvent): void {
-		const left = event.outputBuffer.getChannelData(0);
-		const right = event.outputBuffer.getChannelData(1);
-		const outputs = [[left, right]];
-		this.bufferizer.flush(outputs);
+		while (this.buffer.length > 0) {
+			this.workletNode.port.postMessage(this.buffer.splice(0, 1)[0]);
+		}
 	}
 
 	/**
@@ -347,8 +199,8 @@ export class AudioCore {
 			b.increment = b.frequency / this.context.sampleRate;
 		}
 
-		if (this.node) {
-			this.node.port.postMessage(
+		if (this.workletNode) {
+			this.workletNode.port.postMessage(
 				JSON.stringify({
 					name: "beep",
 					sequence: beeps,
@@ -368,8 +220,8 @@ export class AudioCore {
 	 * Cancel all beeps
 	 */
 	public cancelBeeps(): void {
-		if (this.node) {
-			this.node.port.postMessage(
+		if (this.workletNode) {
+			this.workletNode.port.postMessage(
 				JSON.stringify({
 					name: "cancel_beeps",
 				}),
@@ -414,43 +266,5 @@ export class AudioCore {
 			}
 		}
 		this.playing = [];
-	}
-}
-
-/**
- * AudioBufferizer - Buffers audio processing
- */
-class AudioBufferizer {
-	private bufferSize = 4096;
-	private chunkSize = 512;
-	private chunks: any[] = [];
-	private nbChunks: number;
-	private current = 0;
-	private node: any;
-
-	constructor(node: any) {
-		this.node = node;
-		this.nbChunks = this.bufferSize / this.chunkSize;
-
-		for (let i = 0; i < this.nbChunks; i++) {
-			const left = new Array(this.chunkSize).fill(0);
-			const right = new Array(this.chunkSize).fill(0);
-			this.chunks.push([left, right]);
-		}
-	}
-
-	public flush(outputs: any): void {
-		for (let i = 0; i < outputs[0][0].length; i++) {
-			if (this.current >= this.chunkSize) {
-				if (this.node.beeps.length > 0) {
-					this.node.process(null, this.chunks, null);
-				}
-				this.current = 0;
-			}
-			for (let c = 0; c < outputs[0].length; c++) {
-				outputs[0][c][i] = this.chunks[0][c][this.current];
-			}
-			this.current++;
-		}
 	}
 }
