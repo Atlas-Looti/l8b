@@ -2,6 +2,7 @@
  * Test error handling improvements
  */
 
+import { describe, it, expect } from 'vitest';
 import { Parser } from '../src/v1/parser';
 import { Processor } from '../src/v1/processor';
 import { Runner } from '../src/v1/runner';
@@ -56,7 +57,7 @@ foo()
 
             // This would need a full VM setup to test properly
             // For now, just verify the structure is in place
-            const processor = new (globalThis as any).Processor({});
+            const processor = new Processor({});
             expect(processor.call_stack_frames).toBeDefined();
             expect(processor.generateStackTrace).toBeDefined();
             expect(processor.formatStackTrace).toBeDefined();

@@ -8,8 +8,8 @@ import { Random } from "../random";
 import { Parser } from "./parser";
 import { Program } from "./program";
 import { Routine } from "./routine";
+import { Processor } from "./processor";
 import { MathLib, StringLib, ListLib, JSONLib } from "@l8b/stdlib";
-
 
 // Forward declarations for circular dependencies
 declare class Compiler {
@@ -72,7 +72,7 @@ export class Thread {
 	constructor(runner: Runner) {
 		this.runner = runner;
 		this.loop = false;
-		this.processor = new (globalThis as any).Processor(this.runner);
+		this.processor = new Processor(this.runner);
 		this.paused = false;
 		this.terminated = false;
 		this.next_calls = [];
@@ -215,12 +215,18 @@ export class Runner {
 		this.l8bvm.context.global.JSON = JSONLib;
 		this.l8bvm.context.global.List = ListLib;
 
+		this.l8bvm.context.global.Function = {
+			bind: (...args: any[]) => {
+				return args[0].bind.apply(args[0], args.slice(1));
+			},
+		} as any;
 		// Extend String with stdlib utilities
 		this.l8bvm.context.global.String = {
+			...StringLib,
+			// Override fromCharCode to use proper calling convention
 			fromCharCode: function () {
 				return String.fromCharCode.apply(null, arguments as any);
 			},
-			...StringLib,
 		};
 
 		this.l8bvm.context.global.Number = {
@@ -328,10 +334,10 @@ export class Runner {
 					f = this.main_thread.processor.routineAsFunction(
 						routine,
 						this.l8bvm.context,
-					);
+					) as any;
 					return f(...args);
 				} else if (typeof routine === "function") {
-					return routine(...args);
+					return (routine as any)(...args);
 				}
 			}
 		} else {
