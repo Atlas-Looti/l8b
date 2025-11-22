@@ -4,10 +4,19 @@
 	"description": "Language support for LootiScript - L8B Game Framework",
 	"version": "0.0.1",
 	"publisher": "l8b",
+	"icon": "icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Atlas-Looti/l8b"
 	},
+	"keywords": [
+		"lootiscript",
+		"l8b",
+		"game development",
+		"scripting",
+		"retro games",
+		"game engine"
+	],
 	"engines": {
 		"vscode": "^1.90.0"
 	},
@@ -35,6 +44,13 @@
 			{
 				"language": "lootiscript",
 				"path": "./snippets/lootiscript.code-snippets"
+			}
+		],
+		"grammars": [
+			{
+				"language": "lootiscript",
+				"scopeName": "source.lootiscript",
+				"path": "./syntaxes/lootiscript.tmLanguage.json"
 			}
 		],
 		"configuration": {
@@ -72,19 +88,18 @@
 		"commands": [
 			{
 				"command": "lootiscript.formatDocument",
-				"title": "LootiScript: Format Document"
+				"title": "LootiScript: Format Document",
+				"icon": "$(symbol-method)"
 			},
 			{
 				"command": "lootiscript.runScript",
-				"title": "LootiScript: Run Script"
-			},
-			{
-				"command": "lootiscript.showDocs",
-				"title": "LootiScript: Show API Documentation"
+				"title": "LootiScript: Run Script",
+				"icon": "$(play)"
 			},
 			{
 				"command": "lootiscript.restartLanguageServer",
-				"title": "LootiScript: Restart Language Server"
+				"title": "LootiScript: Restart Language Server",
+				"icon": "$(debug-restart)"
 			}
 		]
 	},

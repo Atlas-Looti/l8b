@@ -90,11 +90,122 @@ const GLOBAL_API: Record<
 	},
 	List: {
 		type: "module",
-		description: "Standard library for array manipulation",
+		description: "Array manipulation and functional programming utilities",
+		properties: {
+			map: { type: "method", signature: "List.map(arr, fn)", description: "Map over array elements" },
+			filter: { type: "method", signature: "List.filter(arr, fn)", description: "Filter array by predicate" },
+			reduce: { type: "method", signature: "List.reduce(arr, fn, initial)", description: "Reduce array to single value" },
+			find: { type: "method", signature: "List.find(arr, fn)", description: "Find first matching element" },
+			findIndex: { type: "method", signature: "List.findIndex(arr, fn)", description: "Find index of first match" },
+			some: { type: "method", signature: "List.some(arr, fn)", description: "Test if any element matches" },
+			every: { type: "method", signature: "List.every(arr, fn)", description: "Test if all elements match" },
+			reverse: { type: "method", signature: "List.reverse(arr)", description: "Reverse array (non-mutating)" },
+			sort: { type: "method", signature: "List.sort(arr, fn?)", description: "Sort array (non-mutating)" },
+			slice: { type: "method", signature: "List.slice(arr, start, end?)", description: "Extract array slice" },
+			concat: { type: "method", signature: "List.concat(...arrays)", description: "Concatenate arrays" },
+			flat: { type: "method", signature: "List.flat(arr, depth?)", description: "Flatten nested array" },
+			flatMap: { type: "method", signature: "List.flatMap(arr, fn)", description: "Map and flatten array" },
+			indexOf: { type: "method", signature: "List.indexOf(arr, item, from?)", description: "Find first index of item" },
+			lastIndexOf: { type: "method", signature: "List.lastIndexOf(arr, item, from?)", description: "Find last index of item" },
+			includes: { type: "method", signature: "List.includes(arr, item, from?)", description: "Check if array includes item" },
+			length: { type: "method", signature: "List.length(arr)", description: "Get array length" },
+			first: { type: "method", signature: "List.first(arr)", description: "Get first element" },
+			last: { type: "method", signature: "List.last(arr)", description: "Get last element" },
+			at: { type: "method", signature: "List.at(arr, index)", description: "Get element at index (supports negative)" },
+			push: { type: "method", signature: "List.push(arr, ...items)", description: "Add items to end" },
+			pop: { type: "method", signature: "List.pop(arr)", description: "Remove and return last item" },
+			shift: { type: "method", signature: "List.shift(arr)", description: "Remove and return first item" },
+			unshift: { type: "method", signature: "List.unshift(arr, ...items)", description: "Add items to start" },
+			splice: { type: "method", signature: "List.splice(arr, start, deleteCount?, ...items)", description: "Remove/insert elements" },
+			fill: { type: "method", signature: "List.fill(arr, value, start?, end?)", description: "Fill array with value" },
+			join: { type: "method", signature: "List.join(arr, separator?)", description: "Join array to string" },
+			unique: { type: "method", signature: "List.unique(arr)", description: "Remove duplicates" },
+			shuffle: { type: "method", signature: "List.shuffle(arr)", description: "Randomly shuffle array" },
+			chunk: { type: "method", signature: "List.chunk(arr, size)", description: "Split into chunks" },
+			sum: { type: "method", signature: "List.sum(arr)", description: "Sum numeric array" },
+			average: { type: "method", signature: "List.average(arr)", description: "Average of numeric array" },
+			min: { type: "method", signature: "List.min(arr)", description: "Minimum value in array" },
+			max: { type: "method", signature: "List.max(arr)", description: "Maximum value in array" },
+		},
 	},
 	Math: {
 		type: "module",
-		description: "Math utilities (sin, cos, sqrt, ...)",
+		description: "Mathematical and game-specific utilities",
+		properties: {
+			abs: { type: "method", signature: "Math.abs(x)", description: "Absolute value" },
+			sqrt: { type: "method", signature: "Math.sqrt(x)", description: "Square root" },
+			floor: { type: "method", signature: "Math.floor(x)", description: "Round down" },
+			ceil: { type: "method", signature: "Math.ceil(x)", description: "Round up" },
+			round: { type: "method", signature: "Math.round(x)", description: "Round to nearest" },
+			min: { type: "method", signature: "Math.min(...args)", description: "Minimum value" },
+			max: { type: "method", signature: "Math.max(...args)", description: "Maximum value" },
+			pow: { type: "method", signature: "Math.pow(base, exp)", description: "Power function" },
+			exp: { type: "method", signature: "Math.exp(x)", description: "e^x" },
+			log: { type: "method", signature: "Math.log(x)", description: "Natural logarithm" },
+			log10: { type: "method", signature: "Math.log10(x)", description: "Base-10 logarithm" },
+			sin: { type: "method", signature: "Math.sin(x)", description: "Sine (radians)" },
+			cos: { type: "method", signature: "Math.cos(x)", description: "Cosine (radians)" },
+			tan: { type: "method", signature: "Math.tan(x)", description: "Tangent (radians)" },
+			asin: { type: "method", signature: "Math.asin(x)", description: "Arcsine" },
+			acos: { type: "method", signature: "Math.acos(x)", description: "Arccosine" },
+			atan: { type: "method", signature: "Math.atan(x)", description: "Arctangent" },
+			atan2: { type: "method", signature: "Math.atan2(y, x)", description: "Two-argument arctangent" },
+			random: { type: "method", signature: "Math.random()", description: "Random number 0-1" },
+			randomInt: { type: "method", signature: "Math.randomInt(min, max)", description: "Random integer" },
+			randomFloat: { type: "method", signature: "Math.randomFloat(min, max)", description: "Random float" },
+			PI: { type: "property", description: "Pi constant (3.14159...)" },
+			E: { type: "property", description: "Euler's number (2.71828...)" },
+			clamp: { type: "method", signature: "Math.clamp(value, min, max)", description: "Clamp value between min/max" },
+			lerp: { type: "method", signature: "Math.lerp(a, b, t)", description: "Linear interpolation" },
+			distance: { type: "method", signature: "Math.distance(x1, y1, x2, y2)", description: "2D distance" },
+			distance3D: { type: "method", signature: "Math.distance3D(x1, y1, z1, x2, y2, z2)", description: "3D distance" },
+			angleBetween: { type: "method", signature: "Math.angleBetween(x1, y1, x2, y2)", description: "Angle between points" },
+			degToRad: { type: "method", signature: "Math.degToRad(degrees)", description: "Convert degrees to radians" },
+			radToDeg: { type: "method", signature: "Math.radToDeg(radians)", description: "Convert radians to degrees" },
+			sign: { type: "method", signature: "Math.sign(x)", description: "Sign of number (-1, 0, 1)" },
+			mod: { type: "method", signature: "Math.mod(n, m)", description: "Euclidean modulo" },
+		},
+	},
+	String: {
+		type: "module",
+		description: "String manipulation utilities",
+		properties: {
+			split: { type: "method", signature: "String.split(str, separator?)", description: "Split string into array" },
+			join: { type: "method", signature: "String.join(arr, separator?)", description: "Join array to string" },
+			trim: { type: "method", signature: "String.trim(str)", description: "Remove whitespace from both ends" },
+			trimStart: { type: "method", signature: "String.trimStart(str)", description: "Remove leading whitespace" },
+			trimEnd: { type: "method", signature: "String.trimEnd(str)", description: "Remove trailing whitespace" },
+			replace: { type: "method", signature: "String.replace(str, search, replacement)", description: "Replace first occurrence" },
+			replaceAll: { type: "method", signature: "String.replaceAll(str, search, replacement)", description: "Replace all occurrences" },
+			startsWith: { type: "method", signature: "String.startsWith(str, prefix)", description: "Check if string starts with prefix" },
+			endsWith: { type: "method", signature: "String.endsWith(str, suffix)", description: "Check if string ends with suffix" },
+			contains: { type: "method", signature: "String.contains(str, search)", description: "Check if string contains substring" },
+			toLowerCase: { type: "method", signature: "String.toLowerCase(str)", description: "Convert to lowercase" },
+			toUpperCase: { type: "method", signature: "String.toUpperCase(str)", description: "Convert to uppercase" },
+			charAt: { type: "method", signature: "String.charAt(str, index)", description: "Get character at index" },
+			charCodeAt: { type: "method", signature: "String.charCodeAt(str, index)", description: "Get char code at index" },
+			fromCharCode: { type: "method", signature: "String.fromCharCode(...codes)", description: "Create string from char codes" },
+			substring: { type: "method", signature: "String.substring(str, start, end?)", description: "Extract substring" },
+			slice: { type: "method", signature: "String.slice(str, start, end?)", description: "Extract substring (supports negative indices)" },
+			indexOf: { type: "method", signature: "String.indexOf(str, search, from?)", description: "Find first index of substring" },
+			lastIndexOf: { type: "method", signature: "String.lastIndexOf(str, search, from?)", description: "Find last index of substring" },
+			repeat: { type: "method", signature: "String.repeat(str, count)", description: "Repeat string n times" },
+			padStart: { type: "method", signature: "String.padStart(str, length, pad?)", description: "Pad string at start" },
+			padEnd: { type: "method", signature: "String.padEnd(str, length, pad?)", description: "Pad string at end" },
+			length: { type: "method", signature: "String.length(str)", description: "Get string length" },
+			parseInt: { type: "method", signature: "String.parseInt(str, radix?)", description: "Parse integer from string" },
+			parseFloat: { type: "method", signature: "String.parseFloat(str)", description: "Parse float from string" },
+			format: { type: "method", signature: "String.format(template, ...args)", description: "Format string with {0}, {1}, etc." },
+		},
+	},
+	JSON: {
+		type: "module",
+		description: "JSON encoding and decoding",
+		properties: {
+			encode: { type: "method", signature: "JSON.encode(value)", description: "Encode value to JSON string" },
+			decode: { type: "method", signature: "JSON.decode(json)", description: "Decode JSON string to value" },
+			pretty: { type: "method", signature: "JSON.pretty(value, indent?)", description: "Pretty-print JSON with indentation" },
+		},
 	},
 	// Screen API
 	screen: {
@@ -150,12 +261,46 @@ const GLOBAL_API: Record<
 				signature:
 					"screen.fillCircle(x: number, y: number, radius: number, color: string)",
 			},
-			drawLine: {
-				type: "method",
-				description: "Draw a line between two points",
-				signature:
-					"screen.drawLine(x1: number, y1: number, x2: number, y2: number, color: string)",
-			},
+			drawLine: { type: "method", signature: "screen.drawLine(x1, y1, x2, y2, color?)", description: "Draw line between two points" },
+			clear: { type: "method", signature: "screen.clear(color?)", description: "Clear screen (alias for clearScreen)" },
+			setColor: { type: "method", signature: "screen.setColor(color)", description: "Set drawing color" },
+			setAlpha: { type: "method", signature: "screen.setAlpha(alpha)", description: "Set opacity (0-1)" },
+			setPixelated: { type: "method", signature: "screen.setPixelated(pixelated)", description: "Enable/disable pixelated rendering" },
+			setBlending: { type: "method", signature: "screen.setBlending(mode)", description: "Set blending mode" },
+			setLinearGradient: { type: "method", signature: "screen.setLinearGradient(x1, y1, x2, y2, c1, c2)", description: "Set linear gradient" },
+			setRadialGradient: { type: "method", signature: "screen.setRadialGradient(x, y, radius, c1, c2)", description: "Set radial gradient" },
+			setFont: { type: "method", signature: "screen.setFont(font)", description: "Set font family" },
+			loadFont: { type: "method", signature: "screen.loadFont(font)", description: "Load font" },
+			isFontReady: { type: "method", signature: "screen.isFontReady(font?)", description: "Check if font is loaded" },
+			setTranslation: { type: "method", signature: "screen.setTranslation(tx, ty)", description: "Set translation offset" },
+			setScale: { type: "method", signature: "screen.setScale(x, y)", description: "Set scale" },
+			setRotation: { type: "method", signature: "screen.setRotation(rotation)", description: "Set rotation" },
+			setDrawAnchor: { type: "method", signature: "screen.setDrawAnchor(ax, ay)", description: "Set sprite drawing anchor" },
+			setDrawRotation: { type: "method", signature: "screen.setDrawRotation(rotation)", description: "Set sprite rotation" },
+			setDrawScale: { type: "method", signature: "screen.setDrawScale(x, y?)", description: "Set sprite scale" },
+			fillRoundRect: { type: "method", signature: "screen.fillRoundRect(x, y, w, h, r?, color?)", description: "Fill rounded rectangle" },
+			fillRound: { type: "method", signature: "screen.fillRound(x, y, w, h, color?)", description: "Fill round (ellipse in rect)" },
+			drawRoundRect: { type: "method", signature: "screen.drawRoundRect(x, y, w, h, r?, color?)", description: "Draw rounded rectangle outline" },
+			drawRound: { type: "method", signature: "screen.drawRound(x, y, w, h, color?)", description: "Draw round outline" },
+			drawImage: { type: "method", signature: "screen.drawImage(sprite, x, y, w?, h?)", description: "Draw image (alias for drawSprite)" },
+			drawSpritePart: { type: "method", signature: "screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w?, h?)", description: "Draw part of sprite" },
+			drawImagePart: { type: "method", signature: "screen.drawImagePart(sprite, sx, sy, sw, sh, x, y, w?, h?)", description: "Draw part of image" },
+			drawMap: { type: "method", signature: "screen.drawMap(map, x, y, w, h)", description: "Draw tile map" },
+			drawTextOutline: { type: "method", signature: "screen.drawTextOutline(text, x, y, size, color?)", description: "Draw text with outline" },
+			textWidth: { type: "method", signature: "screen.textWidth(text, size)", description: "Measure text width" },
+			setLineWidth: { type: "method", signature: "screen.setLineWidth(width)", description: "Set line width" },
+			setLineDash: { type: "method", signature: "screen.setLineDash(dash)", description: "Set line dash pattern" },
+			drawPolygon: { type: "method", signature: "screen.drawPolygon(...points)", description: "Draw polygon outline" },
+			drawPolyline: { type: "method", signature: "screen.drawPolyline(...points)", description: "Draw polyline" },
+			fillPolygon: { type: "method", signature: "screen.fillPolygon(...points)", description: "Fill polygon" },
+			drawQuadCurve: { type: "method", signature: "screen.drawQuadCurve(...args)", description: "Draw quadratic curve" },
+			drawBezierCurve: { type: "method", signature: "screen.drawBezierCurve(...args)", description: "Draw bezier curve" },
+			drawArc: { type: "method", signature: "screen.drawArc(x, y, radius, angle1, angle2, ccw, color?)", description: "Draw arc" },
+			fillArc: { type: "method", signature: "screen.fillArc(x, y, radius, angle1, angle2, ccw, color?)", description: "Fill arc" },
+			setCursorVisible: { type: "method", signature: "screen.setCursorVisible(visible)", description: "Show/hide cursor" },
+			tri: { type: "method", signature: "screen.tri(x1, y1, x2, y2, x3, y3, color?)", description: "Draw triangle outline" },
+			trib: { type: "method", signature: "screen.trib(x1, y1, x2, y2, x3, y3, color?)", description: "Fill triangle" },
+			ttri: { type: "method", signature: "screen.ttri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, texture, ...)", description: "Textured triangle (3D)" },
 		},
 	},
 	// Audio API
@@ -226,22 +371,18 @@ const GLOBAL_API: Record<
 		type: "object",
 		description: "Runtime system utilities and information",
 		properties: {
-			time: {
-				type: "property",
-				description: "Current system time in milliseconds",
-			},
-			fps: {
-				type: "property",
-				description: "Current frames per second",
-			},
-			deltaTime: {
-				type: "property",
-				description: "Time elapsed since last frame in seconds",
-			},
-			platform: {
-				type: "property",
-				description: "Current platform (web, mobile, etc.)",
-			},
+			time: { type: "property", description: "Current system time in milliseconds" },
+			fps: { type: "property", description: "Current frames per second" },
+			deltaTime: { type: "property", description: "Time elapsed since last frame (seconds)" },
+			cpu_load: { type: "property", description: "CPU load percentage" },
+			update_rate: { type: "property", description: "Target update rate" },
+			language: { type: "property", description: "Browser language" },
+			loading: { type: "property", description: "Asset loading progress (0-1)" },
+			inputs: { type: "property", description: "Input device availability" },
+			pause: { type: "method", signature: "system.pause()", description: "Pause game execution" },
+			exit: { type: "method", signature: "system.exit()", description: "Exit game" },
+			prompt: { type: "method", signature: "system.prompt(text, callback)", description: "Prompt user for input" },
+			say: { type: "method", signature: "system.say(text)", description: "Show alert message" },
 		},
 	},
 };
@@ -288,6 +429,16 @@ connection.onInitialize((params: InitializeParams) => {
 				triggerCharacters: ["(", ","],
 			},
 			referencesProvider: true,
+			documentFormattingProvider: true,
+			renameProvider: {
+				prepareProvider: true,
+			},
+			codeActionProvider: {
+				codeActionKinds: [
+					CodeActionKind.QuickFix,
+					CodeActionKind.Refactor,
+				],
+			},
 		},
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -491,12 +642,19 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
 
-	// Validate embedded languages
+	// Validate embedded languages (only if they exist in document)
+	const documentRegions = documentRegionsCache.get(textDocument);
 	const allModes = languageModes.getAllModes();
 	for (const mode of allModes) {
 		if (mode.doValidation) {
-			const embeddedDiagnostics = mode.doValidation(textDocument);
-			diagnostics.push(...embeddedDiagnostics);
+			// Check if this mode's language actually exists in the document
+			const embeddedDoc = documentRegions.getEmbeddedDocument(mode.getId());
+			const hasEmbeddedContent = embeddedDoc.getText().trim().length > 0;
+
+			if (hasEmbeddedContent) {
+				const embeddedDiagnostics = await mode.doValidation(textDocument);
+				diagnostics.push(...embeddedDiagnostics);
+			}
 		}
 	}
 
@@ -553,7 +711,7 @@ connection.onCompletion(
 		// Check if we're in an embedded language region
 		const mode = languageModes.getModeAtPosition(document, position);
 		if (mode && mode.doComplete) {
-			const result = mode.doComplete(document, position);
+			const result = await mode.doComplete(document, position);
 			if (result) {
 				return result;
 			}
@@ -702,14 +860,14 @@ connection.onSignatureHelp((params): SignatureHelp | null => {
 	};
 });
 
-connection.onHover((params): Hover | null => {
+connection.onHover(async (params): Promise<Hover | null> => {
 	const document = documents.get(params.textDocument.uri);
 	if (!document) return null;
 
 	// Check if we're in an embedded language region
 	const mode = languageModes.getModeAtPosition(document, params.position);
 	if (mode && mode.doHover) {
-		const result = mode.doHover(document, params.position);
+		const result = await mode.doHover(document, params.position);
 		if (result) {
 			return result;
 		}

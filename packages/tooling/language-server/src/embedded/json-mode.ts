@@ -2,13 +2,12 @@ import {
 	TextDocument,
 	Position,
 	CompletionList,
-	CompletionItem,
 	Hover,
 	Diagnostic,
 	DocumentSymbol,
 } from "vscode-languageserver/node";
 import {
-	JSONLanguageService,
+	LanguageService,
 	getLanguageService,
 } from "vscode-json-languageservice";
 import { LanguageMode } from "./language-modes";
@@ -18,7 +17,7 @@ import { DocumentRegionsCache } from "./mode-manager";
  * JSON language mode for embedded JSON support
  */
 export function getJSONMode(
-	jsonLanguageService: JSONLanguageService,
+	jsonLanguageService: LanguageService,
 	documentRegionsCache: DocumentRegionsCache,
 ): LanguageMode {
 	return {
@@ -26,67 +25,65 @@ export function getJSONMode(
 			return "json";
 		},
 
-		doComplete(
-			document: TextDocument,
-			position: Position,
-		): CompletionList | null {
-			// Get virtual JSON document with all non-JSON content replaced with whitespace
-			const documentRegions = documentRegionsCache.get(document);
-			const embedded = documentRegions.getEmbeddedDocument("json");
+	async doComplete(
+		document: TextDocument,
+		position: Position,
+	): Promise<CompletionList | null> {
+		// Get virtual JSON document with all non-JSON content replaced with whitespace
+		const documentRegions = documentRegionsCache.get(document);
+		const embedded = documentRegions.getEmbeddedDocument("json");
 
-			// Parse JSON document
-			const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
+		// Parse JSON document
+		const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
 
-			// Get completions
-			const completions = jsonLanguageService.doComplete(
-				embedded,
-				position,
-				jsonDocument,
-			);
+		// Get completions
+		const completions = await jsonLanguageService.doComplete(
+			embedded,
+			position,
+			jsonDocument,
+		);
 
-			return completions;
-		},
+		return completions;
+	},
 
-		doHover(document: TextDocument, position: Position): Hover | null {
-			const documentRegions = documentRegionsCache.get(document);
-			const embedded = documentRegions.getEmbeddedDocument("json");
-			const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
+	async doHover(document: TextDocument, position: Position): Promise<Hover | null> {
+		const documentRegions = documentRegionsCache.get(document);
+		const embedded = documentRegions.getEmbeddedDocument("json");
+		const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
 
-			return jsonLanguageService.doHover(embedded, position, jsonDocument);
-		},
+		return await jsonLanguageService.doHover(embedded, position, jsonDocument);
+	},
 
-		doValidation(document: TextDocument): Diagnostic[] {
-			const documentRegions = documentRegionsCache.get(document);
-			const embedded = documentRegions.getEmbeddedDocument("json");
-			const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
+	async doValidation(document: TextDocument): Promise<Diagnostic[]> {
+		const documentRegions = documentRegionsCache.get(document);
+		const embedded = documentRegions.getEmbeddedDocument("json");
+		const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
 
-			return jsonLanguageService.doValidation(embedded, jsonDocument, {
-				schemaValidation: "error",
-				commentValidation: "warning",
-			});
-		},
+		return await jsonLanguageService.doValidation(embedded, jsonDocument, {
+			schemaValidation: "error",
+		});
+	},
 
-		findDocumentSymbols(document: TextDocument): DocumentSymbol[] {
-			const documentRegions = documentRegionsCache.get(document);
-			const embedded = documentRegions.getEmbeddedDocument("json");
-			const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
+	findDocumentSymbols(document: TextDocument): DocumentSymbol[] {
+		const documentRegions = documentRegionsCache.get(document);
+		const embedded = documentRegions.getEmbeddedDocument("json");
+		const jsonDocument = jsonLanguageService.parseJSONDocument(embedded);
 
-			return jsonLanguageService.findDocumentSymbols(embedded, jsonDocument);
-		},
+		// Use findDocumentSymbols2 which returns DocumentSymbol[] instead of SymbolInformation[]
+		return jsonLanguageService.findDocumentSymbols2(embedded, jsonDocument);
+	},
 	};
 }
 
 /**
  * Create JSON language service instance
  */
-export function createJSONLanguageService(): JSONLanguageService {
+export function createJSONLanguageService(): LanguageService {
 	return getLanguageService({
-		schemaRequestService: {
-			async requestSchema(uri: string): Promise<string> {
-				// Return empty schema for now
-				// Can be extended to load schemas from URLs
-				return "";
-			},
+		schemaRequestService: async (_uri: string): Promise<string> => {
+			// Return empty schema for now
+			// Can be extended to load schemas from URLs
+			return "";
 		},
 		workspaceContext: {
 			resolveRelativePath: (relativePath: string, resource: string) => {

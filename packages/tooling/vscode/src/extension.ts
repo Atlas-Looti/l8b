@@ -18,8 +18,9 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.StatusBarAlignment.Right,
 		100,
 	);
-	statusBarItem.text = "$(pulse) L8B";
-	statusBarItem.tooltip = "LootiScript Language Server";
+	statusBarItem.text = "$(loading~spin) L8B";
+	statusBarItem.tooltip = "LootiScript Language Server: Starting...";
+	statusBarItem.command = "workbench.actions.view.problems"; // Open problems on click
 	statusBarItem.show();
 	context.subscriptions.push(statusBarItem);
 
@@ -64,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 	client
 		.start()
 		.then(() => {
-			statusBarItem.text = "$(check) L8B";
+			statusBarItem.text = "$(pass) L8B";
 			statusBarItem.tooltip = "LootiScript Language Server: Running";
 			console.log("LootiScript Language Server started successfully");
 		})
@@ -132,20 +133,6 @@ function registerCommands(context: vscode.ExtensionContext) {
 		}),
 	);
 
-	// Command: Show API Documentation
-	context.subscriptions.push(
-		vscode.commands.registerCommand("lootiscript.showDocs", () => {
-			const panel = vscode.window.createWebviewPanel(
-				"lootiscriptDocs",
-				"LootiScript API Documentation",
-				vscode.ViewColumn.Two,
-				{},
-			);
-
-			panel.webview.html = getDocumentationHTML();
-		}),
-	);
-
 	// Command: Restart Language Server
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
@@ -171,158 +158,45 @@ function registerCommands(context: vscode.ExtensionContext) {
 }
 
 function updateStatusBarWithDiagnostics() {
+	if (!statusBarItem) {
+		return;
+	}
+
 	const diagnostics = vscode.languages.getDiagnostics();
-	let errorCount = 0;
-	let warningCount = 0;
+	let totalErrors = 0;
+	let totalWarnings = 0;
 
 	for (const [uri, diags] of diagnostics) {
-		if (uri.fsPath.endsWith(".loot")) {
+		// Only count diagnostics for LootiScript files
+		if (uri.path.endsWith(".loot")) {
 			for (const diag of diags) {
 				if (diag.severity === vscode.DiagnosticSeverity.Error) {
-					errorCount++;
+					totalErrors++;
 				} else if (diag.severity === vscode.DiagnosticSeverity.Warning) {
-					warningCount++;
+					totalWarnings++;
 				}
 			}
 		}
 	}
 
-	if (errorCount > 0) {
-		statusBarItem.text = `$(error) L8B ${errorCount}`;
-		statusBarItem.tooltip = `LootiScript: ${errorCount} error(s), ${warningCount} warning(s)`;
-	} else if (warningCount > 0) {
-		statusBarItem.text = `$(warning) L8B ${warningCount}`;
-		statusBarItem.tooltip = `LootiScript: ${warningCount} warning(s)`;
+	// Update status bar based on diagnostics
+	if (totalErrors > 0) {
+		statusBarItem.text = `$(error) L8B`;
+		statusBarItem.tooltip = `LootiScript: ${totalErrors} error${totalErrors !== 1 ? "s" : ""}${totalWarnings > 0 ? `, ${totalWarnings} warning${totalWarnings !== 1 ? "s" : ""}` : ""}`;
+		statusBarItem.backgroundColor = new vscode.ThemeColor(
+			"statusBarItem.errorBackground",
+		);
+	} else if (totalWarnings > 0) {
+		statusBarItem.text = `$(warning) L8B`;
+		statusBarItem.tooltip = `LootiScript: ${totalWarnings} warning${totalWarnings !== 1 ? "s" : ""}`;
+		statusBarItem.backgroundColor = new vscode.ThemeColor(
+			"statusBarItem.warningBackground",
+		);
 	} else {
-		statusBarItem.text = "$(check) L8B";
-		statusBarItem.tooltip = "LootiScript: No problems";
+		statusBarItem.text = "$(pass) L8B";
+		statusBarItem.tooltip = "LootiScript Language Server: No problems";
+		statusBarItem.backgroundColor = undefined;
 	}
-}
-
-function getDocumentationHTML(): string {
-	return `<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>LootiScript API Documentation</title>
-	<style>
-		body {
-			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-			padding: 20px;
-			line-height: 1.6;
-			max-width: 800px;
-			margin: 0 auto;
-		}
-		h1 { color: #007acc; border-bottom: 2px solid #007acc; padding-bottom: 10px; }
-		h2 { color: #333; margin-top: 30px; }
-		.api-section { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; }
-		code { background: #e0e0e0; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
-		.method { margin: 10px 0; }
-		.signature { color: #0066cc; font-weight: bold; }
-		.description { color: #666; margin-left: 20px; }
-	</style>
-</head>
-<body>
-	<h1>LootiScript API Documentation</h1>
-	
-	<h2>🎮 Screen API</h2>
-	<div class="api-section">
-		<div class="method">
-			<div class="signature">screen.drawSprite(sprite: string, x: number, y: number, width?: number, height?: number)</div>
-			<div class="description">Draw a sprite at the specified position</div>
-		</div>
-		<div class="method">
-			<div class="signature">screen.fillRect(x: number, y: number, width: number, height: number, color: string)</div>
-			<div class="description">Fill a rectangle with the specified color</div>
-		</div>
-		<div class="method">
-			<div class="signature">screen.drawText(text: string, x: number, y: number, color?: string, size?: number)</div>
-			<div class="description">Draw text at the specified position</div>
-		</div>
-		<div class="method">
-			<div class="signature">screen.clearScreen(color?: string)</div>
-			<div class="description">Clear the screen with a color (default: black)</div>
-		</div>
-		<div class="method">
-			<div class="signature">screen.drawCircle(x: number, y: number, radius: number, color: string)</div>
-			<div class="description">Draw a circle outline</div>
-		</div>
-		<div class="method">
-			<div class="signature">screen.fillCircle(x: number, y: number, radius: number, color: string)</div>
-			<div class="description">Draw a filled circle</div>
-		</div>
-	</div>
-
-	<h2>🔊 Audio API</h2>
-	<div class="api-section">
-		<div class="method">
-			<div class="signature">audio.playSound(soundName: string, volume?: number, loop?: boolean)</div>
-			<div class="description">Play a sound effect</div>
-		</div>
-		<div class="method">
-			<div class="signature">audio.playMusic(musicName: string, volume?: number, loop?: boolean)</div>
-			<div class="description">Play background music</div>
-		</div>
-		<div class="method">
-			<div class="signature">audio.stopSound(soundName: string)</div>
-			<div class="description">Stop a playing sound</div>
-		</div>
-		<div class="method">
-			<div class="signature">audio.beep(frequency?: number, duration?: number)</div>
-			<div class="description">Play a beep sound</div>
-		</div>
-	</div>
-
-	<h2>🎯 Input API</h2>
-	<div class="api-section">
-		<div class="method">
-			<div class="signature">input.keyboard</div>
-			<div class="description">Keyboard input state object</div>
-		</div>
-		<div class="method">
-			<div class="signature">input.mouse</div>
-			<div class="description">Mouse input state (x, y, pressed)</div>
-		</div>
-		<div class="method">
-			<div class="signature">input.touch</div>
-			<div class="description">Touch input for mobile devices</div>
-		</div>
-	</div>
-
-	<h2>⚙️ System API</h2>
-	<div class="api-section">
-		<div class="method">
-			<div class="signature">system.time</div>
-			<div class="description">Current system time in milliseconds</div>
-		</div>
-		<div class="method">
-			<div class="signature">system.fps</div>
-			<div class="description">Current frames per second</div>
-		</div>
-		<div class="method">
-			<div class="signature">system.deltaTime</div>
-			<div class="description">Time elapsed since last frame (seconds)</div>
-		</div>
-	</div>
-
-	<h2>📝 Game Loop Functions</h2>
-	<div class="api-section">
-		<div class="method">
-			<div class="signature">init = function() ... end</div>
-			<div class="description">Called once when the game starts</div>
-		</div>
-		<div class="method">
-			<div class="signature">update = function() ... end</div>
-			<div class="description">Called every frame for game logic</div>
-		</div>
-		<div class="method">
-			<div class="signature">draw = function() ... end</div>
-			<div class="description">Called every frame for rendering</div>
-		</div>
-	</div>
-</body>
-</html>`;
 }
 
 export function deactivate(): Thenable<void> | undefined {

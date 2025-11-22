@@ -28,13 +28,15 @@ class LanguageModelCache<T> {
 		// Cleanup old entries
 		if (this.cache.size > this.maxEntries) {
 			const firstKey = this.cache.keys().next().value;
-			this.cache.delete(firstKey);
+			if (firstKey !== undefined) {
+				this.cache.delete(firstKey);
+			}
 		}
 
 		return value;
 	}
 
-	protected create(document: TextDocument): T {
+	protected create(_document: TextDocument): T {
 		throw new Error("Must be implemented by subclass");
 	}
 }

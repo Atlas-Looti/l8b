@@ -10,22 +10,38 @@
 	},
 	"Update Loop": {
 		"prefix": "update",
-		"body": ["update = function()", "\t${1:// update logic}", "end"],
+		"body": [
+			"update = function()",
+			"\t${1:// update logic}",
+			"end"
+		],
 		"description": "Game update function called every frame"
 	},
 	"Draw Loop": {
 		"prefix": "draw",
-		"body": ["draw = function()", "\t${1:// draw logic}", "end"],
+		"body": [
+			"draw = function()",
+			"\t${1:// draw logic}",
+			"end"
+		],
 		"description": "Game draw function for rendering"
 	},
 	"Init Function": {
 		"prefix": "init",
-		"body": ["init = function()", "\t${1:// initialization}", "end"],
+		"body": [
+			"init = function()",
+			"\t${1:// initialization}",
+			"end"
+		],
 		"description": "Game initialization function"
 	},
 	"If Statement": {
 		"prefix": "if",
-		"body": ["if ${1:condition} then", "\t${2:// code}", "end"],
+		"body": [
+			"if ${1:condition} then",
+			"\t${2:// code}",
+			"end"
+		],
 		"description": "If conditional statement"
 	},
 	"If-Else Statement": {
@@ -41,12 +57,20 @@
 	},
 	"For Loop": {
 		"prefix": "for",
-		"body": ["for ${1:i} in ${2:list} do", "\t${3:// loop body}", "end"],
+		"body": [
+			"for ${1:i} in ${2:list} do",
+			"\t${3:// loop body}",
+			"end"
+		],
 		"description": "For loop iteration"
 	},
 	"While Loop": {
 		"prefix": "while",
-		"body": ["while ${1:condition} do", "\t${2:// loop body}", "end"],
+		"body": [
+			"while ${1:condition} do",
+			"\t${2:// loop body}",
+			"end"
+		],
 		"description": "While loop"
 	},
 	"Draw Sprite": {
@@ -72,17 +96,23 @@
 	},
 	"Clear Screen": {
 		"prefix": "clear",
-		"body": ["screen.clearScreen(\"${1:#000000}\")"],
+		"body": [
+			"screen.clearScreen(\"${1:#000000}\")"
+		],
 		"description": "Clear the screen with a color"
 	},
 	"Play Sound": {
 		"prefix": "sound",
-		"body": ["audio.playSound(\"${1:soundName}\", ${2:1.0}, ${3:false})"],
+		"body": [
+			"audio.playSound(\"${1:soundName}\", ${2:1.0}, ${3:false})"
+		],
 		"description": "Play a sound effect"
 	},
 	"Play Music": {
 		"prefix": "music",
-		"body": ["audio.playMusic(\"${1:musicName}\", ${2:1.0}, ${3:true})"],
+		"body": [
+			"audio.playMusic(\"${1:musicName}\", ${2:1.0}, ${3:true})"
+		],
 		"description": "Play background music"
 	},
 	"Input Check": {
@@ -122,12 +152,16 @@
 	},
 	"Local Variable": {
 		"prefix": "local",
-		"body": ["local ${1:name} = ${2:value}"],
+		"body": [
+			"local ${1:name} = ${2:value}"
+		],
 		"description": "Declare a local variable"
 	},
 	"Print Debug": {
 		"prefix": "print",
-		"body": ["print(${1:message})"],
+		"body": [
+			"print(${1:message})"
+		],
 		"description": "Print debug message to console"
 	},
 	"Comment Block": {
@@ -139,5 +173,155 @@
 			"${2}"
 		],
 		"description": "Create a comment section divider"
+	},
+	"Arrow Function": {
+		"prefix": "arrow",
+		"body": [
+			"${1:name} = (${2:args}) => ${3:expression}"
+		],
+		"description": "Create an arrow function"
+	},
+	"Arrow Function Block": {
+		"prefix": "arrowblock",
+		"body": [
+			"${1:name} = (${2:args}) => {",
+			"\t${3:// function body}",
+			"}"
+		],
+		"description": "Create an arrow function with block body"
+	},
+	"Template Literal": {
+		"prefix": "template",
+		"body": [
+			"`${1:text} $${${2:variable}}`"
+		],
+		"description": "Create a template literal with interpolation"
+	},
+	"Complete Game Template": {
+		"prefix": "game",
+		"body": [
+			"// Game State",
+			"local state = {",
+			"\tscore = 0,",
+			"\tplayer = { x = 0, y = 0 }",
+			"}",
+			"",
+			"// Initialize game",
+			"init = function()",
+			"\tstate.player.x = screen.width / 2",
+			"\tstate.player.y = screen.height / 2",
+			"end",
+			"",
+			"// Update game logic",
+			"update = function()",
+			"\t${1:// update logic}",
+			"end",
+			"",
+			"// Render graphics",
+			"draw = function()",
+			"\tscreen.clearScreen(\"#000000\")",
+			"\t${2:// draw logic}",
+			"end"
+		],
+		"description": "Complete game template with init, update, and draw"
+	},
+	"Sprite Animation": {
+		"prefix": "animate",
+		"body": [
+			"${1:sprite} = {",
+			"\tframes = [\"${2:frame1}\", \"${3:frame2}\"],",
+			"\tcurrentFrame = 0,",
+			"\tframeTime = 0,",
+			"\tframeDuration = ${4:200},",
+			"\tupdate = function(self)",
+			"\t\tself.frameTime = self.frameTime + system.deltaTime * 1000",
+			"\t\tif self.frameTime >= self.frameDuration then",
+			"\t\t\tself.frameTime = 0",
+			"\t\t\tself.currentFrame = (self.currentFrame + 1) % #self.frames",
+			"\t\tend",
+			"\tend,",
+			"\tdraw = function(self, x, y)",
+			"\t\tscreen.drawSprite(self.frames[self.currentFrame + 1], x, y)",
+			"\tend",
+			"}"
+		],
+		"description": "Create an animated sprite with frame animation"
+	},
+	"Collision Detection": {
+		"prefix": "collision",
+		"body": [
+			"checkCollision = function(a, b)",
+			"\treturn a.x < b.x + b.width and",
+			"\t       a.x + a.width > b.x and",
+			"\t       a.y < b.y + b.height and",
+			"\t       a.y + a.height > b.y",
+			"end"
+		],
+		"description": "AABB collision detection function"
+	},
+	"Object Literal": {
+		"prefix": "obj",
+		"body": [
+			"${1:name} = {",
+			"\t${2:key} = ${3:value}",
+			"}"
+		],
+		"description": "Create an object literal"
+	},
+	"Class Definition": {
+		"prefix": "class",
+		"body": [
+			"${1:ClassName} = class",
+			"\tinit = function()",
+			"\t\t${2:// initialization}",
+			"\tend",
+			"end"
+		],
+		"description": "Create a class with init method"
+	},
+	"Class Extends": {
+		"prefix": "extends",
+		"body": [
+			"${1:ChildClass} = class extends ${2:ParentClass}",
+			"\t${3:// override methods}",
+			"end"
+		],
+		"description": "Create a class that extends another"
+	},
+	"After Delay": {
+		"prefix": "after",
+		"body": [
+			"after ${1:1000} do",
+			"\t${2:// execute after delay}",
+			"end"
+		],
+		"description": "Execute code after delay (milliseconds)"
+	},
+	"Every Interval": {
+		"prefix": "every",
+		"body": [
+			"every ${1:1000} do",
+			"\t${2:// execute every interval}",
+			"end"
+		],
+		"description": "Execute code every interval (milliseconds)"
+	},
+	"For Range Loop": {
+		"prefix": "forto",
+		"body": [
+			"for ${1:i} = ${2:1} to ${3:10} do",
+			"\t${4:// loop body}",
+			"end"
+		],
+		"description": "For loop with range (to)"
+	},
+	"For Range with Step": {
+		"prefix": "fortostep",
+		"body": [
+			"for ${1:i} = ${2:1} to ${3:10} by ${4:2} do",
+			"\t${5:// loop body}",
+			"end"
+		],
+		"description": "For loop with range and step"
 	}
 }

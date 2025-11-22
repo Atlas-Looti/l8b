@@ -6,51 +6,49 @@
 // Type "screen." below and trigger autocomplete (Ctrl+Space)
 // You should see only screen methods like drawSprite, fillRect, etc.
 
-
 // Demo 2: Signature Help
 // Type the function call below and watch parameter hints appear
-// screen.drawSprite() - cursor inside parentheses
-
-
-// Demo 3: Code Snippets
-// Type "func" and press Tab to expand function template
-
-
-// Type "update" and press Tab to expand update loop
-
-
-// Type "if" and press Tab to expand if statement
-
-
-// Demo 4: Find All References
-// Define a variable and use it multiple times
-myVariable = 42
-x = myVariable + 10
-y = myVariable * 2
-print(myVariable)
-// Right-click on "myVariable" and select "Find All References"
-
-// Demo 5: Quick Fix - Missing 'end'
-// Uncomment the code below to see the quick fix icon
-// testFunction = function()
-//   print("missing end keyword")
-
-// Demo 6: Extract to Function
-// Select the 3 print statements below
-// Right-click → Refactor → Extract to function
-print("Line 1")
-print("Line 2")  
-print("Line 3")
-
-// Demo 7: Full API examples
-draw = function()
-	screen.clearScreen("#000000")
-	screen.fillRect(10, 10, 50, 50, "#FF0000")
-	screen.drawText("Hello L8B!", 20, 80, "#FFFFFF", 16)
-end
-
-update = function()
-	if input.keyboard.pressed("space") then
-		audio.beep(440, 100)
-	end
-end
+	// screen.drawSprite() - cursor inside parentheses
+	
+	// Demo 3: Code Snippets
+	// Type "func" and press Tab to expand function template
+		
+		// Type "update" and press Tab to expand update loop
+		
+		
+		// Type "if" and press Tab to expand if statement
+		
+		
+		// Demo 4: Find All References
+		// Define a variable and use it multiple times
+		myVariable = 42
+		x = myVariable + 10
+		y = myVariable * 2
+		print(myVariable)
+		// Right-click on "myVariable" and select "Find All References"
+		
+		// Demo 5: Quick Fix - Missing 'end'
+		// Uncomment the code below to see the quick fix icon
+		// testFunction = function()
+			//   print("missing end keyword")
+			
+			// Demo 6: Extract to Function
+			// Select the 3 print statements below
+			// Right-click → Refactor → Extract to function
+				print("Line 1")
+				print("Line 2")
+				print("Line 3")
+				
+				// Demo 7: Full API examples
+				draw = function()
+					screen.clearScreen("#000000")
+					screen.fillRect(10, 10, 50, 50, "#FF0000")
+					screen.drawText("Hello L8B!", 20, 80, "#FFFFFF", 16)
+				end
+				
+				update = function()
+					if input.keyboard.pressed("space") then
+						audio.beep(440, 100)
+					end
+				end
+				

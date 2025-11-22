@@ -1,7 +1,6 @@
 import {
 	TextDocument,
 	Position,
-	Range,
 } from "vscode-languageserver-textdocument";
 import {
 	CompletionList,
@@ -19,10 +18,10 @@ export interface LanguageMode {
 	doComplete?(
 		document: TextDocument,
 		position: Position,
-	): CompletionList | CompletionItem[] | null;
-	doHover?(document: TextDocument, position: Position): Hover | null;
-	doValidation?(document: TextDocument): Diagnostic[];
-	findDocumentSymbols?(document: TextDocument): DocumentSymbol[];
+	): CompletionList | CompletionItem[] | null | Promise<CompletionList | CompletionItem[] | null>;
+	doHover?(document: TextDocument, position: Position): Hover | null | Promise<Hover | null>;
+	doValidation?(document: TextDocument): Diagnostic[] | Promise<Diagnostic[]>;
+	findDocumentSymbols?(document: TextDocument): DocumentSymbol[] | Promise<DocumentSymbol[]>;
 }
 
 /**
@@ -147,44 +146,39 @@ export class DocumentRegions {
 	 */
 	getEmbeddedDocument(languageId: string): TextDocument {
 		const text = this.document.getText();
-		const targetRegions = this.getRegionsForLanguage(languageId);
-		const allRegions = this.regions;
+		const languageRegions = this.getRegionsForLanguage(languageId);
 
-		// Build virtual document by replacing non-matching regions with whitespace
+		// If no regions for this language, return empty document
+		if (languageRegions.length === 0) {
+			return TextDocument.create(
+				this.document.uri + "." + languageId,
+				languageId,
+				this.document.version,
+				"", // Empty content
+			);
+		}
+
+		// Build virtual document with only the matching language content
 		let result = "";
 		let lastOffset = 0;
 
-		// Sort all regions by start position
-		const sortedRegions = [...allRegions].sort((a, b) => a.start - b.start);
+		// Sort regions by start position
+		const sortedRegions = [...languageRegions].sort((a, b) => a.start - b.start);
 
 		for (const region of sortedRegions) {
-			// Add content before this region
+			// Add whitespace for content before this region
 			if (region.start > lastOffset) {
-				const beforeText = text.substring(lastOffset, region.start);
-				if (region.languageId === languageId) {
-					result += beforeText;
-				} else {
-					// Replace with whitespace
-					result += " ".repeat(beforeText.length);
-				}
+				result += " ".repeat(region.start - lastOffset);
 			}
 
 			// Add region content
-			if (region.languageId === languageId) {
-				result += text.substring(region.start, region.end);
-			} else {
-				// Replace with whitespace
-				const regionText = text.substring(region.start, region.end);
-				result += " ".repeat(regionText.length);
-			}
-
+			result += text.substring(region.start, region.end);
 			lastOffset = region.end;
 		}
 
-		// Add remaining content
+		// Add whitespace for remaining content
 		if (lastOffset < text.length) {
-			const remainingText = text.substring(lastOffset);
-			result += remainingText;
+			result += " ".repeat(text.length - lastOffset);
 		}
 
 		return TextDocument.create(
