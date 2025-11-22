@@ -92,6 +92,12 @@ export class Compiler {
 			if (i < this.program.statements.length - 1) {
 				this.routine.POP(s);
 			}
+
+			// OPTIMIZATION: Dead Code Elimination
+			// Stop compiling after return, break, or continue statements
+			if (s instanceof Return || s instanceof Break || s instanceof Continue) {
+				break;
+			}
 		}
 		this.routine.optimize();
 		this.routine.resolveLabels();
@@ -431,6 +437,53 @@ export class Compiler {
 			ref === "<<" ||
 			ref === ">>"
 		) {
+			// OPTIMIZATION: Constant Folding
+			// If both operands are constant values, compute the result at compile time
+			if (
+				op.term1 instanceof Value &&
+				op.term1.type === Value.TYPE_NUMBER &&
+				op.term2 instanceof Value &&
+				op.term2.type === Value.TYPE_NUMBER
+			) {
+				let result: number;
+				const v1 = op.term1.value as number;
+				const v2 = op.term2.value as number;
+
+				switch (op.operation) {
+					case "+":
+						result = v1 + v2;
+						break;
+					case "-":
+						result = v1 - v2;
+						break;
+					case "*":
+						result = v1 * v2;
+						break;
+					case "/":
+						result = v1 / v2;
+						break;
+					case "%":
+						result = v1 % v2;
+						break;
+					case "&":
+						result = v1 & v2;
+						break;
+					case "|":
+						result = v1 | v2;
+						break;
+					case "<<":
+						result = v1 << v2;
+						break;
+					case ">>":
+						result = v1 >> v2;
+						break;
+					default:
+						result = 0;
+				}
+				this.routine.LOAD_VALUE(result, op);
+				return;
+			}
+
 			this.compile(op.term1);
 			this.compile(op.term2);
 			switch (op.operation) {
@@ -769,6 +822,54 @@ export class Compiler {
 	 * @param {For} forloop - The for loop AST node
 	 */
 	compileFor(forloop: For): void {
+		// OPTIMIZATION: Loop Unrolling
+		// If the loop has constant bounds and is small (≤ 5 iterations), unroll it
+		if (
+			forloop.range_from instanceof Value &&
+			forloop.range_from.type === Value.TYPE_NUMBER &&
+			forloop.range_to instanceof Value &&
+			forloop.range_to.type === Value.TYPE_NUMBER &&
+			(forloop.range_by == null ||
+				(forloop.range_by instanceof Value &&
+					forloop.range_by.type === Value.TYPE_NUMBER))
+		) {
+			const from = forloop.range_from.value as number;
+			const to = forloop.range_to.value as number;
+			const step =
+				forloop.range_by instanceof Value
+					? (forloop.range_by.value as number)
+					: 1;
+
+			// Calculate iteration count
+			let iterations = 0;
+			if (step > 0 && to >= from) {
+				iterations = Math.floor((to - from) / step) + 1;
+			} else if (step < 0 && to <= from) {
+				iterations = Math.floor((from - to) / Math.abs(step)) + 1;
+			}
+
+			// Only unroll if iterations are small (≤ 5)
+			if (iterations > 0 && iterations <= 5) {
+				const iterator = this.locals.register(forloop.iterator);
+				this.locals.push();
+
+				for (let i = 0; i < iterations; i++) {
+					const iterValue = from + i * step;
+					// Set iterator value
+					this.routine.LOAD_VALUE(iterValue, forloop);
+					this.routine.STORE_LOCAL(iterator, forloop);
+					this.routine.POP(forloop);
+
+					// Compile loop body
+					this.compileSequence(forloop.sequence);
+				}
+
+				this.locals.pop();
+				return;
+			}
+		}
+
+		// Standard loop compilation (not unrolled)
 		var for_continue: string,
 			for_end: string,
 			for_start: string,
@@ -843,6 +944,16 @@ export class Compiler {
 				this.routine.POP(sequence[i]);
 			}
 			this.compile(sequence[i]);
+
+			// OPTIMIZATION: Dead Code Elimination
+			// Stop compiling after return, break, or continue statements
+			if (
+				sequence[i] instanceof Return ||
+				sequence[i] instanceof Break ||
+				sequence[i] instanceof Continue
+			) {
+				break;
+			}
 		}
 	}
 
