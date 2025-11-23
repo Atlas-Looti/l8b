@@ -156,7 +156,6 @@
 		"@vscode/test-electron": "^2.5.2"
 	},
 	"dependencies": {
-		"vscode-languageclient": "^9.0.1",
-		"@l8b/tooling-assets": "workspace:*"
+		"vscode-languageclient": "^9.0.1"
 	}
 }

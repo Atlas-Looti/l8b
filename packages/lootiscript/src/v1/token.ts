@@ -130,6 +130,11 @@ export class Token {
 	static readonly TYPE_NOT = 202;
 	static readonly TYPE_ERROR = 404;
 	static readonly TYPE_DELETE = 403;
+	static readonly TYPE_IMPORT = 120;
+	static readonly TYPE_EXPORT = 121;
+	static readonly TYPE_FROM = 122;
+	static readonly TYPE_AS = 123;
+	static readonly TYPE_DEFAULT = 124;
 
 	// Predefined keyword mapping
 	static readonly predefined: Record<string, number> = {
@@ -162,5 +167,10 @@ export class Token {
 		local: Token.TYPE_LOCAL,
 		var: Token.TYPE_LOCAL, // Alias
 		let: Token.TYPE_LOCAL, // Alias
+		import: Token.TYPE_IMPORT,
+		export: Token.TYPE_EXPORT,
+		from: Token.TYPE_FROM,
+		as: Token.TYPE_AS,
+		default: Token.TYPE_DEFAULT,
 	};
 }

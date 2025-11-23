@@ -45,15 +45,6 @@ export class ActionsProvider implements vscode.TreeDataProvider<ActionItem> {
                     title: "Restart Language Server",
                 }
             ),
-            new ActionItem(
-                "Open Assets Editor",
-                "Open Assets Editor in Browser",
-                vscode.TreeItemCollapsibleState.None,
-                {
-                    command: "lootiscript.openAssetsEditor",
-                    title: "Open Assets Editor",
-                }
-            ),
         ]);
     }
 }

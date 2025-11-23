@@ -9,7 +9,7 @@ import {
 import { ActionsProvider } from "./views/actionsProvider";
 import { ApiProvider } from "./views/apiProvider";
 import { ExamplesProvider } from "./views/examplesProvider";
-import { AssetsServerManager } from "./views/assetsEditorProvider";
+
 
 let client: LanguageClient;
 let statusBarItem: vscode.StatusBarItem;
@@ -88,12 +88,8 @@ export function activate(context: vscode.ExtensionContext) {
 			console.error("Failed to start LootiScript Language Server:", error);
 		});
 
-	// Initialize Assets Server Manager
-	const assetsManager = new AssetsServerManager(context.extensionUri, context);
-	context.subscriptions.push(vscode.Disposable.from(assetsManager));
-
 	// Register commands
-	registerCommands(context, assetsManager);
+	registerCommands(context);
 
 	// Listen to diagnostics for error count in status bar
 	context.subscriptions.push(
@@ -107,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log("LootiScript Language Server extension is now active!");
 }
 
-function registerCommands(context: vscode.ExtensionContext, assetsManager: AssetsServerManager) {
+function registerCommands(context: vscode.ExtensionContext) {
 	// Command: Format Document
 	context.subscriptions.push(
 		vscode.commands.registerCommand("lootiscript.formatDocument", async () => {
@@ -191,12 +187,7 @@ function registerCommands(context: vscode.ExtensionContext, assetsManager: Asset
 		),
 	);
 
-	// Command: Open Assets Editor
-	context.subscriptions.push(
-		vscode.commands.registerCommand("lootiscript.openAssetsEditor", () => {
-			assetsManager.openEditor();
-		})
-	);
+
 }
 
 function updateStatusBarWithDiagnostics() {
