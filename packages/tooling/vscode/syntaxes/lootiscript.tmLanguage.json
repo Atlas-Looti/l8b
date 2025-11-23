@@ -1,289 +1,289 @@
 {
-    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-    "name": "LootiScript",
-    "scopeName": "source.lootiscript",
-    "patterns": [
-        {
-            "include": "#comments"
-        },
-        {
-            "include": "#keywords"
-        },
-        {
-            "include": "#strings"
-        },
-        {
-            "include": "#numbers"
-        },
-        {
-            "include": "#function-definition"
-        },
-        {
-            "include": "#constants"
-        },
-        {
-            "include": "#built-in-apis"
-        },
-        {
-            "include": "#operators"
-        },
-        {
-            "include": "#variables"
-        }
-    ],
-    "repository": {
-        "comments": {
-            "patterns": [
-                {
-                    "name": "comment.line.double-slash.lootiscript",
-                    "begin": "//",
-                    "end": "$",
-                    "patterns": [
-                        {
-                            "name": "meta.toc-list.region.lootiscript",
-                            "match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b",
-                            "captures": {
-                                "1": {
-                                    "name": "keyword.other.lootiscript"
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "comment.block.lootiscript",
-                    "begin": "/\\*",
-                    "end": "\\*/",
-                    "patterns": [
-                        {
-                            "name": "meta.toc-list.region.lootiscript",
-                            "match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b",
-                            "captures": {
-                                "1": {
-                                    "name": "keyword.other.lootiscript"
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        "keywords": {
-            "patterns": [
-                {
-                    "name": "keyword.control.lootiscript",
-                    "match": "\\b(if|then|else|elsif|elseif|end|while|do|for|in|to|by|break|continue|return|after|every|sleep)\\b"
-                },
-                {
-                    "name": "keyword.other.lootiscript",
-                    "match": "\\b(function|local|global|var|let|object|class|extends|new|delete)\\b"
-                },
-                {
-                    "name": "keyword.operator.logical.lootiscript",
-                    "match": "\\b(and|or|not)\\b"
-                }
-            ]
-        },
-        "constants": {
-            "patterns": [
-                {
-                    "name": "constant.language.lootiscript",
-                    "match": "\\b(true|false|nil)\\b"
-                }
-            ]
-        },
-        "strings": {
-            "patterns": [
-                {
-                    "name": "string.quoted.template.lootiscript",
-                    "begin": "`",
-                    "end": "`",
-                    "patterns": [
-                        {
-                            "name": "constant.character.escape.lootiscript",
-                            "match": "\\\\."
-                        },
-                        {
-                            "name": "meta.embedded.line.lootiscript",
-                            "begin": "\\$\\{",
-                            "end": "\\}",
-                            "patterns": [
-                                {
-                                    "include": "$self"
-                                }
-                            ],
-                            "beginCaptures": {
-                                "0": {
-                                    "name": "punctuation.definition.template-expression.begin.lootiscript"
-                                }
-                            },
-                            "endCaptures": {
-                                "0": {
-                                    "name": "punctuation.definition.template-expression.end.lootiscript"
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "string.quoted.double.lootiscript",
-                    "begin": "\"",
-                    "end": "\"",
-                    "patterns": [
-                        {
-                            "name": "constant.character.escape.lootiscript",
-                            "match": "\\\\."
-                        }
-                    ]
-                },
-                {
-                    "name": "string.quoted.single.lootiscript",
-                    "begin": "'",
-                    "end": "'",
-                    "patterns": [
-                        {
-                            "name": "constant.character.escape.lootiscript",
-                            "match": "\\\\."
-                        }
-                    ]
-                }
-            ]
-        },
-        "numbers": {
-            "patterns": [
-                {
-                    "name": "constant.numeric.hex.lootiscript",
-                    "match": "\\b0[xX][0-9a-fA-F]+\\b"
-                },
-                {
-                    "name": "constant.numeric.float.lootiscript",
-                    "match": "\\b[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?\\b"
-                },
-                {
-                    "name": "constant.numeric.scientific.lootiscript",
-                    "match": "\\b[0-9]+[eE][+-]?[0-9]+\\b"
-                },
-                {
-                    "name": "constant.numeric.integer.lootiscript",
-                    "match": "\\b[0-9]+\\b"
-                }
-            ]
-        },
-        "function-definition": {
-            "patterns": [
-                {
-                    "name": "meta.function.lootiscript",
-                    "begin": "\\b(function)\\s*(?:([a-zA-Z_][a-zA-Z0-9_]*)\\s*)?(\\()",
-                    "end": "\\)",
-                    "beginCaptures": {
-                        "1": {
-                            "name": "keyword.other.lootiscript"
-                        },
-                        "2": {
-                            "name": "entity.name.function.lootiscript"
-                        },
-                        "3": {
-                            "name": "punctuation.definition.parameters.begin.lootiscript"
-                        }
-                    },
-                    "endCaptures": {
-                        "0": {
-                            "name": "punctuation.definition.parameters.end.lootiscript"
-                        }
-                    },
-                    "patterns": [
-                        {
-                            "name": "variable.parameter.lootiscript",
-                            "match": "[a-zA-Z_][a-zA-Z0-9_]*"
-                        },
-                        {
-                            "name": "punctuation.separator.parameter.lootiscript",
-                            "match": ","
-                        },
-                        {
-                            "name": "meta.type-annotation.lootiscript",
-                            "match": ":\\s*([a-zA-Z_][a-zA-Z0-9_]*)",
-                            "captures": {
-                                "1": {
-                                    "name": "entity.name.type.lootiscript"
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "meta.arrow-function.lootiscript",
-                    "match": "(\\([^)]*\\)|[a-zA-Z_][a-zA-Z0-9_]*)\\s*(=>)",
-                    "captures": {
-                        "1": {
-                            "name": "meta.parameters.lootiscript"
-                        },
-                        "2": {
-                            "name": "storage.type.function.arrow.lootiscript"
-                        }
-                    }
-                }
-            ]
-        },
-        "built-in-apis": {
-            "patterns": [
-                {
-                    "name": "support.class.lootiscript",
-                    "match": "\\b(screen|audio|input|system|sprite|map|List|Math|String|JSON|Object)\\b"
-                },
-                {
-                    "name": "support.function.lootiscript",
-                    "match": "\\b(print|type|typeof|assert|error|require)\\b"
-                }
-            ]
-        },
-        "operators": {
-            "patterns": [
-                {
-                    "name": "keyword.operator.assignment.lootiscript",
-                    "match": "(=|\\+=|-=|\\*=|/=|%=|\\|=|&=)"
-                },
-                {
-                    "name": "keyword.operator.comparison.lootiscript",
-                    "match": "(==|!=|<=|>=|<|>)"
-                },
-                {
-                    "name": "keyword.operator.arithmetic.lootiscript",
-                    "match": "(\\+|-|\\*|/|%|\\^)"
-                },
-                {
-                    "name": "keyword.operator.bitwise.lootiscript",
-                    "match": "(<<|>>|&|\\||~)"
-                },
-                {
-                    "name": "keyword.operator.arrow.lootiscript",
-                    "match": "=>"
-                }
-            ]
-        },
-        "variables": {
-            "patterns": [
-                {
-                    "name": "meta.assignment.lootiscript",
-                    "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(=)(?!=)",
-                    "captures": {
-                        "1": {
-                            "name": "variable.other.assignment.lootiscript"
-                        },
-                        "2": {
-                            "name": "keyword.operator.assignment.lootiscript"
-                        }
-                    }
-                },
-                {
-                    "name": "variable.other.property.lootiscript",
-                    "match": "(?<=\\.)([a-zA-Z_][a-zA-Z0-9_]*)"
-                },
-                {
-                    "name": "variable.other.lootiscript",
-                    "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
-                }
-            ]
-        }
-    }
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "LootiScript",
+	"scopeName": "source.lootiscript",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#function-definition"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#built-in-apis"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#variables"
+		}
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.double-slash.lootiscript",
+					"begin": "//",
+					"end": "$",
+					"patterns": [
+						{
+							"name": "meta.toc-list.region.lootiscript",
+							"match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b",
+							"captures": {
+								"1": {
+									"name": "keyword.other.lootiscript"
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "comment.block.lootiscript",
+					"begin": "/\\*",
+					"end": "\\*/",
+					"patterns": [
+						{
+							"name": "meta.toc-list.region.lootiscript",
+							"match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b",
+							"captures": {
+								"1": {
+									"name": "keyword.other.lootiscript"
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.lootiscript",
+					"match": "\\b(if|then|else|elsif|elseif|end|while|do|for|in|to|by|break|continue|return|after|every|sleep)\\b"
+				},
+				{
+					"name": "keyword.other.lootiscript",
+					"match": "\\b(function|local|global|var|let|object|class|extends|new|delete)\\b"
+				},
+				{
+					"name": "keyword.operator.logical.lootiscript",
+					"match": "\\b(and|or|not)\\b"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.language.lootiscript",
+					"match": "\\b(true|false|nil)\\b"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [
+				{
+					"name": "string.quoted.template.lootiscript",
+					"begin": "`",
+					"end": "`",
+					"patterns": [
+						{
+							"name": "constant.character.escape.lootiscript",
+							"match": "\\\\."
+						},
+						{
+							"name": "meta.embedded.line.lootiscript",
+							"begin": "\\$\\{",
+							"end": "\\}",
+							"patterns": [
+								{
+									"include": "$self"
+								}
+							],
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.definition.template-expression.begin.lootiscript"
+								}
+							},
+							"endCaptures": {
+								"0": {
+									"name": "punctuation.definition.template-expression.end.lootiscript"
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "string.quoted.double.lootiscript",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.lootiscript",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name": "string.quoted.single.lootiscript",
+					"begin": "'",
+					"end": "'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.lootiscript",
+							"match": "\\\\."
+						}
+					]
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.hex.lootiscript",
+					"match": "\\b0[xX][0-9a-fA-F]+\\b"
+				},
+				{
+					"name": "constant.numeric.float.lootiscript",
+					"match": "\\b[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?\\b"
+				},
+				{
+					"name": "constant.numeric.scientific.lootiscript",
+					"match": "\\b[0-9]+[eE][+-]?[0-9]+\\b"
+				},
+				{
+					"name": "constant.numeric.integer.lootiscript",
+					"match": "\\b[0-9]+\\b"
+				}
+			]
+		},
+		"function-definition": {
+			"patterns": [
+				{
+					"name": "meta.function.lootiscript",
+					"begin": "\\b(function)\\s*(?:([a-zA-Z_][a-zA-Z0-9_]*)\\s*)?(\\()",
+					"end": "\\)",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.other.lootiscript"
+						},
+						"2": {
+							"name": "entity.name.function.lootiscript"
+						},
+						"3": {
+							"name": "punctuation.definition.parameters.begin.lootiscript"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.parameters.end.lootiscript"
+						}
+					},
+					"patterns": [
+						{
+							"name": "variable.parameter.lootiscript",
+							"match": "[a-zA-Z_][a-zA-Z0-9_]*"
+						},
+						{
+							"name": "punctuation.separator.parameter.lootiscript",
+							"match": ","
+						},
+						{
+							"name": "meta.type-annotation.lootiscript",
+							"match": ":\\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+							"captures": {
+								"1": {
+									"name": "entity.name.type.lootiscript"
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "meta.arrow-function.lootiscript",
+					"match": "(\\([^)]*\\)|[a-zA-Z_][a-zA-Z0-9_]*)\\s*(=>)",
+					"captures": {
+						"1": {
+							"name": "meta.parameters.lootiscript"
+						},
+						"2": {
+							"name": "storage.type.function.arrow.lootiscript"
+						}
+					}
+				}
+			]
+		},
+		"built-in-apis": {
+			"patterns": [
+				{
+					"name": "support.class.lootiscript",
+					"match": "\\b(screen|audio|input|system|sprite|map|List|Math|String|JSON|Object)\\b"
+				},
+				{
+					"name": "support.function.lootiscript",
+					"match": "\\b(print|type|typeof|assert|error|require)\\b"
+				}
+			]
+		},
+		"operators": {
+			"patterns": [
+				{
+					"name": "keyword.operator.assignment.lootiscript",
+					"match": "(=|\\+=|-=|\\*=|/=|%=|\\|=|&=)"
+				},
+				{
+					"name": "keyword.operator.comparison.lootiscript",
+					"match": "(==|!=|<=|>=|<|>)"
+				},
+				{
+					"name": "keyword.operator.arithmetic.lootiscript",
+					"match": "(\\+|-|\\*|/|%|\\^)"
+				},
+				{
+					"name": "keyword.operator.bitwise.lootiscript",
+					"match": "(<<|>>|&|\\||~)"
+				},
+				{
+					"name": "keyword.operator.arrow.lootiscript",
+					"match": "=>"
+				}
+			]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"name": "meta.assignment.lootiscript",
+					"match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(=)(?!=)",
+					"captures": {
+						"1": {
+							"name": "variable.other.assignment.lootiscript"
+						},
+						"2": {
+							"name": "keyword.operator.assignment.lootiscript"
+						}
+					}
+				},
+				{
+					"name": "variable.other.property.lootiscript",
+					"match": "(?<=\\.)([a-zA-Z_][a-zA-Z0-9_]*)"
+				},
+				{
+					"name": "variable.other.lootiscript",
+					"match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+				}
+			]
+		}
+	}
 }

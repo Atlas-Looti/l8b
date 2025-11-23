@@ -10,7 +10,6 @@ import { ActionsProvider } from "./views/actionsProvider";
 import { ApiProvider } from "./views/apiProvider";
 import { ExamplesProvider } from "./views/examplesProvider";
 
-
 let client: LanguageClient;
 let statusBarItem: vscode.StatusBarItem;
 
@@ -33,9 +32,15 @@ export function activate(context: vscode.ExtensionContext) {
 	const apiProvider = new ApiProvider();
 	const examplesProvider = new ExamplesProvider();
 
-	vscode.window.registerTreeDataProvider("lootiscript-actions", actionsProvider);
+	vscode.window.registerTreeDataProvider(
+		"lootiscript-actions",
+		actionsProvider,
+	);
 	vscode.window.registerTreeDataProvider("lootiscript-api", apiProvider);
-	vscode.window.registerTreeDataProvider("lootiscript-examples", examplesProvider);
+	vscode.window.registerTreeDataProvider(
+		"lootiscript-examples",
+		examplesProvider,
+	);
 
 	// The server is implemented in node
 	const serverModule = context.asAbsolutePath(
@@ -97,8 +102,6 @@ export function activate(context: vscode.ExtensionContext) {
 			updateStatusBarWithDiagnostics();
 		}),
 	);
-
-
 
 	console.log("LootiScript Language Server extension is now active!");
 }
@@ -186,8 +189,6 @@ function registerCommands(context: vscode.ExtensionContext) {
 			},
 		),
 	);
-
-
 }
 
 function updateStatusBarWithDiagnostics() {

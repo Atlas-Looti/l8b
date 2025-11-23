@@ -1,7 +1,4 @@
-import {
-	TextDocument,
-	Position,
-} from "vscode-languageserver-textdocument";
+import { TextDocument, Position } from "vscode-languageserver-textdocument";
 import {
 	CompletionList,
 	CompletionItem,
@@ -18,10 +15,19 @@ export interface LanguageMode {
 	doComplete?(
 		document: TextDocument,
 		position: Position,
-	): CompletionList | CompletionItem[] | null | Promise<CompletionList | CompletionItem[] | null>;
-	doHover?(document: TextDocument, position: Position): Hover | null | Promise<Hover | null>;
+	):
+		| CompletionList
+		| CompletionItem[]
+		| null
+		| Promise<CompletionList | CompletionItem[] | null>;
+	doHover?(
+		document: TextDocument,
+		position: Position,
+	): Hover | null | Promise<Hover | null>;
 	doValidation?(document: TextDocument): Diagnostic[] | Promise<Diagnostic[]>;
-	findDocumentSymbols?(document: TextDocument): DocumentSymbol[] | Promise<DocumentSymbol[]>;
+	findDocumentSymbols?(
+		document: TextDocument,
+	): DocumentSymbol[] | Promise<DocumentSymbol[]>;
 }
 
 /**
@@ -163,7 +169,9 @@ export class DocumentRegions {
 		let lastOffset = 0;
 
 		// Sort regions by start position
-		const sortedRegions = [...languageRegions].sort((a, b) => a.start - b.start);
+		const sortedRegions = [...languageRegions].sort(
+			(a, b) => a.start - b.start,
+		);
 
 		for (const region of sortedRegions) {
 			// Add whitespace for content before this region
