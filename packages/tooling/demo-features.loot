@@ -25,6 +25,7 @@
 		x = myVariable + 10
 		y = myVariable * 2
 		print(myVariable)
+	
 		// Right-click on "myVariable" and select "Find All References"
 		
 		// Demo 5: Quick Fix - Missing 'end'

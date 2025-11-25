@@ -90,6 +90,8 @@ const defaultSettings: LootiScriptSettings = {
 	format: { enable: true, indentSize: 1 },
 };
 
+const API_ACCESS_REGEX = /\b([A-Za-z_][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)\b/g;
+
 let globalSettings: LootiScriptSettings = defaultSettings;
 const documentSettings: Map<string, LootiScriptSettings> = new Map();
 const documentStates: Map<string, DocumentState> = new Map();
@@ -1357,6 +1359,8 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		diagnostics.push(diagnostic);
 	}
 
+	validateApiUsage(textDocument, diagnostics);
+
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
@@ -2000,6 +2004,118 @@ function getSnippetCompletions(): CompletionItem[] {
 		},
 	];
 }
+
+
+function validateApiUsage(
+	textDocument: TextDocument,
+	diagnostics: Diagnostic[],
+): void {
+	const text = textDocument.getText();
+	API_ACCESS_REGEX.lastIndex = 0;
+
+	const seenPositions = new Set<number>();
+	let match: RegExpExecArray | null;
+
+	while ((match = API_ACCESS_REGEX.exec(text))) {
+		const matchIndex = match.index;
+		if (seenPositions.has(matchIndex)) {
+			continue;
+		}
+		seenPositions.add(matchIndex);
+
+		const objectName = match[1];
+		const propertyName = match[2];
+		const api = GLOBAL_API[objectName];
+		if (!api || !api.properties) {
+			continue;
+		}
+
+		if (api.properties[propertyName]) {
+			continue;
+		}
+
+		const prevChar = matchIndex > 0 ? text[matchIndex - 1] : "";
+		if (prevChar === '"' || prevChar === "'" || prevChar === "`") {
+			continue;
+		}
+
+		const propertyStart = matchIndex + objectName.length + 1;
+		const propertyEnd = propertyStart + propertyName.length;
+
+		const suggestion = getClosestPropertySuggestion(
+			propertyName,
+			Object.keys(api.properties),
+		);
+
+		const message = suggestion
+			? `Unknown property '${propertyName}' on ${objectName}. Did you mean '${suggestion}'?`
+			: `Unknown property '${propertyName}' on ${objectName}.`;
+
+		diagnostics.push({
+			severity: DiagnosticSeverity.Error,
+			range: Range.create(
+				textDocument.positionAt(propertyStart),
+				textDocument.positionAt(propertyEnd),
+			),
+			message,
+			source: "lootiscript",
+			code: "API1001",
+		});
+	}
+}
+
+function getClosestPropertySuggestion(
+	target: string,
+	candidates: string[],
+): string | null {
+	if (candidates.length === 0) {
+		return null;
+	}
+
+	let bestMatch: { value: string; score: number } | null = null;
+	for (const candidate of candidates) {
+		const score = levenshteinDistance(target, candidate);
+		if (!bestMatch || score < bestMatch.score) {
+			bestMatch = { value: candidate, score };
+		}
+	}
+
+	if (!bestMatch) {
+		return null;
+	}
+
+	const threshold = Math.max(1, Math.floor(target.length * 0.4));
+	return bestMatch.score <= threshold ? bestMatch.value : null;
+}
+
+function levenshteinDistance(a: string, b: string): number {
+	const rows = a.length + 1;
+	const cols = b.length + 1;
+	const dp: number[][] = Array.from({ length: rows }, () =>
+		Array(cols).fill(0),
+	);
+
+	for (let i = 0; i < rows; i++) {
+		dp[i][0] = i;
+	}
+	for (let j = 0; j < cols; j++) {
+		dp[0][j] = j;
+	}
+
+	for (let i = 1; i < rows; i++) {
+		for (let j = 1; j < cols; j++) {
+			const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+			dp[i][j] = Math.min(
+				dp[i - 1][j] + 1,
+				dp[i][j - 1] + 1,
+				dp[i - 1][j - 1] + cost,
+			);
+		}
+	}
+
+	return dp[a.length][b.length];
+}
+
 
 function findSymbolByName(
 	state: DocumentState,
