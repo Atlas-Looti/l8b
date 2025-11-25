@@ -5,7 +5,7 @@
 	"private": true,
 	"scripts": {
 		"build": "turbo run build ",
-		"dev": "turbo run dev",
+		"dev": "turbo run dev --concurrency=15",
 		"lint": " biome check --write .",
 		"lint:check": " biome check .",
 		"format": " biome format --write .",
