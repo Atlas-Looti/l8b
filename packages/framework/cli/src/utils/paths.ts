@@ -134,14 +134,14 @@ export function resolveProjectPath(
 }
 
 /**
- * Get BitCell font paths (dist and src)
+ * Get BitCell font paths (dist and assets)
  *
  * @param cliPackageRoot - CLI package root directory
- * @returns Object with dist and src font paths
+ * @returns Object with dist and assets font paths
  */
 export function getBitCellFontPaths(cliPackageRoot: string): {
 	dist: string;
-	src: string;
+	assets: string;
 } {
 	return {
 		dist: path.join(
@@ -151,9 +151,8 @@ export function getBitCellFontPaths(cliPackageRoot: string): {
 			"fonts",
 			DEFAULT_FILES.BITCELL_FONT,
 		),
-		src: path.join(
+		assets: path.join(
 			cliPackageRoot,
-			"src",
 			"assets",
 			"fonts",
 			DEFAULT_FILES.BITCELL_FONT,

@@ -9,11 +9,11 @@ import path from "path";
 import fs from "fs-extra";
 import pc from "picocolors";
 
-import { loadConfig } from "./config-loader";
+import { loadConfig } from "../config";
 import { detectResources } from "../loader/auto-detect";
 import { loadSources } from "../loader/source-loader";
 import { generateHTML } from "../generator/html-generator";
-import { compileSources, saveCompiled } from "../compiler";
+import { compileSources, saveCompiled } from "../build";
 import { bundleRuntime } from "../bundler/runtime-bundler";
 import {
 	getCliPackageRoot,
@@ -186,8 +186,8 @@ export async function build(
 	let fontSourcePath: string | null = null;
 	if (await fs.pathExists(fontPaths.dist)) {
 		fontSourcePath = fontPaths.dist;
-	} else if (await fs.pathExists(fontPaths.src)) {
-		fontSourcePath = fontPaths.src;
+	} else if (await fs.pathExists(fontPaths.assets)) {
+		fontSourcePath = fontPaths.assets;
 	}
 
 	const fontDistPath = path.join(
@@ -203,7 +203,7 @@ export async function build(
 		// Only warn, don't fail - font might work from browser cache
 		console.warn(pc.yellow("  ⚠ BitCell font not found. Tried:"));
 		console.warn(pc.yellow(`    ${fontPaths.dist}`));
-		console.warn(pc.yellow(`    ${fontPaths.src}`));
+		console.warn(pc.yellow(`    ${fontPaths.assets}`));
 		console.warn(pc.gray("  (Font may still work if cached)"));
 	}
 

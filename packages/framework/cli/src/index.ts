@@ -5,8 +5,8 @@
  * development server, production build, and production server.
  */
 
-export * from "./types";
-export * from "./core";
+export * from "./config";
+export * from "./commands";
 export * from "./loader";
 export * from "./plugin";
 export * from "./generator";

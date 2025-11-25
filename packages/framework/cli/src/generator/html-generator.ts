@@ -5,11 +5,11 @@
  * script loading and runtime initialization.
  */
 
-import type { LootiConfig } from "../types/config";
-import { getCanvasSize } from "../core/config-loader";
+import type { LootiConfig } from "../config";
+import { getCanvasSize } from "../config";
 import { INTERNAL_ENDPOINTS } from "../utils/constants";
 import type { Resources } from "@l8b/runtime";
-import type { CompiledModule } from "../compiler";
+import type { CompiledModule } from "../build";
 
 /**
  * Generate variable name from module name (sanitized for JavaScript)

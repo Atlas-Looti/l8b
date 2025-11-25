@@ -19,7 +19,7 @@ const externalDeps = Array.from(
 );
 
 export default defineConfig({
-	entry: ["src/index.ts", "src/cli.ts", "src/compiler/compile-worker.ts"],
+	entry: ["src/index.ts", "src/cli.ts", "src/build/compile-worker.ts"],
 	format: ["esm"],
 	dts: true,
 	clean: true,
@@ -34,7 +34,7 @@ export default defineConfig({
 		const distAssetsDir = join(process.cwd(), "dist", "assets", "fonts");
 		mkdirSync(distAssetsDir, { recursive: true });
 		copyFileSync(
-			join(process.cwd(), "src", "assets", "fonts", "BitCell.ttf"),
+			join(process.cwd(), "assets", "fonts", "BitCell.ttf"),
 			join(distAssetsDir, "BitCell.ttf"),
 		);
 	},

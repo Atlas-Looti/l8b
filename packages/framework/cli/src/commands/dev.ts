@@ -11,7 +11,7 @@ import path from "path";
 import chokidar from "chokidar";
 import fs from "fs-extra";
 
-import { loadConfig } from "./config-loader";
+import { loadConfig } from "../config";
 import { detectResources } from "../loader/auto-detect";
 import { loadSources } from "../loader/source-loader";
 import { generateHTML } from "../generator/html-generator";
@@ -167,7 +167,7 @@ export async function dev(
 						// Get font paths
 						const fontPaths = getBitCellFontPaths(cliPackageRoot);
 						const normalizedDistFontPath = path.normalize(fontPaths.dist);
-						const normalizedSrcFontPath = path.normalize(fontPaths.src);
+						const normalizedAssetsFontPath = path.normalize(fontPaths.assets);
 
 						// Place middleware BEFORE other middlewares to catch font requests early
 						server.middlewares.use(async (req, res, next) => {
@@ -181,10 +181,10 @@ export async function dev(
 								req.url &&
 								(req.url === fontUrl || req.url.startsWith(fontUrl))
 							) {
-								// Try dist first, then src
+								// Try dist first, then assets
 								let fontPath = normalizedDistFontPath;
 								if (!(await fs.pathExists(fontPath))) {
-									fontPath = normalizedSrcFontPath;
+									fontPath = normalizedAssetsFontPath;
 								}
 
 								if (await fs.pathExists(fontPath)) {
@@ -202,7 +202,7 @@ export async function dev(
 									}
 								} else {
 									console.warn(
-										`[L8B CLI] BitCell font not found. Tried:\n  ${normalizedDistFontPath}\n  ${normalizedSrcFontPath}`,
+										`[L8B CLI] BitCell font not found. Tried:\n  ${normalizedDistFontPath}\n  ${normalizedAssetsFontPath}`,
 									);
 								}
 							}

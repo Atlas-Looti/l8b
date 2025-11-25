@@ -10,7 +10,7 @@ import pc from "picocolors";
 import { preview } from "vite";
 import type { PreviewServer } from "vite";
 
-import { loadConfig } from "./config-loader";
+import { loadConfig } from "../config";
 import { DEFAULT_DIRS, DEFAULT_FILES } from "../utils/paths";
 import { DEFAULT_SERVER, FONT } from "../utils/constants";
 import { handleRuntimeLogRequest } from "../utils/runtime-logs";

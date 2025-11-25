@@ -6,7 +6,7 @@
 
 import fs from "fs-extra";
 import path from "path";
-import type { LootiConfig } from "../types/config";
+import type { LootiConfig } from "./config";
 import { DEFAULT_FILES } from "../utils/paths";
 import { ConfigError } from "../utils/errors";
 
@@ -157,3 +157,4 @@ export function getCanvasSize(config: LootiConfig): {
 		config.height || config.canvas?.height || DEFAULT_DIMENSIONS.height;
 	return { width, height };
 }
+

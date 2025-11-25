@@ -19,7 +19,7 @@ import path from "path";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
-import { dev, build, start } from "./core";
+import { dev, build, start } from "./commands";
 import { DEFAULT_SERVER } from "./utils/constants";
 import {
 	ConfigError,
