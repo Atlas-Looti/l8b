@@ -1,10 +1,5 @@
 {
-  "data": {
-    "game": "/scripts/game.loot",
-    "main": "/scripts/main.loot",
-    "menu": "/scripts/menu.loot",
-    "pause": "/scripts/pause.loot"
-  },
-  "hash": "1b01b234d2e2aff9dbeec0a1225f5579ed9edb3df0ee4085cc1fbe91ad410b96",
-  "timestamp": 1763999238842
+  "data": {},
+  "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timestamp": 1764039792070
 }

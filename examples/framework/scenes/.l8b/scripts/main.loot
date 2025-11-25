@@ -1,24 +1,41 @@
-// Scene-driven entry point
+// Main entry point - Setup dan orchestrate semua scene
 init = function()
   print("Initializing Scene Demo...")
-
-  // Register scenes with the shared manager
-  scenes.add("menu", menu_scene)
-  scenes.add("game", game_scene)
-  scenes.add("pause", pause_scene)
-
-  // Start with the menu scene
-  scenes.switch("menu")
+  
+  // Global variables untuk input state
+  previous_up = false
+  previous_down = false
+  previous_space = false
+  previous_escape = false
+  
+  // Create semua scene
+  local menuScene = createMenuScene("menu")
+  local gameScene = createGameScene("game")
+  local gameOverScene = createGameOverScene("gameover")
+  local pauseScene = createPauseScene("pause")
+  
+  // Add scenes ke scene manager dengan key (Phaser-like API)
+  scene.addScene("menu", menuScene)
+  scene.addScene("game", gameScene)
+  scene.addScene("gameover", gameOverScene)
+  scene.addScene("pause", pauseScene)
+  
+  // Set active scene ke menu
+  scene.setActiveScene("menu")
+  
+  print("Scene Demo initialized!")
+  print("Active scene: " + scene.getActiveSceneId())
 end
 
-// Optional: keep doing global work alongside scenes
+// Update function - Scene manager akan handle update scene aktif
 update = function()
-  if system.fps < 30 then
-    print("Low FPS while running scene")
-  end
+  // Scene manager sudah otomatis update scene aktif
+  // Kita bisa tambahkan global update logic di sini jika perlu
 end
 
+// Draw function - Scene manager akan handle draw scene aktif
 draw = function()
-  screen.drawText("Current Scene:", 20, 420, 14, "#FFFFFF")
-  screen.drawText(scenes.current() or "-", 20, 395, 14, "#FFFFFF")
+  // Scene manager sudah otomatis draw scene aktif
+  // Kita bisa tambahkan global draw logic di sini jika perlu
 end
+

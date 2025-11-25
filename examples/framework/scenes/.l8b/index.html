@@ -45,10 +45,11 @@
       // Production: Use bundled runtime
 import { Runtime, Routine } from '/runtime.js';
       
-      import game from '/compiled/game.js';
+      import game_scene from '/compiled/game-scene.js';
+      import gameover_scene from '/compiled/gameover-scene.js';
       import main from '/compiled/main.js';
-      import menu from '/compiled/menu.js';
-      import pause from '/compiled/pause.js';
+      import menu_scene from '/compiled/menu-scene.js';
+      import pause_scene from '/compiled/pause-scene.js';
 
       const canvas = document.getElementById('game');
       if (!canvas) throw new Error('Canvas element with id "game" not found');
@@ -212,10 +213,11 @@ import { Runtime, Routine } from '/runtime.js';
       
       // Production: Use pre-compiled routines
       runtimeOptions.compiledRoutines = {
-        'game': new Routine(0).import(game.routine),
+        'game-scene': new Routine(0).import(game_scene.routine),
+          'gameover-scene': new Routine(0).import(gameover_scene.routine),
           'main': new Routine(0).import(main.routine),
-          'menu': new Routine(0).import(menu.routine),
-          'pause': new Routine(0).import(pause.routine)
+          'menu-scene': new Routine(0).import(menu_scene.routine),
+          'pause-scene': new Routine(0).import(pause_scene.routine)
       };
       
 

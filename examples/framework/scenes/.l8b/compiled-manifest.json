@@ -1,9 +1,14 @@
 {
   "modules": [
     {
-      "name": "game",
-      "filename": "scripts/game.loot",
-      "path": "compiled/game.js"
+      "name": "game-scene",
+      "filename": "scripts/game-scene.loot",
+      "path": "compiled/game-scene.js"
+    },
+    {
+      "name": "gameover-scene",
+      "filename": "scripts/gameover-scene.loot",
+      "path": "compiled/gameover-scene.js"
     },
     {
       "name": "main",
@@ -11,14 +16,14 @@
       "path": "compiled/main.js"
     },
     {
-      "name": "menu",
-      "filename": "scripts/menu.loot",
-      "path": "compiled/menu.js"
+      "name": "menu-scene",
+      "filename": "scripts/menu-scene.loot",
+      "path": "compiled/menu-scene.js"
     },
     {
-      "name": "pause",
-      "filename": "scripts/pause.loot",
-      "path": "compiled/pause.js"
+      "name": "pause-scene",
+      "filename": "scripts/pause-scene.loot",
+      "path": "compiled/pause-scene.js"
     }
   ]
 }

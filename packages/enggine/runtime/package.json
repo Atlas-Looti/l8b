@@ -24,7 +24,8 @@
 		"@l8b/input": "workspace:*",
 		"@l8b/time": "workspace:*",
 		"@l8b/sprites": "workspace:*",
-		"@l8b/map": "workspace:*"
+		"@l8b/map": "workspace:*",
+		"@l8b/scene": "workspace:*"
 	},
 	"keywords": [
 		"runtime",
