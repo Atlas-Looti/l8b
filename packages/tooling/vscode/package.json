@@ -24,7 +24,16 @@
 		"Programming Languages",
 		"Snippets"
 	],
-	"activationEvents": [],
+	"activationEvents": [
+		"onLanguage:lootiscript",
+		"onCommand:lootiscript.formatDocument",
+		"onCommand:lootiscript.runScript",
+		"onCommand:lootiscript.restartLanguageServer",
+		"onView:lootiscript-actions",
+		"onView:lootiscript-api",
+		"onView:lootiscript-examples",
+		"workspaceContains:**/*.loot"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"languages": [
@@ -129,11 +138,6 @@
 				"command": "lootiscript.restartLanguageServer",
 				"title": "LootiScript: Restart Language Server",
 				"icon": "$(debug-restart)"
-			},
-			{
-				"command": "lootiscript.openAssetsEditor",
-				"title": "LootiScript: Open Assets Editor",
-				"icon": "$(browser)"
 			}
 		]
 	},

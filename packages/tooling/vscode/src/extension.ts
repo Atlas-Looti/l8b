@@ -8,10 +8,12 @@ import {
 } from "vscode-languageclient/node";
 import { ActionsProvider } from "./views/actionsProvider";
 import { ApiProvider } from "./views/apiProvider";
+import type { GlobalApiMap } from "./views/apiProvider";
 import { ExamplesProvider } from "./views/examplesProvider";
 
 let client: LanguageClient;
 let statusBarItem: vscode.StatusBarItem;
+const GLOBAL_API_REQUEST = "lootiscript/globalApi";
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log("LootiScript Language Server extension is activating...");
@@ -82,19 +84,21 @@ export function activate(context: vscode.ExtensionContext) {
 	// Start the client. This will also launch the server
 	client
 		.start()
-		.then(() => {
+		.then(async () => {
 			statusBarItem.text = "$(pass) L8B";
 			statusBarItem.tooltip = "LootiScript Language Server: Running";
 			console.log("LootiScript Language Server started successfully");
+			await hydrateApiReference(apiProvider);
 		})
 		.catch((error) => {
 			statusBarItem.text = "$(error) L8B";
 			statusBarItem.tooltip = `LootiScript Language Server: Error - ${error}`;
+			apiProvider.setError("Unable to load API reference");
 			console.error("Failed to start LootiScript Language Server:", error);
 		});
 
 	// Register commands
-	registerCommands(context);
+	registerCommands(context, apiProvider);
 
 	// Listen to diagnostics for error count in status bar
 	context.subscriptions.push(
@@ -127,7 +131,10 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log("LootiScript Language Server extension is now active!");
 }
 
-function registerCommands(context: vscode.ExtensionContext) {
+function registerCommands(
+	context: vscode.ExtensionContext,
+	apiProvider: ApiProvider,
+) {
 	// Command: Format Document
 	context.subscriptions.push(
 		vscode.commands.registerCommand("lootiscript.formatDocument", async () => {
@@ -148,7 +155,6 @@ function registerCommands(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("lootiscript.runScript", async () => {
 			const editor = vscode.window.activeTextEditor;
 			if (editor && editor.document.languageId === "lootiscript") {
-				const filePath = editor.document.uri.fsPath;
 
 				// Try to find and run with @l8b/cli if available
 				const terminal = vscode.window.createTerminal("L8B Run");
@@ -177,12 +183,18 @@ function registerCommands(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand(
 			"lootiscript.restartLanguageServer",
 			async () => {
-				if (client) {
-					statusBarItem.text = "$(sync~spin) L8B";
-					statusBarItem.tooltip = "LootiScript Language Server: Restarting...";
+				if (!client) {
+					vscode.window.showWarningMessage("Language server is not running.");
+					return;
+				}
 
+				statusBarItem.text = "$(sync~spin) L8B";
+				statusBarItem.tooltip = "LootiScript Language Server: Restarting...";
+
+				try {
 					await client.stop();
 					await client.start();
+					await hydrateApiReference(apiProvider);
 
 					statusBarItem.text = "$(check) L8B";
 					statusBarItem.tooltip = "LootiScript Language Server: Running";
@@ -190,6 +202,11 @@ function registerCommands(context: vscode.ExtensionContext) {
 					vscode.window.showInformationMessage(
 						"LootiScript Language Server restarted",
 					);
+				} catch (error) {
+					statusBarItem.text = "$(error) L8B";
+					statusBarItem.tooltip = `LootiScript Language Server: Error - ${error}`;
+					apiProvider.setError("Unable to load API reference");
+					vscode.window.showErrorMessage("Failed to restart LootiScript Language Server.");
 				}
 			},
 		),
@@ -330,6 +347,23 @@ function createEnhancedHover(diagnostic: vscode.Diagnostic): vscode.Hover {
 	}
 
 	return new vscode.Hover(contents, diagnostic.range);
+}
+
+
+async function hydrateApiReference(apiProvider: ApiProvider): Promise<void> {
+	if (!client) {
+		return;
+	}
+
+	apiProvider.setLoading();
+
+	try {
+		const apiData = await client.sendRequest<GlobalApiMap>(GLOBAL_API_REQUEST);
+		apiProvider.setApiData(apiData);
+	} catch (error) {
+		apiProvider.setError("Unable to load API reference");
+		console.error("Failed to load LootiScript API reference", error);
+	}
 }
 
 export function deactivate(): Thenable<void> | undefined {

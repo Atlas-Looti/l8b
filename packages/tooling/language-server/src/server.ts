@@ -69,6 +69,29 @@ interface DocumentState {
 	symbols: SymbolInfo[];
 }
 
+interface LootiScriptSettings {
+	diagnostics: { enable: boolean };
+	completion: { enable: boolean };
+	signatureHelp: { enable: boolean };
+	format: { enable: boolean; indentSize: number };
+}
+type PartialLootiScriptSettings = {
+	diagnostics?: Partial<LootiScriptSettings["diagnostics"]>;
+	completion?: Partial<LootiScriptSettings["completion"]>;
+	signatureHelp?: Partial<LootiScriptSettings["signatureHelp"]>;
+	format?: Partial<LootiScriptSettings["format"]>;
+};
+
+
+const defaultSettings: LootiScriptSettings = {
+	diagnostics: { enable: true },
+	completion: { enable: true },
+	signatureHelp: { enable: true },
+	format: { enable: true, indentSize: 1 },
+};
+
+let globalSettings: LootiScriptSettings = defaultSettings;
+const documentSettings: Map<string, LootiScriptSettings> = new Map();
 const documentStates: Map<string, DocumentState> = new Map();
 
 // Global API list for suggestions and hover info
@@ -958,6 +981,9 @@ const jsonLanguageService = createJSONLanguageService();
 languageModes.registerMode(
 	getJSONMode(jsonLanguageService, documentRegionsCache),
 );
+const GLOBAL_API_REQUEST = "lootiscript/globalApi";
+connection.onRequest(GLOBAL_API_REQUEST, () => GLOBAL_API);
+
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
@@ -1019,6 +1045,18 @@ connection.onInitialized(() => {
 	}
 });
 
+connection.onDidChangeConfiguration(async (change) => {
+	if (hasConfigurationCapability) {
+		documentSettings.clear();
+	} else {
+		globalSettings = sanitizeSettings(change.settings?.lootiscript);
+	}
+
+	for (const doc of documents.all()) {
+		await validateTextDocument(doc);
+	}
+});
+
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
@@ -1033,6 +1071,7 @@ documents.onDidOpen((change) => {
 
 documents.onDidClose((change) => {
 	documentStates.delete(change.document.uri);
+	documentSettings.delete(change.document.uri);
 	connection.sendDiagnostics({ uri: change.document.uri, diagnostics: [] });
 });
 
@@ -1192,6 +1231,11 @@ function buildRange(node: ASTNode): Range {
 }
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
+	const settings = await getDocumentSettings(textDocument.uri);
+	if (!settings.diagnostics.enable) {
+		connection.sendDiagnostics({ uri: textDocument.uri, diagnostics: [] });
+		return;
+	}
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
 
@@ -1330,6 +1374,11 @@ connection.onCompletion(
 			return null;
 		}
 
+		const settings = await getDocumentSettings(uri);
+		if (!settings.completion.enable) {
+			return null;
+		}
+
 		const position = params.position;
 
 		// Check if we're in an embedded language region
@@ -1422,9 +1471,14 @@ connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
 });
 
 // Signature help provides parameter information when typing function calls
-connection.onSignatureHelp((params): SignatureHelp | null => {
+connection.onSignatureHelp(async (params): Promise<SignatureHelp | null> => {
 	const document = documents.get(params.textDocument.uri);
 	if (!document) return null;
+
+	const settings = await getDocumentSettings(params.textDocument.uri);
+	if (!settings.signatureHelp.enable) {
+		return null;
+	}
 
 	const line = document.getText({
 		start: Position.create(params.position.line, 0),
@@ -1619,18 +1673,26 @@ connection.onRenameRequest((params: RenameParams): WorkspaceEdit | null => {
 	};
 });
 
-connection.onDocumentFormatting((params: DocumentFormattingParams) => {
+connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
 	const doc = documents.get(params.textDocument.uri);
 	if (!doc) return [];
+	const settings = await getDocumentSettings(params.textDocument.uri);
+	if (!settings.format.enable) {
+		return [];
+	}
 	const text = doc.getText();
 	const lines = text.split(/\r?\n/);
+	const indentWidth = Math.max(settings.format.indentSize, 1);
+	const indentUnit = params.options.insertSpaces
+		? " ".repeat(indentWidth)
+		: "	".repeat(indentWidth);
 	let indent = 0;
 	const formatted = lines.map((line) => {
 		let trimmed = line.trim();
 		if (/^(end|else|elseif)/.test(trimmed)) {
 			indent = Math.max(indent - 1, 0);
 		}
-		const formattedLine = `${"\t".repeat(indent)}${trimmed}`;
+		const formattedLine = `${indentUnit.repeat(indent)}${trimmed}`;
 		if (
 			/(then|do|function|repeat)\b.*$/.test(trimmed) &&
 			!trimmed.includes("end")
@@ -1944,6 +2006,50 @@ function findSymbolByName(
 	name: string,
 ): SymbolInfo | undefined {
 	return state.symbols.find((sym) => sym.name === name);
+}
+
+async function getDocumentSettings(resource: string): Promise<LootiScriptSettings> {
+	if (!hasConfigurationCapability) {
+		return globalSettings;
+	}
+
+	const cached = documentSettings.get(resource);
+	if (cached) {
+		return cached;
+	}
+
+	const configuration = await connection.workspace.getConfiguration({
+		scopeUri: resource,
+		section: "lootiscript",
+	});
+	const sanitized = sanitizeSettings(configuration as PartialLootiScriptSettings);
+	documentSettings.set(resource, sanitized);
+	return sanitized;
+}
+
+function sanitizeSettings(settings?: PartialLootiScriptSettings): LootiScriptSettings {
+	const merged = settings || {};
+	const rawIndent = merged.format?.indentSize ?? defaultSettings.format.indentSize;
+	const normalizedIndent = Math.min(Math.max(rawIndent, 1), 4);
+	return {
+		diagnostics: {
+			enable:
+				merged.diagnostics?.enable ?? defaultSettings.diagnostics.enable,
+		},
+		completion: {
+			enable:
+				merged.completion?.enable ?? defaultSettings.completion.enable,
+		},
+		signatureHelp: {
+			enable:
+				merged.signatureHelp?.enable ?? defaultSettings.signatureHelp.enable,
+		},
+		format: {
+			enable:
+				merged.format?.enable ?? defaultSettings.format.enable,
+			indentSize: normalizedIndent,
+		},
+	};
 }
 
 // Make the text document manager listen on the connection
