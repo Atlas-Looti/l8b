@@ -1,0 +1,14 @@
+// Main entry point
+// Define routes: route(path, sceneName)
+// - Static routes: route("/", "home")
+// - Dynamic routes: route("/player/:id", "player") - :id becomes params.id
+
+route("/", "home")
+route("/battle", "battle")
+route("/player/:id", "player")
+
+// Initialize game (called once at startup)
+init = function()
+  print("Game initialized")
+  print("Current route: " + router.getPath())
+end

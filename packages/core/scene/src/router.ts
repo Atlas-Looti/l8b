@@ -155,15 +155,38 @@ export class Router {
     /**
      * Get public API interface for VM
      * This is what gets exposed to lootiscript as `router`
+     * Note: VM may not support getters properly, so we use both functions and properties
      */
     getInterface(): any {
-        return {
+        const self = this;
+        const routerInterface: any = {
             push: (path: string) => this.push(path),
             replace: (path: string) => this.replace(path),
             back: () => this.back(),
-            get path() { return this.state.path; },
-            get params() { return this.state.params; },
-            get sceneName() { return this.state.sceneName; }
+            // Functions for reliable access (VM compatible)
+            getPath: () => self.state.path,
+            getParams: () => self.state.params,
+            getSceneName: () => self.state.sceneName,
         };
+        
+        // Define properties that always return current state
+        // This works better in VM than getters
+        Object.defineProperty(routerInterface, 'path', {
+            get: () => self.state.path,
+            enumerable: true,
+            configurable: true,
+        });
+        Object.defineProperty(routerInterface, 'params', {
+            get: () => self.state.params,
+            enumerable: true,
+            configurable: true,
+        });
+        Object.defineProperty(routerInterface, 'sceneName', {
+            get: () => self.state.sceneName,
+            enumerable: true,
+            configurable: true,
+        });
+        
+        return routerInterface;
     }
 }

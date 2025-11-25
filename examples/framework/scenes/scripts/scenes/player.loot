@@ -1,0 +1,46 @@
+scene("player", object
+// Scene state
+id = 0
+
+// Called every time scene becomes active
+// params contains route parameters (e.g., {id: "42"} from /player/:id)
+onEnter = function(params)
+	print("Entered player scene with id: " + params.id)
+	// Convert string param to number
+	local idStr = params.id
+	this.id = Number.parse(idStr)
+end
+
+// Called when leaving this scene
+onLeave = function()
+	print("Leaving player scene")
+end
+
+update = function()
+	if keyboard.press.ESCAPE then
+		router.back()
+	end
+	
+	if keyboard.press.RIGHT then
+		// Navigate to next player using replace (doesn't add to history)
+		local nextId = this.id + 1
+		router.replace("/player/" + nextId)
+	end
+	
+	if keyboard.press.LEFT then
+		// Navigate to previous player
+		if this.id > 1 then
+			local prevId = this.id - 1
+			router.replace("/player/" + prevId)
+		end
+	end
+end
+
+draw = function()
+	screen.clear("rgb(20, 60, 20)")
+	screen.drawText("PLAYER PROFILE", 0, 40, 30, "lime")
+	screen.drawText("ID: " + this.id, 0, 0, 40, "white")
+	screen.drawText("Press RIGHT/LEFT to navigate", 0, -40, 20, "rgb(100, 200, 100)")
+	screen.drawText("Press ESC to go back", 0, -70, 20, "rgb(100, 200, 100)")
+end
+end)

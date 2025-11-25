@@ -153,6 +153,9 @@ export class Parser {
 			String: true,
 			Number: true,
 			scenes: true,
+			scene: true,
+			route: true,
+			router: true,
 		};
 		this.warnings = [];
 	}

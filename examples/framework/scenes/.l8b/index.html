@@ -42,10 +42,13 @@
   <body>
     <canvas id="game"></canvas>
     <script type="module">
-      // Development: Use Vite-resolved modules
-import { Runtime } from '@l8b/runtime';
+      // Production: Use bundled runtime
+import { Runtime, Routine } from '/runtime.js';
       
-      
+      import main from '/compiled/main.js';
+      import scenes_battle from '/compiled/scenes/battle.js';
+      import scenes_home from '/compiled/scenes/home.js';
+      import scenes_player from '/compiled/scenes/player.js';
 
       const canvas = document.getElementById('game');
       if (!canvas) throw new Error('Canvas element with id "game" not found');
@@ -201,15 +204,18 @@ import { Runtime } from '@l8b/runtime';
             }
           },
           postMessage: (msg) => {
-            console.log('[GAME MESSAGE]', msg);
+            // Compilation messages are handled during build
           },
         },
       };
 
       
-      // Development: Use source files
-      runtimeOptions.sources = {
-        
+      // Production: Use pre-compiled routines
+      runtimeOptions.compiledRoutines = {
+        'main': new Routine(0).import(main.routine),
+          'scenes/battle': new Routine(0).import(scenes_battle.routine),
+          'scenes/home': new Routine(0).import(scenes_home.routine),
+          'scenes/player': new Routine(0).import(scenes_player.routine)
       };
       
 

@@ -344,6 +344,9 @@ export async function saveCompiled(
 	// Save each compiled module as JS file that exports the routine data
 	for (const module of compiled) {
 		const outputPath = path.join(compiledDir, `${module.name}.js`);
+		// Ensure parent directory exists for nested modules (e.g., scenes/battle.js)
+		await fs.ensureDir(path.dirname(outputPath));
+		
 		// Use the serialization utility from @l8b/compiler
 		// Check if source map support is available (will be added in Phase 2.3)
 		const jsContent = serializeRoutineToModule(
