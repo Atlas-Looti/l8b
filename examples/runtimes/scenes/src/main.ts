@@ -18,14 +18,18 @@ import playerScene from "./scripts/scenes/player.loot?raw";
 
 const canvas = document.getElementById("game") as HTMLCanvasElement | null;
 if (!canvas) throw new Error("Canvas element with id 'game' not found");
-canvas.width = 800;
-canvas.height = 600;
+
+// Use flexible window size (any) - use window dimensions
+const width = window.innerWidth;
+const height = window.innerHeight;
+canvas.width = width;
+canvas.height = height;
 
 // Create runtime with multiple source files
 const runtime = new Runtime({
 	canvas,
-	width: 800,
-	height: 600,
+	width,
+	height,
 	sources: {
 		main: mainLootiScript,
 		"scenes/home": homeScene,
@@ -67,5 +71,15 @@ try {
 console.log("Runtime available as window.runtime");
 console.log("Try: runtime.sceneManager.router.push('/battle')");
 
-window.addEventListener("resize", logCanvasSize);
+// Handle window resize - update canvas size dynamically
+const handleResize = () => {
+	const newWidth = window.innerWidth;
+	const newHeight = window.innerHeight;
+	canvas.width = newWidth;
+	canvas.height = newHeight;
+	// Runtime will automatically use canvas dimensions
+	logCanvasSize();
+};
+
+window.addEventListener("resize", handleResize);
 

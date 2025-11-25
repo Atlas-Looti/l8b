@@ -18,7 +18,7 @@
  */
 
 import { AudioCore } from "@l8b/audio";
-import { Random } from "@l8b/lootiscript";
+import { Random, Routine } from "@l8b/lootiscript";
 import { L8BVM, type GlobalAPI, type MetaFunctions } from "@l8b/vm";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
@@ -221,6 +221,48 @@ export class RuntimeOrchestrator {
 	}
 
 	/**
+	 * Convert LootiScript scene definition to JavaScript-compatible object
+	 * 
+	 * Converts Routine objects (LootiScript functions) to JavaScript functions
+	 * so they can be called from TypeScript code.
+	 * 
+	 * @param def Scene definition object from LootiScript
+	 * @returns Converted scene definition with JavaScript functions
+	 */
+	private convertSceneDefinition(def: any): any {
+		if (!def || typeof def !== "object") {
+			return def;
+		}
+
+		// Check if VM is ready
+		if (!this.vm?.runner?.main_thread?.processor) {
+			console.warn(`[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.`);
+			return def;
+		}
+
+		const processor = this.vm.runner.main_thread.processor;
+		const context = this.vm.context;
+		const converted: any = {};
+		
+		for (const key in def) {
+			const value = def[key];
+			
+			// Convert Routine objects to JavaScript functions
+			if (value instanceof Routine) {
+				converted[key] = processor.routineAsFunction(value, context);
+			} else if (value && typeof value === "object" && !Array.isArray(value)) {
+				// Recursively convert nested objects
+				converted[key] = this.convertSceneDefinition(value);
+			} else {
+				// Copy other values as-is
+				converted[key] = value;
+			}
+		}
+		
+		return converted;
+	}
+
+	/**
 	 * Step 3: Initialize VM and execute source code
 	 *
 	 * Creates the L8BVM instance, sets up the global API and meta functions,
@@ -265,7 +307,12 @@ export class RuntimeOrchestrator {
 			music: this.music,
 			assets: this.assets,
 			system: this.system.getAPI(),
-			scene: (name: string, def: any) => this.sceneManager.registerScene(name, def),
+			scene: (name: string, def: any) => {
+				// Convert Routine objects to JavaScript functions before registering
+				// Note: this.vm is available because scene() is called after VM creation
+				const convertedDef = this.convertSceneDefinition(def);
+				this.sceneManager.registerScene(name, convertedDef);
+			},
 			route: (path: string, sceneName: string) => this.sceneManager.registerRoute(path, sceneName),
 			router: this.sceneManager.router.getInterface(),
 			// Dynamic asset constructors

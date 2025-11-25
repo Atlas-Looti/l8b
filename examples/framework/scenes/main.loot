@@ -10,5 +10,5 @@ route("/player/:id", "player")
 // Initialize game (called once at startup)
 init = function()
   print("Game initialized")
-  print("Current route: " + router.path)
+  print("Current route: " + router.getPath())
 end
