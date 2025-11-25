@@ -43,14 +43,17 @@ export const DEFAULT_FILES = {
  */
 export function getCliPackageRoot(): string {
 	const normalizedPath = __dirname.replace(/\\/g, "/");
-	
+
 	// Try to find packages/framework/cli or packages/cli
 	const frameworkCliIndex = normalizedPath.indexOf("/packages/framework/cli/");
 	if (frameworkCliIndex !== -1) {
-		const root = normalizedPath.substring(0, frameworkCliIndex + "/packages/framework/cli".length);
+		const root = normalizedPath.substring(
+			0,
+			frameworkCliIndex + "/packages/framework/cli".length,
+		);
 		return path.normalize(root);
 	}
-	
+
 	const cliIndex = normalizedPath.indexOf("/packages/cli/");
 	if (cliIndex !== -1) {
 		const root = normalizedPath.substring(0, cliIndex + "/packages/cli".length);

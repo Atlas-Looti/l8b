@@ -68,4 +68,3 @@ export function getModuleName(filePath: string, projectPath: string): string {
 	const relative = path.relative(projectPath, filePath);
 	return relative.replace(/\.loot$/, "").replace(/\\/g, "/");
 }
-

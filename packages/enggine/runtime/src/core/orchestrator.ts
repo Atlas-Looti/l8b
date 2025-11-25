@@ -222,10 +222,10 @@ export class RuntimeOrchestrator {
 
 	/**
 	 * Convert LootiScript scene definition to JavaScript-compatible object
-	 * 
+	 *
 	 * Converts Routine objects (LootiScript functions) to JavaScript functions
 	 * so they can be called from TypeScript code.
-	 * 
+	 *
 	 * @param def Scene definition object from LootiScript
 	 * @returns Converted scene definition with JavaScript functions
 	 */
@@ -236,17 +236,19 @@ export class RuntimeOrchestrator {
 
 		// Check if VM is ready
 		if (!this.vm?.runner?.main_thread?.processor) {
-			console.warn(`[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.`);
+			console.warn(
+				`[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.`,
+			);
 			return def;
 		}
 
 		const processor = this.vm.runner.main_thread.processor;
 		const context = this.vm.context;
 		const converted: any = {};
-		
+
 		for (const key in def) {
 			const value = def[key];
-			
+
 			// Convert Routine objects to JavaScript functions
 			if (value instanceof Routine) {
 				converted[key] = processor.routineAsFunction(value, context);
@@ -258,7 +260,7 @@ export class RuntimeOrchestrator {
 				converted[key] = value;
 			}
 		}
-		
+
 		return converted;
 	}
 
@@ -313,7 +315,8 @@ export class RuntimeOrchestrator {
 				const convertedDef = this.convertSceneDefinition(def);
 				this.sceneManager.registerScene(name, convertedDef);
 			},
-			route: (path: string, sceneName: string) => this.sceneManager.registerRoute(path, sceneName),
+			route: (path: string, sceneName: string) =>
+				this.sceneManager.registerRoute(path, sceneName),
 			router: this.sceneManager.router.getInterface(),
 			// Dynamic asset constructors
 			Image: Image,
@@ -411,7 +414,7 @@ export class RuntimeOrchestrator {
 			sceneNames: registeredScenes,
 		});
 		this.sceneManager.router.init();
-		const activeScene = this.sceneManager.hasActiveScene() 
+		const activeScene = this.sceneManager.hasActiveScene()
 			? (this.sceneManager as any).getCurrentSceneName?.() || "unknown"
 			: null;
 		const routerState = this.sceneManager.router.getState();

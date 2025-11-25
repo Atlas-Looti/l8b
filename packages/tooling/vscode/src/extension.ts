@@ -258,41 +258,44 @@ function updateStatusBarWithDiagnostics() {
  * Create enhanced hover content for diagnostics
  * Shows error code, context, suggestions, and related information
  */
-function createEnhancedHover(
-	diagnostic: vscode.Diagnostic,
-): vscode.Hover {
+function createEnhancedHover(diagnostic: vscode.Diagnostic): vscode.Hover {
 	const contents: vscode.MarkdownString[] = [];
 
 	// Extract error code from message if present
 	const message = diagnostic.message;
 	const errorCodeMatch = message.match(/\[([A-Z]\d+)\]/);
-	const errorCode = errorCodeMatch ? errorCodeMatch[1] : diagnostic.code as string | undefined;
+	const errorCode = errorCodeMatch
+		? errorCodeMatch[1]
+		: (diagnostic.code as string | undefined);
 
 	// Main error message
 	const mainContent = new vscode.MarkdownString();
-	
+
 	if (errorCode) {
 		mainContent.appendMarkdown(`**Error Code:** \`${errorCode}\`\n\n`);
 	}
-	
+
 	// Clean message (remove error code prefix if present)
 	const cleanMessage = message.replace(/^\[[A-Z]\d+\]\s*/, "");
 	mainContent.appendMarkdown(`**Error:** ${cleanMessage}\n\n`);
-	
+
 	contents.push(mainContent);
 
 	// Add related information if available
-	if (diagnostic.relatedInformation && diagnostic.relatedInformation.length > 0) {
+	if (
+		diagnostic.relatedInformation &&
+		diagnostic.relatedInformation.length > 0
+	) {
 		const relatedContent = new vscode.MarkdownString();
 		relatedContent.appendMarkdown("**Related Information:**\n\n");
-		
+
 		for (const related of diagnostic.relatedInformation) {
 			const filePath = vscode.workspace.asRelativePath(related.location.uri);
 			relatedContent.appendMarkdown(
 				`- ${related.message} \n  \`${filePath}:${related.location.range.start.line + 1}:${related.location.range.start.character + 1}\`\n\n`,
 			);
 		}
-		
+
 		contents.push(relatedContent);
 	}
 
@@ -300,16 +303,18 @@ function createEnhancedHover(
 	if (message.includes("💡") || message.includes("Suggestion")) {
 		const suggestionContent = new vscode.MarkdownString();
 		suggestionContent.appendMarkdown("**💡 Suggestions:**\n\n");
-		
+
 		// Extract suggestions from related information
 		if (diagnostic.relatedInformation) {
 			for (const related of diagnostic.relatedInformation) {
 				if (related.message.includes("💡")) {
-					suggestionContent.appendMarkdown(`- ${related.message.replace("💡", "").trim()}\n\n`);
+					suggestionContent.appendMarkdown(
+						`- ${related.message.replace("💡", "").trim()}\n\n`,
+					);
 				}
 			}
 		}
-		
+
 		if (suggestionContent.value.includes("💡")) {
 			contents.push(suggestionContent);
 		}

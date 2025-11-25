@@ -59,7 +59,12 @@ export class Parser {
 	object_nesting: number;
 	not_terminated: Token[];
 	// Track function names and their start locations for better error messages
-	function_stack: Array<{ name: string; line: number; column: number; token: Token }>;
+	function_stack: Array<{
+		name: string;
+		line: number;
+		column: number;
+		token: Token;
+	}>;
 	api_reserved: Record<string, boolean>;
 	warnings: Array<{
 		type: string;
@@ -204,7 +209,8 @@ export class Parser {
 								"Verify all blocks are properly matched",
 							];
 							return (this.error_info = {
-								error: "Too many 'end' statements - no matching opening statement found",
+								error:
+									"Too many 'end' statements - no matching opening statement found",
 								line: token.line,
 								column: token.column,
 								context: context,
@@ -599,7 +605,11 @@ export class Parser {
 
 		// If assigned value is a function and we have a name, update function_stack
 		// Find the most recently added function (should be the one we just parsed)
-		if (assignedValue instanceof Function && functionName && this.function_stack.length > 0) {
+		if (
+			assignedValue instanceof Function &&
+			functionName &&
+			this.function_stack.length > 0
+		) {
 			// Find function that matches the function token
 			const funcToken = (assignedValue as any).token;
 			for (let i = this.function_stack.length - 1; i >= 0; i--) {
@@ -825,8 +835,10 @@ export class Parser {
 			}
 		} catch (error) {
 			// Remove from stack on error
-			if (this.function_stack.length > 0 &&
-				this.function_stack[this.function_stack.length - 1].token === funk) {
+			if (
+				this.function_stack.length > 0 &&
+				this.function_stack[this.function_stack.length - 1].token === funk
+			) {
 				this.function_stack.pop();
 			}
 			throw error;

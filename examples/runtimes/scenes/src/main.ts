@@ -82,4 +82,3 @@ const handleResize = () => {
 };
 
 window.addEventListener("resize", handleResize);
-

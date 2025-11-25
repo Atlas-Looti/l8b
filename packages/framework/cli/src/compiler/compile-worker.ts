@@ -41,10 +41,7 @@ const { chunk, projectPath }: WorkerData = workerData;
 /**
  * Compile a single file
  */
-function compileFile(
-	filePath: string,
-	filename: string,
-): BaseCompileResult {
+function compileFile(filePath: string, filename: string): BaseCompileResult {
 	try {
 		const source = fs.readFileSync(filePath, "utf-8");
 		return compileSource(source, filename);
@@ -142,4 +139,3 @@ processChunk()
 			warnings: [],
 		});
 	});
-

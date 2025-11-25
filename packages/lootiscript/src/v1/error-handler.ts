@@ -18,14 +18,14 @@ export enum ErrorCode {
 	E1007 = "E1007", // Misuse of reserved keyword
 	E1008 = "E1008", // Unterminated string
 	E1009 = "E1009", // Unterminated object/array
-	
+
 	// Runtime Errors (E2xxx)
 	E2001 = "E2001", // Undefined variable
 	E2002 = "E2002", // Type mismatch
 	E2003 = "E2003", // Division by zero
 	E2004 = "E2004", // Function not found
 	E2005 = "E2005", // Invalid operation
-	
+
 	// Compilation Errors (E3xxx)
 	E3001 = "E3001", // Compilation failed
 }
@@ -116,11 +116,11 @@ export class SyntaxError extends LootiScriptError {
 
 	toString(): string {
 		let msg = "";
-		
+
 		if (this.code) {
 			msg += `[${this.code}] `;
 		}
-		
+
 		msg += `${this.name}: ${this.message}\n`;
 		msg += `  at ${this.file}:${this.line}:${this.column}\n`;
 
@@ -214,7 +214,8 @@ export function formatSourceContext(
 		if (lineNum === line) {
 			// Calculate pointer position (account for line number and prefix)
 			const baseOffset = 8; // ">    18 | " = 8 chars
-			const pointer = " ".repeat(baseOffset + Math.max(0, column - 1)) + 
+			const pointer =
+				" ".repeat(baseOffset + Math.max(0, column - 1)) +
 				"^".repeat(Math.max(1, errorLength));
 			context += `${pointer}\n`;
 		}

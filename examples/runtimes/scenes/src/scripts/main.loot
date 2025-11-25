@@ -10,6 +10,7 @@ route("/player/:id", "player")
 // Initialize game (called once at startup)
 init = function()
   print("Game initialized")
-  print("Current route: " + router.getPath())
+  // Note: router.init() is called after all sources are loaded
+  // So router.getPath() will be available in scene onEnter() hooks
 end
 

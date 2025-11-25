@@ -103,10 +103,10 @@ export function lootiScriptPlugin(): Plugin {
 
 				if (!moduleGraph) {
 					// Fallback to full reload if module graph not initialized
-				server.ws.send({
-					type: "full-reload",
-					path: "*",
-				});
+					server.ws.send({
+						type: "full-reload",
+						path: "*",
+					});
 					return [];
 				}
 

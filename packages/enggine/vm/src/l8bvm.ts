@@ -99,7 +99,10 @@ export class L8BVM {
 
 			// Get stack trace from processor if available
 			let stackTrace = err.stackTrace;
-			if (!stackTrace && this.runner?.main_thread?.processor?.generateStackTrace) {
+			if (
+				!stackTrace &&
+				this.runner?.main_thread?.processor?.generateStackTrace
+			) {
 				stackTrace = this.runner.main_thread.processor.generateStackTrace();
 			}
 
@@ -148,7 +151,10 @@ export class L8BVM {
 
 			// Get stack trace from processor if available
 			let stackTrace = err.stackTrace;
-			if (!stackTrace && this.runner?.main_thread?.processor?.generateStackTrace) {
+			if (
+				!stackTrace &&
+				this.runner?.main_thread?.processor?.generateStackTrace
+			) {
 				stackTrace = this.runner.main_thread.processor.generateStackTrace();
 			}
 

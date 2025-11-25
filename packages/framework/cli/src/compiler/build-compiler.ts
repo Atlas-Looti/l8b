@@ -26,13 +26,13 @@ function getWorkerScriptPath(): string {
 	const cliRoot = getCliPackageRoot();
 	// Worker is always built to dist/compiler/compile-worker.js
 	const distPath = path.join(cliRoot, "dist", "compiler", "compile-worker.js");
-	
+
 	if (!fs.existsSync(distPath)) {
 		throw new Error(
 			`Worker script not found at ${distPath}. Please run 'npm run build' in @l8b/cli package.`,
 		);
 	}
-	
+
 	return distPath;
 }
 
@@ -147,7 +147,10 @@ async function compileSourcesParallel(
 	const workerCount = Math.min(cpuCount, sourceEntries.length);
 
 	// Split sources into chunks
-	const chunks = chunkArray(sourceEntries, Math.ceil(sourceEntries.length / workerCount));
+	const chunks = chunkArray(
+		sourceEntries,
+		Math.ceil(sourceEntries.length / workerCount),
+	);
 
 	// Get worker script path
 	const workerScript = getWorkerScriptPath();
@@ -237,7 +240,11 @@ async function compileSourcesParallel(
 		console.error(pc.red(`  ✗ ${compileErrors.length} errors`));
 	}
 
-	return { compiled: compiledModules, errors: compileErrors, warnings: compileWarnings };
+	return {
+		compiled: compiledModules,
+		errors: compileErrors,
+		warnings: compileWarnings,
+	};
 }
 
 /**
@@ -324,7 +331,11 @@ async function compileSourcesSequential(
 		console.error(pc.red(`  ✗ ${compileErrors.length} errors`));
 	}
 
-	return { compiled: compiledModules, errors: compileErrors, warnings: compileWarnings };
+	return {
+		compiled: compiledModules,
+		errors: compileErrors,
+		warnings: compileWarnings,
+	};
 }
 
 /**
@@ -346,7 +357,7 @@ export async function saveCompiled(
 		const outputPath = path.join(compiledDir, `${module.name}.js`);
 		// Ensure parent directory exists for nested modules (e.g., scenes/battle.js)
 		await fs.ensureDir(path.dirname(outputPath));
-		
+
 		// Use the serialization utility from @l8b/compiler
 		// Check if source map support is available (will be added in Phase 2.3)
 		const jsContent = serializeRoutineToModule(

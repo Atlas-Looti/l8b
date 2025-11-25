@@ -78,10 +78,7 @@ export async function optimizeImage(
 
 		// Resize if needed
 		if (metadata.width && metadata.height) {
-			if (
-				metadata.width > opts.maxWidth ||
-				metadata.height > opts.maxHeight
-			) {
+			if (metadata.width > opts.maxWidth || metadata.height > opts.maxHeight) {
 				image.resize(opts.maxWidth, opts.maxHeight, {
 					fit: "inside",
 					withoutEnlargement: true,
@@ -172,4 +169,3 @@ export async function isSharpAvailable(): Promise<boolean> {
 	const sharp = await getSharp();
 	return sharp !== null;
 }
-

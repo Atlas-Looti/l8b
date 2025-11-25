@@ -110,10 +110,7 @@ export async function dev(
 		 */
 		const getResources = async (): Promise<Resources> => {
 			// Compute hash for resources (public directory and config)
-			const hashPaths = [
-				DEFAULT_DIRS.PUBLIC,
-				DEFAULT_FILES.CONFIG,
-			];
+			const hashPaths = [DEFAULT_DIRS.PUBLIC, DEFAULT_FILES.CONFIG];
 			const currentHash = await computeHash(projectPath, hashPaths);
 
 			// Try to get from cache
@@ -136,10 +133,7 @@ export async function dev(
 		 */
 		const getSources = async (): Promise<Record<string, string>> => {
 			// Compute hash for sources (scripts directories)
-			const hashPaths = [
-				DEFAULT_DIRS.SCRIPTS,
-				DEFAULT_DIRS.SRC_L8B_LS,
-			];
+			const hashPaths = [DEFAULT_DIRS.SCRIPTS, DEFAULT_DIRS.SRC_L8B_LS];
 			const currentHash = await computeHash(projectPath, hashPaths);
 
 			// Try to get from cache

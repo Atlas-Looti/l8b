@@ -99,17 +99,17 @@ export async function build(
 	const publicDir = path.join(projectPath, DEFAULT_DIRS.PUBLIC);
 	if (await fs.pathExists(publicDir)) {
 		console.log(pc.gray("  Copying and optimizing public assets..."));
-		
+
 		// Try to optimize images
 		const { optimizeImages, isSharpAvailable } = await import(
 			"../bundler/asset-optimizer"
 		);
-		
+
 		const sharpAvailable = await isSharpAvailable();
 		if (sharpAvailable) {
 			const spritesDir = path.join(publicDir, "sprites");
 			const distSpritesDir = path.join(distDir, "sprites");
-			
+
 			if (await fs.pathExists(spritesDir)) {
 				const stats = await optimizeImages(spritesDir, distSpritesDir);
 				if (stats.optimized > 0) {
@@ -121,7 +121,7 @@ export async function build(
 				}
 			}
 		}
-		
+
 		// Copy remaining assets (non-images or if optimization skipped)
 		await fs.copy(publicDir, distDir, {
 			overwrite: true,

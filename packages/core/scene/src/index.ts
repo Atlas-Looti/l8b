@@ -22,7 +22,7 @@
  *       router.push("/player/1")
  *     end
  *   end
- *   
+ *
  *   draw = function()
  *     screen.clear("black")
  *   end
@@ -46,4 +46,3 @@ export type {
 	SceneEvents,
 	SceneConfig,
 } from "./types";
-

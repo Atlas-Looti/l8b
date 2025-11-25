@@ -176,4 +176,3 @@ export async function clearAllCache(cacheDir: string): Promise<void> {
 		await fs.emptyDir(cacheDir);
 	}
 }
-

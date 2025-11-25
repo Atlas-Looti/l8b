@@ -1218,9 +1218,10 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 		if ((parser as any).error_info) {
 			const err = (parser as any).error_info;
-			
+
 			// Calculate better range - try to include the full error span
-			const errorLength = err.length || (typeof err.error === "string" ? err.error.length : 10);
+			const errorLength =
+				err.length || (typeof err.error === "string" ? err.error.length : 10);
 			const line = err.line - 1; // Convert to 0-based
 			const column = Math.max(0, err.column - 1); // Convert to 0-based
 			const lineText = textDocument.getText({
@@ -1228,40 +1229,48 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 				end: { line, character: Number.MAX_SAFE_INTEGER },
 			});
 			const endColumn = Math.min(lineText.length, column + errorLength);
-			
+
 			// Build enhanced error message
 			let errorMessage = err.error || "Syntax Error";
 			if (err.code) {
 				errorMessage = `[${err.code}] ${errorMessage}`;
 			}
-			
+
 			// Add context to message if available
 			if (err.context) {
 				// Extract just the error line from context for the message
 				const contextLines = err.context.split("\n");
-				const errorLineInContext = contextLines.find((l: string) => l.startsWith(">"));
+				const errorLineInContext = contextLines.find((l: string) =>
+					l.startsWith(">"),
+				);
 				if (errorLineInContext) {
 					errorMessage += `\n\n${errorLineInContext.trim()}`;
 				}
 			}
-			
+
 			// Build related information
 			const relatedInformation: DiagnosticRelatedInformation[] = [];
-			
+
 			// Add related location if available (e.g., where function started)
 			if (err.related) {
 				relatedInformation.push({
 					location: {
 						uri: textDocument.uri,
 						range: {
-							start: { line: err.related.line - 1, character: err.related.column - 1 },
-							end: { line: err.related.line - 1, character: err.related.column + 10 },
+							start: {
+								line: err.related.line - 1,
+								character: err.related.column - 1,
+							},
+							end: {
+								line: err.related.line - 1,
+								character: err.related.column + 10,
+							},
 						},
 					},
 					message: err.related.message || "Related location",
 				});
 			}
-			
+
 			// Add suggestions as related information
 			if (err.suggestions && err.suggestions.length > 0) {
 				// Add first suggestion as related info
@@ -1276,7 +1285,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 					message: `💡 ${err.suggestions[0]}`,
 				});
 			}
-			
+
 			const diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Error,
 				range: {
@@ -1286,7 +1295,8 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 				message: errorMessage,
 				source: "lootiscript",
 				code: err.code || undefined,
-				relatedInformation: relatedInformation.length > 0 ? relatedInformation : undefined,
+				relatedInformation:
+					relatedInformation.length > 0 ? relatedInformation : undefined,
 			};
 			diagnostics.push(diagnostic);
 		}
@@ -1650,7 +1660,7 @@ connection.onCodeAction((params: CodeActionParams): CodeAction[] => {
 			const document = documents.get(params.textDocument.uri);
 			if (document) {
 				const errorLine = diagnostic.range.end.line;
-				
+
 				// Find the end of the line or next non-empty line
 				let insertLine = errorLine + 1;
 				while (insertLine < document.lineCount) {
@@ -1663,17 +1673,14 @@ connection.onCodeAction((params: CodeActionParams): CodeAction[] => {
 					}
 					insertLine++;
 				}
-				
+
 				actions.push({
 					title: "Add missing 'end' to close block",
 					kind: CodeActionKind.QuickFix,
 					edit: {
 						changes: {
 							[params.textDocument.uri]: [
-								TextEdit.insert(
-									Position.create(insertLine, 0),
-									"end\n",
-								),
+								TextEdit.insert(Position.create(insertLine, 0), "end\n"),
 							],
 						},
 					},
@@ -1689,12 +1696,7 @@ connection.onCodeAction((params: CodeActionParams): CodeAction[] => {
 				kind: CodeActionKind.QuickFix,
 				edit: {
 					changes: {
-						[params.textDocument.uri]: [
-							TextEdit.replace(
-								diagnostic.range,
-								"",
-							),
-						],
+						[params.textDocument.uri]: [TextEdit.replace(diagnostic.range, "")],
 					},
 				},
 				diagnostics: [diagnostic],
@@ -1702,7 +1704,10 @@ connection.onCodeAction((params: CodeActionParams): CodeAction[] => {
 		}
 
 		// Quick fix: Missing 'end' keyword (generic)
-		if ((message.includes("unterminated") || message.includes("missing 'end'")) && !errorCode) {
+		if (
+			(message.includes("unterminated") || message.includes("missing 'end'")) &&
+			!errorCode
+		) {
 			actions.push({
 				title: "Insert 'end'",
 				kind: CodeActionKind.QuickFix,
