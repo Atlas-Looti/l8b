@@ -6,38 +6,50 @@
  */
 
 import { Parser, Compiler } from "@l8b/lootiscript";
+import {
+	createDiagnostic,
+	type Diagnostic,
+	SyntaxErrorCode,
+	WarningCode,
+	CompilationErrorCode,
+} from "@l8b/diagnostics";
 
 /**
  * Compilation error information
  */
 export interface CompileError {
-	/** File path where error occurred */
 	file: string;
-	/** Error message */
 	error: string;
-	/** Line number (if available) */
 	line?: number;
-	/** Column number (if available) */
 	column?: number;
+	code?: string;
+	context?: string;
+	suggestions?: string[];
+	diagnostic?: Diagnostic;
 }
 
 /**
  * Compilation warning information
  */
 export interface CompileWarning {
-	/** File path where warning occurred */
 	file: string;
-	/** Warning message */
 	warning: string;
-	/** Line number (if available) */
 	line?: number;
-	/** Column number (if available) */
 	column?: number;
+	code?: string;
+	context?: string;
+	suggestions?: string[];
+	diagnostic?: Diagnostic;
 }
 
 /**
  * Compilation result
  */
+const warningCodeMap: Record<string, WarningCode> = {
+	assigning_api_variable: WarningCode.W1001,
+	assignment_as_condition: WarningCode.W1002,
+};
+
 export interface CompileResult {
 	/** Successfully compiled routine (if no errors) */
 	routine?: any;
@@ -63,6 +75,53 @@ export function compileSource(
 	const errors: CompileError[] = [];
 	const warnings: CompileWarning[] = [];
 
+	const pushError = (code: string, info: Record<string, any> = {}): void => {
+		const diagnostic = createDiagnostic(code, {
+			file: filename,
+			line: info.line,
+			column: info.column,
+			length: info.length,
+			context: info.context,
+			suggestions: info.suggestions,
+			related: info.related,
+			stackTrace: info.stackTrace,
+			data: info,
+		});
+
+		errors.push({
+			file: filename,
+			error: diagnostic.message,
+			line: diagnostic.line,
+			column: diagnostic.column,
+			code: diagnostic.code,
+			context: diagnostic.context,
+			suggestions: diagnostic.suggestions,
+			diagnostic,
+		});
+	};
+
+	const pushWarning = (code: string, info: Record<string, any> = {}): void => {
+		const diagnostic = createDiagnostic(code, {
+			file: filename,
+			line: info.line,
+			column: info.column,
+			context: info.context,
+			suggestions: info.suggestions,
+			data: info,
+		});
+
+		warnings.push({
+			file: filename,
+			warning: diagnostic.message,
+			line: diagnostic.line,
+			column: diagnostic.column,
+			code: diagnostic.code,
+			context: diagnostic.context,
+			suggestions: diagnostic.suggestions,
+			diagnostic,
+		});
+	};
+
 	try {
 		// Parse source code
 		const parser = new Parser(source, filename);
@@ -71,12 +130,7 @@ export function compileSource(
 		// Check for parse errors
 		if ((parser as any).error_info) {
 			const err = (parser as any).error_info;
-			errors.push({
-				file: filename,
-				error: err.error || "Parse error",
-				line: err.line,
-				column: err.column,
-			});
+			pushError(err.code || SyntaxErrorCode.E1004, err);
 
 			return { errors, warnings, filename };
 		}
@@ -89,12 +143,10 @@ export function compileSource(
 
 		// Collect warnings
 		for (const w of parser.warnings) {
-			warnings.push({
-				file: filename,
-				warning: w.type || "Warning",
-				line: w.line,
-				column: w.column,
-			});
+			const warningCode =
+				warningCodeMap[w.type as keyof typeof warningCodeMap] ??
+				WarningCode.W1001;
+			pushWarning(warningCode, w);
 		}
 
 		return {
@@ -104,12 +156,18 @@ export function compileSource(
 			filename,
 		};
 	} catch (error: any) {
-		errors.push({
-			file: filename,
-			error: error.message || String(error),
-			line: error.line,
-			column: error.column,
-		});
+		pushError(
+			error.code || CompilationErrorCode.E3001,
+			error.line !== undefined
+				? error
+				: {
+					error: error.message || String(error),
+					line: error.line,
+					column: error.column,
+					context: error.context,
+					suggestions: error.suggestions,
+				},
+		);
 
 		return { errors, warnings, filename };
 	}
@@ -135,11 +193,31 @@ export async function compileFile(filePath: string): Promise<CompileResult> {
 
 		return compileSource(source, filename);
 	} catch (error: any) {
+		const diagnostic = createDiagnostic(
+			error.code || CompilationErrorCode.E3001,
+			{
+				file: filePath,
+				line: error.line,
+				column: error.column,
+				context: error.context,
+				suggestions: error.suggestions,
+				data: {
+					error: error.message || String(error),
+				},
+			},
+		);
+
 		return {
 			errors: [
 				{
 					file: filePath,
-					error: error.message || String(error),
+					error: diagnostic.message,
+					line: diagnostic.line,
+					column: diagnostic.column,
+					code: diagnostic.code,
+					context: diagnostic.context,
+					suggestions: diagnostic.suggestions,
+					diagnostic,
 				},
 			],
 			warnings: [],

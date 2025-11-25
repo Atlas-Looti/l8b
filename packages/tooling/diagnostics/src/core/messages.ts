@@ -199,7 +199,7 @@ export const MESSAGES: Record<string, MessageTemplate> = {
 		code: CompilationErrorCode.E3001,
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.Compilation,
-		message: "Compilation failed",
+		message: (args) => String(args.error || "Compilation failed"),
 		description: "The compilation process encountered an error",
 		suggestions: [
 			"Check the error messages above for details",
@@ -210,7 +210,8 @@ export const MESSAGES: Record<string, MessageTemplate> = {
 		code: CompilationErrorCode.E3002,
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.Compilation,
-		message: (args) => `File not found: ${args.filePath}`,
+		message: (args) =>
+			`File not found: ${args.filePath || args.file || "unknown file"}`,
 		description: "A required file could not be found",
 		suggestions: [
 			"Check if the file path is correct",

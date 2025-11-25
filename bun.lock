@@ -202,6 +202,7 @@
       },
       "dependencies": {
         "@l8b/compiler": "workspace:*",
+        "@l8b/diagnostics": "workspace:*",
         "@l8b/lootiscript": "workspace:*",
         "@l8b/runtime": "workspace:*",
         "chokidar": "^3.5.3",
@@ -223,6 +224,7 @@
       "name": "@l8b/compiler",
       "version": "0.0.1",
       "dependencies": {
+        "@l8b/diagnostics": "workspace:*",
         "@l8b/lootiscript": "workspace:*",
       },
       "devDependencies": {

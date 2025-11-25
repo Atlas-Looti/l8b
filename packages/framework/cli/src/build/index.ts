@@ -11,6 +11,12 @@ import fs from "fs-extra";
 import pc from "picocolors";
 
 import {
+	formatForCLI,
+	createDiagnostic,
+	CompilationErrorCode,
+} from "@l8b/diagnostics";
+
+import {
 	compileSource,
 	serializeRoutineToModule,
 	type CompileResult as BaseCompileResult,
@@ -41,6 +47,57 @@ export interface CompileResult {
 	warnings: CompileWarning[];
 }
 
+function logDiagnosticLines(
+	text: string,
+	log: (line: string) => void,
+	indent = "      ",
+): void {
+	const lines = text.split("\n");
+	for (const line of lines) {
+		if (line.trim().length === 0) {
+			log("");
+		} else {
+			log(`${indent}${line}`);
+		}
+	}
+}
+
+function formatFallbackMessage(
+	prefix: string,
+	message: string,
+	file?: string,
+	line?: number,
+	column?: number,
+): string {
+	let output = `${prefix} ${message}`;
+	if (file) {
+		output += `\n  at ${file}`;
+		if (line !== undefined) {
+			output += `:${line}`;
+			if (column !== undefined) {
+				output += `:${column}`;
+			}
+		}
+	}
+	return output;
+}
+
+function formatCompileErrorOutput(error: CompileError): string {
+	if (error.diagnostic) {
+		return formatForCLI(error.diagnostic);
+	}
+
+	return formatFallbackMessage("✗", error.error, error.file, error.line, error.column);
+}
+
+function formatCompileWarningOutput(warning: CompileWarning): string {
+	if (warning.diagnostic) {
+		return formatForCLI(warning.diagnostic);
+	}
+
+	return formatFallbackMessage("⚠", warning.warning, warning.file, warning.line, warning.column);
+}
+
 /**
  * Compile a single file path.
  */
@@ -49,11 +106,31 @@ function compileFile(filePath: string, filename: string): BaseCompileResult {
 		const source = fs.readFileSync(filePath, "utf-8");
 		return compileSource(source, filename);
 	} catch (error: any) {
+		const diagnostic = createDiagnostic(
+			error?.code || CompilationErrorCode.E3001,
+			{
+				file: filename,
+				line: error?.line,
+				column: error?.column,
+				context: error?.context,
+				suggestions: error?.suggestions,
+				data: {
+					error: error?.message || String(error),
+				},
+			},
+		);
+
 		return {
 			errors: [
 				{
 					file: filename,
-					error: error?.message || String(error),
+					error: diagnostic.message,
+					line: diagnostic.line,
+					column: diagnostic.column,
+					code: diagnostic.code,
+					context: diagnostic.context,
+					suggestions: diagnostic.suggestions,
+					diagnostic,
 				},
 			],
 			warnings: [],
@@ -82,12 +159,29 @@ export async function compileSources(
 		const filename = relativePath || path.basename(normalizedPath);
 
 		if (!(await fs.pathExists(normalizedPath))) {
-			errors.push({
+			const diagnostic = createDiagnostic(CompilationErrorCode.E3002, {
 				file: filename,
-				error: `File not found: ${normalizedPath}`,
+				context: `Resolved path: ${normalizedPath}`,
+				suggestions: [`Ensure ${normalizedPath} exists and is readable.`],
+				data: { filePath: normalizedPath },
 			});
+
+			const compileError: CompileError = {
+				file: filename,
+				error: diagnostic.message,
+				line: diagnostic.line,
+				column: diagnostic.column,
+				code: diagnostic.code,
+				context: diagnostic.context,
+				suggestions: diagnostic.suggestions,
+				diagnostic,
+			};
+
+			errors.push(compileError);
 			console.error(pc.red(`    ✗ ${moduleName} (${filename})`));
-			console.error(pc.red(`      File not found: ${normalizedPath}`));
+			logDiagnosticLines(formatForCLI(diagnostic), (line) =>
+				console.error(pc.red(line)),
+			);
 			continue;
 		}
 
@@ -97,16 +191,9 @@ export async function compileSources(
 			errors.push(...result.errors);
 			for (const error of result.errors) {
 				console.error(pc.red(`    ✗ ${moduleName} (${filename})`));
-				console.error(pc.red(`      ${error.error}`));
-				if (error.line !== undefined) {
-					console.error(
-						pc.gray(
-							`      Line ${error.line}${
-								error.column !== undefined ? `, Column ${error.column}` : ""
-							}`,
-						),
-					);
-				}
+				logDiagnosticLines(formatCompileErrorOutput(error), (line) =>
+					console.error(pc.red(line)),
+				);
 			}
 		} else if (result.routine) {
 			compiled.push({
@@ -118,11 +205,13 @@ export async function compileSources(
 			if (result.warnings.length > 0) {
 				for (const warning of result.warnings) {
 					warnings.push(warning);
-					console.warn(
-						pc.yellow(`    ⚠ ${moduleName}: ${warning.warning ?? "Warning"}`),
+					console.warn(pc.yellow(`    ⚠ ${moduleName}: ${warning.warning ?? "Warning"}`));
+					logDiagnosticLines(formatCompileWarningOutput(warning), (line) =>
+						console.warn(pc.yellow(line)),
 					);
 				}
 			}
+
 
 			console.log(pc.green(`    ✓ ${moduleName} (${filename})`));
 		}

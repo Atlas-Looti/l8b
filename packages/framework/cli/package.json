@@ -22,6 +22,7 @@
 		"@l8b/runtime": "workspace:*",
 		"@l8b/lootiscript": "workspace:*",
 		"@l8b/compiler": "workspace:*",
+		"@l8b/diagnostics": "workspace:*",
 		"chokidar": "^3.5.3",
 		"esbuild": "^0.19.0",
 		"fs-extra": "^11.2.0",

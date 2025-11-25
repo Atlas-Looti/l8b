@@ -19,7 +19,8 @@
 		"test": "vitest run --passWithNoTests"
 	},
 	"dependencies": {
-		"@l8b/lootiscript": "workspace:*"
+		"@l8b/lootiscript": "workspace:*",
+		"@l8b/diagnostics": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "^20.0.0",
