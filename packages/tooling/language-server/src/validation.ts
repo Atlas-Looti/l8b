@@ -1,6 +1,5 @@
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { Diagnostic, DiagnosticSeverity } from "vscode-languageserver/node";
-import { Range } from "vscode-languageserver-types";
+import { Diagnostic, DiagnosticSeverity, Range } from "vscode-languageserver/node";
 import { Parser } from "@l8b/lootiscript/dist/v1/parser";
 import { formatForLSP, createDiagnostic } from "@l8b/diagnostics";
 import { Connection } from "vscode-languageserver/node";

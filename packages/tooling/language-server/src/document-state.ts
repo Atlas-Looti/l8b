@@ -1,6 +1,6 @@
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Parser } from "@l8b/lootiscript/dist/v1/parser";
-import { Range, Position } from "vscode-languageserver-types";
+import { Range, Position } from "vscode-languageserver/node";
 import { Connection } from "vscode-languageserver/node";
 import { ASTNode, Scope, SymbolInfo, DocumentState } from "./types";
 
@@ -171,4 +171,5 @@ function buildRange(node: ASTNode): Range {
 		),
 	);
 }
+
 

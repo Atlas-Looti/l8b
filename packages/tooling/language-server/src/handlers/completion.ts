@@ -4,7 +4,7 @@ import {
 	CompletionList,
 	InsertTextFormat,
 } from "vscode-languageserver/node";
-import { TextDocument, Position } from "vscode-languageserver-textdocument";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import { TextDocuments } from "vscode-languageserver/node";
 import { LanguageModes } from "../embedded/mode-manager";
 import { getDocumentStates } from "../document-state";

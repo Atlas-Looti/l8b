@@ -7,16 +7,13 @@ import {
 	RenameParams,
 	WorkspaceEdit,
 	TextEdit,
+	ReferenceParams,
 } from "vscode-languageserver/node";
-import { TextDocument } from "vscode-languageserver-textdocument";
-import { TextDocuments } from "vscode-languageserver/node";
 import { getDocumentStates } from "../document-state";
 import { getWordAtPosition } from "../utils";
+import { SymbolInfo } from "../types";
 
-export function setupSymbolHandlers(
-	connection: any,
-	documents: TextDocuments<TextDocument>,
-) {
+export function setupSymbolHandlers(connection: any) {
 	connection.onDefinition((params: DefinitionParams) => {
 		const documentStates = getDocumentStates();
 		const state = documentStates.get(params.textDocument.uri);
@@ -59,7 +56,7 @@ export function setupSymbolHandlers(
 	});
 
 	// Find all references to a symbol across the workspace
-	connection.onReferences((params) => {
+	connection.onReferences((params: ReferenceParams) => {
 		const documentStates = getDocumentStates();
 		const state = documentStates.get(params.textDocument.uri);
 		if (!state) return [];
@@ -117,9 +114,10 @@ export function setupSymbolHandlers(
 }
 
 function findSymbolByName(
-	state: { symbols: Array<{ name: string }> },
+	state: { symbols: SymbolInfo[] },
 	name: string,
-) {
+): SymbolInfo | undefined {
 	return state.symbols.find((sym) => sym.name === name);
 }
+
 

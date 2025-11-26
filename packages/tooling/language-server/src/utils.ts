@@ -1,6 +1,6 @@
-import { TextDocument, Position } from "vscode-languageserver-textdocument";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import { Position } from "vscode-languageserver/node";
 import { CompletionContext } from "./types";
-import { GLOBAL_API } from "./api-definitions/index";
 
 export function getWordAtPosition(
 	document: TextDocument,

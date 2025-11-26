@@ -2,9 +2,9 @@ import {
 	SignatureHelp,
 	SignatureInformation,
 	ParameterInformation,
+	Position,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { Position } from "vscode-languageserver-types";
 import { TextDocuments } from "vscode-languageserver/node";
 import { GLOBAL_API } from "../api-definitions/index";
 import { getDocumentSettings } from "../settings";

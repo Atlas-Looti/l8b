@@ -1,5 +1,5 @@
-import { DocumentFormattingParams, TextEdit } from "vscode-languageserver/node";
-import { TextDocument, Range, Position } from "vscode-languageserver-textdocument";
+import { DocumentFormattingParams, TextEdit, Range, Position } from "vscode-languageserver/node";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import { TextDocuments } from "vscode-languageserver/node";
 import { getDocumentSettings } from "../settings";
 import { Connection } from "vscode-languageserver/node";
@@ -48,4 +48,5 @@ export function setupFormattingHandler(
 		return [TextEdit.replace(fullRange, formatted.join("\n"))];
 	});
 }
+
 

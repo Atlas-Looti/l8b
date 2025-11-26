@@ -1,4 +1,4 @@
-import { Range } from "vscode-languageserver-types";
+import { Range } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
 // Simple AST node interface

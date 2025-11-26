@@ -162,7 +162,7 @@ connection.onDidChangeWatchedFiles((_change) => {
 setupCompletionHandlers(connection, documents, languageModes, hasConfigurationCapability);
 setupHoverHandler(connection, documents, languageModes);
 setupSignatureHelpHandler(connection, documents, hasConfigurationCapability);
-setupSymbolHandlers(connection, documents);
+setupSymbolHandlers(connection);
 setupFormattingHandler(connection, documents, hasConfigurationCapability);
 setupCodeActionsHandler(connection, documents);
 
