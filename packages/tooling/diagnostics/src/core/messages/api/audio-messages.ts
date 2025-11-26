@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const audioMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7011]: {
@@ -79,4 +83,3 @@ export const audioMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

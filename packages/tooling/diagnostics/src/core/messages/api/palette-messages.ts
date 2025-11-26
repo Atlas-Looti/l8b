@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const paletteMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7071]: {
@@ -47,7 +51,8 @@ export const paletteMessages: Record<string, MessageTemplate> = {
 		code: APIErrorCode.E7074,
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.API,
-		message: (args) => `Palette loading failed: ${args.paletteName || "unknown"}`,
+		message: (args) =>
+			`Palette loading failed: ${args.paletteName || "unknown"}`,
 		description: "The palette could not be loaded",
 		suggestions: [
 			"Check if the palette file exists",
@@ -70,4 +75,3 @@ export const paletteMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

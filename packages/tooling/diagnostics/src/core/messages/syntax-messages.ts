@@ -3,7 +3,11 @@
  */
 
 import { SyntaxErrorCode } from "../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../types";
 
 export const syntaxMessages: Record<string, MessageTemplate> = {
 	[SyntaxErrorCode.E1001]: {
@@ -16,7 +20,8 @@ export const syntaxMessages: Record<string, MessageTemplate> = {
 			}
 			return `Unterminated '${args.blockType || "block"}' ; no matching 'end' found`;
 		},
-		description: "A function or block declaration was started but not properly closed",
+		description:
+			"A function or block declaration was started but not properly closed",
 		suggestions: (args) => {
 			if (args.functionName) {
 				return [
@@ -36,7 +41,8 @@ export const syntaxMessages: Record<string, MessageTemplate> = {
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.Syntax,
 		message: "Too many 'end' statements",
-		description: "An 'end' keyword was found without a matching opening statement",
+		description:
+			"An 'end' keyword was found without a matching opening statement",
 		suggestions: [
 			"Remove the extra 'end' statement",
 			"Check if you have a missing opening statement (if, for, while, function)",
@@ -120,4 +126,3 @@ export const syntaxMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

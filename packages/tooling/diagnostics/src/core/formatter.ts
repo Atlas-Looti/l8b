@@ -39,7 +39,8 @@ export function formatForCLI(diagnostic: Diagnostic): string {
 	}
 
 	// Suggestions
-	const suggestions = diagnostic.suggestions || getSuggestions(code, diagnostic.data);
+	const suggestions =
+		diagnostic.suggestions || getSuggestions(code, diagnostic.data);
 	if (suggestions.length > 0) {
 		lines.push("");
 		lines.push("Suggestions:");
@@ -153,7 +154,9 @@ export function formatForLSP(diagnostic: Diagnostic): {
 	}
 
 	// Add first suggestion as related info
-	const suggestions = diagnostic.suggestions || getSuggestions(diagnostic.code || "", diagnostic.data);
+	const suggestions =
+		diagnostic.suggestions ||
+		getSuggestions(diagnostic.code || "", diagnostic.data);
 	if (suggestions.length > 0) {
 		relatedInformation.push({
 			location: {
@@ -205,7 +208,8 @@ export function formatForBrowser(diagnostic: Diagnostic): string {
 	}
 
 	// Add suggestions
-	const suggestions = diagnostic.suggestions || getSuggestions(code, diagnostic.data);
+	const suggestions =
+		diagnostic.suggestions || getSuggestions(code, diagnostic.data);
 	if (suggestions.length > 0) {
 		formatted += "\n\nSuggestions:";
 		for (const suggestion of suggestions) {
@@ -266,11 +270,14 @@ export function createDiagnostic(
 	} = {},
 ): Diagnostic {
 	const message = formatMessage(code, { ...args, ...args.data });
-	const suggestions = args.suggestions || getSuggestions(code, { ...args, ...args.data });
+	const suggestions =
+		args.suggestions || getSuggestions(code, { ...args, ...args.data });
 
 	return {
 		code,
-		severity: code.startsWith("E") ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
+		severity: code.startsWith("E")
+			? DiagnosticSeverity.Error
+			: DiagnosticSeverity.Warning,
 		message,
 		file: args.file,
 		line: args.line,
@@ -283,4 +290,3 @@ export function createDiagnostic(
 		data: args.data,
 	};
 }
-

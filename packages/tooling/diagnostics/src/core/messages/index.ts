@@ -68,4 +68,3 @@ export function getSuggestions(
 
 	return template.suggestions;
 }
-

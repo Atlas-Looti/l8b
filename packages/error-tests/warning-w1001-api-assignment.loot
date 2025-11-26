@@ -1,0 +1,11 @@
+// ============================================
+// WARNING TESTS - W1001: Assigning to API Variables
+// ============================================
+
+// ⚠️ W1001: Assigning to API variable
+testAssigningToAPI = function()
+ screen = {} // Warning: Assigning to API variable 'screen'
+ audio = null // Warning: Assigning to API variable 'audio'
+ keyboard = 10 // Warning: Assigning to API variable 'keyboard'
+ gamepad = "test" // Warning: Assigning to API variable 'gamepad'
+end

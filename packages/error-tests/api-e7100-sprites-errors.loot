@@ -1,0 +1,12 @@
+// ============================================
+// API ERROR TESTS - E7100: Sprites Nested Properties
+// ============================================
+
+// ❌ E7100: Unknown nested property on sprites
+// Note: Nested properties seperti sprites.player.x akan selalu error
+// karena Language Server tidak bisa validate instance properties
+testSpritesErrors = function()
+ sprites.player.invalidProperty = 10
+ sprites.enemy.wrongMethod()
+ sprites.boss.nonExistent = true
+end

@@ -167,9 +167,7 @@ export class Router {
 	 * Should be called after routes are registered but before game loop starts
 	 */
 	init(): void {
-		const initialPath = isBrowser()
-			? window.location.pathname
-			: DEFAULT_PATH;
+		const initialPath = isBrowser() ? window.location.pathname : DEFAULT_PATH;
 
 		this.handlePathChange(initialPath);
 		this.ensureActiveScene();

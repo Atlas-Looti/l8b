@@ -157,4 +157,3 @@ export function getCanvasSize(config: LootiConfig): {
 		config.height || config.canvas?.height || DEFAULT_DIMENSIONS.height;
 	return { width, height };
 }
-

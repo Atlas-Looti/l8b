@@ -64,20 +64,27 @@ export class ApiProvider implements vscode.TreeDataProvider<ApiItem> {
 		}
 
 		if (!this.apiData) {
-			return Promise.resolve([ApiItem.message("API reference unavailable", true)]);
+			return Promise.resolve([
+				ApiItem.message("API reference unavailable", true),
+			]);
 		}
 
 		if (!element) {
 			const categories = Object.entries(this.apiData).filter(
-				([, entry]) => entry.properties && Object.keys(entry.properties).length > 0,
+				([, entry]) =>
+					entry.properties && Object.keys(entry.properties).length > 0,
 			);
 
 			if (categories.length === 0) {
-				return Promise.resolve([ApiItem.message("No API sections registered", true)]);
+				return Promise.resolve([
+					ApiItem.message("No API sections registered", true),
+				]);
 			}
 
 			return Promise.resolve(
-				categories.map(([key, entry]) => ApiItem.category(key, entry.description)),
+				categories.map(([key, entry]) =>
+					ApiItem.category(key, entry.description),
+				),
 			);
 		}
 
@@ -120,11 +127,7 @@ class ApiItem extends vscode.TreeItem {
 		);
 	}
 
-	static member(
-		category: string,
-		name: string,
-		prop: GlobalApiEntry,
-	): ApiItem {
+	static member(category: string, name: string, prop: GlobalApiEntry): ApiItem {
 		const signatureSuffix =
 			prop.type === "method" && !name.endsWith("()") ? "()" : "";
 		const detail = prop.signature ?? prop.description;
@@ -153,4 +156,3 @@ class ApiItem extends vscode.TreeItem {
 		);
 	}
 }
-

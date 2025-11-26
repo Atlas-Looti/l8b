@@ -1,0 +1,8 @@
+// ============================================
+// SYNTAX ERROR TESTS - E1004: Unexpected Token
+// ============================================
+
+// ❌ E1004: Missing closing parenthesis
+testMissingParen = function()
+ print("test" // Missing closing )
+end

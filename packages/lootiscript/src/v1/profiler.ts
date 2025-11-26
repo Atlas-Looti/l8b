@@ -55,7 +55,9 @@ export class VMProfiler {
 	}
 
 	getAverageMetrics(): ProfilerMetrics {
-		if (this.samples.length === 0) {return this.stop();}
+		if (this.samples.length === 0) {
+			return this.stop();
+		}
 
 		const total = this.samples.reduce((acc, curr) => ({
 			ops: acc.ops + curr.ops,

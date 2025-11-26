@@ -1,0 +1,9 @@
+// ============================================
+// SYNTAX ERROR TESTS - E1001: Unterminated Function
+// ============================================
+
+// ❌ E1001: Function tidak ditutup dengan 'end'
+testUnterminated = function()
+ print("This function is not closed")
+  local x = 10
+  // Missing 'end' - seharusnya ada 'end' di sini

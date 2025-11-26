@@ -3,7 +3,11 @@
  */
 
 import { CLIErrorCode } from "../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../types";
 
 export const cliMessages: Record<string, MessageTemplate> = {
 	[CLIErrorCode.E6001]: {
@@ -40,4 +44,3 @@ export const cliMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

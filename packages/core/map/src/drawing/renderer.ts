@@ -1,6 +1,10 @@
 import type { Sprite } from "@l8b/sprites";
 import type { AnimatedTile } from "../data/types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export interface RenderState {
 	canvas: HTMLCanvasElement | null;

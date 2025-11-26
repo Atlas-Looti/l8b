@@ -45,4 +45,3 @@ export {
 	formatSimple,
 	createDiagnostic,
 } from "./core/formatter";
-

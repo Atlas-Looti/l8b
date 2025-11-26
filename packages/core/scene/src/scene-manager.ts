@@ -87,10 +87,7 @@ export class SceneManager {
 	/**
 	 * Check if scene is already active
 	 */
-	private isSameScene(
-		name: string,
-		scene: SceneDefinition,
-	): boolean {
+	private isSameScene(name: string, scene: SceneDefinition): boolean {
 		return this.activeSceneName === name && this.activeScene === scene;
 	}
 

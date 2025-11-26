@@ -3,7 +3,11 @@
  */
 
 import { SceneErrorCode } from "../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../types";
 
 export const sceneMessages: Record<string, MessageTemplate> = {
 	[SceneErrorCode.E5001]: {
@@ -12,10 +16,7 @@ export const sceneMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.Scene,
 		message: (args) => `Invalid path: ${args.path}`,
 		description: "An invalid scene path was provided",
-		suggestions: [
-			"Check the path format",
-			"Verify the path is valid",
-		],
+		suggestions: ["Check the path format", "Verify the path is valid"],
 	},
 	[SceneErrorCode.E5002]: {
 		code: SceneErrorCode.E5002,
@@ -84,4 +85,3 @@ export const sceneMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

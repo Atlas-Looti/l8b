@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const screenMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7001]: {
@@ -11,7 +15,8 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.API,
 		message: "Failed to get 2D canvas context",
-		description: "The browser could not create a 2D rendering context for the canvas",
+		description:
+			"The browser could not create a 2D rendering context for the canvas",
 		suggestions: [
 			"Check if the canvas element is valid",
 			"Verify the browser supports canvas 2D rendering",
@@ -90,4 +95,3 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

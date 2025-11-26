@@ -7,7 +7,11 @@ import { Image } from "../image";
 import { Sprite } from "../sprite";
 import { createFrame } from "../sprite/frame";
 import type { SpriteProperties } from "../types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export function loadSprite(
 	url: string,
@@ -21,7 +25,7 @@ export function loadSprite(
 			data: { url: String(url) },
 		});
 		const formatted = formatForBrowser(diagnostic);
-		
+
 		if (runtime?.listener?.reportError) {
 			runtime.listener.reportError(formatted);
 		}
@@ -30,7 +34,7 @@ export function loadSprite(
 		sprite.ready = 1;
 		return sprite;
 	}
-	
+
 	const sprite = new Sprite(0, 0);
 	sprite.ready = 0;
 
@@ -52,7 +56,7 @@ export function loadSprite(
 			data: { url },
 		});
 		const formatted = formatForBrowser(diagnostic);
-		
+
 		if (runtime?.listener?.reportError) {
 			runtime.listener.reportError(formatted);
 		}
@@ -72,27 +76,27 @@ export function updateSprite(
 	}
 
 	const numframes = properties?.frames ?? 1;
-	
+
 	// Validate sprite properties
 	if (numframes <= 0 || !isFinite(numframes) || !Number.isInteger(numframes)) {
 		const diagnostic = createDiagnostic(APIErrorCode.E7022, {
 			data: { error: `Invalid frames: ${numframes}` },
 		});
 		const formatted = formatForBrowser(diagnostic);
-		
+
 		if (runtime?.listener?.reportError) {
 			runtime.listener.reportError(formatted);
 		}
 		return;
 	}
-	
+
 	const fps = properties?.fps;
 	if (fps !== undefined && (fps <= 0 || !isFinite(fps))) {
 		const diagnostic = createDiagnostic(APIErrorCode.E7022, {
 			data: { error: `Invalid fps: ${fps}` },
 		});
 		const formatted = formatForBrowser(diagnostic);
-		
+
 		if (runtime?.listener?.reportError) {
 			runtime.listener.reportError(formatted);
 		}

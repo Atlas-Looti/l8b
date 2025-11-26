@@ -1,8 +1,5 @@
 import { Connection } from "vscode-languageserver/node";
-import {
-	LootiScriptSettings,
-	PartialLootiScriptSettings,
-} from "./types";
+import { LootiScriptSettings, PartialLootiScriptSettings } from "./types";
 
 export const defaultSettings: LootiScriptSettings = {
 	diagnostics: { enable: true },
@@ -48,7 +45,9 @@ export async function getDocumentSettings(
 		scopeUri: resource,
 		section: "lootiscript",
 	});
-	const sanitized = sanitizeSettings(configuration as PartialLootiScriptSettings);
+	const sanitized = sanitizeSettings(
+		configuration as PartialLootiScriptSettings,
+	);
 	documentSettings.set(resource, sanitized);
 	return sanitized;
 }
@@ -57,26 +56,23 @@ export function sanitizeSettings(
 	settings?: PartialLootiScriptSettings,
 ): LootiScriptSettings {
 	const merged = settings || {};
-	const rawIndent = merged.format?.indentSize ?? defaultSettings.format.indentSize;
+	const rawIndent =
+		merged.format?.indentSize ?? defaultSettings.format.indentSize;
 	const normalizedIndent = Math.min(Math.max(rawIndent, 1), 4);
 	return {
 		diagnostics: {
-			enable:
-				merged.diagnostics?.enable ?? defaultSettings.diagnostics.enable,
+			enable: merged.diagnostics?.enable ?? defaultSettings.diagnostics.enable,
 		},
 		completion: {
-			enable:
-				merged.completion?.enable ?? defaultSettings.completion.enable,
+			enable: merged.completion?.enable ?? defaultSettings.completion.enable,
 		},
 		signatureHelp: {
 			enable:
 				merged.signatureHelp?.enable ?? defaultSettings.signatureHelp.enable,
 		},
 		format: {
-			enable:
-				merged.format?.enable ?? defaultSettings.format.enable,
+			enable: merged.format?.enable ?? defaultSettings.format.enable,
 			indentSize: normalizedIndent,
 		},
 	};
 }
-

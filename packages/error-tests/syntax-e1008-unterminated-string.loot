@@ -1,0 +1,8 @@
+// ============================================
+// SYNTAX ERROR TESTS - E1008: Unterminated String
+// ============================================
+
+// ❌ E1008: Missing closing quote
+testUnterminatedString = function()
+ print("Hello world // Missing closing "
+end

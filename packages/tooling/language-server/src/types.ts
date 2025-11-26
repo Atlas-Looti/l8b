@@ -64,4 +64,3 @@ export interface ApiDefinition {
 }
 
 export type GlobalApi = Record<string, ApiDefinition>;
-

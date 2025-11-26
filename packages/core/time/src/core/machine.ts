@@ -10,7 +10,11 @@
 import { StatePlayer } from "../playback";
 import { StateRecorder } from "../recording";
 import type { TimeMachineMessage, TimeMachineStatus } from "../types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export interface TimeMachineRuntime {
 	vm?: {
@@ -94,7 +98,7 @@ export class TimeMachine {
 				data: { error: String(err) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if ((this.runtime as any)?.listener?.reportError) {
 				(this.runtime as any).listener.reportError(formatted);
 			}
@@ -157,7 +161,7 @@ export class TimeMachine {
 				data: { error: String(err) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if ((this.runtime as any)?.listener?.reportError) {
 				(this.runtime as any).listener.reportError(formatted);
 			}
@@ -180,7 +184,7 @@ export class TimeMachine {
 				data: { error: String(err) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if ((this.runtime as any)?.listener?.reportError) {
 				(this.runtime as any).listener.reportError(formatted);
 			}
@@ -225,13 +229,13 @@ export class TimeMachine {
 				data: { value: String(position) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if ((this.runtime as any)?.listener?.reportError) {
 				(this.runtime as any).listener.reportError(formatted);
 			}
 			return;
 		}
-		
+
 		const pos = Math.round(position);
 		this.replayPosition = Math.max(
 			2,

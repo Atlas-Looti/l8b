@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const mapMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7031]: {
@@ -21,8 +25,7 @@ export const mapMessages: Record<string, MessageTemplate> = {
 		code: APIErrorCode.E7032,
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.API,
-		message: (args) =>
-			`Invalid tile coordinates: (${args.x}, ${args.y})`,
+		message: (args) => `Invalid tile coordinates: (${args.x}, ${args.y})`,
 		description: "Tile coordinates are out of map bounds",
 		suggestions: [
 			"Check coordinates are within map dimensions",
@@ -54,4 +57,3 @@ export const mapMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

@@ -1,0 +1,10 @@
+// ============================================
+// API ERROR TESTS - E7100: Audio API Invalid Properties
+// ============================================
+
+// ❌ E7100: Unknown property on audio API
+testAudioErrors = function()
+ audio.nonExistentMethod()
+ audio.invalidProperty = true
+ audio.wrongFunction()
+end

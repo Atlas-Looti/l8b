@@ -1,0 +1,10 @@
+// ============================================
+// API ERROR TESTS - E7100: Screen API Invalid Properties
+// ============================================
+
+// ❌ E7100: Unknown property on screen API
+testScreenErrors = function()
+ screen.invalidProperty = 100
+ screen.wrongMethod()
+ screen.nonExistentFunction()
+end

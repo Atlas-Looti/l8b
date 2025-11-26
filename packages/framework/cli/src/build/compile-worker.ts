@@ -46,5 +46,3 @@ if (parentPort) {
 }
 
 export {};
-
-

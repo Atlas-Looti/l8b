@@ -37,9 +37,7 @@ import {
 } from "./program";
 import { Token } from "./token";
 import { Tokenizer } from "./tokenizer";
-import {
-	SyntaxErrorCode as ErrorCode,
-} from "@l8b/diagnostics";
+import { SyntaxErrorCode as ErrorCode } from "@l8b/diagnostics";
 
 /**
  * Base error class for LootiScript errors

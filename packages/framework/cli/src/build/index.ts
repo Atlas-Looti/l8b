@@ -87,7 +87,13 @@ function formatCompileErrorOutput(error: CompileError): string {
 		return formatForCLI(error.diagnostic);
 	}
 
-	return formatFallbackMessage("✗", error.error, error.file, error.line, error.column);
+	return formatFallbackMessage(
+		"✗",
+		error.error,
+		error.file,
+		error.line,
+		error.column,
+	);
 }
 
 function formatCompileWarningOutput(warning: CompileWarning): string {
@@ -95,7 +101,13 @@ function formatCompileWarningOutput(warning: CompileWarning): string {
 		return formatForCLI(warning.diagnostic);
 	}
 
-	return formatFallbackMessage("⚠", warning.warning, warning.file, warning.line, warning.column);
+	return formatFallbackMessage(
+		"⚠",
+		warning.warning,
+		warning.file,
+		warning.line,
+		warning.column,
+	);
 }
 
 /**
@@ -205,13 +217,14 @@ export async function compileSources(
 			if (result.warnings.length > 0) {
 				for (const warning of result.warnings) {
 					warnings.push(warning);
-					console.warn(pc.yellow(`    ⚠ ${moduleName}: ${warning.warning ?? "Warning"}`));
+					console.warn(
+						pc.yellow(`    ⚠ ${moduleName}: ${warning.warning ?? "Warning"}`),
+					);
 					logDiagnosticLines(formatCompileWarningOutput(warning), (line) =>
 						console.warn(pc.yellow(line)),
 					);
 				}
 			}
-
 
 			console.log(pc.green(`    ✓ ${moduleName} (${filename})`));
 		}
@@ -265,5 +278,3 @@ export async function saveCompiled(
 		spaces: 2,
 	});
 }
-
-

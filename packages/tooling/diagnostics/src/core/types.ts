@@ -100,4 +100,3 @@ export interface MessageTemplate {
 	/** Optional category */
 	category?: DiagnosticCategory;
 }
-

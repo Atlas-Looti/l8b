@@ -155,7 +155,6 @@ function registerCommands(
 		vscode.commands.registerCommand("lootiscript.runScript", async () => {
 			const editor = vscode.window.activeTextEditor;
 			if (editor && editor.document.languageId === "lootiscript") {
-
 				// Try to find and run with @l8b/cli if available
 				const terminal = vscode.window.createTerminal("L8B Run");
 				terminal.show();
@@ -206,7 +205,9 @@ function registerCommands(
 					statusBarItem.text = "$(error) L8B";
 					statusBarItem.tooltip = `LootiScript Language Server: Error - ${error}`;
 					apiProvider.setError("Unable to load API reference");
-					vscode.window.showErrorMessage("Failed to restart LootiScript Language Server.");
+					vscode.window.showErrorMessage(
+						"Failed to restart LootiScript Language Server.",
+					);
 				}
 			},
 		),
@@ -348,7 +349,6 @@ function createEnhancedHover(diagnostic: vscode.Diagnostic): vscode.Hover {
 
 	return new vscode.Hover(contents, diagnostic.range);
 }
-
 
 async function hydrateApiReference(apiProvider: ApiProvider): Promise<void> {
 	if (!client) {

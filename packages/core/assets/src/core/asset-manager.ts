@@ -13,7 +13,11 @@ import type {
 	Runtime,
 	TextLoaderResult,
 } from "../types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export type { Runtime };
 
@@ -72,7 +76,7 @@ export class AssetManager {
 						data: { assetName: `font: ${font}`, error: String(err) },
 					});
 					const formatted = formatForBrowser(diagnostic);
-					
+
 					if ((this.runtime as any)?.listener?.reportError) {
 						(this.runtime as any).listener.reportError(formatted);
 					}
@@ -82,7 +86,7 @@ export class AssetManager {
 				data: { assetName: `font: ${font}`, error: String(err) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if ((this.runtime as any)?.listener?.reportError) {
 				(this.runtime as any).listener.reportError(formatted);
 			}
@@ -127,7 +131,7 @@ export class AssetManager {
 				data: { assetName: `image: ${actualPath}` },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if ((this.runtime as any)?.listener?.reportError) {
 				(this.runtime as any).listener.reportError(formatted);
 			}
@@ -166,7 +170,7 @@ export class AssetManager {
 					data: { assetName: `JSON: ${path}`, error: String(err) },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if ((this.runtime as any)?.listener?.reportError) {
 					(this.runtime as any).listener.reportError(formatted);
 				}
@@ -209,7 +213,7 @@ export class AssetManager {
 					data: { assetName: `text: ${path}`, error: String(err) },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if ((this.runtime as any)?.listener?.reportError) {
 					(this.runtime as any).listener.reportError(formatted);
 				}

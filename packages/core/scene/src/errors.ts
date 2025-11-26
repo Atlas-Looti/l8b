@@ -3,7 +3,10 @@
  */
 
 export class SceneError extends Error {
-	constructor(message: string, public readonly context?: Record<string, unknown>) {
+	constructor(
+		message: string,
+		public readonly context?: Record<string, unknown>,
+	) {
 		super(message);
 		this.name = "SceneError";
 		Error.captureStackTrace?.(this, this.constructor);
@@ -33,4 +36,3 @@ export class InvalidSceneDefinitionError extends SceneError {
 		this.name = "InvalidSceneDefinitionError";
 	}
 }
-

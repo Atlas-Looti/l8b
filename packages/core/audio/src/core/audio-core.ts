@@ -4,7 +4,11 @@
  */
 import { Beeper } from "../devices/beeper";
 import { AUDIO_WORKLET_CODE } from "./audio-worklet";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export class AudioCore {
 	public context!: AudioContext;
@@ -71,7 +75,7 @@ export class AudioCore {
 					data: { soundName },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
@@ -98,7 +102,7 @@ export class AudioCore {
 					data: { musicName },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
@@ -178,7 +182,7 @@ export class AudioCore {
 				data: { error: String(e) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
@@ -294,7 +298,7 @@ export class AudioCore {
 					data: { error: String(err) },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}

@@ -12,6 +12,7 @@ import { storageMessages } from "./storage-messages";
 import { paletteMessages } from "./palette-messages";
 import { timeMessages } from "./time-messages";
 import { drawMessages } from "./draw-messages";
+import { validationMessages } from "./validation-messages";
 import type { MessageTemplate } from "../../types";
 
 /**
@@ -28,5 +29,5 @@ export const apiMessages: Record<string, MessageTemplate> = {
 	...paletteMessages,
 	...timeMessages,
 	...drawMessages,
+	...validationMessages,
 };
-

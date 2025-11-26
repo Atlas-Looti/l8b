@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const spriteMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7021]: {
@@ -56,4 +60,3 @@ export const spriteMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

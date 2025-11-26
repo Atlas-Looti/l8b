@@ -1,6 +1,10 @@
 import { ZBuffer } from "../tri";
 import type { ScreenInterface, ScreenOptions } from "../types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 /**
  * BaseScreen encapsulates canvas/context management plus shared drawing state.
@@ -110,12 +114,12 @@ export class BaseScreen {
 		if (!ctx) {
 			const diagnostic = createDiagnostic(APIErrorCode.E7001);
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			// Report error via runtime listener if available
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
-			
+
 			// Still throw for critical initialization failure
 			throw new Error(formatted);
 		}
@@ -174,22 +178,25 @@ export class BaseScreen {
 			this.context.strokeStyle = hex;
 		} else if (typeof color === "string") {
 			// Validate color format
-			const isValidColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(color) ||
+			const isValidColor =
+				/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(color) ||
 				/^rgb\(|^rgba\(|^hsl\(|^hsla\(/.test(color) ||
-				/^(red|green|blue|yellow|cyan|magenta|black|white|gray|grey|orange|pink|purple|brown|transparent)$/i.test(color);
-			
+				/^(red|green|blue|yellow|cyan|magenta|black|white|gray|grey|orange|pink|purple|brown|transparent)$/i.test(
+					color,
+				);
+
 			if (!isValidColor) {
 				const diagnostic = createDiagnostic(APIErrorCode.E7003, {
 					data: { color },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
 				return;
 			}
-			
+
 			this.context.fillStyle = color;
 			this.context.strokeStyle = color;
 		}
@@ -205,13 +212,13 @@ export class BaseScreen {
 
 	setBlending(blending: string): void {
 		const blend = this.blending[blending || "normal"];
-		
+
 		if (!blend) {
 			const diagnostic = createDiagnostic(APIErrorCode.E7007, {
 				data: { blendMode: blending },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
@@ -219,7 +226,7 @@ export class BaseScreen {
 			this.context.globalCompositeOperation = "source-over";
 			return;
 		}
-		
+
 		this.context.globalCompositeOperation = blend as GlobalCompositeOperation;
 	}
 
@@ -280,7 +287,7 @@ export class BaseScreen {
 					data: { font },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
@@ -290,7 +297,7 @@ export class BaseScreen {
 				data: { font },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
@@ -419,13 +426,13 @@ export class BaseScreen {
 					data: { width, height },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
 				return;
 			}
-			
+
 			this.canvas.width = width;
 			this.canvas.height = height;
 			this.initContext();

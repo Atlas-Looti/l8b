@@ -263,4 +263,3 @@ export const screenApi: Partial<GlobalApi> = {
 		},
 	},
 };
-

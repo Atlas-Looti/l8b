@@ -1,0 +1,10 @@
+// ============================================
+// API ERROR TESTS - E7100: Storage API Invalid Properties
+// ============================================
+
+// ❌ E7100: Unknown property on storage API
+testStorageErrors = function()
+ storage.wrongMethod()
+ storage.invalidProperty = "test"
+ storage.nonExistentFunction()
+end

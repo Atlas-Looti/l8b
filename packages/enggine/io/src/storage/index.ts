@@ -2,7 +2,11 @@
  * Storage service - localStorage wrapper with automatic serialization
  */
 
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export class StorageService {
 	private namespace: string;
@@ -31,13 +35,13 @@ export class StorageService {
 				data: { key: String(name) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 			return null;
 		}
-		
+
 		// Check cache first
 		if (this.cache.has(name)) {
 			return this.cache.get(name);
@@ -58,7 +62,7 @@ export class StorageService {
 					data: { error: `Get operation failed: ${String(err)}` },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
@@ -78,13 +82,13 @@ export class StorageService {
 				data: { key: String(name) },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 			return;
 		}
-		
+
 		// Update cache
 		this.cache.set(name, value);
 
@@ -128,7 +132,7 @@ export class StorageService {
 				if (err.name === "QuotaExceededError" || err.code === 22) {
 					const diagnostic = createDiagnostic(APIErrorCode.E7061);
 					const formatted = formatForBrowser(diagnostic);
-					
+
 					if (this.runtime?.listener?.reportError) {
 						this.runtime.listener.reportError(formatted);
 					}
@@ -137,7 +141,7 @@ export class StorageService {
 						data: { error: `Set operation failed: ${String(err)}` },
 					});
 					const formatted = formatForBrowser(diagnostic);
-					
+
 					if (this.runtime?.listener?.reportError) {
 						this.runtime.listener.reportError(formatted);
 					}

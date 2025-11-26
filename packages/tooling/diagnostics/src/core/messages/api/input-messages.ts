@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const inputMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7051]: {
@@ -30,4 +34,3 @@ export const inputMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

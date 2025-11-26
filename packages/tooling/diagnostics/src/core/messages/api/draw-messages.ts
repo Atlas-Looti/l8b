@@ -3,14 +3,19 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const drawMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7091]: {
 		code: APIErrorCode.E7091,
 		severity: DiagnosticSeverity.Error,
 		category: DiagnosticCategory.API,
-		message: (args) => `Drawing operation failed: ${args.operation || "unknown"}`,
+		message: (args) =>
+			`Drawing operation failed: ${args.operation || "unknown"}`,
 		description: "A drawing operation could not be completed",
 		suggestions: [
 			"Check if drawing context is valid",
@@ -44,4 +49,3 @@ export const drawMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

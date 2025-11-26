@@ -3,7 +3,11 @@
  */
 
 import { RuntimeErrorCode } from "../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../types";
 
 export const runtimeMessages: Record<string, MessageTemplate> = {
 	[RuntimeErrorCode.E2001]: {
@@ -65,4 +69,3 @@ export const runtimeMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

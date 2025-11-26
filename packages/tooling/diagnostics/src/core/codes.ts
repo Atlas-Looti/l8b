@@ -137,6 +137,9 @@ export enum APIErrorCode {
 	E7091 = "E7091", // Drawing operation failed
 	E7092 = "E7092", // Invalid drawing context
 	E7093 = "E7093", // Invalid drawing parameters
+
+	// API Validation Errors (E7100-E7199)
+	E7100 = "E7100", // Unknown API property
 }
 
 /**
@@ -172,4 +175,3 @@ export type ErrorCode =
  * Union type of all diagnostic codes
  */
 export type DiagnosticCode = ErrorCode | WarningCode;
-

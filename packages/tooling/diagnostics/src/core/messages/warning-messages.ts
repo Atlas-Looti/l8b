@@ -3,7 +3,11 @@
  */
 
 import { WarningCode } from "../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../types";
 
 export const warningMessages: Record<string, MessageTemplate> = {
 	// Syntax Warnings (W1xxx)
@@ -23,7 +27,8 @@ export const warningMessages: Record<string, MessageTemplate> = {
 		severity: DiagnosticSeverity.Warning,
 		category: DiagnosticCategory.Syntax,
 		message: "Assignment used as condition",
-		description: "An assignment operator (=) was used in a condition instead of comparison (==)",
+		description:
+			"An assignment operator (=) was used in a condition instead of comparison (==)",
 		suggestions: [
 			"Use == for comparison instead of =",
 			"Check if you meant to assign before comparing",
@@ -82,7 +87,8 @@ export const warningMessages: Record<string, MessageTemplate> = {
 		code: WarningCode.W5004,
 		severity: DiagnosticSeverity.Warning,
 		category: DiagnosticCategory.Scene,
-		message: "No scenes registered. Make sure to call scene() before router.init().",
+		message:
+			"No scenes registered. Make sure to call scene() before router.init().",
 		description: "Router was initialized before any scenes were registered",
 		suggestions: [
 			"Register scenes before calling router.init()",
@@ -90,4 +96,3 @@ export const warningMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

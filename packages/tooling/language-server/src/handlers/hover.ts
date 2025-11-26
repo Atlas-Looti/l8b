@@ -18,12 +18,19 @@ export function setupHoverHandler(
 		if (!document) return null;
 
 		// Check if we're in an embedded language region
-		const mode = languageModes.getModeAtPosition(document, params.position);
-		if (mode && mode.doHover) {
-			const result = await mode.doHover(document, params.position);
-			if (result) {
-				return result;
+		try {
+			const mode = languageModes.getModeAtPosition(document, params.position);
+			if (mode && mode.doHover) {
+				const result = await mode.doHover(document, params.position);
+				if (result) {
+					return result;
+				}
 			}
+		} catch (error: any) {
+			// Log error but continue with default hover
+			connection.console?.error(
+				`Hover error in embedded mode: ${error?.message || error}`,
+			);
 		}
 
 		// Default LootiScript hover
@@ -63,4 +70,3 @@ function findSymbolByName(
 ): SymbolInfo | undefined {
 	return state.symbols.find((sym) => sym.name === name);
 }
-

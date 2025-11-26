@@ -63,7 +63,9 @@ export function setupCodeActionsHandler(
 					kind: CodeActionKind.QuickFix,
 					edit: {
 						changes: {
-							[params.textDocument.uri]: [TextEdit.replace(diagnostic.range, "")],
+							[params.textDocument.uri]: [
+								TextEdit.replace(diagnostic.range, ""),
+							],
 						},
 					},
 					diagnostics: [diagnostic],
@@ -72,7 +74,8 @@ export function setupCodeActionsHandler(
 
 			// Quick fix: Missing 'end' keyword (generic)
 			if (
-				(message.includes("unterminated") || message.includes("missing 'end'")) &&
+				(message.includes("unterminated") ||
+					message.includes("missing 'end'")) &&
 				!errorCode
 			) {
 				actions.push({
@@ -152,5 +155,3 @@ export function setupCodeActionsHandler(
 		return actions;
 	});
 }
-
-

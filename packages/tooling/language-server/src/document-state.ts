@@ -172,4 +172,31 @@ function buildRange(node: ASTNode): Range {
 	);
 }
 
+export function getWordAtPosition(
+	document: TextDocument,
+	position: Position,
+): string | null {
+	const line = document.getText({
+		start: Position.create(position.line, 0),
+		end: Position.create(position.line + 1, 0),
+	});
 
+	const wordRegex = /\b[a-zA-Z_][a-zA-Z0-9_]*\b/g;
+	let match;
+	while ((match = wordRegex.exec(line)) !== null) {
+		const start = match.index;
+		const end = start + match[0].length;
+		if (position.character >= start && position.character <= end) {
+			return match[0];
+		}
+	}
+
+	return null;
+}
+
+export function findSymbolByName(
+	state: DocumentState,
+	name: string,
+): SymbolInfo | null {
+	return state.symbols.find((s) => s.name === name) || null;
+}

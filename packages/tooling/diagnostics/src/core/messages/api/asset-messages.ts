@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const assetMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7041]: {
@@ -54,4 +58,3 @@ export const assetMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

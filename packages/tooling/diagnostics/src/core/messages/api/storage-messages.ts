@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const storageMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7061]: {
@@ -36,10 +40,6 @@ export const storageMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid storage key: '${args.key}'`,
 		description: "The storage key is invalid",
-		suggestions: [
-			"Use a valid key format",
-			"Check key length and characters",
-		],
+		suggestions: ["Use a valid key format", "Check key length and characters"],
 	},
 };
-

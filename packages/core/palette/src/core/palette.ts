@@ -3,7 +3,11 @@
  */
 
 import type { ColorHex, ColorRGB, PaletteData } from "../types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export interface PaletteOptions {
 	colors?: ColorHex[];
@@ -18,7 +22,7 @@ export class Palette {
 
 	constructor(options: PaletteOptions | PaletteData = {}, runtime?: any) {
 		this.runtime = runtime;
-		
+
 		if ("colors" in options && Array.isArray(options.colors)) {
 			// Validate palette format
 			if (!this.validatePaletteFormat(options.colors)) {
@@ -26,7 +30,7 @@ export class Palette {
 					data: { format: "invalid color array" },
 				});
 				const formatted = formatForBrowser(diagnostic);
-				
+
 				if (this.runtime?.listener?.reportError) {
 					this.runtime.listener.reportError(formatted);
 				}
@@ -44,14 +48,14 @@ export class Palette {
 
 		this.rgbCache = new Map();
 	}
-	
+
 	/**
 	 * Validate palette format
 	 */
 	private validatePaletteFormat(colors: any[]): boolean {
 		if (!Array.isArray(colors)) return false;
-		return colors.every(color => 
-			typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color)
+		return colors.every(
+			(color) => typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color),
 		);
 	}
 
@@ -65,17 +69,17 @@ export class Palette {
 				data: { index, maxIndex: this.colors.length - 1 },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 			return "#000000";
 		}
-		
+
 		if (this.colors.length === 0) {
 			return "#000000";
 		}
-		
+
 		return this.colors[index % this.colors.length] || "#000000";
 	}
 
@@ -124,26 +128,26 @@ export class Palette {
 				data: { index, maxIndex: this.colors.length - 1 },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 			return;
 		}
-		
+
 		// Validate color format
 		if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
 			const diagnostic = createDiagnostic(APIErrorCode.E7072, {
 				data: { format: color },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 			return;
 		}
-		
+
 		// Expand palette if needed
 		while (this.colors.length <= index) {
 			this.colors.push("#000000");
@@ -180,13 +184,13 @@ export class Palette {
 				data: { format: "invalid color array" },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 			return;
 		}
-		
+
 		this.colors = [...colors];
 		this.rgbCache.clear();
 	}

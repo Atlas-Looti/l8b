@@ -161,12 +161,12 @@ export function compileSource(
 			error.line !== undefined
 				? error
 				: {
-					error: error.message || String(error),
-					line: error.line,
-					column: error.column,
-					context: error.context,
-					suggestions: error.suggestions,
-				},
+						error: error.message || String(error),
+						line: error.line,
+						column: error.column,
+						context: error.context,
+						suggestions: error.suggestions,
+					},
 		);
 
 		return { errors, warnings, filename };

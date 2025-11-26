@@ -119,5 +119,3 @@ function findSymbolByName(
 ): SymbolInfo | undefined {
 	return state.symbols.find((sym) => sym.name === name);
 }
-
-

@@ -3,7 +3,11 @@
  */
 
 import { CompilationErrorCode } from "../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../types";
 
 export const compilationMessages: Record<string, MessageTemplate> = {
 	[CompilationErrorCode.E3001]: {
@@ -41,4 +45,3 @@ export const compilationMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

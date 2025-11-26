@@ -3,7 +3,11 @@ import { KeyboardInput } from "../devices/keyboard";
 import { MouseInput } from "../devices/mouse";
 import { TouchInput } from "../devices/touch";
 import type { KeyboardState, MouseState, TouchState } from "../types";
-import { createDiagnostic, APIErrorCode, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	APIErrorCode,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 /**
  * Input manager - orchestrates keyboard, mouse, touch, and gamepad handlers.
@@ -40,7 +44,7 @@ export class Input {
 				data: { error: "Keyboard state not available" },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
@@ -57,7 +61,7 @@ export class Input {
 				data: { error: "Mouse state not available" },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
@@ -74,7 +78,7 @@ export class Input {
 				data: { error: "Touch state not available" },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
@@ -91,7 +95,7 @@ export class Input {
 				data: { device: "gamepad" },
 			});
 			const formatted = formatForBrowser(diagnostic);
-			
+
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}

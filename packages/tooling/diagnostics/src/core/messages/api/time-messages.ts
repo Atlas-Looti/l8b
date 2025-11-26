@@ -3,7 +3,11 @@
  */
 
 import { APIErrorCode } from "../../codes";
-import { MessageTemplate, DiagnosticSeverity, DiagnosticCategory } from "../../types";
+import {
+	MessageTemplate,
+	DiagnosticSeverity,
+	DiagnosticCategory,
+} from "../../types";
 
 export const timeMessages: Record<string, MessageTemplate> = {
 	[APIErrorCode.E7081]: {
@@ -55,4 +59,3 @@ export const timeMessages: Record<string, MessageTemplate> = {
 		],
 	},
 };
-

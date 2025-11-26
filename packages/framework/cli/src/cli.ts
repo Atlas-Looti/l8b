@@ -58,7 +58,9 @@ function normalizePort(port?: number): number | undefined {
 	return undefined;
 }
 
-function coerceHost(value: MaybeArray<string | boolean | number> | undefined): HostOption {
+function coerceHost(
+	value: MaybeArray<string | boolean | number> | undefined,
+): HostOption {
 	if (Array.isArray(value)) {
 		return coerceHost(value[value.length - 1]);
 	}

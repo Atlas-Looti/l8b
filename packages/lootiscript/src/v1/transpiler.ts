@@ -168,7 +168,6 @@ export class Transpiler {
 		s += "return stack_index ;\n}";
 		console.info(s);
 		try {
-			 
 			eval(s);
 		} catch (error) {
 			err = error;

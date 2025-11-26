@@ -1,0 +1,10 @@
+// ============================================
+// API ERROR TESTS - E7100: Keyboard API Invalid Properties
+// ============================================
+
+// ❌ E7100: Unknown property on keyboard API
+testKeyboardErrors = function()
+ keyboard.invalidKey()
+ keyboard.wrongProperty = 10
+ keyboard.nonExistentMethod()
+end

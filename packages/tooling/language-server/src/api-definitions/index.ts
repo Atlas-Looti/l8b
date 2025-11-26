@@ -33,7 +33,9 @@ export const GLOBAL_API: GlobalApi = {
 } as GlobalApi;
 
 /**
- * Regex to match API access patterns (e.g., "screen.drawSprite", "Math.abs")
+ * Regex to match API access patterns:
+ * - Single level: "screen.drawSprite", "Math.abs"
+ * - Nested: "sprites.player.x", "map.level1.width"
  */
-export const API_ACCESS_REGEX = /\b([A-Za-z_][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)\b/g;
-
+export const API_ACCESS_REGEX =
+	/\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\.([A-Za-z_][A-Za-z0-9_]*)\b/g;

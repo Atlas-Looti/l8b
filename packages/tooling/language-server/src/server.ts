@@ -20,7 +20,19 @@ import { setupSignatureHelpHandler } from "./handlers/signature-help";
 import { setupSymbolHandlers } from "./handlers/symbols";
 import { setupFormattingHandler } from "./handlers/formatting";
 import { setupCodeActionsHandler } from "./handlers/code-actions";
-import { clearDocumentSettings, setGlobalSettings, sanitizeSettings } from "./settings";
+import { setupDefinitionHandler } from "./handlers/definition";
+import { setupReferencesHandler } from "./handlers/references";
+import { setupRenameHandler } from "./handlers/rename";
+import {
+	setupSemanticTokensHandler,
+	TOKEN_TYPES,
+	TOKEN_MODIFIERS,
+} from "./handlers/semantic-tokens";
+import {
+	clearDocumentSettings,
+	setGlobalSettings,
+	sanitizeSettings,
+} from "./settings";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -78,6 +90,13 @@ connection.onInitialize((params: InitializeParams) => {
 			},
 			codeActionProvider: {
 				codeActionKinds: [CodeActionKind.QuickFix, CodeActionKind.Refactor],
+			},
+			semanticTokensProvider: {
+				legend: {
+					tokenTypes: TOKEN_TYPES,
+					tokenModifiers: TOKEN_MODIFIERS,
+				},
+				full: true,
 			},
 		},
 	};
@@ -159,12 +178,21 @@ connection.onDidChangeWatchedFiles((_change) => {
 });
 
 // Setup all handlers
-setupCompletionHandlers(connection, documents, languageModes, hasConfigurationCapability);
+setupCompletionHandlers(
+	connection,
+	documents,
+	languageModes,
+	hasConfigurationCapability,
+);
 setupHoverHandler(connection, documents, languageModes);
 setupSignatureHelpHandler(connection, documents, hasConfigurationCapability);
 setupSymbolHandlers(connection);
 setupFormattingHandler(connection, documents, hasConfigurationCapability);
 setupCodeActionsHandler(connection, documents);
+setupDefinitionHandler(connection, documents);
+setupReferencesHandler(connection, documents);
+setupRenameHandler(connection, documents);
+setupSemanticTokensHandler(connection, documents);
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events

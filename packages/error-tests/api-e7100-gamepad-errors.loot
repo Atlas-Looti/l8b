@@ -1,0 +1,10 @@
+// ============================================
+// API ERROR TESTS - E7100: Gamepad API Invalid Properties
+// ============================================
+
+// ❌ E7100: Unknown property on gamepad API
+testGamepadErrors = function()
+ gamepad.wrongButton()
+ gamepad.invalidAxis = 5
+ gamepad.nonExistentMethod()
+end

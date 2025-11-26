@@ -1,5 +1,5 @@
+import { TextDocument } from "vscode-languageserver-textdocument";
 import {
-	TextDocument,
 	Position,
 	CompletionList,
 	Hover,

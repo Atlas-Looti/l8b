@@ -37,4 +37,3 @@ export interface LootiConfig {
 	};
 	logging?: LootiLoggingConfig;
 }
-
