@@ -24,6 +24,7 @@ local z = 30  // semua sama
 ```
 
 **Tips:**
+
 - Gunakan local variables untuk temporary values dalam functions
 - Hindari mixing local dan global variables dengan nama sama
 

@@ -15,6 +15,7 @@ Untuk memudahkan pekerjaan Anda, l8b secara otomatis menskalakan koordinat layar
 - **Rentang**: Karena 0 ada di tengah, dimensi terkecil berkisar dari **-100 hingga +100**.
 
 Dimensi terbesar akan menyesuaikan rasio aspek layar. Misalnya pada layar 16:9:
+
 - Landscape: Y dari -100 s/d +100, X dari -178 s/d +178.
 - Portrait: X dari -100 s/d +100, Y dari -178 s/d +178.
 
@@ -32,6 +33,7 @@ Dimensi terbesar akan menyesuaikan rasio aspek layar. Misalnya pada layar 16:9:
 Mendefinisikan warna yang akan digunakan untuk pemanggilan fungsi menggambar berikutnya.
 
 Warna didefinisikan sebagai string:
+
 - **RGB**: `"rgb(255,0,0)"` (Merah terang), `"rgb(255,255,255)"` (Putih). Nilai 0-255.
 - **Hex**: `"#FFF"` atau `"#FFFFFF"` (Putih), `"#F00"` (Merah).
 - **Nama**: `"red"`, `"blue"`, `"white"`, dll (sesuai standar HTML5).
@@ -47,6 +49,7 @@ screen.clear("#000") // Isi layar dengan hitam
 #### `screen.setAlpha(opacity)`
 
 Mendefinisikan tingkat opasitas (transparansi) keseluruhan untuk fungsi menggambar selanjutnya.
+
 - `0`: Transparan total (tidak terlihat).
 - `1`: Opasitas total (menutupi apa yang ada di bawahnya).
 
@@ -59,6 +62,7 @@ screen.setAlpha(1)   // Reset ke default
 #### `screen.setBlending(mode)`
 
 Mendefinisikan bagaimana operasi menggambar selanjutnya akan dikomposisikan dengan gambar yang sudah ada.
+
 - `"normal"`: Menimpa gambar di bawahnya (default).
 - `"additive"`: Menambahkan nilai warna (efek cahaya/glowing).
 
@@ -67,6 +71,7 @@ Mendefinisikan bagaimana operasi menggambar selanjutnya akan dikomposisikan deng
 #### `screen.fillRect(x, y, width, height, color)`
 
 Menggambar persegi panjang **padat** (terisi warna).
+
 - `x, y`: Koordinat pusat persegi panjang.
 - `width, height`: Lebar dan tinggi.
 - `color`: (Opsional) Warna isi. Jika dihilangkan, menggunakan warna terakhir.
@@ -78,6 +83,7 @@ Menggambar **garis tepi** (outline) persegi panjang. Parameter sama dengan `fill
 #### `screen.fillRound(x, y, width, height, color)`
 
 Menggambar bentuk bulat padat (lingkaran atau elips tergantung dimensi).
+
 - `x, y`: Koordinat pusat.
 - `width, height`: Diameter horizontal dan vertikal.
 
@@ -107,6 +113,7 @@ Sama seperti polygon tapi garis tidak ditutup otomatis kembali ke titik awal.
 #### `screen.drawArc(x, y, radius, startAngle, endAngle, counterClockwise, color)`
 
 Menggambar busur lingkaran.
+
 - `radius`: Jari-jari lingkaran.
 - `startAngle, endAngle`: Sudut dalam **derajat**.
 
@@ -115,6 +122,7 @@ Menggambar busur lingkaran.
 #### `screen.drawSprite(name, x, y, width, height)`
 
 Menggambar sprite yang telah Anda buat di tab Sprites.
+
 - `name`: Nama sprite (string), contoh `"player"`.
 - `x, y`: Koordinat pusat sprite.
 - `width`: Lebar tampilan.
@@ -122,12 +130,14 @@ Menggambar sprite yang telah Anda buat di tab Sprites.
 
 **Animated Sprites**:
 Jika sprite memiliki animasi, l8b otomatis memutar frame yang sesuai.
+
 - `sprites["name"].setFrame(0)`: Reset animasi ke frame awal.
 - `screen.drawSprite("name.0", ...)`: Menggambar frame spesifik (frame 0).
 
 #### `screen.drawMap(name, x, y, width, height)`
 
 Menggambar map yang dibuat di tab Maps.
+
 - `name`: Nama map.
 - `x, y`: Koordinat pusat tampilan map.
 - `width, height`: Ukuran tampilan map di layar.
@@ -137,6 +147,7 @@ Menggambar map yang dibuat di tab Maps.
 #### `screen.drawText(text, x, y, size, color)`
 
 Menampilkan teks di layar.
+
 - `text`: String teks yang akan ditampilkan.
 - `x, y`: Koordinat pusat teks.
 - `size`: Tinggi teks.
@@ -155,7 +166,9 @@ Memulai proses loading font. Font harus diload sebelum bisa digunakan dengan sem
 Fungsi-fungsi ini mengubah sistem koordinat untuk operasi menggambar selanjutnya. **Penting:** Selalu reset kembali nilai transformasi setelah selesai menggambar bagian yang diinginkan.
 
 #### `screen.setTranslation(tx, ty)`
+
 Menggeser titik asal koordinat.
+
 ```lua
 screen.setTranslation(50, 50)
 // Menggambar di (0,0) sekarang akan muncul di (50,50)
@@ -163,7 +176,9 @@ screen.setTranslation(0, 0) // Reset
 ```
 
 #### `screen.setRotation(angle)`
+
 Memutar seluruh sistem koordinat sebesar `angle` derajat.
+
 ```lua
 screen.setRotation(45)
 // Gambar miring 45 derajat
@@ -171,7 +186,9 @@ screen.setRotation(0) // Reset
 ```
 
 #### `screen.setScale(x, y)`
+
 Memperbesar/memperkecil sistem koordinat.
+
 ```lua
 screen.setScale(2, 2) // Zoom 2x
 screen.setScale(1, 1) // Reset
@@ -182,7 +199,9 @@ screen.setScale(1, 1) // Reset
 Berbeda dengan transformasi layar, fungsi ini hanya mempengaruhi **bagaimana objek digambar**, bukan sistem koordinatnya.
 
 #### `screen.setDrawRotation(angle)`
+
 Memutar objek (sprite/text/rect) pada porosnya sendiri.
+
 ```lua
 screen.setDrawRotation(90)
 screen.drawSprite("player", 0, 0, 32) // Player diputar 90 derajat
@@ -190,7 +209,9 @@ screen.setDrawRotation(0) // Reset
 ```
 
 #### `screen.setDrawAnchor(anchorX, anchorY)`
+
 Mengubah titik tumpu (anchor point) gambar. Defaultnya adalah tengah (0,0).
+
 - `x`: -1 (kiri), 0 (tengah), 1 (kanan)
 - `y`: -1 (bawah), 0 (tengah), 1 (atas)
 
@@ -261,6 +282,7 @@ l8b memungkinkan Anda memutar efek suara dan musik.
 ### `audio.playSound(name, volume, pitch, pan, loop)`
 
 Memutar suara (SFX).
+
 - `name`: Nama file suara di tab Sounds.
 - `volume`: 0 sampai 1 (default 1).
 - `pitch`: Kecepatan playback (default 1).
@@ -268,6 +290,7 @@ Memutar suara (SFX).
 - `loop`: 1 (true) untuk mengulang terus menerus.
 
 Mengembalikan objek suara yang bisa dikontrol:
+
 ```lua
 sfx = audio.playSound("explosion")
 sfx.setVolume(0.5)
@@ -277,11 +300,13 @@ sfx.stop()
 ### `audio.playMusic(name, volume, loop)`
 
 Memutar musik latar (BGM).
+
 - `name`: Nama file musik di tab Music.
 - `volume`: 0 sampai 1.
 - `loop`: 1 (true) untuk looping.
 
 Mengembalikan objek musik:
+
 ```lua
 bgm = audio.playMusic("theme", 0.8, 1)
 bgm.stop()
@@ -291,6 +316,7 @@ bgm.play() // Resume
 ### `audio.beep(pattern)`
 
 Memutar suara sintetis sederhana (legacy beeper).
+
 ```lua
 audio.beep("C E G") // Memutar chord C Major
 ```
@@ -350,10 +376,13 @@ Objek `system` menyediakan informasi sistem dan kontrol alur.
 ### Interaksi & Kontrol
 
 #### `system.say(message)`
+
 Menampilkan jendela pesan (alert).
 
 #### `system.prompt(message, callback)`
+
 Menampilkan jendela input teks.
+
 ```lua
 system.prompt("Siapa nama Anda?", function(result)
   if result then
@@ -363,9 +392,11 @@ end)
 ```
 
 #### `system.pause()`
+
 Menjeda eksekusi program (hanya di development environment).
 
 #### `system.exit()`
+
 Keluar dari program.
 
 ## Storage
@@ -373,6 +404,7 @@ Keluar dari program.
 Objek `storage` memungkinkan penyimpanan data permanen (Persistent Storage). Data tetap tersimpan meskipun browser ditutup.
 
 #### `storage.set(name, value)`
+
 Menyimpan nilai secara permanen. Nilai bisa berupa number, string, list, atau object.
 
 ```lua
@@ -381,6 +413,7 @@ storage.set("settings", { sound: true, music: false })
 ```
 
 #### `storage.get(name)`
+
 Mengambil nilai yang tersimpan. Mengembalikan `null` jika data tidak ditemukan (atau `0` tergantung implementasi, cek nilai balik).
 
 ```lua

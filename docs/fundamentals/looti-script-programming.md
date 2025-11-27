@@ -511,6 +511,7 @@ player.y = 30  // O(1) direct access
 ```
 
 Cache memiliki 3 state:
+
 - **Monomorphic**: Single object shape (tercepat, O(1))
 - **Polymorphic**: 2-4 object shapes berbeda (cepat)
 - **Megamorphic**: Banyak shapes (fallback ke hash lookup)
@@ -520,6 +521,7 @@ Cache memiliki 3 state:
 Compiler melakukan beberapa optimisasi otomatis:
 
 **1. Peephole Optimization (Opcode Fusion)**
+
 ```lua
 // Kode Anda:
 x = getValue()
@@ -530,6 +532,7 @@ x()
 ```
 
 **2. Constant Folding**
+
 ```lua
 // Kode Anda:
 x = 2 + 3 * 4
@@ -539,6 +542,7 @@ x = 14  // Tidak ada operasi runtime
 ```
 
 **3. Dead Code Elimination**
+
 ```lua
 // Kode Anda:
 if false then
@@ -559,6 +563,7 @@ Runtime menggunakan **object pooling** untuk mengurangi garbage collection:
 ### Best Practices untuk Performa
 
 1. **Gunakan local variables** untuk variabel yang sering diakses:
+
 ```lua
 update = function()
   local px = player.x  // Cache ke local
@@ -572,6 +577,7 @@ end
 ```
 
 2. **Hindari property access berulang** dalam loop:
+
 ```lua
 // ❌ Buruk
 for i = 0 to 100
@@ -586,6 +592,7 @@ end
 ```
 
 3. **Gunakan arrow functions** untuk callback sederhana:
+
 ```lua
 // Lebih efisien untuk fungsi kecil
 enemies.forEach(e => e.update())

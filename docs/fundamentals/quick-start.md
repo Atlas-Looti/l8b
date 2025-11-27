@@ -32,6 +32,7 @@ Untuk pengalaman development yang optimal, install **LootiScript extension** unt
 4. Klik **Install**
 
 **Fitur extension:**
+
 - ✅ Syntax highlighting untuk file `.loot`
 - ✅ Code completion dan IntelliSense
 - ✅ Error detection dan diagnostics
@@ -68,6 +69,7 @@ File `l8b.config.json` di root project digunakan untuk mengatur metadata dan beh
 ```
 
 **Options:**
+
 - `name`: Nama project (identifier)
 - `orientation`: Orientasi layar (`any`, `portrait`, `landscape`)
 - `aspect`: Rasio aspek layar (`free`, `16:9`, `4:3`, dll)
@@ -140,6 +142,7 @@ end
 ### `update()`
 
 Dipanggil **60 kali per detik**. Tempat terbaik untuk:
+
 - Game logic dan physics
 - Movement dan collision detection
 - Input handling (keyboard, mouse, gamepad)
