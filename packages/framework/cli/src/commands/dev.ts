@@ -72,7 +72,6 @@ export async function dev(
 		const watchPaths = [
 			path.join(projectPath, DEFAULT_DIRS.PUBLIC),
 			path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
-			path.join(projectPath, DEFAULT_DIRS.SRC_L8B_LS),
 			path.join(projectPath, DEFAULT_FILES.CONFIG),
 		];
 
@@ -132,8 +131,8 @@ export async function dev(
 		 * Get or cache sources with hash-based invalidation
 		 */
 		const getSources = async (): Promise<Record<string, string>> => {
-			// Compute hash for sources (scripts directories)
-			const hashPaths = [DEFAULT_DIRS.SCRIPTS, DEFAULT_DIRS.SRC_L8B_LS];
+			// Compute hash for sources (scripts directory)
+			const hashPaths = [DEFAULT_DIRS.SCRIPTS];
 			const currentHash = await computeHash(projectPath, hashPaths);
 
 			// Try to get from cache

@@ -16,8 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  */
 export const DEFAULT_DIRS = {
 	BUILD_OUTPUT: ".l8b",
-	SCRIPTS: "scripts",
-	SRC_L8B_LS: "src/l8b/ls",
+	SCRIPTS: "src",
 	PUBLIC: "public",
 	COMPILED: "compiled",
 	FONTS: "fonts",

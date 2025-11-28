@@ -144,39 +144,34 @@ export async function build(
 
 	// Copy source files (.loot) to dist for production
 	console.log(pc.gray("  Copying source files..."));
-	const scriptsDirs = [
-		path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
-		path.join(projectPath, DEFAULT_DIRS.SRC_L8B_LS),
-	];
+	const scriptsDir = path.join(projectPath, DEFAULT_DIRS.SCRIPTS);
 
-	for (const scriptsDir of scriptsDirs) {
-		if (await fs.pathExists(scriptsDir)) {
-			const scriptsDest = path.join(distDir, DEFAULT_DIRS.SCRIPTS);
-			await fs.ensureDir(scriptsDest);
+	if (await fs.pathExists(scriptsDir)) {
+		const scriptsDest = path.join(distDir, DEFAULT_DIRS.SCRIPTS);
+		await fs.ensureDir(scriptsDest);
 
-			/**
-			 * Copy .loot files recursively
-			 */
-			async function copyLootFiles(
-				srcDir: string,
-				destDir: string,
-			): Promise<void> {
-				const entries = await fs.readdir(srcDir, { withFileTypes: true });
-				for (const entry of entries) {
-					const srcPath = path.join(srcDir, entry.name);
-					const destPath = path.join(destDir, entry.name);
+		/**
+		 * Copy .loot files recursively
+		 */
+		async function copyLootFiles(
+			srcDir: string,
+			destDir: string,
+		): Promise<void> {
+			const entries = await fs.readdir(srcDir, { withFileTypes: true });
+			for (const entry of entries) {
+				const srcPath = path.join(srcDir, entry.name);
+				const destPath = path.join(destDir, entry.name);
 
-					if (entry.isDirectory()) {
-						await fs.ensureDir(destPath);
-						await copyLootFiles(srcPath, destPath);
-					} else if (entry.name.endsWith(".loot")) {
-						await fs.copy(srcPath, destPath);
-					}
+				if (entry.isDirectory()) {
+					await fs.ensureDir(destPath);
+					await copyLootFiles(srcPath, destPath);
+				} else if (entry.name.endsWith(".loot")) {
+					await fs.copy(srcPath, destPath);
 				}
 			}
-
-			await copyLootFiles(scriptsDir, scriptsDest);
 		}
+
+		await copyLootFiles(scriptsDir, scriptsDest);
 	}
 	console.log(pc.green("  ✓ Copied source files"));
 

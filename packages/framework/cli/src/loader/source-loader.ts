@@ -68,33 +68,18 @@ export async function loadSources(
 ): Promise<Record<string, string>> {
 	const sources: Record<string, string> = {};
 
-	// Check for standard locations
-	const locations = [
-		path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
-		path.join(projectPath, DEFAULT_DIRS.SRC_L8B_LS),
-	];
+	// Check for standard location
+	const scriptsDir = path.join(projectPath, DEFAULT_DIRS.SCRIPTS);
 
-	// Scan all locations in parallel
-	const scanTasks = locations.map((dir) => findLootFiles(dir));
-	const allFiles = (await Promise.all(scanTasks)).flat();
+	// Scan for .loot files
+	const allFiles = await findLootFiles(scriptsDir);
 
 	// Process files to create module names
 	for (const file of allFiles) {
-		// Determine which source root this file belongs to
-		let sourceRoot: string | null = null;
-		for (const loc of locations) {
-			if (file.startsWith(loc + path.sep) || file === loc) {
-				sourceRoot = loc;
-				break;
-			}
-		}
-
-		if (!sourceRoot) continue;
-
-		// Create a module name relative to the source root
-		// e.g. scripts/main.loot -> main
-		// scripts/scenes/level1.loot -> scenes/level1
-		const relativePath = path.relative(sourceRoot, file);
+		// Create a module name relative to the scripts directory
+		// e.g. src/main.loot -> main
+		// src/scenes/level1.loot -> scenes/level1
+		const relativePath = path.relative(scriptsDir, file);
 		const name = relativePath.replace(/\.loot$/, "").replace(/\\/g, "/");
 
 		// For dev server with Vite, we return the file path (relative to project root)

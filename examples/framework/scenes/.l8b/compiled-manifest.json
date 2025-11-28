@@ -2,22 +2,22 @@
   "modules": [
     {
       "name": "main",
-      "filename": "scripts/main.loot",
+      "filename": "src/main.loot",
       "path": "compiled/main.js"
     },
     {
       "name": "scenes/battle",
-      "filename": "scripts/scenes/battle.loot",
+      "filename": "src/scenes/battle.loot",
       "path": "compiled/scenes/battle.js"
     },
     {
       "name": "scenes/home",
-      "filename": "scripts/scenes/home.loot",
+      "filename": "src/scenes/home.loot",
       "path": "compiled/scenes/home.js"
     },
     {
       "name": "scenes/player",
-      "filename": "scripts/scenes/player.loot",
+      "filename": "src/scenes/player.loot",
       "path": "compiled/scenes/player.js"
     }
   ]
