@@ -315,6 +315,7 @@ end)
 
 ### Array Manipulation
 
+{% raw %}
 ```lua
 // Reverse (returns new array)
 local reversed = List.reverse({1, 2, 3})  // {3, 2, 1}
@@ -342,6 +343,7 @@ local result = List.flatMap({1, 2}, function(x)
 end)
 // Returns: {1, 2, 2, 4}
 ```
+{% endraw %}
 
 ### Searching
 
@@ -392,6 +394,7 @@ List.splice(arr, 1, 2, "a", "b")  // Remove 2 at index 1, insert "a", "b"
 
 ### Utilities
 
+{% raw %}
 ```lua
 // Fill array with value
 local filled = List.fill({1, 2, 3}, 0)  // {0, 0, 0}
@@ -409,6 +412,7 @@ local shuffled = List.shuffle({1, 2, 3, 4, 5})
 local chunks = List.chunk({1, 2, 3, 4, 5}, 2)
 // Returns: {{1, 2}, {3, 4}, {5}}
 ```
+{% endraw %}
 
 ### Number Array Utilities
 
