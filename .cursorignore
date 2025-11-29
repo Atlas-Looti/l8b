@@ -14,6 +14,8 @@ dist/
 out/
 .turbo/
 .vitepress/dist/
+.l8b/              # L8B build output
+*.tsbuildinfo     # TypeScript build info
 
 # Environment & Secrets
 .env
