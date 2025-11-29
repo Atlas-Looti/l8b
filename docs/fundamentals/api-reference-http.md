@@ -172,6 +172,7 @@ local response = await http.get("https://api.example.com/data", {
 ### Body
 
 For POST/PUT requests, body can be:
+
 - Object (will be JSON stringified)
 - String (sent as-is)
 
@@ -196,7 +197,7 @@ local response = await http.post("https://api.example.com/data", '{"name":"John"
 
 In development mode, all HTTP requests are automatically logged to the console:
 
-```
+```text
 [HTTP] GET    200 https://api.example.com/data (45ms) 1.2KB
 [HTTP] POST   201 https://api.example.com/users (120ms) 500B
 ```
@@ -276,5 +277,3 @@ catch (error)
   print("Error: " .. error)
 end
 ```
-
-

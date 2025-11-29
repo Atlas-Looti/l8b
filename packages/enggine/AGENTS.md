@@ -107,7 +107,7 @@ private initializeVM(): void {
 
 ## Virtual Machine
 
-### Architecture
+### VM Architecture
 
 The VM (`packages/enggine/vm`) executes compiled LootiScript bytecode:
 

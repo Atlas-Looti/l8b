@@ -1214,12 +1214,16 @@ Console.log(globalVar)  // 100
 
 Type annotations are parsed but not enforced at runtime:
 
+{% raw %}
+
 ```lua
 local name: string = "Alice"
 local age: number = 30
 local items: number[] = {1, 2, 3}
 local matrix: number[][] = {{1, 2}, {3, 4}}
 ```
+
+{% endraw %}
 
 Supported types:
 

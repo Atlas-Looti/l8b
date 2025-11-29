@@ -192,5 +192,3 @@ end
 - All actions require the app to be running in a Farcaster Mini App environment
 - Actions will throw errors if called outside of a Mini App
 - Use `player.isInMiniApp()` to check if actions are available before calling
-
-
