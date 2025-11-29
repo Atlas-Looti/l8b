@@ -45,6 +45,7 @@ screen.clear("#FF0000")  // Fill screen with red
 Sets the color for subsequent drawing operations.
 
 Color can be defined as:
+
 - **RGB**: `"rgb(255,0,0)"` (bright red), `"rgb(255,255,255)"` (white). Values 0-255.
 - **Hex**: `"#FFF"` or `"#FFFFFF"` (white), `"#F00"` (red).
 - **Named**: `"red"`, `"blue"`, `"white"`, etc. (HTML5 standard colors).
@@ -356,6 +357,7 @@ end
 ```
 
 **Available Keys:**
+
 - Arrow keys: `UP`, `DOWN`, `LEFT`, `RIGHT`
 - Letter keys: `A`, `B`, `C`, ... `Z`
 - Number keys: `keyboard["0"]`, `keyboard["1"]`, ... `keyboard["9"]`
@@ -389,6 +391,7 @@ The `touch` object for touch screens (also reports mouse status as single touch)
 | `touch.touches` | Array of all active touch points (for multi-touch). |
 
 **Touch Point Object:**
+
 - `x` - Touch X position
 - `y` - Touch Y position
 - `id` - Unique touch identifier
@@ -403,6 +406,7 @@ if gamepad.press.A == 1 then jump() end
 ```
 
 **Available Buttons:**
+
 - Face buttons: `A`, `B`, `X`, `Y`
 - D-pad: `UP`, `DOWN`, `LEFT`, `RIGHT`
 - Shoulder buttons: `L1`, `R1`
@@ -422,6 +426,7 @@ L8B allows you to play sound effects and music.
 Plays a sound effect (SFX).
 
 **Parameters:**
+
 - `name`: Sound file name (relative to `assets/` directory)
 - `volume`: 0.0 to 1.0 (default: 1.0)
 - `pitch`: 0.5 to 2.0 (default: 1.0)
@@ -429,6 +434,7 @@ Plays a sound effect (SFX).
 - `loop`: `true` to loop continuously (default: `false`)
 
 **Returns:** Sound control object with methods:
+
 - `stop()` - Stop the sound
 - `setVolume(v)` - Set volume (0.0-1.0)
 - `setPitch(p)` - Set pitch (0.5-2.0)
@@ -447,11 +453,13 @@ sfx.stop()
 Plays background music (BGM).
 
 **Parameters:**
+
 - `name`: Music file name (relative to `assets/` directory)
 - `volume`: 0.0 to 1.0 (default: 1.0)
 - `loop`: `true` to loop (default: `false`)
 
 **Returns:** Music control object with methods:
+
 - `play()` - Resume playback
 - `stop()` - Stop the music
 - `setVolume(v)` - Set volume (0.0-1.0)
@@ -475,6 +483,7 @@ Audio.beep("tempo 120 C4 D4 E4 F4")
 ```
 
 **Note Format:**
+
 - Note names: `C`, `D`, `E`, `F`, `G`, `A`, `B`
 - Octaves: `0-8` (e.g., `C4`, `A3`)
 - Sharps: `#` (e.g., `C#4`)
@@ -496,10 +505,12 @@ The asset manager allows you to load external files. Loading is **asynchronous**
 Loads an image file.
 
 **Parameters:**
+
 - `path`: Image file path relative to `assets/` directory
 - `callback`: Optional callback called when image is loaded
 
 **Returns:** Loader object with:
+
 - `ready`: `0` (loading) or `1` (ready)
 - `image`: Image object when loaded
 
@@ -521,10 +532,12 @@ end
 Loads a JSON file and parses it into an L8B object.
 
 **Parameters:**
+
 - `path`: JSON file path (without .json extension)
 - `callback`: Optional callback called when JSON is loaded
 
 **Returns:** Loader object with:
+
 - `ready`: `0` (loading) or `1` (ready)
 - `data`: Parsed JSON data when loaded
 
@@ -539,6 +552,7 @@ end)
 Loads a text file.
 
 **Parameters:**
+
 - `path`: Text file path (without extension)
 - `callback`: Optional callback
 - `ext`: File extension (default: "txt")
@@ -900,6 +914,7 @@ image = Image(canvasElement)
 ### Drawing on Images
 
 Images support the same drawing API as screen:
+
 - `image.clear(color)`, `image.setColor(color)`, `image.setAlpha(alpha)`
 - `image.fillRect()`, `image.drawRect()`, `image.drawLine()`, etc.
 - `image.drawSprite()`, `image.drawText()`, `image.drawMap()`
