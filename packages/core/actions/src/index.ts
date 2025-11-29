@@ -18,4 +18,3 @@ export type {
 	ViewTokenOptions,
 	OpenMiniAppOptions,
 } from "./types";
-

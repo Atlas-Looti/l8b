@@ -160,4 +160,3 @@ class HttpLogger {
 
 // Singleton instance
 export const httpLogger = new HttpLogger();
-

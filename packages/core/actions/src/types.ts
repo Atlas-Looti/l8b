@@ -90,4 +90,3 @@ export interface ActionsAPI {
 	// Social
 	composeCast(options: ComposeCastOptions): Promise<any>;
 }
-

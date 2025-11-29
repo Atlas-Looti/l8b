@@ -46,4 +46,3 @@ export const evmApi: Partial<GlobalApi> = {
 		},
 	},
 };
-

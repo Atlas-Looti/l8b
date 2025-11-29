@@ -170,4 +170,3 @@ export class ActionsService {
 		this.initialized = false;
 	}
 }
-
