@@ -84,7 +84,6 @@ export class EVMService {
 		}
 	}
 
-
 	/**
 	 * Get interface for LootiScript exposure
 	 */

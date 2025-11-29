@@ -80,6 +80,13 @@
         "vite": "^7.2.2",
       },
     },
+    "packages/core/actions": {
+      "name": "@l8b/actions",
+      "version": "0.0.1",
+      "dependencies": {
+        "@farcaster/miniapp-sdk": "0.2.1",
+      },
+    },
     "packages/core/assets": {
       "name": "@l8b/assets",
       "version": "0.0.1",
@@ -108,6 +115,10 @@
         "@farcaster/miniapp-sdk": "0.2.1",
         "viem": "^2.40.0",
       },
+    },
+    "packages/core/http": {
+      "name": "@l8b/http",
+      "version": "0.0.1",
     },
     "packages/core/input": {
       "name": "@l8b/input",
@@ -202,9 +213,11 @@
       "name": "@l8b/runtime",
       "version": "0.0.1",
       "dependencies": {
+        "@l8b/actions": "workspace:*",
         "@l8b/audio": "workspace:*",
         "@l8b/diagnostics": "workspace:*",
         "@l8b/evm": "workspace:*",
+        "@l8b/http": "workspace:*",
         "@l8b/input": "workspace:*",
         "@l8b/io": "workspace:*",
         "@l8b/lootiscript": "workspace:*",
@@ -508,6 +521,8 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
+    "@l8b/actions": ["@l8b/actions@workspace:packages/core/actions"],
+
     "@l8b/assets": ["@l8b/assets@workspace:packages/core/assets"],
 
     "@l8b/audio": ["@l8b/audio@workspace:packages/core/audio"],
@@ -517,6 +532,8 @@
     "@l8b/diagnostics": ["@l8b/diagnostics@workspace:packages/tooling/diagnostics"],
 
     "@l8b/evm": ["@l8b/evm@workspace:packages/core/evm"],
+
+    "@l8b/http": ["@l8b/http@workspace:packages/core/http"],
 
     "@l8b/input": ["@l8b/input@workspace:packages/core/input"],
 

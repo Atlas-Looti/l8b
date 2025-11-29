@@ -5,4 +5,9 @@
  */
 
 export { WalletService } from "./wallet-service";
-export type { WalletAPI, TransactionRequest } from "./types";
+export type {
+	WalletAPI,
+	TransactionRequest,
+	BatchCall,
+	BatchTransactionResult,
+} from "./types";

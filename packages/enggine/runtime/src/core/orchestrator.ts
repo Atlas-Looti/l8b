@@ -33,6 +33,8 @@ import { Palette } from "@l8b/palette";
 import { PlayerService } from "@l8b/player";
 import { WalletService } from "@l8b/wallet";
 import { EVMService } from "@l8b/evm";
+import { ActionsService } from "@l8b/actions";
+import { HttpService } from "@l8b/http";
 import type {
 	RuntimeDebugOptions,
 	RuntimeListener,
@@ -69,6 +71,8 @@ export class RuntimeOrchestrator {
 	public player: PlayerService;
 	public wallet: WalletService;
 	public evm: EVMService;
+	public actions: ActionsService;
+	public http: HttpService;
 	public vm: L8BVM | null = null;
 
 	// Asset collections (populated by AssetLoader)
@@ -124,6 +128,8 @@ export class RuntimeOrchestrator {
 		this.player = new PlayerService();
 		this.wallet = new WalletService();
 		this.evm = new EVMService();
+		this.actions = new ActionsService();
+		this.http = new HttpService();
 
 		// Asset loader for sprites, maps, sounds, and other resources
 		this.assetLoader = new AssetLoader(
@@ -346,6 +352,9 @@ export class RuntimeOrchestrator {
 			player: this.player.getInterface(),
 			wallet: this.wallet.getInterface(),
 			evm: this.evm.getInterface(),
+			actions: this.actions.getInterface(),
+			// HTTP client for external APIs
+			http: this.http.getInterface(),
 		};
 
 		// Initialize VM with meta functions and global API

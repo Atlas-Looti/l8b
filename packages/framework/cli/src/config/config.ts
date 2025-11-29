@@ -1,3 +1,17 @@
+/**
+ * OG Image generation options
+ */
+export interface OGImageOptions {
+	/** Route path (e.g., "/level/5") */
+	routePath: string;
+	/** Route parameters extracted from path */
+	params: Record<string, string>;
+	/** Image width (default: 1200 for 3:2 aspect ratio) */
+	width?: number;
+	/** Image height (default: 800 for 3:2 aspect ratio) */
+	height?: number;
+}
+
 export interface LootiLoggingConfig {
 	browser?: {
 		/** Show runtime lifecycle logs in browser console */
@@ -23,7 +37,16 @@ export interface LootiLoggingConfig {
  */
 export interface FarcasterEmbedConfig {
 	/** Image URL for the embed (3:2 aspect ratio, max 1024 chars) */
-	imageUrl: string;
+	imageUrl?: string;
+	/** Dynamic image generation - if true, uses /og-image endpoint with route path */
+	dynamicImage?: boolean;
+	/** LootiScript function name to call for generating OG image (optional)
+	 * Function signature: function generateOGImage(routePath, params, screen)
+	 * - routePath: string - The route path (e.g., "/level/5")
+	 * - params: table - Route parameters (e.g., { id = "5" })
+	 * - screen: object - Screen API interface for drawing
+	 */
+	ogImageFunction?: string;
 	/** Button title (max 32 characters) */
 	buttonTitle: string;
 	/** Action type - "launch_frame" or "view_token" */

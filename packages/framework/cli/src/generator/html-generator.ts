@@ -203,6 +203,32 @@ import { Runtime } from '@l8b/runtime';`
         }
       };
 
+      // HTTP Logger for development
+      if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        window.__l8b_http_logger = {
+          logRequest: function(method, url, status, time, size, error) {
+            const methodColor = method === 'GET' ? 'color: #4A9EFF' : 
+                               method === 'POST' ? 'color: #4CAF50' :
+                               method === 'PUT' ? 'color: #FFC107' :
+                               method === 'DELETE' ? 'color: #F44336' : 'color: #9E9E9E';
+            const statusColor = status >= 200 && status < 300 ? 'color: #4CAF50' :
+                               status >= 400 ? 'color: #F44336' : 'color: #FFC107';
+            let log = '%c[HTTP]%c ' + method.padEnd(6);
+            if (status !== undefined) log += ' %c' + status;
+            log += ' ' + url;
+            if (time !== undefined) log += ' (' + time + 'ms)';
+            if (size !== undefined) {
+              const sizeStr = size < 1024 ? size + 'B' :
+                             size < 1024 * 1024 ? (size / 1024).toFixed(1) + 'KB' :
+                             (size / (1024 * 1024)).toFixed(1) + 'MB';
+              log += ' ' + sizeStr;
+            }
+            if (error) log += ' - ' + error;
+            console.log(log, 'color: #9E9E9E', methodColor, status !== undefined ? statusColor : '', '');
+          }
+        };
+      }
+
       const runtimeOptions = {
         canvas: canvas,
         width: canvas.width,

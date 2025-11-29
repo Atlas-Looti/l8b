@@ -21,7 +21,7 @@ import { fileURLToPath } from "url";
 import yargs, { type Argv } from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { dev, build, start, init } from "./commands";
+import { dev, build, start, init, contractImport } from "./commands";
 import { DEFAULT_SERVER } from "./utils/constants";
 import {
 	ConfigError,
@@ -40,6 +40,7 @@ interface BaseArgs {
 interface ServerArgs extends BaseArgs {
 	port?: number;
 	host?: HostOption;
+	tunnel?: boolean;
 }
 
 interface InitArgs {
@@ -167,6 +168,7 @@ void yargs(hideBin(process.argv))
 				await dev(projectPath, {
 					port: normalizePort(args.port) ?? DEFAULT_SERVER.PORT,
 					host: args.host ?? DEFAULT_SERVER.HOST,
+					tunnel: args.tunnel ?? false,
 				});
 			} catch (error) {
 				handleCliError(error, "Error starting server:");
@@ -228,6 +230,53 @@ void yargs(hideBin(process.argv))
 				});
 			} catch (error) {
 				handleCliError(error, "Error starting server:");
+			}
+		},
+	)
+	.command(
+		"contract import <address>",
+		"Import smart contract ABI and generate LootiScript wrapper",
+		(yargsBuilder: Argv) =>
+			yargsBuilder
+				.positional("address", {
+					type: "string",
+					describe: "Contract address",
+					demandOption: true,
+				})
+				.option("chain", {
+					type: "string",
+					describe: "Blockchain (base, ethereum, optimism, arbitrum)",
+					demandOption: true,
+					choices: ["base", "ethereum", "optimism", "arbitrum"],
+				})
+				.option("name", {
+					type: "string",
+					describe: "Contract name for the generated wrapper",
+					demandOption: true,
+				})
+				.option("api-key", {
+					type: "string",
+					describe:
+						"Block explorer API key (or set BASE_API_KEY, ETHEREUM_API_KEY, etc.)",
+				})
+				.option("root", {
+					type: "string",
+					describe: "Path to project root",
+				}),
+		async (args: any) => {
+			try {
+				const projectPath = args.root
+					? path.resolve(args.root)
+					: process.cwd();
+				await contractImport({
+					address: args.address,
+					chain: args.chain,
+					name: args.name,
+					projectPath,
+					apiKey: args["api-key"],
+				});
+			} catch (error) {
+				handleCliError(error, "Error importing contract:");
 			}
 		},
 	)

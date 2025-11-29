@@ -75,6 +75,7 @@ The `l8b.config.json` file in the project root is used to configure metadata and
 - `dev.port`: Port for development server (default: 3000)
 - `dev.host`: Host for development server (default: "localhost", use `"0.0.0.0"` to expose)
 - `logging`: Configuration for debug output in browser and terminal
+- `farcaster`: Farcaster Mini App configuration (see [Farcaster Mini Apps Guide](/fundamentals/farcaster-miniapps))
 
 ### Package.json
 

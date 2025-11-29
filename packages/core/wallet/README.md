@@ -84,6 +84,74 @@ local signature = await wallet.signMessage("Hello, World!")
 // Throws error if signing fails or user rejects
 ```
 
+#### wallet.sendBatch()
+
+Send multiple transactions in a single batch (EIP-5792). This allows operations like "approve and swap" in one user confirmation.
+
+```lua
+local result = await wallet.sendBatch({
+  {
+    to: "0x...",      // Contract address
+    data: "0x..."     // ABI-encoded approve call
+  },
+  {
+    to: "0x...",      // DEX contract
+    data: "0x..."     // ABI-encoded swap call
+  }
+})
+// Returns: { hash: string, transactions: string[] }
+// hash: Main batch transaction hash
+// transactions: Array of individual transaction hashes
+```
+
+**Batch Call Object:**
+- `to` (string, required): Contract or recipient address
+- `value` (string, optional): Amount in wei (as hex string)
+- `data` (string, optional): Transaction data (for contract calls)
+
+**Note:** If the wallet doesn't support EIP-5792, transactions will be sent sequentially as a fallback.
+
+#### wallet.switchChain()
+
+Switch to a different Ethereum chain.
+
+```lua
+await wallet.switchChain(8453)  // Switch to Base mainnet
+// Throws error if chain is not added to wallet
+```
+
+**Common Chain IDs:**
+- `1` - Ethereum Mainnet
+- `8453` - Base Mainnet
+- `10` - Optimism
+- `42161` - Arbitrum One
+
+#### wallet.waitForTx()
+
+Wait for a transaction to be confirmed on the blockchain.
+
+```lua
+local result = await wallet.waitForTx(txHash, confirmations, timeout)
+// confirmations: number of confirmations to wait for (default: 1)
+// timeout: timeout in milliseconds (default: 300000 = 5 minutes)
+// Returns: { status: "confirmed" | "failed" | "timeout", blockNumber?: number, confirmations?: number }
+```
+
+**Example:**
+```lua
+local txHash = await wallet.sendTransaction({...})
+local result = await wallet.waitForTx(txHash, 2)  // Wait for 2 confirmations
+
+if result.status == "confirmed" then
+  print("Transaction confirmed in block: " .. result.blockNumber)
+  print("Confirmations: " .. result.confirmations)
+elseif result.status == "failed" then
+  print("Transaction failed")
+else
+  print("Transaction timeout")
+end
+```
+
 ### Event Handlers
 
 > **Note**: Event handlers are primarily for internal use. In LootiScript, you typically check connection state and account information when needed rather than using event callbacks.
@@ -208,6 +276,79 @@ async function callContract()
     print("Contract call transaction: " .. txHash)
   catch (error)
     print("Contract call failed: " .. error)
+  end
+end
+```
+
+### Batch Transactions
+
+```lua
+async function approveAndSwap()
+  if wallet.isConnected() == 0 then
+    await wallet.connect()
+  end
+  
+  try
+    // Approve token spending and swap in one batch
+    local result = await wallet.sendBatch({
+      {
+        to: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",  // USDC contract
+        data: "0x095ea7b3..."  // approve(address,uint256) encoded
+      },
+      {
+        to: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",  // Uniswap router
+        data: "0x38ed1739..."  // swapExactTokensForETH encoded
+      }
+    })
+    
+    print("Batch transaction: " .. result.hash)
+    print("Individual transactions: " .. #result.transactions)
+    
+    // Wait for confirmation
+    local confirmation = await wallet.waitForTx(result.hash, 1)
+    if confirmation.status == "confirmed" then
+      print("Swap completed!")
+    end
+  catch (error)
+    print("Batch transaction failed: " .. error)
+  end
+end
+```
+
+### Switching Chains
+
+```lua
+async function switchToBase()
+  try
+    await wallet.switchChain(8453)  // Base mainnet
+    local chainId = await wallet.getChainId()
+    print("Switched to chain: " .. chainId)
+  catch (error)
+    print("Failed to switch chain: " .. error)
+  end
+end
+```
+
+### Waiting for Transaction Confirmation
+
+```lua
+async function sendAndWait()
+  local txHash = await wallet.sendTransaction({
+    to: "0x...",
+    value: "0x2386f26fc10000"
+  })
+  
+  print("Transaction sent: " .. txHash)
+  print("Waiting for confirmation...")
+  
+  local result = await wallet.waitForTx(txHash, 2, 60000)  // 2 confirmations, 60s timeout
+  
+  if result.status == "confirmed" then
+    print("Confirmed in block: " .. result.blockNumber)
+  elseif result.status == "failed" then
+    print("Transaction failed")
+  else
+    print("Timeout waiting for confirmation")
   end
 end
 ```

@@ -29,7 +29,9 @@
 		"@l8b/diagnostics": "workspace:*",
 		"@l8b/player": "workspace:*",
 		"@l8b/wallet": "workspace:*",
-		"@l8b/evm": "workspace:*"
+		"@l8b/evm": "workspace:*",
+		"@l8b/actions": "workspace:*",
+		"@l8b/http": "workspace:*"
 	},
 	"keywords": [
 		"runtime",

@@ -1104,6 +1104,605 @@ data = JSON.decode(jsonStr)
 pretty = JSON.pretty({x: 1, y: 2}, 2)
 ```
 
+## Farcaster Mini Apps APIs
+
+L8B provides built-in APIs for Farcaster Mini Apps integration. These APIs automatically detect if the game is running in a Farcaster Mini App environment and gracefully fall back to safe defaults when running outside.
+
+> **Note:** For complete Farcaster Mini Apps setup and configuration, see [Farcaster Mini Apps Guide](/fundamentals/farcaster-miniapps).
+
+### Player API
+
+Access Farcaster player information and context.
+
+#### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `player.fid` | `number` | Farcaster ID (0 if not in Mini App) |
+| `player.username` | `string?` | Username (undefined if not available) |
+| `player.displayName` | `string?` | Display name (undefined if not available) |
+| `player.pfpUrl` | `string?` | Profile picture URL (undefined if not available) |
+
+#### Methods
+
+##### `player.getFid()`
+
+Returns the Farcaster ID of the current user.
+
+```lua
+local fid = player.getFid()
+print("FID: " .. fid)
+```
+
+##### `player.getUsername()`
+
+Returns the username of the current user.
+
+```lua
+local username = player.getUsername()
+if username then
+  print("Username: " .. username)
+end
+```
+
+##### `player.getDisplayName()`
+
+Returns the display name of the current user.
+
+```lua
+local displayName = player.getDisplayName()
+if displayName then
+  print("Welcome, " .. displayName)
+end
+```
+
+##### `player.getPfpUrl()`
+
+Returns the profile picture URL of the current user.
+
+```lua
+local pfpUrl = player.getPfpUrl()
+if pfpUrl then
+  print("PFP: " .. pfpUrl)
+end
+```
+
+##### `player.getContext()`
+
+Returns the complete player context including location information.
+
+```lua
+local context = player.getContext()
+print("FID: " .. context.fid)
+
+if context.location then
+  if context.location.type == "cast_embed" then
+    local cast = context.location.cast
+    print("Opened from cast: " .. cast.text)
+  end
+end
+```
+
+##### `player.isInMiniApp()`
+
+Checks if the game is running in a Farcaster Mini App.
+
+```lua
+if player.isInMiniApp() then
+  print("Running in Farcaster Mini App")
+  local fid = player.getFid()
+  print("FID: " .. fid)
+else
+  print("Running outside Mini App")
+end
+```
+
+For complete Player API documentation, see [@l8b/player README](/packages/core/player/README.md).
+
+### Wallet API
+
+Interact with the user's Ethereum wallet in Farcaster Mini Apps.
+
+#### Methods
+
+##### `wallet.isConnected()`
+
+Checks if the wallet is connected.
+
+```lua
+if wallet.isConnected() then
+  print("Wallet is connected")
+else
+  print("Wallet is not connected")
+end
+```
+
+##### `wallet.connect()`
+
+Connects to the user's wallet. Shows a connection prompt.
+
+```lua
+async function init()
+  if not wallet.isConnected() then
+    await wallet.connect()
+    print("Wallet connected!")
+  end
+end
+
+await(init())
+```
+
+##### `wallet.getAddress()`
+
+Gets the current wallet address.
+
+```lua
+async function getWallet()
+  local address = await wallet.getAddress()
+  if address then
+    print("Address: " .. address)
+  else
+    print("No wallet connected")
+  end
+end
+
+await(getWallet())
+```
+
+##### `wallet.getChainId()`
+
+Gets the current chain ID.
+
+```lua
+async function getChain()
+  local chainId = await wallet.getChainId()
+  print("Chain ID: " .. chainId)
+end
+
+await(getChain())
+```
+
+##### `wallet.sendTransaction(tx)`
+
+Sends a transaction. Shows a transaction confirmation prompt.
+
+```lua
+async function sendEth()
+  local tx = {
+    to = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+    value = "100000000000000000", -- 0.1 ETH in wei
+  }
+  local hash = await wallet.sendTransaction(tx)
+  print("Transaction sent: " .. hash)
+end
+
+await(sendEth())
+```
+
+##### `wallet.signMessage(message)`
+
+Signs a message with the connected wallet.
+
+```lua
+async function sign()
+  local message = "Hello, Farcaster!"
+  local signature = await wallet.signMessage(message)
+  print("Signature: " .. signature)
+end
+
+await(sign())
+```
+
+##### `wallet.sendBatch(txs)`
+
+Send multiple transactions in a single batch (EIP-5792). This allows operations like "approve and swap" in one user confirmation.
+
+```lua
+async function batchApproveAndSwap()
+  local result = await wallet.sendBatch({
+    {
+      to = "0x...",      // Token contract
+      data = "0x..."     // ABI-encoded approve call
+    },
+    {
+      to = "0x...",      // DEX contract
+      data = "0x..."     // ABI-encoded swap call
+    }
+  })
+  // Returns: array of transaction hashes
+  print("Batch sent: " .. result[1] .. ", " .. result[2])
+end
+
+await(batchApproveAndSwap())
+```
+
+##### `wallet.switchChain(chainId)`
+
+Switch to a different Ethereum chain.
+
+```lua
+async function switchToBase()
+  await wallet.switchChain(8453)  // Base mainnet
+  print("Switched to Base")
+end
+
+await(switchToBase())
+```
+
+##### `wallet.waitForTx(hash)`
+
+Wait for a transaction to be confirmed.
+
+```lua
+async function sendAndWait()
+  local hash = await wallet.sendTransaction({
+    to = "0x...",
+    value = "100000000000000000"
+  })
+  
+  await wallet.waitForTx(hash)
+  print("Transaction confirmed!")
+end
+
+await(sendAndWait())
+```
+
+For complete Wallet API documentation, see [@l8b/wallet README](/packages/core/wallet/README.md).
+
+### EVM API
+
+Interact with Ethereum smart contracts using viem.
+
+#### Methods
+
+##### `evm.read(contractAddress, abi, functionName, args?)`
+
+Reads from a smart contract (view function, no transaction).
+
+```lua
+async function readContract()
+  local contractAddress = "0x..."
+  local contractAbi = {
+    {
+      "inputs": {},
+      "name": "name",
+      "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  }
+  
+  local name = await evm.read(contractAddress, contractAbi, "name")
+  print("Contract Name: " .. name)
+end
+
+await(readContract())
+```
+
+##### `evm.write(contractAddress, abi, functionName, args?)`
+
+Writes to a smart contract (state-changing, sends transaction).
+
+```lua
+async function writeContract()
+  local contractAddress = "0x..."
+  local contractAbi = { ... }
+  
+  local hash = await evm.write(contractAddress, contractAbi, "setName", {"NewName"})
+  print("Transaction hash: " .. hash)
+end
+
+await(writeContract())
+```
+
+##### `evm.call(contractAddress, abi, functionName, args?)`
+
+Simulates a contract call (no transaction, returns result).
+
+```lua
+async function simulateCall()
+  local contractAddress = "0x..."
+  local contractAbi = { ... }
+  
+  local result = await evm.call(contractAddress, contractAbi, "calculate", {100, 200})
+  print("Result: " .. result)
+end
+
+await(simulateCall())
+```
+
+##### `evm.getBalance(address?)`
+
+Gets the balance of an address (or current wallet if no address provided).
+
+```lua
+async function checkBalance()
+  local balanceWei = await evm.getBalance()
+  local balanceEth = evm.formatEther(balanceWei)
+  print("Balance: " .. balanceEth .. " ETH")
+end
+
+await(checkBalance())
+```
+
+##### `evm.formatEther(value)`
+
+Formats a value from wei to ether.
+
+```lua
+local balanceWei = "1000000000000000000" -- 1 ETH in wei
+local balanceEth = evm.formatEther(balanceWei)
+print(balanceEth) -- "1.0"
+```
+
+##### `evm.parseEther(value)`
+
+Parses a value from ether to wei.
+
+```lua
+local balanceEth = "1.5"
+local balanceWei = evm.parseEther(balanceEth)
+print(balanceWei) -- "1500000000000000000"
+```
+
+For complete EVM API documentation, see [@l8b/evm README](/packages/core/evm/README.md).
+
+### Actions API
+
+Access Farcaster SDK actions for Mini Apps.
+
+> **Note**: All actions require the app to be running in a Farcaster Mini App. Use `player.isInMiniApp()` to check availability.
+
+#### Core Actions
+
+##### `actions.ready(options?)`
+
+Hide the splash screen and display your app content.
+
+```lua
+await actions.ready()
+// Optional: disable native gestures
+await actions.ready({ disableNativeGestures = true })
+```
+
+##### `actions.close()`
+
+Close the Mini App.
+
+```lua
+await actions.close()
+```
+
+#### Sharing
+
+##### `actions.share(options)`
+
+Share content via compose cast.
+
+```lua
+await actions.share({
+  text = "Check this out!",
+  embeds = {"https://example.com"}
+})
+```
+
+#### Authentication
+
+##### `actions.signIn(options)`
+
+Request Sign In with Farcaster credential.
+
+```lua
+local result = await actions.signIn({
+  nonce = "secure-nonce-from-server",
+  acceptAuthAddress = true  -- optional, defaults to true
+})
+// Returns: { signature: string, message: string }
+```
+
+#### Navigation
+
+##### `actions.openUrl(options)`
+
+Open an external URL.
+
+```lua
+await actions.openUrl({
+  url = "https://example.com"
+})
+```
+
+##### `actions.viewProfile(options)`
+
+View a Farcaster profile.
+
+```lua
+await actions.viewProfile({
+  fid = 6841
+})
+```
+
+##### `actions.viewCast(options)`
+
+View a specific cast.
+
+```lua
+await actions.viewCast({
+  hash = "0x1234...",
+  close = false  -- optional
+})
+```
+
+#### Token Operations
+
+##### `actions.swapToken(options)`
+
+Open swap form with pre-filled tokens.
+
+```lua
+await actions.swapToken({
+  sellToken = "eip155:8453/erc20:0x...",
+  buyToken = "eip155:8453/native",
+  sellAmount = "1000000"
+})
+```
+
+##### `actions.sendToken(options)`
+
+Open send form with pre-filled token and recipient.
+
+```lua
+await actions.sendToken({
+  token = "eip155:8453/erc20:0x...",
+  amount = "1000000",
+  recipientAddress = "0x..."
+})
+```
+
+##### `actions.viewToken(options)`
+
+View a token.
+
+```lua
+await actions.viewToken({
+  token = "eip155:8453/erc20:0x..."
+})
+```
+
+#### Social
+
+##### `actions.composeCast(options)`
+
+Open cast composer with suggested content.
+
+```lua
+await actions.composeCast({
+  text = "Check this out!",
+  embeds = {"https://example.com"},
+  parent = {
+    type = "cast",
+    hash = "0x1234..."
+  }
+})
+```
+
+For complete Actions API documentation, see [@l8b/actions README](/packages/core/actions/README.md).
+
+### HTTP API
+
+Make HTTP requests to external APIs.
+
+#### Basic Methods
+
+##### `http.get(url, options?)`
+
+Make a GET request.
+
+```lua
+local response = await http.get("https://api.example.com/data")
+if response.ok() == 1 then
+  local data = response.json()
+  print("Data: " .. data)
+end
+```
+
+##### `http.post(url, body?, options?)`
+
+Make a POST request.
+
+```lua
+local response = await http.post(
+  "https://api.example.com/data",
+  {
+    name = "John",
+    age = 30
+  }
+)
+```
+
+##### `http.put(url, body?, options?)`
+
+Make a PUT request.
+
+##### `http.delete(url, options?)`
+
+Make a DELETE request.
+
+##### `http.request(url, options)`
+
+Make a custom HTTP request with full control.
+
+```lua
+local response = await http.request("https://api.example.com/data", {
+  method = "POST",
+  headers = {
+    ["Authorization"] = "Bearer token123"
+  },
+  body = { key = "value" },
+  timeout = 5000
+})
+```
+
+#### Response Object
+
+All HTTP methods return a `HttpResponse` object.
+
+**Properties:**
+- `response.status` - HTTP status code (number)
+- `response.headers` - Response headers (table)
+
+**Methods:**
+- `response.ok()` - Check if response is OK (returns 1 for true, 0 for false)
+- `response.json()` - Parse response body as JSON
+- `response.jsonOrThrow()` - Parse JSON, throws if not OK or invalid JSON
+- `response.jsonOrNull()` - Parse JSON, returns null if error
+- `response.ensureOk()` - Ensure response is OK, throws if not
+- `response.text()` - Get response body as text
+- `response.data()` - Alias for text()
+
+#### Request Options
+
+**Headers:**
+```lua
+local response = await http.get("https://api.example.com/data", {
+  headers = {
+    ["Authorization"] = "Bearer token123"
+  }
+})
+```
+
+**Timeout:**
+```lua
+local response = await http.get("https://api.example.com/data", {
+  timeout = 5000  -- 5 seconds (default: 30000)
+})
+```
+
+**Body:**
+```lua
+// Object (auto JSON stringified)
+local response = await http.post("https://api.example.com/data", {
+  name = "John",
+  age = 30
+})
+
+// String (sent as-is)
+local response = await http.post("https://api.example.com/data", '{"name":"John"}')
+```
+
+#### Development Features
+
+In development mode, all HTTP requests are automatically logged to the console:
+
+```
+[HTTP] GET    200 https://api.example.com/data (45ms) 1.2KB
+[HTTP] POST   201 https://api.example.com/users (120ms) 500B
+```
+
+HTTP errors include enhanced context with suggestions for CORS, timeout, and network errors.
+
+For complete HTTP API documentation, see [@l8b/http README](/packages/core/http/README.md).
+
 ## Additional Resources
 
 For detailed API documentation with complete method signatures, parameters, return types, and examples, see the individual package READMEs:
@@ -1117,3 +1716,8 @@ For detailed API documentation with complete method signatures, parameters, retu
 - [@l8b/palette](/packages/core/palette/README.md) - Palette API
 - [@l8b/scene](/packages/core/scene/README.md) - Scene management API
 - [@l8b/time](/packages/core/time/README.md) - System API
+- [@l8b/player](/packages/core/player/README.md) - Player API (Farcaster)
+- [@l8b/wallet](/packages/core/wallet/README.md) - Wallet API (Farcaster)
+- [@l8b/evm](/packages/core/evm/README.md) - EVM API (Farcaster)
+- [@l8b/actions](/packages/core/actions/README.md) - Actions API (Farcaster)
+- [@l8b/http](/packages/core/http/README.md) - HTTP API

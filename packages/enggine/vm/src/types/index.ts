@@ -62,6 +62,9 @@ export interface GlobalAPI {
 	player?: any;
 	wallet?: any;
 	evm?: any;
+	actions?: any;
+	// HTTP client
+	http?: any;
 }
 
 /**

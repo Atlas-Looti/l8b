@@ -30,6 +30,92 @@ Games can check `player.isInMiniApp()` in LootiScript to conditionally enable Mi
 
 The Farcaster Mini App SDK is automatically bundled with the runtime through service dependencies. No additional configuration is required - it's available in all L8B games automatically.
 
+## Farcaster Embed & Manifest
+
+L8B framework supports Farcaster Mini App embeds and manifest generation:
+
+### Manifest
+
+The manifest (`/.well-known/farcaster.json`) is automatically generated from `l8b.config.json`:
+
+```json
+{
+  "farcaster": {
+    "manifest": {
+      "accountAssociation": { ... },
+      "miniapp": {
+        "version": "1",
+        "name": "My Game",
+        "iconUrl": "https://example.com/icon.png",
+        "homeUrl": "https://example.com"
+      }
+    }
+  }
+}
+```
+
+### Per-Route Embeds
+
+Each route can have its own embed configuration for social sharing:
+
+```json
+{
+  "farcaster": {
+    "embeds": {
+      "/": {
+        "imageUrl": "https://example.com/home.png",
+        "buttonTitle": "Play"
+      },
+      "/level/:id": {
+        "dynamicImage": true,
+        "ogImageFunction": "generateLevelOGImage",
+        "buttonTitle": "Level"
+      }
+    }
+  }
+}
+```
+
+### Dynamic OG Images
+
+For dynamic routes (e.g., `/level/:id`), you can generate OG images using the Screen API:
+
+1. **Enable dynamic images** in embed config:
+   ```json
+   {
+     "dynamicImage": true,
+     "ogImageFunction": "generateLevelOGImage"
+   }
+   ```
+
+2. **Create OG image function** in LootiScript:
+   ```lua
+   function generateLevelOGImage(routePath, params, screen)
+     -- Clear background
+     screen.clear("#1a1a1a")
+     
+     -- Set color and font
+     screen.setColor("#ffffff")
+     screen.setFont("BitCell")
+     
+     -- Draw level info
+     local levelId = params.id
+     screen.drawText("Level " .. levelId, 600, 400, 48)
+     
+     -- Draw game name
+     screen.setColor("#888888")
+     screen.drawText("My Game", 600, 500, 24)
+   end
+   ```
+
+3. **Access the image** at `/og-image/:route` (e.g., `/og-image/level/5`)
+
+The framework automatically:
+- Extracts route parameters from the URL
+- Calls your OG image function with the route path and parameters
+- Falls back to default rendering if no function is provided
+- Generates images with 3:2 aspect ratio (1200x800) as per Farcaster spec
+
 ## CLI Architecture
 
 ### Command Structure

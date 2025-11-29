@@ -22,6 +22,10 @@ export default defineConfig({
 						link: "/fundamentals/looti-script-programming",
 					},
 					{ text: "API Reference", link: "/fundamentals/api-reference" },
+					{
+						text: "Farcaster Mini Apps",
+						link: "/fundamentals/farcaster-miniapps",
+					},
 				],
 			},
 			{
