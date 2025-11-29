@@ -3,7 +3,7 @@ alwaysApply: true
 description: Critical l8b-specific patterns and conventions
 ---
 
-# L8b Project Essentials
+# L8B Project Essentials
 
 ## Package Manager - CRITICAL
 
@@ -33,6 +33,50 @@ When adding local package dependencies, use workspace protocol:
 }
 ```
 
+## Framework Workflow
+
+### Development
+
+```bash
+l8b dev [root]              # Start dev server with HMR
+```
+
+Dev server:
+- Watches `src/`, `public/`, `l8b.config.json`
+- Compiles `.loot` files on-the-fly
+- Generates HTML with runtime
+- Provides HMR via Vite
+
+### Build
+
+```bash
+l8b build [root]            # Build for production
+```
+
+Build process:
+1. Discovers all `.loot` files in `src/`
+2. Compiles each to bytecode
+3. Saves to `.l8b/`
+4. Bundles runtime
+5. Copies assets
+6. Generates production HTML
+
+### Source Loading
+
+Sources are automatically discovered from `src/`:
+- All `.loot` files are found recursively
+- Module names based on relative path
+- Example: `src/scenes/intro.loot` → `"scenes/intro"`
+
+### Resource Detection
+
+Resources are auto-detected from `public/`:
+- `public/sprites/` → images
+- `public/maps/` → maps
+- `public/sounds/` → sounds
+- `public/music/` → music
+- `public/fonts/` → fonts
+
 ## API Definition Pattern
 
 When creating new Core APIs, add definition in `tooling/language-server/src/api-definitions/` for IDE autocomplete.
@@ -42,7 +86,33 @@ When creating new Core APIs, add definition in `tooling/language-server/src/api-
 Core APIs are exposed to LootiScript via VM globals:
 
 ```typescript
-vm.setGlobal("apiName", apiImplementation);
+// In packages/enggine/runtime/src/core/orchestrator.ts
+const global: GlobalAPI = {
+  screen: this.screen.getInterface(),
+  audio: this.audio.getInterface(),
+  Assets: this.assets.getInterface(),
+  // ...
+};
+
+this.vm = new L8BVM(meta, global, ...);
 ```
 
-See `packages/enggine/vm/` for existing patterns.
+See `packages/enggine/runtime/src/core/orchestrator.ts` for existing patterns.
+
+## Compilation Pipeline
+
+```
+.loot source → Parser → AST → Compiler → Bytecode → Serialize → .l8b/
+```
+
+1. **Parser** (`packages/lootiscript`) - Tokenizes and parses
+2. **Compiler** (`packages/lootiscript`) - Compiles AST to bytecode
+3. **Framework** (`packages/framework/compiler`) - Serializes bytecode
+4. **Runtime** (`packages/enggine/vm`) - Executes bytecode
+
+## Runtime Execution Flow
+
+1. **Runtime Orchestrator** initializes core services and VM
+2. **VM** loads compiled routines (prod) or sources (dev)
+3. **Game loop** runs: input → update → draw
+4. **Core APIs** handle game logic
