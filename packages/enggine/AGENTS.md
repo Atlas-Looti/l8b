@@ -3,6 +3,7 @@
 ## Overview
 
 Engine packages handle the runtime execution of LootiScript games:
+
 - **runtime** - Runtime orchestrator and game loop
 - **vm** - Virtual machine for bytecode execution
 - **stdlib** - Standard library functions
@@ -132,6 +133,7 @@ class L8BVM {
 ### Bytecode Execution
 
 The VM:
+
 1. Loads compiled routines
 2. Executes bytecode instructions
 3. Manages call stack
@@ -198,6 +200,7 @@ storage.get("key")
 ```
 
 Uses localStorage with:
+
 - Batched writes for performance
 - Caching for reads
 - Error handling
@@ -293,6 +296,7 @@ try {
 ### Error Formatting
 
 Errors include:
+
 - Error code
 - File location
 - Stack trace
@@ -310,6 +314,7 @@ Errors include:
 ### Object Pooling
 
 Runtime uses object pooling for:
+
 - Arrays
 - Objects
 - Temporary values
@@ -317,12 +322,14 @@ Runtime uses object pooling for:
 ## Integration with Framework
 
 The runtime:
+
 - **Receives** compiled bytecode from framework build
 - **Bundles** with framework CLI for production
 - **Loads** sources directly in development
 - **Exposes** APIs to LootiScript code
 
 Framework handles:
+
 - Compiling LootiScript to bytecode
 - Bundling runtime for browser
 - Generating HTML with runtime

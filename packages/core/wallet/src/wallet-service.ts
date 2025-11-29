@@ -2,6 +2,7 @@
  * Wallet Service - Farcaster wallet operations
  */
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import type { TransactionRequest, WalletAPI } from "./types";
 
 export class WalletService {
@@ -29,8 +30,13 @@ export class WalletService {
 		}
 
 		try {
-			// Dynamic import to avoid bundling issues when not in Mini App
-			const { sdk } = await import("@farcaster/miniapp-sdk");
+			// Use sdk.isInMiniApp() for accurate detection
+			const isInMiniApp = await sdk.isInMiniApp();
+			if (!isInMiniApp) {
+				this.provider = null;
+				return;
+			}
+
 			this.provider = sdk.wallet.getEthereumProvider();
 		} catch (err) {
 			// Not in Mini App environment or SDK not available

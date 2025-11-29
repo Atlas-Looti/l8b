@@ -6,6 +6,30 @@ The framework package provides developer-facing tools for LootiScript game devel
 - **CLI** (`packages/framework/cli`) - Command-line interface
 - **Compiler** (`packages/framework/compiler`) - LootiScript compilation utilities
 
+## Farcaster Mini Apps Support
+
+L8B is designed as a game framework for Farcaster Mini Apps, but **fully supports non-Mini App environments** as well.
+
+### Automatic Detection
+
+All L8B games automatically detect if they're running in a Farcaster Mini App using `sdk.isInMiniApp()`. This detection is handled by:
+- `@l8b/player` - Player context service
+- `@l8b/wallet` - Wallet operations service  
+- `@l8b/evm` - EVM blockchain operations service
+
+### Graceful Fallback
+
+When running outside a Mini App environment:
+- **Player API**: Returns default values (fid: 0, empty context)
+- **Wallet API**: Returns `null` provider, methods throw appropriate errors
+- **EVM API**: Returns `null` clients, methods return safe defaults or throw errors
+
+Games can check `player.isInMiniApp()` in LootiScript to conditionally enable Mini App features.
+
+### SDK Availability
+
+The Farcaster Mini App SDK is automatically bundled with the runtime through service dependencies. No additional configuration is required - it's available in all L8B games automatically.
+
 ## CLI Architecture
 
 ### Command Structure

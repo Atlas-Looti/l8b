@@ -103,6 +103,10 @@ function generateRuntimeScript(
 	};
 
 	return `
+      // Farcaster Mini App SDK is automatically available in all L8B games
+      // It's bundled with the runtime through @l8b/player, @l8b/wallet, and @l8b/evm
+      // Services use sdk.isInMiniApp() for accurate detection and gracefully handle non-Mini App environments
+      
       ${
 				isProduction
 					? `// Production: Use bundled runtime

@@ -127,6 +127,7 @@ The project uses **Turbo** for build orchestration:
 ### Dev Server
 
 The dev server (`l8b dev`):
+
 1. Loads config from `l8b.config.json`
 2. Watches `src/`, `public/`, `l8b.config.json`
 3. Uses Vite with custom LootiScript plugin
@@ -137,6 +138,7 @@ The dev server (`l8b dev`):
 ### Build Process
 
 The build process (`l8b build`):
+
 1. Discovers all `.loot` files in `src/`
 2. Compiles each to bytecode
 3. Saves compiled bytecode to `.l8b/`
@@ -149,6 +151,7 @@ See `packages/framework/AGENTS.md` for detailed framework documentation.
 ## Core API Development
 
 Core APIs are exposed to LootiScript via VM globals. Each API:
+
 1. Implements service class with `getInterface()` method
 2. Is registered in runtime orchestrator
 3. Has language server definition for autocompletion
@@ -159,6 +162,7 @@ See `packages/core/AGENTS.md` for detailed core API patterns.
 ## Runtime Architecture
 
 The runtime orchestrator:
+
 1. Initializes core services
 2. Creates VM with global APIs
 3. Loads compiled routines or sources
@@ -170,6 +174,7 @@ See `packages/enggine/AGENTS.md` for detailed runtime documentation.
 ## Language Server
 
 The language server:
+
 1. Provides autocompletion based on API definitions
 2. Validates LootiScript code
 3. Shows diagnostics from compiler
@@ -180,6 +185,7 @@ See `packages/tooling/AGENTS.md` for detailed tooling documentation.
 ## LootiScript Language
 
 LootiScript is compiled to bytecode:
+
 1. Source → Parser → AST
 2. AST → Compiler → Bytecode
 3. Bytecode → VM → Execution
@@ -234,6 +240,7 @@ See `packages/lootiscript/AGENTS.md` for detailed language documentation.
 ## Key Files Reference
 
 ### Framework
+
 - `packages/framework/cli/src/commands/dev.ts` - Dev server
 - `packages/framework/cli/src/commands/build.ts` - Build process
 - `packages/framework/cli/src/loader/source-loader.ts` - Source discovery
@@ -241,15 +248,18 @@ See `packages/lootiscript/AGENTS.md` for detailed language documentation.
 - `packages/framework/cli/src/generator/html-generator.ts` - HTML generation
 
 ### Runtime
+
 - `packages/enggine/runtime/src/core/orchestrator.ts` - Main orchestrator
 - `packages/enggine/vm/src/` - VM implementation
 - `packages/enggine/stdlib/src/` - Standard library
 
 ### Core APIs
+
 - `packages/core/*/src/index.ts` - API implementations
 - `packages/tooling/language-server/src/api-definitions/` - API definitions
 
 ### Language
+
 - `packages/lootiscript/src/v1/parser.ts` - Parser
 - `packages/lootiscript/src/v1/compiler.ts` - Compiler
 

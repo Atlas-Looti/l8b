@@ -2,14 +2,25 @@
  * EVM Service - Blockchain operations using viem
  */
 
+import { sdk } from "@farcaster/miniapp-sdk";
+import {
+	createPublicClient,
+	createWalletClient,
+	custom,
+	formatEther as viemFormatEther,
+	parseEther as viemParseEther,
+	type PublicClient,
+	type WalletClient,
+} from "viem";
+import { base } from "viem/chains";
 import type { EVMAPI } from "./types";
 
 export class EVMService {
 	private provider: any = null;
-	private publicClient: any = null;
-	private walletClient: any = null;
+	private publicClient: PublicClient | null = null;
+	private walletClient: WalletClient | null = null;
 	private initialized: boolean = false;
-	private defaultChain: any = null;
+	private defaultChain = base;
 
 	constructor() {
 		// Lazy initialization
@@ -32,29 +43,27 @@ export class EVMService {
 		}
 
 		try {
-			// Dynamic imports to avoid bundling issues
-			const { sdk } = await import("@farcaster/miniapp-sdk");
-			const { createPublicClient, createWalletClient, custom, http } =
-				await import("viem");
-			const { base } = await import("viem/chains");
+			// Use sdk.isInMiniApp() for accurate detection
+			const isInMiniApp = await sdk.isInMiniApp();
+			if (!isInMiniApp) {
+				this.provider = null;
+				return;
+			}
 
 			this.provider = sdk.wallet.getEthereumProvider();
 
 			if (this.provider) {
-				// Default to Base chain (can be made configurable later)
-				this.defaultChain = base;
-
-				// Public client for reads
+				// Public client for reads - use custom transport to use provider's RPC
 				this.publicClient = createPublicClient({
 					chain: this.defaultChain,
-					transport: http(),
-				});
+					transport: custom(this.provider),
+				}) as PublicClient;
 
 				// Wallet client for writes
 				this.walletClient = createWalletClient({
 					chain: this.defaultChain,
 					transport: custom(this.provider),
-				});
+				}) as WalletClient;
 			}
 		} catch (err) {
 			// Not in Mini App environment or dependencies not available
@@ -75,40 +84,6 @@ export class EVMService {
 		}
 	}
 
-	/**
-	 * Format ether value (wei to ether)
-	 */
-	private formatEtherValue(value: string): string {
-		try {
-			const bigIntValue = BigInt(value);
-			const divisor = BigInt(10 ** 18);
-			const quotient = bigIntValue / divisor;
-			const remainder = bigIntValue % divisor;
-			if (remainder === BigInt(0)) {
-				return quotient.toString();
-			}
-			// Simple decimal formatting
-			return `${quotient}.${remainder.toString().padStart(18, "0").replace(/0+$/, "")}`;
-		} catch {
-			return "0";
-		}
-	}
-
-	/**
-	 * Parse ether value (ether to wei)
-	 */
-	private parseEtherValue(value: string): string {
-		try {
-			const parts = value.split(".");
-			const whole = parts[0] || "0";
-			const decimal = parts[1] || "";
-			const paddedDecimal = decimal.padEnd(18, "0").slice(0, 18);
-			const wei = BigInt(whole) * BigInt(10 ** 18) + BigInt(paddedDecimal);
-			return wei.toString();
-		} catch {
-			return "0";
-		}
-	}
 
 	/**
 	 * Get interface for LootiScript exposure
@@ -171,6 +146,7 @@ export class EVMService {
 						functionName,
 						args: args || [],
 						account,
+						chain: service.defaultChain,
 					});
 
 					return hash;
@@ -228,11 +204,19 @@ export class EVMService {
 			},
 
 			formatEther: (value: string) => {
-				return service.formatEtherValue(value);
+				try {
+					return viemFormatEther(BigInt(value));
+				} catch {
+					return "0";
+				}
 			},
 
 			parseEther: (value: string) => {
-				return service.parseEtherValue(value);
+				try {
+					return viemParseEther(value).toString();
+				} catch {
+					return "0";
+				}
 			},
 		};
 	}

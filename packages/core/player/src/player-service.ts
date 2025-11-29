@@ -2,6 +2,7 @@
  * Player Service - Farcaster player context management
  */
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import type { PlayerAPI, PlayerContext } from "./types";
 
 export class PlayerService {
@@ -30,8 +31,13 @@ export class PlayerService {
 		}
 
 		try {
-			// Dynamic import to avoid bundling issues when not in Mini App
-			const { sdk } = await import("@farcaster/miniapp-sdk");
+			// Use sdk.isInMiniApp() for accurate detection
+			const isInMiniApp = await sdk.isInMiniApp();
+			if (!isInMiniApp) {
+				this.context = null;
+				return;
+			}
+
 			const fcContext = await sdk.context;
 
 			this.context = {
