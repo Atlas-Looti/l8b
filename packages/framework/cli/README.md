@@ -50,6 +50,7 @@ l8b dev [root]
 - `root` - Path to project root (default: current directory)
 - `--port <number>` - Port to use (default: 3000)
 - `--host <hostname>` - Expose to network (use `0.0.0.0` to expose)
+- `--tunnel` - Enable tunneling for Farcaster Mini Apps testing (uses cloudflared)
 
 **Examples:**
 
@@ -68,7 +69,24 @@ l8b dev --host 0.0.0.0
 
 # Custom port and host
 l8b dev --port 8080 --host 0.0.0.0
+
+# Enable tunneling for Farcaster Mini Apps
+l8b dev --tunnel
 ```
+
+**Tunneling for Farcaster Mini Apps:**
+
+When developing Farcaster Mini Apps, you need a public HTTPS URL. Use the `--tunnel` flag to automatically create a tunnel:
+
+```bash
+l8b dev --tunnel
+```
+
+This will:
+- Start a cloudflared tunnel (requires cloudflared installed)
+- Update `/.well-known/farcaster.json` with the tunnel URL
+- Display a QR code for mobile testing
+- Automatically update manifest URLs for testing
 
 **Features:**
 - Hot module replacement (HMR)

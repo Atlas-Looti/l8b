@@ -154,7 +154,9 @@ export class WalletService {
 				}
 			},
 
-			sendBatch: async (calls: BatchCall[]): Promise<BatchTransactionResult> => {
+			sendBatch: async (
+				calls: BatchCall[],
+			): Promise<BatchTransactionResult> => {
 				await service.initialize();
 				if (!service.provider) {
 					throw new Error("Wallet not available");
@@ -302,8 +304,7 @@ export class WalletService {
 								});
 								const currentBlockNumber = parseInt(currentBlock, 16);
 								const txBlockNumber = parseInt(receipt.blockNumber, 16);
-								currentConfirmations =
-									currentBlockNumber - txBlockNumber + 1;
+								currentConfirmations = currentBlockNumber - txBlockNumber + 1;
 
 								if (currentConfirmations >= confirmations) {
 									resolve({

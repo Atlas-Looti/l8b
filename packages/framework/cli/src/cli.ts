@@ -265,9 +265,7 @@ void yargs(hideBin(process.argv))
 				}),
 		async (args: any) => {
 			try {
-				const projectPath = args.root
-					? path.resolve(args.root)
-					: process.cwd();
+				const projectPath = args.root ? path.resolve(args.root) : process.cwd();
 				await contractImport({
 					address: args.address,
 					chain: args.chain,

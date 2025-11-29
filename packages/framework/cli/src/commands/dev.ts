@@ -316,9 +316,7 @@ export async function dev(
 					console.log(
 						pc.green("\n🔗 Tunnel active!\n"),
 						pc.cyan(`   Tunnel URL: ${tunnelUrl}\n`),
-						pc.gray(
-							"   Use this URL in Farcaster Mini App preview tool\n",
-						),
+						pc.gray("   Use this URL in Farcaster Mini App preview tool\n"),
 					);
 
 					// Generate QR code for mobile testing (optional)
@@ -335,9 +333,7 @@ export async function dev(
 					pc.red("\n✗ Failed to start tunnel:\n"),
 					error instanceof Error ? error.message : String(error),
 				);
-				console.log(
-					pc.gray("\n   Continuing without tunnel...\n"),
-				);
+				console.log(pc.gray("\n   Continuing without tunnel...\n"));
 			}
 		}
 

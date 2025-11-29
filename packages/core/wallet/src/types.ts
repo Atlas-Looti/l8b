@@ -44,7 +44,11 @@ export interface WalletAPI {
 	switchChain(chainId: number): Promise<void>;
 
 	// Transaction waiting
-	waitForTx(txHash: string, confirmations?: number, timeout?: number): Promise<{
+	waitForTx(
+		txHash: string,
+		confirmations?: number,
+		timeout?: number,
+	): Promise<{
 		status: "confirmed" | "failed" | "timeout";
 		blockNumber?: number;
 		confirmations?: number;

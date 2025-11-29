@@ -1,6 +1,6 @@
 /**
  * Tunnel utilities for Farcaster Mini Apps development
- * 
+ *
  * Provides HTTPS tunneling via cloudflared for testing Mini Apps locally
  */
 
@@ -15,7 +15,7 @@ export interface TunnelResult {
 
 /**
  * Start a cloudflared tunnel to the local server
- * 
+ *
  * @param localPort - Port of the local server
  * @returns Promise resolving to tunnel URL and process
  */
@@ -36,7 +36,9 @@ export async function startCloudflaredTunnel(
 		cloudflared.stdout.on("data", (data: Buffer) => {
 			const output = data.toString();
 			// cloudflared outputs the URL in format: https://xxxx-xxxx-xxxx.trycloudflare.com
-			const urlMatch = output.match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/g);
+			const urlMatch = output.match(
+				/https:\/\/[a-z0-9-]+\.trycloudflare\.com/g,
+			);
 			if (urlMatch && urlMatch.length > 0) {
 				tunnelUrl = urlMatch[0];
 				if (tunnelUrl) {
@@ -61,9 +63,7 @@ export async function startCloudflaredTunnel(
 		cloudflared.on("exit", (code) => {
 			if (code !== 0 && !tunnelUrl) {
 				reject(
-					new Error(
-						`cloudflared exited with code ${code}\n${errorOutput}`,
-					),
+					new Error(`cloudflared exited with code ${code}\n${errorOutput}`),
 				);
 			}
 		});
@@ -84,7 +84,7 @@ export async function startCloudflaredTunnel(
 
 /**
  * Update manifest URL to point to tunnel
- * 
+ *
  * @param manifestJson - Original manifest JSON string
  * @param tunnelUrl - Tunnel URL
  * @returns Updated manifest JSON string
@@ -130,4 +130,3 @@ export async function isCloudflaredAvailable(): Promise<boolean> {
 		}, 2000);
 	});
 }
-

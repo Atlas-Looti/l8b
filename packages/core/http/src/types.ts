@@ -52,7 +52,10 @@ export interface HttpAPI {
 	 * @param options - Request options (headers, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	get(url: string, options?: Omit<HttpRequestOptions, "method" | "body">): Promise<HttpResponse>;
+	get(
+		url: string,
+		options?: Omit<HttpRequestOptions, "method" | "body">,
+	): Promise<HttpResponse>;
 
 	/**
 	 * Make a POST request
@@ -86,6 +89,8 @@ export interface HttpAPI {
 	 * @param options - Request options (headers, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	delete(url: string, options?: Omit<HttpRequestOptions, "method" | "body">): Promise<HttpResponse>;
+	delete(
+		url: string,
+		options?: Omit<HttpRequestOptions, "method" | "body">,
+	): Promise<HttpResponse>;
 }
-

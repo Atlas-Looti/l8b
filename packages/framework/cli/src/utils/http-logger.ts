@@ -1,6 +1,6 @@
 /**
  * HTTP Request Logger for Development
- * 
+ *
  * Logs HTTP requests made from LootiScript for debugging
  */
 
@@ -147,9 +147,7 @@ class HttpLogger {
 			.map((log) => log.time || 0)
 			.filter((time) => time > 0);
 		const averageTime =
-			times.length > 0
-				? times.reduce((a, b) => a + b, 0) / times.length
-				: 0;
+			times.length > 0 ? times.reduce((a, b) => a + b, 0) / times.length : 0;
 
 		return {
 			total,
@@ -162,4 +160,3 @@ class HttpLogger {
 
 // Singleton instance
 export const httpLogger = new HttpLogger();
-

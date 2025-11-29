@@ -1,6 +1,6 @@
 /**
  * HTTP Service - External API requests
- * 
+ *
  * Provides fetch-like functionality for making HTTP requests to external APIs
  */
 
@@ -145,20 +145,18 @@ export class HttpService {
 
 		try {
 			const requestTimeout = options.timeout || 30000;
-			const response = await this.fetchWithTimeout(url, fetchOptions, requestTimeout);
+			const response = await this.fetchWithTimeout(
+				url,
+				fetchOptions,
+				requestTimeout,
+			);
 			const responseText = await response.text();
 			responseSize = new Blob([responseText]).size;
 
 			// Log successful request in dev mode
 			if (httpLogger) {
 				const time = Date.now() - startTime;
-				httpLogger.logRequest(
-					method,
-					url,
-					response.status,
-					time,
-					responseSize,
-				);
+				httpLogger.logRequest(method, url, response.status, time, responseSize);
 			}
 
 			return this.createResponse(response, responseText, url);
@@ -186,16 +184,21 @@ export class HttpService {
 					error.message.includes("cross-origin") ||
 					error.message.includes("Access-Control")
 				) {
-					enhancedMessage = `[E7xxx] CORS error: API server needs to allow requests from your domain.\n` +
+					enhancedMessage =
+						`[E7xxx] CORS error: API server needs to allow requests from your domain.\n` +
 						`  URL: ${url}\n` +
 						`  Method: ${method}\n` +
 						`  Suggestion: Check CORS headers on API server or use a proxy`;
 				}
 
 				// Timeout errors
-				if (error.message.includes("timeout") || error.message.includes("AbortError")) {
+				if (
+					error.message.includes("timeout") ||
+					error.message.includes("AbortError")
+				) {
 					const requestTimeout = options.timeout || 30000;
-					enhancedMessage = `[E7xxx] Request timeout: Server took too long to respond.\n` +
+					enhancedMessage =
+						`[E7xxx] Request timeout: Server took too long to respond.\n` +
 						`  URL: ${url}\n` +
 						`  Timeout: ${requestTimeout}ms\n` +
 						`  Suggestion: Increase timeout or check server status`;
@@ -207,7 +210,8 @@ export class HttpService {
 					error.message.includes("NetworkError") ||
 					error.message.includes("network")
 				) {
-					enhancedMessage = `[E7xxx] Network error: Unable to reach server.\n` +
+					enhancedMessage =
+						`[E7xxx] Network error: Unable to reach server.\n` +
 						`  URL: ${url}\n` +
 						`  Suggestion: Check internet connection and server availability`;
 				}
@@ -225,7 +229,10 @@ export class HttpService {
 		const service = this;
 
 		return {
-			request: async (url: string, options: HttpRequestOptions = {}): Promise<HttpResponse> => {
+			request: async (
+				url: string,
+				options: HttpRequestOptions = {},
+			): Promise<HttpResponse> => {
 				return service.makeRequest(url, options);
 			},
 
@@ -276,4 +283,3 @@ export class HttpService {
 		// No cleanup needed for HTTP service
 	}
 }
-

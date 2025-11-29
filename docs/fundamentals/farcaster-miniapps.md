@@ -45,7 +45,7 @@ if context.location and context.location.type == "cast_embed" then
 end
 ```
 
-See [Player API Reference](/packages/core/player/README.md) for complete documentation.
+See [Player API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/player/README.md) for complete documentation.
 
 ## Wallet API
 
@@ -86,7 +86,134 @@ async function sign()
 end
 ```
 
-See [Wallet API Reference](/packages/core/wallet/README.md) for complete documentation.
+See [Wallet API Reference](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/wallet/README.md) for complete documentation.
+
+### New Wallet Methods
+
+#### `wallet.sendBatch(calls)`
+
+Send multiple transactions in a single batch (EIP-5792):
+
+```lua
+async function batchApproveAndSwap()
+  local result = await wallet.sendBatch({
+    {
+      to = "0x...",      // Token contract
+      data = "0x..."     // ABI-encoded approve call
+    },
+    {
+      to = "0x...",      // DEX contract
+      data = "0x..."     // ABI-encoded swap call
+    }
+  })
+  // Returns: {hash: string, transactions: string[]}
+  print("Batch hash: " .. result.hash)
+end
+```
+
+#### `wallet.switchChain(chainId)`
+
+Switch to a different Ethereum chain:
+
+```lua
+await wallet.switchChain(8453)  // Base mainnet
+```
+
+#### `wallet.waitForTx(hash, confirmations?, timeout?)`
+
+Wait for transaction confirmation:
+
+```lua
+local hash = await wallet.sendTransaction({to = "0x...", value = "0x0"})
+local result = await wallet.waitForTx(hash, 1, 60000)  // 1 confirmation, 60s timeout
+if result.status == "confirmed" then
+  print("Transaction confirmed in block " .. result.blockNumber)
+end
+```
+
+## Actions API
+
+Access Farcaster SDK actions for Mini Apps:
+
+```lua
+// Initialize app
+function init()
+  await actions.ready()  // Hide splash screen
+end
+
+// Share game result
+async function shareResult(score)
+  await actions.composeCast({
+    text = "I scored " .. score .. " points!",
+    embeds = {"https://mygame.com/result/" .. score}
+  })
+end
+
+// Sign in user
+async function authenticate()
+  local nonce = await fetchNonceFromServer()
+  local result = await actions.signIn({ nonce = nonce })
+  await sendToServer(result.signature, result.message)
+end
+
+// Open another Mini App
+await actions.openMiniApp({
+  url = "https://example.com/miniapp"
+})
+
+// View profile
+await actions.viewProfile({
+  fid = 6841
+})
+
+// Token operations
+await actions.swapToken({
+  sellToken = "eip155:8453/erc20:0x...",
+  buyToken = "eip155:8453/native",
+  sellAmount = "1000000"
+})
+```
+
+See [Actions API Reference](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/actions/README.md) for complete documentation.
+
+## HTTP API
+
+Make HTTP requests to external APIs:
+
+```lua
+// GET request
+async function fetchData()
+  local response = await http.get("https://api.example.com/data")
+  if response.ok() == 1 then
+    local data = response.json()
+    print("Data: " .. data.name)
+  end
+end
+
+// POST request
+async function saveScore(score)
+  local response = await http.post("https://api.example.com/scores", {
+    score = score,
+    timestamp = system.time
+  }, {
+    headers = {
+      ["Authorization"] = "Bearer " .. authToken
+    }
+  })
+  
+  if response.ok() == 1 then
+    return response.json()
+  end
+end
+
+// Using helpers
+local data = await http.get("https://api.example.com/data").jsonOrNull()
+if data then
+  print("Success: " .. data.name)
+end
+```
+
+See [HTTP API Reference](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/http/README.md) for complete documentation.
 
 ## EVM API
 
@@ -125,7 +252,35 @@ async function checkBalance()
 end
 ```
 
-See [EVM API Reference](/packages/core/evm/README.md) for complete documentation.
+See [EVM API Reference](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/evm/README.md) for complete documentation.
+
+### Smart Contract Bindings
+
+L8B provides a CLI command to automatically generate typed LootiScript wrappers from smart contract ABIs:
+
+```bash
+l8b contract import 0x1234... --chain base --name MyToken
+```
+
+This will:
+- Fetch the ABI from Basescan/Etherscan
+- Generate a typed LootiScript wrapper at `src/contracts/MyToken.loot`
+- Create read/write functions for all contract methods
+
+**Usage:**
+
+```lua
+local MyToken = require("contracts/mytoken")
+
+// Read from contract (no transaction)
+local name = await MyToken.name()
+local balance = await MyToken.balanceOf("0x...")
+
+// Write to contract (sends transaction)
+local hash = await MyToken.transfer("0x...", "1000000")
+```
+
+See [CLI Documentation](https://github.com/Atlas-Looti/l8b2/blob/main/packages/framework/cli/README.md) for complete contract import documentation.
 
 ## Publishing Your Mini App
 
@@ -332,7 +487,9 @@ Each embed configuration supports:
 
 - [Farcaster Mini Apps Documentation](https://miniapps.farcaster.xyz)
 - [Farcaster Mini App Manifest Tool](https://farcaster.xyz/~/developers/mini-apps/manifest)
-- [Player API Reference](/packages/core/player/README.md)
-- [Wallet API Reference](/packages/core/wallet/README.md)
-- [EVM API Reference](/packages/core/evm/README.md)
+- [Player API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/player/README.md)
+- [Wallet API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/wallet/README.md)
+- [EVM API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/evm/README.md)
+- [Actions API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/actions/README.md)
+- [HTTP API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/http/README.md)
 

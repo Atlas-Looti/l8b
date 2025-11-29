@@ -72,7 +72,7 @@ Sets how subsequent drawing operations will be composited with existing graphics
 - `"multiply"`: Multiplies colors.
 - `"screen"`: Screen blend mode.
 
-See [Screen API](/packages/core/screen/README.md) for all available blending modes.
+See [Screen API](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/screen/README.md) for all available blending modes.
 
 ### Drawing Primitives
 
@@ -322,7 +322,7 @@ screen.setCursorVisible(false)  // Hide cursor
 screen.setCursorVisible(true)   // Show cursor
 ```
 
-For complete Screen API documentation, see [@l8b/screen README](/packages/core/screen/README.md).
+For complete Screen API documentation, see [@l8b/screen README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/screen/README.md).
 
 ## Inputs
 
@@ -415,7 +415,7 @@ if gamepad.press.A == 1 then jump() end
 - Stick buttons: `LS`, `RS`
 - Menu buttons: `START`, `SELECT`
 
-For complete Input API documentation, see [@l8b/input README](/packages/core/input/README.md).
+For complete Input API documentation, see [@l8b/input README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/input/README.md).
 
 ## Audio
 
@@ -494,7 +494,7 @@ Audio.beep("tempo 120 C4 D4 E4 F4")
 
 Stops all currently playing beeps and sounds.
 
-For complete Audio API documentation, see [@l8b/audio README](/packages/core/audio/README.md).
+For complete Audio API documentation, see [@l8b/audio README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/audio/README.md).
 
 ## Assets
 
@@ -575,7 +575,7 @@ Loads a custom font file (.ttf).
 Assets.loadFont("myfont")  // Loads assets/myfont.ttf
 ```
 
-For complete Assets API documentation, see [@l8b/assets README](/packages/core/assets/README.md).
+For complete Assets API documentation, see [@l8b/assets README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/assets/README.md).
 
 ## System
 
@@ -635,7 +635,7 @@ Exits the program.
 - `system.disable_autofullscreen`: Set to `1` to disable automatic fullscreen.
 - `system.preemptive`: Set to `1` to enable preemptive threading (default: `1`).
 
-For complete System API documentation, see [@l8b/time README](/packages/core/time/README.md).
+For complete System API documentation, see [@l8b/time README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/time/README.md).
 
 ## Storage
 
@@ -731,7 +731,7 @@ Finds the index of the color closest to the given hex color.
 - `palette.getAll()`: Get all colors as array
 - `Palette.rgbToHex(r, g, b)`: Static method to convert RGB to hex string
 
-For complete Palette API documentation, see [@l8b/palette README](/packages/core/palette/README.md).
+For complete Palette API documentation, see [@l8b/palette README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/palette/README.md).
 
 ## Scene Management
 
@@ -833,7 +833,7 @@ end
 - `router.params`: Current route parameters (object)
 - `router.sceneName`: Current scene name
 
-For complete Scene API documentation, see [@l8b/scene README](/packages/core/scene/README.md).
+For complete Scene API documentation, see [@l8b/scene README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/scene/README.md).
 
 ## Sprites
 
@@ -857,7 +857,7 @@ sprite = Sprite(32, 32)  // Create a new 32x32 sprite
 - `sprite.getFrame()`: Get current animation frame
 - `sprite.getCurrentFrameCanvas()`: Get canvas of current frame
 
-For complete Sprites API documentation, see [@l8b/sprites README](/packages/core/sprites/README.md).
+For complete Sprites API documentation, see [@l8b/sprites README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/sprites/README.md).
 
 ## Maps
 
@@ -885,7 +885,7 @@ map = Map(20, 15, 16, 16)  // 20x15 tiles, 16x16 pixels per tile
 - `updateMap(map, data, sprites?)`: Update existing map with new data
 - `saveMap(map)`: Save map data to JSON string
 
-For complete Map API documentation, see [@l8b/map README](/packages/core/map/README.md).
+For complete Map API documentation, see [@l8b/map README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/map/README.md).
 
 ## Images
 
@@ -919,7 +919,7 @@ Images support the same drawing API as screen:
 - `image.fillRect()`, `image.drawRect()`, `image.drawLine()`, etc.
 - `image.drawSprite()`, `image.drawText()`, `image.drawMap()`
 
-For complete Image API documentation, see [@l8b/sprites README](/packages/core/sprites/README.md).
+For complete Image API documentation, see [@l8b/sprites README](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/sprites/README.md).
 
 ## Standard Library
 
@@ -1197,7 +1197,7 @@ else
 end
 ```
 
-For complete Player API documentation, see [@l8b/player README](/packages/core/player/README.md).
+For complete Player API documentation, see [@l8b/player README](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/player/README.md).
 
 ### Wallet API
 
@@ -1347,7 +1347,7 @@ end
 await(sendAndWait())
 ```
 
-For complete Wallet API documentation, see [@l8b/wallet README](/packages/core/wallet/README.md).
+For complete Wallet API documentation, see [@l8b/wallet README](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/wallet/README.md).
 
 ### EVM API
 
@@ -1445,7 +1445,7 @@ local balanceWei = evm.parseEther(balanceEth)
 print(balanceWei) -- "1500000000000000000"
 ```
 
-For complete EVM API documentation, see [@l8b/evm README](/packages/core/evm/README.md).
+For complete EVM API documentation, see [@l8b/evm README](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/evm/README.md).
 
 ### Actions API
 
@@ -1586,7 +1586,7 @@ await actions.composeCast({
 })
 ```
 
-For complete Actions API documentation, see [@l8b/actions README](/packages/core/actions/README.md).
+For complete Actions API documentation, see [@l8b/actions README](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/actions/README.md).
 
 ### HTTP API
 
@@ -1701,23 +1701,23 @@ In development mode, all HTTP requests are automatically logged to the console:
 
 HTTP errors include enhanced context with suggestions for CORS, timeout, and network errors.
 
-For complete HTTP API documentation, see [@l8b/http README](/packages/core/http/README.md).
+For complete HTTP API documentation, see [@l8b/http README](https://github.com/Atlas-Looti/l8b2/blob/mainhttps://github.com/Atlas-Looti/l8b2/blob/main/packages/core/http/README.md).
 
 ## Additional Resources
 
 For detailed API documentation with complete method signatures, parameters, return types, and examples, see the individual package READMEs:
 
-- [@l8b/screen](/packages/core/screen/README.md) - Screen rendering API
-- [@l8b/audio](/packages/core/audio/README.md) - Audio playback API
-- [@l8b/input](/packages/core/input/README.md) - Input handling API
-- [@l8b/assets](/packages/core/assets/README.md) - Asset loading API
-- [@l8b/sprites](/packages/core/sprites/README.md) - Sprite and Image API
-- [@l8b/map](/packages/core/map/README.md) - Map API
-- [@l8b/palette](/packages/core/palette/README.md) - Palette API
-- [@l8b/scene](/packages/core/scene/README.md) - Scene management API
-- [@l8b/time](/packages/core/time/README.md) - System API
-- [@l8b/player](/packages/core/player/README.md) - Player API (Farcaster)
-- [@l8b/wallet](/packages/core/wallet/README.md) - Wallet API (Farcaster)
-- [@l8b/evm](/packages/core/evm/README.md) - EVM API (Farcaster)
-- [@l8b/actions](/packages/core/actions/README.md) - Actions API (Farcaster)
-- [@l8b/http](/packages/core/http/README.md) - HTTP API
+- [@l8b/screen](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/screen/README.md) - Screen rendering API
+- [@l8b/audio](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/audio/README.md) - Audio playback API
+- [@l8b/input](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/input/README.md) - Input handling API
+- [@l8b/assets](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/assets/README.md) - Asset loading API
+- [@l8b/sprites](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/sprites/README.md) - Sprite and Image API
+- [@l8b/map](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/map/README.md) - Map API
+- [@l8b/palette](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/palette/README.md) - Palette API
+- [@l8b/scene](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/scene/README.md) - Scene management API
+- [@l8b/time](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/time/README.md) - System API
+- [@l8b/player](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/player/README.md) - Player API (Farcaster)
+- [@l8b/wallet](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/wallet/README.md) - Wallet API (Farcaster)
+- [@l8b/evm](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/evm/README.md) - EVM API (Farcaster)
+- [@l8b/actions](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/actions/README.md) - Actions API (Farcaster)
+- [@l8b/http](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/http/README.md) - HTTP API

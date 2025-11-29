@@ -498,6 +498,112 @@ scene("player", object
 end)
 ```
 
+## Farcaster Mini Apps APIs
+
+### Player API
+
+| Member | Description |
+|--------|-------------|
+| `player.fid` | Farcaster ID (number, 0 if not in Mini App) |
+| `player.username` | Username (string, undefined if not available) |
+| `player.displayName` | Display name (string, undefined if not available) |
+| `player.pfpUrl` | Profile picture URL (string, undefined if not available) |
+| `player.getFid()` | Get Farcaster ID |
+| `player.getUsername()` | Get username |
+| `player.getDisplayName()` | Get display name |
+| `player.getPfpUrl()` | Get profile picture URL |
+| `player.getContext()` | Get complete player context |
+| `player.isInMiniApp()` | Check if running in Mini App (returns 1 or 0) |
+
+### Wallet API
+
+| Method | Description |
+|--------|-------------|
+| `wallet.isConnected()` | Check if wallet is connected (returns 1 or 0) |
+| `wallet.connect()` | Connect wallet (async) |
+| `wallet.getAddress()` | Get wallet address (async, returns string or null) |
+| `wallet.getChainId()` | Get current chain ID (async, returns number) |
+| `wallet.sendTransaction(tx)` | Send transaction (async, returns hash) |
+| `wallet.signMessage(message)` | Sign message (async, returns signature) |
+| `wallet.sendBatch(calls)` | Send batch transactions EIP-5792 (async, returns {hash, transactions}) |
+| `wallet.switchChain(chainId)` | Switch to different chain (async) |
+| `wallet.waitForTx(hash, confirmations?, timeout?)` | Wait for transaction confirmation (async) |
+
+**Transaction Request:**
+```lua
+{
+  to = "0x...",      // Recipient address (required)
+  value = "0x0",     // Amount in wei (hex string, optional)
+  data = "0x...",    // Transaction data (hex string, optional)
+  gas = "0x5208",    // Gas limit (hex string, optional)
+  gasPrice = "0x3b9aca00"  // Gas price (hex string, optional)
+}
+```
+
+### EVM API
+
+| Method | Description |
+|--------|-------------|
+| `evm.read(address, abi, functionName, args?)` | Read from contract (async, no transaction) |
+| `evm.write(address, abi, functionName, args?)` | Write to contract (async, sends transaction) |
+| `evm.call(address, abi, functionName, args?)` | Simulate contract call (async, no transaction) |
+| `evm.getBalance(address?)` | Get balance in wei (async, returns string) |
+| `evm.formatEther(value)` | Convert wei to ether (returns string) |
+| `evm.parseEther(value)` | Convert ether to wei (returns string) |
+
+### Actions API
+
+| Method | Description |
+|--------|-------------|
+| `actions.ready(disableNativeGestures?)` | Hide splash screen (async) |
+| `actions.close()` | Close Mini App (async) |
+| `actions.share({text?, embeds?})` | Share content (async) |
+| `actions.signIn({nonce, acceptAuthAddress?})` | Sign in with Farcaster (async, returns {signature, message}) |
+| `actions.addMiniApp()` | Prompt user to add Mini App (async) |
+| `actions.openMiniApp({url})` | Open another Mini App (async) |
+| `actions.openUrl({url})` | Open external URL (async) |
+| `actions.viewProfile({fid})` | View Farcaster profile (async) |
+| `actions.viewCast({hash, close?})` | View cast (async) |
+| `actions.swapToken({sellToken?, buyToken?, sellAmount?})` | Open swap form (async) |
+| `actions.sendToken({token?, amount?, recipientAddress?, recipientFid?})` | Open send form (async) |
+| `actions.viewToken({token})` | View token (async) |
+| `actions.composeCast({text?, embeds?, parent?, close?, channelKey?})` | Open cast composer (async) |
+
+### HTTP API
+
+| Method | Description |
+|--------|-------------|
+| `http.get(url, options?)` | GET request (async, returns HttpResponse) |
+| `http.post(url, body?, options?)` | POST request (async, returns HttpResponse) |
+| `http.put(url, body?, options?)` | PUT request (async, returns HttpResponse) |
+| `http.delete(url, options?)` | DELETE request (async, returns HttpResponse) |
+| `http.request(url, options)` | Custom request (async, returns HttpResponse) |
+
+**Request Options:**
+```lua
+{
+  method = "POST",           // HTTP method
+  headers = {                // Request headers
+    ["Authorization"] = "Bearer token"
+  },
+  body = {key = "value"},    // Request body (auto JSON stringified)
+  timeout = 5000             // Timeout in ms (default: 30000)
+}
+```
+
+**Response Object:**
+| Property/Method | Description |
+|----------------|-------------|
+| `response.status` | HTTP status code (number) |
+| `response.headers` | Response headers (table) |
+| `response.ok()` | Check if OK (returns 1 or 0) |
+| `response.json()` | Parse as JSON |
+| `response.jsonOrThrow()` | Parse JSON, throws if not OK |
+| `response.jsonOrNull()` | Parse JSON, returns null if error |
+| `response.ensureOk()` | Ensure OK, throws if not |
+| `response.text()` | Get as text |
+| `response.data()` | Alias for text() |
+
 ## Standard Library
 
 L8B provides standard library utilities accessible as global objects: `Math`, `String`, `List`, and `JSON`.

@@ -71,7 +71,7 @@ See the [Quick Start Guide](/fundamentals/quick-start) for detailed instructions
 - **[LootiScript Programming](/fundamentals/looti-script-programming)** - Learn the LootiScript language
 - **[API Reference](/fundamentals/api-reference)** - Complete API documentation
 - **[Farcaster Mini Apps](/fundamentals/farcaster-miniapps)** - Build and publish Farcaster Mini Apps
-- **[Quick Reference](/quick-reference/)** - Cheatsheets and quick references
+- **[Quick Reference](/quick-reference/api-cheatsheet)** - Cheatsheets and quick references
 
 ## Architecture
 

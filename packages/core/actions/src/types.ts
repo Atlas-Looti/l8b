@@ -69,7 +69,9 @@ export interface ActionsAPI {
 	share(options: ShareOptions): Promise<void>;
 
 	// Authentication
-	signIn(options: SignInOptions): Promise<{ signature: string; message: string }>;
+	signIn(
+		options: SignInOptions,
+	): Promise<{ signature: string; message: string }>;
 
 	// Mini App management
 	addMiniApp(): Promise<void>;
@@ -88,4 +90,3 @@ export interface ActionsAPI {
 	// Social
 	composeCast(options: ComposeCastOptions): Promise<any>;
 }
-

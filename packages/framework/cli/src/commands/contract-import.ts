@@ -1,6 +1,6 @@
 /**
  * Contract Import Command
- * 
+ *
  * Fetches ABI from block explorers and generates typed LootiScript wrappers
  */
 
@@ -117,7 +117,9 @@ end
 	for (const func of functions.filter(
 		(f) => f.stateMutability === "view" || f.stateMutability === "pure",
 	)) {
-		const params = func.inputs.map((input: any, i: number) => input.name || `arg${i}`).join(", ");
+		const params = func.inputs
+			.map((input: any, i: number) => input.name || `arg${i}`)
+			.join(", ");
 
 		code += `
 async function ${contractName}.${func.name}(${params})
@@ -139,7 +141,9 @@ end
 	for (const func of functions.filter(
 		(f) => f.stateMutability !== "view" && f.stateMutability !== "pure",
 	)) {
-		const params = func.inputs.map((input: any, i: number) => input.name || `arg${i}`).join(", ");
+		const params = func.inputs
+			.map((input: any, i: number) => input.name || `arg${i}`)
+			.join(", ");
 
 		code += `
 async function ${contractName}.${func.name}(${params})
@@ -175,7 +179,11 @@ export async function contractImport(
 	options: ContractImportOptions,
 ): Promise<void> {
 	const projectPath = options.projectPath || process.cwd();
-	const contractsDir = path.join(projectPath, DEFAULT_DIRS.SCRIPTS, "contracts");
+	const contractsDir = path.join(
+		projectPath,
+		DEFAULT_DIRS.SCRIPTS,
+		"contracts",
+	);
 
 	// Ensure contracts directory exists
 	await fs.ensureDir(contractsDir);
@@ -188,7 +196,11 @@ export async function contractImport(
 
 	try {
 		// Fetch ABI
-		console.log(pc.gray(`  Fetching ABI from ${CHAIN_CONFIG[options.chain.toLowerCase()].explorer}...`));
+		console.log(
+			pc.gray(
+				`  Fetching ABI from ${CHAIN_CONFIG[options.chain.toLowerCase()].explorer}...`,
+			),
+		);
 		const abi = await fetchABI(options.address, options.chain, options.apiKey);
 		console.log(pc.green(`  ✓ ABI fetched (${abi.length} items)\n`));
 
@@ -222,4 +234,3 @@ export async function contractImport(
 		process.exit(1);
 	}
 }
-
