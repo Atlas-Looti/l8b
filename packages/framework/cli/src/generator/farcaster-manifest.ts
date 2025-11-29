@@ -48,3 +48,4 @@ export function generateFarcasterManifestJSON(
 
 	return JSON.stringify(manifest, null, 2);
 }
+
