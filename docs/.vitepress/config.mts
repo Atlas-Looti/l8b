@@ -16,29 +16,29 @@ export default defineConfig({
 		// https://vitepress.dev/reference/default-theme-config
 		logo: "/l8b2/logo.svg",
 
-		nav: [
-			{ text: "Home", link: "/" },
-			{ text: "Quick Start", link: "/fundamentals/quick-start" },
-			{ text: "API Reference", link: "/fundamentals/api-reference" },
-			{ text: "Farcaster", link: "/fundamentals/farcaster-miniapps" },
-		],
-
 		sidebar: [
 			{
 				text: "Getting Started",
+				collapsed: false,
 				items: [
-					{ text: "What is L8B?", link: "/" },
+					{ text: "Introduction", link: "/" },
 					{ text: "Quick Start", link: "/fundamentals/quick-start" },
 				],
 			},
 			{
-				text: "Fundamentals",
+				text: "Core Concepts",
+				collapsed: false,
 				items: [
 					{
-						text: "LootiScript Programming",
+						text: "LootiScript Language",
 						link: "/fundamentals/looti-script-programming",
 					},
-					{ text: "API Reference", link: "/fundamentals/api-reference" },
+				],
+			},
+			{
+				text: "Web3 Integration",
+				collapsed: false,
+				items: [
 					{
 						text: "Farcaster Mini Apps",
 						link: "/fundamentals/farcaster-miniapps",
@@ -46,7 +46,32 @@ export default defineConfig({
 				],
 			},
 			{
-				text: "Quick Reference",
+				text: "API Reference",
+				collapsed: false,
+				items: [
+					{ text: "Screen", link: "/fundamentals/api-reference-screen" },
+					{ text: "Inputs", link: "/fundamentals/api-reference-inputs" },
+					{ text: "Audio", link: "/fundamentals/api-reference-audio" },
+					{ text: "Assets", link: "/fundamentals/api-reference-assets" },
+					{ text: "System", link: "/fundamentals/api-reference-system" },
+					{ text: "Storage", link: "/fundamentals/api-reference-storage" },
+					{ text: "Palette", link: "/fundamentals/api-reference-palette" },
+					{ text: "Scene", link: "/fundamentals/api-reference-scene" },
+					{ text: "Router", link: "/fundamentals/api-reference-router" },
+					{ text: "Sprites", link: "/fundamentals/api-reference-sprites" },
+					{ text: "Maps", link: "/fundamentals/api-reference-maps" },
+					{ text: "Images", link: "/fundamentals/api-reference-images" },
+					{ text: "Standard Library", link: "/fundamentals/api-reference-stdlib" },
+					{ text: "Player API", link: "/fundamentals/api-reference-player" },
+					{ text: "Wallet API", link: "/fundamentals/api-reference-wallet" },
+					{ text: "EVM API", link: "/fundamentals/api-reference-evm" },
+					{ text: "Actions API", link: "/fundamentals/api-reference-actions" },
+					{ text: "HTTP API", link: "/fundamentals/api-reference-http" },
+				],
+			},
+			{
+				text: "Reference",
+				collapsed: true,
 				items: [
 					{ text: "API Cheatsheet", link: "/quick-reference/api-cheatsheet" },
 					{
@@ -60,7 +85,8 @@ export default defineConfig({
 				],
 			},
 			{
-				text: "Advanced Topics",
+				text: "Advanced",
+				collapsed: true,
 				items: [
 					{
 						text: "Advanced LootiScript",
@@ -81,6 +107,15 @@ export default defineConfig({
 		footer: {
 			message: "Released under the MIT License.",
 			copyright: "Copyright © 2024 L8B Game Engine",
+		},
+
+		editLink: {
+			pattern: "https://github.com/Atlas-Looti/l8b2/edit/main/docs/:path",
+			text: "Edit this page on GitHub",
+		},
+
+		lastUpdated: {
+			text: "Last updated",
 		},
 	},
 });

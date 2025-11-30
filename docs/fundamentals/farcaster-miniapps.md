@@ -32,7 +32,7 @@ if player.isInMiniApp() then
   local fid = player.getFid()
   local username = player.getUsername()
   local displayName = player.getDisplayName()
-  
+
   print("Welcome, " .. displayName .. " (FID: " .. fid .. ")")
 end
 
@@ -57,11 +57,11 @@ async function init()
   if not wallet.isConnected() then
     await wallet.connect()
   end
-  
+
   -- Get wallet address
   local address = await wallet.getAddress()
   print("Connected: " .. address)
-  
+
   -- Get chain ID
   local chainId = await wallet.getChainId()
   print("Chain ID: " .. chainId)
@@ -200,7 +200,7 @@ async function saveScore(score)
       ["Authorization"] = "Bearer " .. authToken
     }
   })
-  
+
   if response.ok() == 1 then
     return response.json()
   end
@@ -231,7 +231,7 @@ async function readContract()
       "type": "function"
     }
   }
-  
+
   local name = await evm.read(contractAddress, contractAbi, "name")
   print("Contract Name: " .. name)
 end
@@ -239,7 +239,7 @@ end
 async function writeContract()
   local contractAddress = "0x..."
   local contractAbi = { ... }
-  
+
   local hash = await evm.write(contractAddress, contractAbi, "setName", {"NewName"})
   print("Transaction hash: " .. hash)
 end
@@ -263,6 +263,7 @@ l8b contract import 0x1234... --chain base --name MyToken
 ```
 
 This will:
+
 - Fetch the ABI from Basescan/Etherscan
 - Generate a typed LootiScript wrapper at `src/contracts/MyToken.loot`
 - Create read/write functions for all contract methods
@@ -371,6 +372,7 @@ Use a static image URL:
 For dynamic routes (e.g., `/level/:id`), generate images on-demand using the Screen API:
 
 1. **Enable dynamic images** in embed config:
+
    ```json
    {
      "dynamicImage": true,
@@ -379,23 +381,24 @@ For dynamic routes (e.g., `/level/:id`), generate images on-demand using the Scr
    ```
 
 2. **Create OG image function** in LootiScript:
+
    ```lua
    function generateLevelOGImage(routePath, params, screen)
      -- Clear background
      screen.clear("#1a1a1a")
-     
+
      -- Set color and font
      screen.setColor("#ffffff")
      screen.setFont("BitCell")
-     
+
      -- Draw level info
      local levelId = params.id
      screen.drawText("Level " .. levelId, 600, 400, 48)
-     
+
      -- Draw game name
      screen.setColor("#888888")
      screen.drawText("My Game", 600, 500, 24)
-     
+
      -- Draw sprites or other graphics
      -- screen.drawSprite("level_badge", 100, 100)
    end
@@ -404,6 +407,7 @@ For dynamic routes (e.g., `/level/:id`), generate images on-demand using the Scr
 3. **Access the image** at `/og-image/:route` (e.g., `/og-image/level/5`)
 
 The framework automatically:
+
 - Extracts route parameters from the URL
 - Calls your OG image function with the route path and parameters
 - Falls back to default rendering if no function is provided
@@ -492,4 +496,3 @@ Each embed configuration supports:
 - [EVM API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/evm/README.md)
 - [Actions API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/actions/README.md)
 - [HTTP API Reference](https://github.com/Atlas-Looti/l8b2/blob/main/packages/core/http/README.md)
-

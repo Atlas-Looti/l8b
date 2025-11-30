@@ -12,7 +12,7 @@ Install L8B CLI as a dev dependency:
 npm install l8b --save-dev
 ```
 
-**Note:** The runtime doesn't need to be installed separately. The CLI will automatically use the runtime from the workspace (if using a monorepo) or bundle it during build.
+**Note:** The runtime is automatically bundled with your project. You don't need to install it separately.
 
 Alternatively, use npx:
 
@@ -91,12 +91,12 @@ Add scripts for development and build in `package.json`:
     "start": "l8b start"
   },
   "devDependencies": {
-    "l8b": "workspace:*"
+    "l8b": "^0.0.1"
   }
 }
 ```
 
-**Note:** For workspace/monorepo, use `workspace:*`. For npm registry, use the appropriate version like `"l8b": "^0.0.1"`.
+**Note:** Replace `^0.0.1` with the latest version of L8B from npm.
 
 **Commands:**
 
@@ -186,12 +186,12 @@ update = function()
   // Update player position
   if keyboard.UP == 1 then player_y -= 2 end
   if keyboard.DOWN == 1 then player_y += 2 end
-  
+
   // Update enemies
   for enemy in enemies do
     enemy.update()
   end
-  
+
   // Check collisions
   checkCollisions()
 end
@@ -205,15 +205,15 @@ Called **every frame** (usually 60 FPS, but may vary by device). Use for renderi
 draw = function()
   // Clear screen
   screen.clear("#000")
-  
+
   // Draw player
   screen.fillRect(player_x, player_y, 32, 32, "#FFF")
-  
+
   // Draw enemies
   for enemy in enemies do
     screen.fillRect(enemy.x, enemy.y, 32, 32, "#F00")
   end
-  
+
   // Draw UI
   screen.setColor("#FFF")
   screen.drawText("Score: " + score, 10, 10, 16)
@@ -249,7 +249,7 @@ update = function()
   if keyboard.RIGHT == 1 then x += 2 end
   if keyboard.UP == 1 then y += 2 end
   if keyboard.DOWN == 1 then y -= 2 end
-  
+
   if keyboard.SPACE == 1 then shoot() end
 end
 ```
@@ -261,7 +261,7 @@ update = function()
   // Mouse position
   player_x = mouse.x
   player_y = mouse.y
-  
+
   // Mouse click
   if mouse.press == 1 then
     shoot(mouse.x, mouse.y)
@@ -303,7 +303,7 @@ init = function()
   every 5 seconds do
     spawnEnemy()
   end
-  
+
   // Update score every second
   every 1 second do
     score += 10
@@ -317,10 +317,10 @@ end
 playCutscene = function()
   showDialogue("Welcome!")
   sleep 2 seconds
-  
+
   showDialogue("Let's start the game")
   sleep 2 seconds
-  
+
   startGame()
 end
 ```
@@ -359,20 +359,20 @@ Enemy = class
     this.hp = 100
     this.speed = 1
   end
-  
+
   update = function()
     // Move towards player
     if this.x < player_x then this.x += this.speed end
     if this.x > player_x then this.x -= this.speed end
   end
-  
+
   takeDamage = function(damage)
     this.hp -= damage
     if this.hp <= 0 then
       this.destroy()
     end
   end
-  
+
   destroy = function()
     // Remove from enemies list
     enemies.removeElement(this)
@@ -415,7 +415,7 @@ The `print()` function sends output to both browser console and terminal:
 update = function()
   print("Player position: " + player_x + ", " + player_y)
   print("Score: " + score)
-  
+
   // Print multiple values
   print("Health:", hp, "Mana:", mana)
 end
@@ -528,7 +528,7 @@ update = function()
   local dx = player_x - enemy_x
   local dy = player_y - enemy_y
   local distance = sqrt(dx * dx + dy * dy)
-  
+
   if distance < 50 then
     // Collision!
   end
@@ -544,12 +544,12 @@ Player = class
     this.y = 0
     this.hp = 100
   end
-  
+
   update = function()
     this.handleInput()
     this.checkCollisions()
   end
-  
+
   handleInput = function()
     if keyboard.LEFT == 1 then this.x -= 2 end
     if keyboard.RIGHT == 1 then this.x += 2 end
@@ -563,7 +563,7 @@ end
 // Game state management
 GameState = object
   current = "menu"
-  
+
   setState = function(newState)
     this.current = newState
   end

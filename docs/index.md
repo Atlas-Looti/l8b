@@ -73,15 +73,15 @@ See the [Quick Start Guide](/fundamentals/quick-start) for detailed instructions
 - **[Farcaster Mini Apps](/fundamentals/farcaster-miniapps)** - Build and publish Farcaster Mini Apps
 - **[Quick Reference](/quick-reference/api-cheatsheet)** - Cheatsheets and quick references
 
-## Architecture
+## Next Steps
 
-L8B is built as a modular monorepo:
+Ready to build your first game? Follow these steps:
 
-- **Core Packages** (`@l8b/core/*`): Core APIs (screen, audio, input, sprites, etc.)
-- **Engine Packages** (`@l8b/enggine/*`): Runtime, VM, and engine infrastructure
-- **Framework Packages** (`@l8b/framework/*`): CLI, compiler, and build tools
-- **Tooling Packages** (`@l8b/tooling/*`): Language server, diagnostics, VSCode extension
-- **LootiScript** (`@l8b/lootiscript`): Parser and language implementation
+1. **[Install L8B CLI](#getting-started)** - Set up the development environment
+2. **[Create a Project](#getting-started)** - Initialize your first game
+3. **[Learn LootiScript](/fundamentals/looti-script-programming)** - Master the scripting language
+4. **[Explore the API](/fundamentals/api-reference)** - Discover available features
+5. **[Deploy to Farcaster](/fundamentals/farcaster-miniapps)** - Publish your mini-app
 
 ## License
 

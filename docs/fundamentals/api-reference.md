@@ -23,10 +23,10 @@ The largest dimension will adjust to the screen aspect ratio. For example, on a 
 
 ### Properties
 
-| Property | Description |
-|----------|-------------|
-| `screen.width` | Current screen width in L8B coordinate units. |
-| `screen.height` | Current screen height in L8B coordinate units. |
+| Property         | Description                                    |
+| ---------------- | ---------------------------------------------- |
+| `screen.width`   | Current screen width in L8B coordinate units.  |
+| `screen.height`  | Current screen height in L8B coordinate units. |
 | `screen.context` | Canvas rendering context (for advanced usage). |
 
 ### Drawing State
@@ -367,28 +367,28 @@ end
 
 The `mouse` object reports mouse pointer position and button status.
 
-| Field | Description |
-|-------|-------------|
-| `mouse.x`, `mouse.y` | Mouse pointer position in screen coordinates. |
-| `mouse.left` | `1` if left button is pressed, `0` if not. |
-| `mouse.right` | `1` if right button is pressed, `0` if not. |
-| `mouse.middle` | `1` if middle button is pressed, `0` if not. |
-| `mouse.pressed` | `1` if any button is pressed, `0` otherwise. |
-| `mouse.press` | `1` if any button was just pressed. |
-| `mouse.release` | `1` if any button was just released. |
-| `mouse.wheel` | Wheel delta: `-1` (down), `0` (no movement), `1` (up). |
+| Field                | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| `mouse.x`, `mouse.y` | Mouse pointer position in screen coordinates.          |
+| `mouse.left`         | `1` if left button is pressed, `0` if not.             |
+| `mouse.right`        | `1` if right button is pressed, `0` if not.            |
+| `mouse.middle`       | `1` if middle button is pressed, `0` if not.           |
+| `mouse.pressed`      | `1` if any button is pressed, `0` otherwise.           |
+| `mouse.press`        | `1` if any button was just pressed.                    |
+| `mouse.release`      | `1` if any button was just released.                   |
+| `mouse.wheel`        | Wheel delta: `-1` (down), `0` (no movement), `1` (up). |
 
 ### Touch
 
 The `touch` object for touch screens (also reports mouse status as single touch).
 
-| Field | Description |
-|-------|-------------|
-| `touch.touching` | `1` if user is touching the screen, `0` if not. |
-| `touch.x`, `touch.y` | Touch position. |
-| `touch.press` | `1` on touch start. |
-| `touch.release` | `1` on touch end. |
-| `touch.touches` | Array of all active touch points (for multi-touch). |
+| Field                | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `touch.touching`     | `1` if user is touching the screen, `0` if not.     |
+| `touch.x`, `touch.y` | Touch position.                                     |
+| `touch.press`        | `1` on touch start.                                 |
+| `touch.release`      | `1` on touch end.                                   |
+| `touch.touches`      | Array of all active touch points (for multi-touch). |
 
 **Touch Point Object:**
 
@@ -1116,12 +1116,12 @@ Access Farcaster player information and context.
 
 #### Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `player.fid` | `number` | Farcaster ID (0 if not in Mini App) |
-| `player.username` | `string?` | Username (undefined if not available) |
-| `player.displayName` | `string?` | Display name (undefined if not available) |
-| `player.pfpUrl` | `string?` | Profile picture URL (undefined if not available) |
+| Property             | Type      | Description                                      |
+| -------------------- | --------- | ------------------------------------------------ |
+| `player.fid`         | `number`  | Farcaster ID (0 if not in Mini App)              |
+| `player.username`    | `string?` | Username (undefined if not available)            |
+| `player.displayName` | `string?` | Display name (undefined if not available)        |
+| `player.pfpUrl`      | `string?` | Profile picture URL (undefined if not available) |
 
 #### Methods
 
@@ -1339,7 +1339,7 @@ async function sendAndWait()
     to = "0x...",
     value = "100000000000000000"
   })
-  
+
   await wallet.waitForTx(hash)
   print("Transaction confirmed!")
 end
@@ -1371,7 +1371,7 @@ async function readContract()
       "type": "function"
     }
   }
-  
+
   local name = await evm.read(contractAddress, contractAbi, "name")
   print("Contract Name: " .. name)
 end
@@ -1387,7 +1387,7 @@ Writes to a smart contract (state-changing, sends transaction).
 async function writeContract()
   local contractAddress = "0x..."
   local contractAbi = { ... }
-  
+
   local hash = await evm.write(contractAddress, contractAbi, "setName", {"NewName"})
   print("Transaction hash: " .. hash)
 end
@@ -1403,7 +1403,7 @@ Simulates a contract call (no transaction, returns result).
 async function simulateCall()
   local contractAddress = "0x..."
   local contractAbi = { ... }
-  
+
   local result = await evm.call(contractAddress, contractAbi, "calculate", {100, 200})
   print("Result: " .. result)
 end
@@ -1648,10 +1648,12 @@ local response = await http.request("https://api.example.com/data", {
 All HTTP methods return a `HttpResponse` object.
 
 **Properties:**
+
 - `response.status` - HTTP status code (number)
 - `response.headers` - Response headers (table)
 
 **Methods:**
+
 - `response.ok()` - Check if response is OK (returns 1 for true, 0 for false)
 - `response.json()` - Parse response body as JSON
 - `response.jsonOrThrow()` - Parse JSON, throws if not OK or invalid JSON
@@ -1663,6 +1665,7 @@ All HTTP methods return a `HttpResponse` object.
 #### Request Options
 
 **Headers:**
+
 ```lua
 local response = await http.get("https://api.example.com/data", {
   headers = {
@@ -1672,6 +1675,7 @@ local response = await http.get("https://api.example.com/data", {
 ```
 
 **Timeout:**
+
 ```lua
 local response = await http.get("https://api.example.com/data", {
   timeout = 5000  -- 5 seconds (default: 30000)
@@ -1679,6 +1683,7 @@ local response = await http.get("https://api.example.com/data", {
 ```
 
 **Body:**
+
 ```lua
 // Object (auto JSON stringified)
 local response = await http.post("https://api.example.com/data", {

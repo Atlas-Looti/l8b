@@ -7,7 +7,7 @@ LootiScript is a lightweight scripting language inspired by Lua, designed to be 
 - Variables are global by default; use `local` to create local variables within functions.
 - Newlines are treated like spaces; code writing can be flexible.
 - There is no `null`, `nil`, or `undefined` value. Variables that have never been assigned have a value of `0`.
-- There is no special boolean type. `0` is considered *false*, everything else is *true*.
+- There is no special boolean type. `0` is considered _false_, everything else is _true_.
 - There are no runtime errors for undefined variables; calling a non-function value as a function will return the value itself.
 - **LootiScript is compiled to bytecode** for faster execution compared to direct interpretation.
 
@@ -292,10 +292,10 @@ end
 playCutscene = function()
   showDialogue("Hello!")
   sleep 2 seconds
-  
+
   showDialogue("Welcome to the game")
   sleep 2 seconds
-  
+
   startGame()
 end
 ```
@@ -304,13 +304,13 @@ end
 
 All schedulers support the following time units:
 
-| Unit | Value (ms) | Example |
-|------|-----------|---------|
-| `millisecond(s)` | 1 | `after 500 milliseconds` |
-| `second(s)` | 1000 | `every 2 seconds` |
-| `minute(s)` | 60000 | `after 5 minutes` |
-| `hour(s)` | 3600000 | `every 1 hour` |
-| `day(s)` | 86400000 | `after 1 day` |
+| Unit             | Value (ms) | Example                  |
+| ---------------- | ---------- | ------------------------ |
+| `millisecond(s)` | 1          | `after 500 milliseconds` |
+| `second(s)`      | 1000       | `every 2 seconds`        |
+| `minute(s)`      | 60000      | `after 5 minutes`        |
+| `hour(s)`        | 3600000    | `every 1 hour`           |
+| `day(s)`         | 86400000   | `after 1 day`            |
 
 If no unit is specified, the value is assumed to be in milliseconds.
 
@@ -324,14 +324,14 @@ If no unit is specified, the value is assumed to be in milliseconds.
 
 ### Comparison Operators
 
-| Operator | Meaning |
-|----------|---------|
-| `==` | Equal to |
-| `!=` | Not equal |
-| `<` | Less than |
-| `>` | Greater than |
-| `<=` | Less than or equal to |
-| `>=` | Greater than or equal to |
+| Operator | Meaning                  |
+| -------- | ------------------------ |
+| `==`     | Equal to                 |
+| `!=`     | Not equal                |
+| `<`      | Less than                |
+| `>`      | Greater than             |
+| `<=`     | Less than or equal to    |
+| `>=`     | Greater than or equal to |
 
 ### Boolean Operators
 
@@ -343,14 +343,14 @@ LootiScript doesn't have a special boolean type; `0` is false and other values a
 
 ### Arithmetic Operators
 
-| Operator | Meaning |
-|----------|---------|
-| `+` | Addition |
-| `-` | Subtraction |
-| `*` | Multiplication |
-| `/` | Division |
-| `%` | Modulo (remainder) |
-| `^` | Power (`x ^ y` is equivalent to `pow(x, y)`) |
+| Operator | Meaning                                      |
+| -------- | -------------------------------------------- |
+| `+`      | Addition                                     |
+| `-`      | Subtraction                                  |
+| `*`      | Multiplication                               |
+| `/`      | Division                                     |
+| `%`      | Modulo (remainder)                           |
+| `^`      | Power (`x ^ y` is equivalent to `pow(x, y)`) |
 
 ## Built-ins
 
@@ -570,7 +570,7 @@ The runtime uses **object pooling** to reduce garbage collection:
 update = function()
   local px = player.x  // Cache to local
   local py = player.y
-  
+
   // Use local variables
   if px > 100 and py > 100 then
     // ...

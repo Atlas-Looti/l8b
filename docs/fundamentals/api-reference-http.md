@@ -218,7 +218,7 @@ HTTP errors include helpful context:
 async function fetchUserData(userId)
   try
     local response = await http.get("https://api.example.com/users/" .. userId)
-    
+
     if response.ok() == 1 then
       local user = response.json()
       return user
@@ -246,7 +246,7 @@ async function saveScore(score)
         ["Authorization"] = "Bearer " .. authToken
       }
     })
-    
+
     if response.ok() == 1 then
       return response.json()
     else
