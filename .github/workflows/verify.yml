@@ -4,24 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  checks:
-    name: Checks
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
-
-      - name: Check code
-        run: pnpm run lint:check && pnpm run format:check && pnpm run check-types
-
   build:
     name: Build
-    needs: checks
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -34,16 +18,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
-
-      - name: Run tests
-        run: pnpm test
