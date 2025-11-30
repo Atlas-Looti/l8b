@@ -1,5 +1,13 @@
 # @l8b/scene
 
+## 1.0.2
+
+### Patch Changes
+
+- ed5382e: formating
+- Updated dependencies [ed5382e]
+  - @l8b/diagnostics@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes

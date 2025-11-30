@@ -1,12 +1,34 @@
 {
 	"name": "@l8b/language-server",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "LSP server for LootiScript",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Atlas-Looti/l8b.git",
+		"directory": "packages/tooling/language-server"
+	},
+	"homepage": "https://github.com/Atlas-Looti/l8b#readme",
+	"bugs": {
+		"url": "https://github.com/Atlas-Looti/l8b/issues"
+	},
+	"keywords": [
+		"lsp",
+		"language-server",
+		"lootiscript",
+		"l8b",
+		"language-server-protocol"
+	],
+	"engines": {
+		"node": ">=18"
+	},
 	"bin": {
 		"l8b-language-server": "./dist/server.js"
 	},
 	"files": [
-		"dist/**/*"
+		"dist/**/*",
+		"README.md",
+		"package.json"
 	],
 	"scripts": {
 		"build": "tsup",
@@ -21,8 +43,8 @@
 	},
 	"devDependencies": {
 		"tsup": "^8.0.0",
-		"typescript": "^5.0.0",
-		"@types/node": "^20.0.0"
+		"typescript": "^5.9.3",
+		"@types/node": "^22.19.1"
 	},
 	"publishConfig": {
 		"access": "public"

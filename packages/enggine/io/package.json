@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/io",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "IO and Storage utilities for L8B Engine",
 	"type": "module",
 	"files": [
@@ -20,9 +20,9 @@
 		"@l8b/diagnostics": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/node": "^20.0.0",
+		"@types/node": "^22.19.1",
 		"tsup": "^8.0.0",
-		"typescript": "^5.0.0"
+		"typescript": "^5.9.3"
 	},
 	"publishConfig": {
 		"access": "public"

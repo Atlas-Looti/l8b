@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/lootiscript",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
@@ -18,7 +18,7 @@
 	"types": "./dist/index.d.ts",
 	"devDependencies": {
 		"tsup": "^8.0.0",
-		"typescript": "^5.0.0"
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
 		"@l8b/stdlib": "workspace:*",
