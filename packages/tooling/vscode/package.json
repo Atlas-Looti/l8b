@@ -1,5 +1,5 @@
 {
-	"name": "lootiscript-vscode",
+	"name": "@l8b/vscode",
 	"displayName": "LootiScript",
 	"description": "Language support for LootiScript - L8B Game Framework",
 	"version": "0.0.1",
