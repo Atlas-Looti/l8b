@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/io",
-	"version": "0.0.0-canary-20251130212449",
+	"version": "1.0.2",
 	"description": "IO and Storage utilities for L8B Engine",
 	"type": "module",
 	"files": [

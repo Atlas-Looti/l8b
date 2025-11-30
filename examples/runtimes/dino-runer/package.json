@@ -1,7 +1,7 @@
 {
 	"name": "dino-runer",
 	"private": true,
-	"version": "0.0.0-canary-20251130212449",
+	"version": "1.0.2",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",

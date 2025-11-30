@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/scene",
-	"version": "0.0.0-canary-20251130212449",
+	"version": "1.0.2",
 	"description": "Scene management and routing system for L8B",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
