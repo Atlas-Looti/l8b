@@ -18,6 +18,10 @@ jobs:
     name: Create version pull request
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
 
     steps:
       - name: Clone repository
@@ -26,12 +30,19 @@ jobs:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
           submodules: 'recursive'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
 
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: PR or publish
-        uses: changesets/action@06245a4e0a36c064a573d4150030f5ec548e4fcc
+        id: changesets
+        uses: changesets/action@v1
         with:
           title: 'chore: version packages'
           commit: 'chore: version packages'
