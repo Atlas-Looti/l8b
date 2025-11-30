@@ -20,5 +20,8 @@
 	},
 	"keywords": [
 		"palette"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

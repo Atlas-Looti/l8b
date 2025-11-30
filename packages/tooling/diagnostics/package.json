@@ -30,5 +30,8 @@
 		"errors",
 		"warnings",
 		"l8b"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

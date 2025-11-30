@@ -20,5 +20,8 @@
 		"http",
 		"fetch",
 		"api"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

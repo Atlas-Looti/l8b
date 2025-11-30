@@ -20,5 +20,8 @@
 	},
 	"keywords": [
 		"input"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

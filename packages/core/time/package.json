@@ -23,5 +23,8 @@
 		"time-machine",
 		"debugging",
 		"replay"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

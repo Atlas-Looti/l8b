@@ -22,5 +22,8 @@
 	},
 	"keywords": [
 		"screen"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

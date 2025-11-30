@@ -38,5 +38,8 @@
 		"game-engine",
 		"game-loop",
 		"vm"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

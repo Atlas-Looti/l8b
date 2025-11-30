@@ -26,5 +26,8 @@
 	},
 	"keywords": [
 		"lootiscript"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

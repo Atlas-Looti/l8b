@@ -20,5 +20,8 @@
 	},
 	"keywords": [
 		"player"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

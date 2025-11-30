@@ -20,5 +20,8 @@
 	},
 	"keywords": [
 		"wallet"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

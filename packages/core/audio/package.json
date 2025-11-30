@@ -23,5 +23,8 @@
 	},
 	"keywords": [
 		"audio"
-	]
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }
