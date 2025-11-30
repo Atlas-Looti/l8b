@@ -1,5 +1,11 @@
 # @l8b/http
 
+## 1.0.1
+
+### Patch Changes
+
+- 94aa716: release 1
+
 ## 0.0.2
 
 ### Patch Changes

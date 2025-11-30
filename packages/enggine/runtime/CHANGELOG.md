@@ -1,5 +1,28 @@
 # @l8b/runtime
 
+## 1.0.1
+
+### Patch Changes
+
+- 94aa716: release 1
+- Updated dependencies [94aa716]
+  - @l8b/diagnostics@1.0.1
+  - @l8b/actions@1.0.1
+  - @l8b/sprites@1.0.1
+  - @l8b/player@1.0.1
+  - @l8b/screen@1.0.1
+  - @l8b/wallet@1.0.1
+  - @l8b/lootiscript@1.0.1
+  - @l8b/audio@1.0.1
+  - @l8b/input@1.0.1
+  - @l8b/scene@1.0.1
+  - @l8b/io@1.0.1
+  - @l8b/vm@1.0.1
+  - @l8b/http@1.0.1
+  - @l8b/time@1.0.1
+  - @l8b/evm@1.0.1
+  - @l8b/map@1.0.1
+
 ## 0.0.2
 
 ### Patch Changes
