@@ -36,6 +36,10 @@ jobs:
           
           # Version packages with snapshot
           pnpm changeset version --no-git-tag --snapshot $snapshot
+          
+          # Reinstall dependencies after version changes
+          pnpm install
+          
           pnpm changeset:prepublish
           
           # Publish with error handling - changeset publish will skip already-published versions
