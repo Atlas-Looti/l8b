@@ -21,12 +21,8 @@ export interface ImageContextState {
 	font: string;
 }
 
-export function createDefaultContextState(
-	centered: boolean,
-): ImageContextState {
-	if (
-		centered
-	) {
+export function createDefaultContextState(centered: boolean): ImageContextState {
+	if (centered) {
 		return {
 			alpha: 1,
 			pixelated: 1,
@@ -35,17 +31,14 @@ export function createDefaultContextState(
 			translation_y: 0, // Will be set to height/2
 			rotation: 0,
 			scale_x: 1,
-			scale_y:
-				-1,
+			scale_y: -1,
 			image_transform: true,
 			anchor_x: 0,
 			anchor_y: 0,
 			object_rotation: 0,
 			object_scale_x: 1,
-			object_scale_y:
-				-1,
-			font:
-				"BitCell",
+			object_scale_y: -1,
+			font: "BitCell",
 		};
 	} else {
 		return {
@@ -58,30 +51,16 @@ export function createDefaultContextState(
 			scale_x: 1,
 			scale_y: 1,
 			image_transform: false,
-			anchor_x:
-				-1,
+			anchor_x: -1,
 			anchor_y: 1,
 			object_rotation: 0,
 			object_scale_x: 1,
 			object_scale_y: 1,
-			font:
-				"BitCell",
+			font: "BitCell",
 		};
 	}
 }
 
-export function updateImageTransform(
-	state: ImageContextState,
-): void {
-	state.image_transform =
-		state.translation_x !==
-			0 ||
-		state.translation_y !==
-			0 ||
-		state.scale_x !==
-			1 ||
-		state.scale_y !==
-			1 ||
-		state.rotation !==
-			0;
+export function updateImageTransform(state: ImageContextState): void {
+	state.image_transform = state.translation_x !== 0 || state.translation_y !== 0 || state.scale_x !== 1 || state.scale_y !== 1 || state.rotation !== 0;
 }

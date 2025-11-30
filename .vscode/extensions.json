@@ -1,5 +1,3 @@
 {
-	"recommendations": [
-		"mike-lischke.vscode-antlr4"
-	]
+	"recommendations": ["mike-lischke.vscode-antlr4"]
 }

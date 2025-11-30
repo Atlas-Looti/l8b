@@ -10,12 +10,9 @@ export interface SpriteFrame {
 	image: Image;
 }
 
-export function createFrame(
-	image: Image,
-): SpriteFrame {
+export function createFrame(image: Image): SpriteFrame {
 	return {
-		canvas:
-			image.canvas,
+		canvas: image.canvas,
 		image,
 	};
 }

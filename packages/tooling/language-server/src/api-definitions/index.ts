@@ -23,30 +23,28 @@ import { walletApi } from "./wallet";
 /**
  * Global API list for suggestions and hover info
  */
-export const GLOBAL_API: GlobalApi =
-	{
-		...coreApi,
-		...screenApi,
-		...audioApi,
-		...inputApi,
-		...systemApi,
-		...sceneApi,
-		...spritesApi,
-		...mapApi,
-		...timeApi,
-		...assetsApi,
-		...paletteApi,
-		...playerApi,
-		...walletApi,
-		...evmApi,
-		...actionsApi,
-		...httpApi,
-	} as GlobalApi;
+export const GLOBAL_API: GlobalApi = {
+	...coreApi,
+	...screenApi,
+	...audioApi,
+	...inputApi,
+	...systemApi,
+	...sceneApi,
+	...spritesApi,
+	...mapApi,
+	...timeApi,
+	...assetsApi,
+	...paletteApi,
+	...playerApi,
+	...walletApi,
+	...evmApi,
+	...actionsApi,
+	...httpApi,
+} as GlobalApi;
 
 /**
  * Regex to match API access patterns:
  * - Single level: "screen.drawSprite", "Math.abs"
  * - Nested: "sprites.player.x", "map.level1.width"
  */
-export const API_ACCESS_REGEX =
-	/\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\.([A-Za-z_][A-Za-z0-9_]*)\b/g;
+export const API_ACCESS_REGEX = /\b([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\.([A-Za-z_][A-Za-z0-9_]*)\b/g;

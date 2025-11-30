@@ -5,10 +5,7 @@
 import type { ErrorInfo } from "@l8b/vm";
 import type { Resources } from "./assets";
 
-export type {
-	ErrorInfo,
-	Resources,
-};
+export type { ErrorInfo, Resources };
 
 /**
  * Runtime configuration options
@@ -35,15 +32,9 @@ export interface RuntimeOptions {
 	/** Base URL for loading assets */
 	url?: string;
 	/** Source code files (for development) */
-	sources?: Record<
-		string,
-		string
-	>;
+	sources?: Record<string, string>;
 	/** Pre-compiled routines (for production) - Record of module name to Routine instance */
-	compiledRoutines?: Record<
-		string,
-		any
-	>;
+	compiledRoutines?: Record<string, any>;
 	/** Resources metadata */
 	resources?: Resources;
 	/** Listener for events (logging, errors) */
@@ -67,19 +58,13 @@ export interface RuntimeOptions {
  */
 export interface RuntimeListener {
 	/** Log message */
-	log?: (
-		message: string,
-	) => void;
+	log?: (message: string) => void;
 	/** Report error */
-	reportError?: (
-		error: ErrorInfo,
-	) => void;
+	reportError?: (error: ErrorInfo) => void;
 	/** Code paused (system.pause called) */
 	codePaused?: () => void;
 	/** Post message to parent (for iframe communication) */
-	postMessage?: (
-		message: any,
-	) => void;
+	postMessage?: (message: any) => void;
 }
 
 /**

@@ -33,144 +33,69 @@ const CHAIN_CONFIG: Record<
 	}
 > = {
 	base: {
-		explorer:
-			"Basescan",
-		apiUrl:
-			"https://api.basescan.org/api",
+		explorer: "Basescan",
+		apiUrl: "https://api.basescan.org/api",
 	},
-	ethereum:
-		{
-			explorer:
-				"Etherscan",
-			apiUrl:
-				"https://api.etherscan.io/api",
-		},
-	optimism:
-		{
-			explorer:
-				"Optimistic Etherscan",
-			apiUrl:
-				"https://api-optimistic.etherscan.io/api",
-		},
-	arbitrum:
-		{
-			explorer:
-				"Arbiscan",
-			apiUrl:
-				"https://api.arbiscan.io/api",
-		},
+	ethereum: {
+		explorer: "Etherscan",
+		apiUrl: "https://api.etherscan.io/api",
+	},
+	optimism: {
+		explorer: "Optimistic Etherscan",
+		apiUrl: "https://api-optimistic.etherscan.io/api",
+	},
+	arbitrum: {
+		explorer: "Arbiscan",
+		apiUrl: "https://api.arbiscan.io/api",
+	},
 };
 
 /**
  * Fetch ABI from block explorer
  */
-async function fetchABI(
-	address: string,
-	chain: string,
-	apiKey?: string,
-): Promise<
-	any[]
-> {
-	const config =
-		CHAIN_CONFIG[
-			chain.toLowerCase()
-		];
-	if (
-		!config
-	) {
-		throw new Error(
-			`Unsupported chain: ${chain}. Supported chains: ${Object.keys(CHAIN_CONFIG).join(", ")}`,
-		);
+async function fetchABI(address: string, chain: string, apiKey?: string): Promise<any[]> {
+	const config = CHAIN_CONFIG[chain.toLowerCase()];
+	if (!config) {
+		throw new Error(`Unsupported chain: ${chain}. Supported chains: ${Object.keys(CHAIN_CONFIG).join(", ")}`);
 	}
 
 	// Try to get API key from environment if not provided
-	const key =
-		apiKey ||
-		process
-			.env[
-			`${chain.toUpperCase()}_API_KEY`
-		] ||
-		"";
+	const key = apiKey || process.env[`${chain.toUpperCase()}_API_KEY`] || "";
 
 	const url = `${config.apiUrl}?module=contract&action=getabi&address=${address}&apikey=${key}`;
 
 	try {
-		const response =
-			await fetch(
-				url,
-			);
-		const data =
-			await response.json();
+		const response = await fetch(url);
+		const data = await response.json();
 
-		if (
-			data.status ===
-				"0" &&
-			data.message ===
-				"NOTOK"
-		) {
-			if (
-				data.result ===
-				"Max rate limit reached"
-			) {
+		if (data.status === "0" && data.message === "NOTOK") {
+			if (data.result === "Max rate limit reached") {
 				throw new Error(
 					`Rate limit reached. Please provide an API key: ${config.explorer} API key via --api-key or ${chain.toUpperCase()}_API_KEY environment variable`,
 				);
 			}
-			throw new Error(
-				`Failed to fetch ABI: ${data.result}`,
-			);
+			throw new Error(`Failed to fetch ABI: ${data.result}`);
 		}
 
-		if (
-			data.status ===
-				"1" &&
-			data.result
-		) {
-			return JSON.parse(
-				data.result,
-			);
+		if (data.status === "1" && data.result) {
+			return JSON.parse(data.result);
 		}
 
-		throw new Error(
-			"Invalid response from block explorer",
-		);
+		throw new Error("Invalid response from block explorer");
 	} catch (error) {
-		if (
-			error instanceof
-			Error
-		) {
+		if (error instanceof Error) {
 			throw error;
 		}
-		throw new Error(
-			"Failed to fetch ABI from block explorer",
-		);
+		throw new Error("Failed to fetch ABI from block explorer");
 	}
 }
 
 /**
  * Generate LootiScript wrapper from ABI
  */
-function generateLootiScriptWrapper(
-	abi: any[],
-	contractAddress: string,
-	contractName: string,
-): string {
-	const functions =
-		abi.filter(
-			(
-				item,
-			) =>
-				item.type ===
-				"function",
-		);
-	const events =
-		abi.filter(
-			(
-				item,
-			) =>
-				item.type ===
-				"event",
-		);
+function generateLootiScriptWrapper(abi: any[], contractAddress: string, contractName: string): string {
+	const functions = abi.filter((item) => item.type === "function");
+	const events = abi.filter((item) => item.type === "event");
 
 	let code = `// Auto-generated contract wrapper for ${contractName}
 // Address: ${contractAddress}
@@ -185,26 +110,8 @@ end
 `;
 
 	// Generate read functions
-	for (const func of functions.filter(
-		(f) =>
-			f.stateMutability ===
-				"view" ||
-			f.stateMutability ===
-				"pure",
-	)) {
-		const params =
-			func.inputs
-				.map(
-					(
-						input: any,
-						i: number,
-					) =>
-						input.name ||
-						`arg${i}`,
-				)
-				.join(
-					", ",
-				);
+	for (const func of functions.filter((f) => f.stateMutability === "view" || f.stateMutability === "pure")) {
+		const params = func.inputs.map((input: any, i: number) => input.name || `arg${i}`).join(", ");
 
 		code += `
 async function ${contractName}.${func.name}(${params})
@@ -223,26 +130,8 @@ end
 `;
 
 	// Generate write functions
-	for (const func of functions.filter(
-		(f) =>
-			f.stateMutability !==
-				"view" &&
-			f.stateMutability !==
-				"pure",
-	)) {
-		const params =
-			func.inputs
-				.map(
-					(
-						input: any,
-						i: number,
-					) =>
-						input.name ||
-						`arg${i}`,
-				)
-				.join(
-					", ",
-				);
+	for (const func of functions.filter((f) => f.stateMutability !== "view" && f.stateMutability !== "pure")) {
+		const params = func.inputs.map((input: any, i: number) => input.name || `arg${i}`).join(", ");
 
 		code += `
 async function ${contractName}.${func.name}(${params})
@@ -256,10 +145,7 @@ end
 `;
 	}
 
-	if (
-		events.length >
-		0
-	) {
+	if (events.length > 0) {
 		code += `
 // Events
 // Note: Event listening is not yet supported in LootiScript
@@ -277,113 +163,40 @@ return ${contractName}
 /**
  * Import contract and generate wrapper
  */
-export async function contractImport(
-	options: ContractImportOptions,
-): Promise<void> {
-	const projectPath =
-		options.projectPath ||
-		process.cwd();
-	const contractsDir =
-		path.join(
-			projectPath,
-			DEFAULT_DIRS.SCRIPTS,
-			"contracts",
-		);
+export async function contractImport(options: ContractImportOptions): Promise<void> {
+	const projectPath = options.projectPath || process.cwd();
+	const contractsDir = path.join(projectPath, DEFAULT_DIRS.SCRIPTS, "contracts");
 
 	// Ensure contracts directory exists
-	await fs.ensureDir(
-		contractsDir,
-	);
+	await fs.ensureDir(contractsDir);
 
-	console.log(
-		pc.cyan(
-			`\n  📦 Importing contract ${options.name} from ${options.chain}...\n`,
-		),
-	);
+	console.log(pc.cyan(`\n  📦 Importing contract ${options.name} from ${options.chain}...\n`));
 
 	try {
 		// Fetch ABI
-		console.log(
-			pc.gray(
-				`  Fetching ABI from ${CHAIN_CONFIG[options.chain.toLowerCase()].explorer}...`,
-			),
-		);
-		const abi =
-			await fetchABI(
-				options.address,
-				options.chain,
-				options.apiKey,
-			);
-		console.log(
-			pc.green(
-				`  ✓ ABI fetched (${abi.length} items)\n`,
-			),
-		);
+		console.log(pc.gray(`  Fetching ABI from ${CHAIN_CONFIG[options.chain.toLowerCase()].explorer}...`));
+		const abi = await fetchABI(options.address, options.chain, options.apiKey);
+		console.log(pc.green(`  ✓ ABI fetched (${abi.length} items)\n`));
 
 		// Generate wrapper
-		console.log(
-			pc.gray(
-				`  Generating LootiScript wrapper...`,
-			),
-		);
-		const wrapper =
-			generateLootiScriptWrapper(
-				abi,
-				options.address,
-				options.name,
-			);
+		console.log(pc.gray(`  Generating LootiScript wrapper...`));
+		const wrapper = generateLootiScriptWrapper(abi, options.address, options.name);
 
 		// Write to file
 		const fileName = `${options.name.toLowerCase()}.loot`;
-		const filePath =
-			path.join(
-				contractsDir,
-				fileName,
-			);
-		await fs.writeFile(
-			filePath,
-			wrapper,
-		);
+		const filePath = path.join(contractsDir, fileName);
+		await fs.writeFile(filePath, wrapper);
 
-		console.log(
-			pc.green(
-				`  ✓ Wrapper generated: ${fileName}\n`,
-			),
-		);
-		console.log(
-			pc.gray(
-				"  Usage:",
-			),
-		);
-		console.log(
-			pc.cyan(
-				`    local ${options.name} = require("contracts/${options.name.toLowerCase()}")\n`,
-			),
-		);
+		console.log(pc.green(`  ✓ Wrapper generated: ${fileName}\n`));
+		console.log(pc.gray("  Usage:"));
+		console.log(pc.cyan(`    local ${options.name} = require("contracts/${options.name.toLowerCase()}")\n`));
 	} catch (error) {
-		console.error(
-			pc.red(
-				"\n✗ Failed to import contract:\n",
-			),
-		);
-		if (
-			error instanceof
-			Error
-		) {
-			console.error(
-				pc.red(
-					`  ${error.message}\n`,
-				),
-			);
+		console.error(pc.red("\n✗ Failed to import contract:\n"));
+		if (error instanceof Error) {
+			console.error(pc.red(`  ${error.message}\n`));
 		} else {
-			console.error(
-				pc.red(
-					`  ${String(error)}\n`,
-				),
-			);
+			console.error(pc.red(`  ${String(error)}\n`));
 		}
-		process.exit(
-			1,
-		);
+		process.exit(1);
 	}
 }

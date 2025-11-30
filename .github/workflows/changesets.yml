@@ -15,25 +15,34 @@ jobs:
     secrets: inherit
 
   changesets:
-    name: Create version pull request
+    name: Version & Publish
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    needs: verify
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
         with:
-          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
           submodules: 'recursive'
 
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: PR or publish
+      - name: Configure npm authentication
+        if: env.NPM_TOKEN != ''
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
+
+      - name: Create release PR or publish
         id: changesets
         uses: changesets/action@06245a4e0a36c064a573d4150030f5ec548e4fcc
         with:
@@ -46,29 +55,26 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Publish prerelease
+      - name: Publish canary prerelease
         if: steps.changesets.outputs.published != 'true'
         continue-on-error: true
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Configure npm authentication
-          if [ -n "$NPM_TOKEN" ]; then
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-            npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
-          else
-            echo "Warning: NPM_TOKEN not set, publishing may fail"
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "⚠️ NPM_TOKEN not set, skipping canary release"
+            exit 0
           fi
-          
+
+          echo "📦 Publishing canary prerelease..."
           git reset --hard origin/main
-          pnpm build 
-          pnpm install
+          pnpm build
+          pnpm install --frozen-lockfile
           pnpm changeset version --no-git-tag --snapshot canary
           pnpm changeset:prepublish
-          
-          # Publish with error handling - changeset publish will skip already-published versions
+
           pnpm changeset publish --no-git-tag --snapshot canary --tag canary || {
-            echo "Some packages failed to publish (this is expected if versions already exist)"
+            echo "⚠️ Some packages failed to publish (expected if versions exist)"
             exit 0
           }
+          echo "✅ Canary release published successfully"

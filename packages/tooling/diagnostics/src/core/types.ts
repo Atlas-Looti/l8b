@@ -73,23 +73,14 @@ export interface Diagnostic {
 	/** Optional category */
 	category?: DiagnosticCategory;
 	/** Optional additional data */
-	data?: Record<
-		string,
-		unknown
-	>;
+	data?: Record<string, unknown>;
 }
 
 /**
  * Message template function arguments
  */
 export interface MessageArgs {
-	[
-		key: string
-	]:
-		| string
-		| number
-		| boolean
-		| undefined;
+	[key: string]: string | number | boolean | undefined;
 }
 
 /**
@@ -101,19 +92,11 @@ export interface MessageTemplate {
 	/** Severity level */
 	severity: DiagnosticSeverity;
 	/** Message template (string or function) */
-	message:
-		| string
-		| ((
-				args: MessageArgs,
-		  ) => string);
+	message: string | ((args: MessageArgs) => string);
 	/** Optional description */
 	description?: string;
 	/** Optional default suggestions */
-	suggestions?:
-		| string[]
-		| ((
-				args: MessageArgs,
-		  ) => string[]);
+	suggestions?: string[] | ((args: MessageArgs) => string[]);
 	/** Optional category */
 	category?: DiagnosticCategory;
 }

@@ -4,12 +4,12 @@ on:
 
 jobs:
   snapshot:
-    name: Release snapshot version
+    name: Release Snapshot Version
     permissions:
       contents: write
       id-token: write
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - name: Clone repository
@@ -18,32 +18,44 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Publish Snapshots
+      - name: Determine snapshot tag
+        id: snapshot-tag
+        run: |
+          BRANCH=$(git branch --show-current)
+          SNAPSHOT_TAG=$(echo "$BRANCH" | tr -cs '[:alnum:]-' '-' | tr '[:upper:]' '[:lower:]' | sed 's/^-//;s/-$//')
+          echo "tag=$SNAPSHOT_TAG" >> $GITHUB_OUTPUT
+          echo "📦 Snapshot tag: $SNAPSHOT_TAG"
+
+      - name: Configure npm authentication
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "❌ Error: NPM_TOKEN not set"
+            exit 1
+          fi
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Version snapshot packages
+        run: |
+          echo "📝 Versioning packages with snapshot tag: ${{ steps.snapshot-tag.outputs.tag }}"
+          pnpm changeset version --no-git-tag --snapshot ${{ steps.snapshot-tag.outputs.tag }}
+          pnpm install --frozen-lockfile
+
+      - name: Prepare for publishing
+        run: pnpm changeset:prepublish
+
+      - name: Publish snapshot
         continue-on-error: true
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          snapshot=$(git branch --show-current | tr -cs '[:alnum:]-' '-' | tr '[:upper:]' '[:lower:]' | sed 's/-$//')
-          
-          # Configure npm authentication
-          if [ -n "$NPM_TOKEN" ]; then
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-            npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
-          else
-            echo "Warning: NPM_TOKEN not set, publishing may fail"
-          fi
-          
-          # Version packages with snapshot
-          pnpm changeset version --no-git-tag --snapshot $snapshot
-          
-          # Reinstall dependencies after version changes
-          pnpm install
-          
-          pnpm changeset:prepublish
-          
-          # Publish with error handling - changeset publish will skip already-published versions
-          pnpm changeset publish --no-git-tag --snapshot $snapshot --tag $snapshot || {
-            echo "Some packages failed to publish (this is expected if versions already exist)"
+          pnpm changeset publish --no-git-tag --snapshot ${{ steps.snapshot-tag.outputs.tag }} --tag ${{ steps.snapshot-tag.outputs.tag }} || {
+            echo "⚠️ Some packages failed to publish (expected if versions exist)"
             exit 0
           }
+          echo "✅ Snapshot published successfully with tag: ${{ steps.snapshot-tag.outputs.tag }}"

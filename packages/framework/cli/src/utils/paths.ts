@@ -9,47 +9,29 @@ import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __dirname =
-	path.dirname(
-		fileURLToPath(
-			import.meta
-				.url,
-		),
-	);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Default directories and file names
  */
-export const DEFAULT_DIRS =
-	{
-		BUILD_OUTPUT:
-			".l8b",
-		SCRIPTS:
-			"src",
-		PUBLIC:
-			"public",
-		COMPILED:
-			"compiled",
-		FONTS:
-			"fonts",
-	} as const;
+export const DEFAULT_DIRS = {
+	BUILD_OUTPUT: ".l8b",
+	SCRIPTS: "src",
+	PUBLIC: "public",
+	COMPILED: "compiled",
+	FONTS: "fonts",
+} as const;
 
 /**
  * Default file names
  */
-export const DEFAULT_FILES =
-	{
-		CONFIG:
-			"l8b.config.json",
-		INDEX_HTML:
-			"index.html",
-		RUNTIME_BUNDLE:
-			"runtime.js",
-		BITCELL_FONT:
-			"BitCell.ttf",
-		PACKAGE_JSON:
-			"package.json",
-	} as const;
+export const DEFAULT_FILES = {
+	CONFIG: "l8b.config.json",
+	INDEX_HTML: "index.html",
+	RUNTIME_BUNDLE: "runtime.js",
+	BITCELL_FONT: "BitCell.ttf",
+	PACKAGE_JSON: "package.json",
+} as const;
 
 /**
  * Get CLI package root directory
@@ -60,87 +42,32 @@ export const DEFAULT_FILES =
  * @returns Absolute path to CLI package root
  */
 export function getCliPackageRoot(): string {
-	const normalizedPath =
-		__dirname.replace(
-			/\\/g,
-			"/",
-		);
+	const normalizedPath = __dirname.replace(/\\/g, "/");
 
 	// Try to find packages/framework/cli or packages/cli
-	const frameworkCliIndex =
-		normalizedPath.indexOf(
-			"/packages/framework/cli/",
-		);
-	if (
-		frameworkCliIndex !==
-		-1
-	) {
-		const root =
-			normalizedPath.substring(
-				0,
-				frameworkCliIndex +
-					"/packages/framework/cli"
-						.length,
-			);
-		return path.normalize(
-			root,
-		);
+	const frameworkCliIndex = normalizedPath.indexOf("/packages/framework/cli/");
+	if (frameworkCliIndex !== -1) {
+		const root = normalizedPath.substring(0, frameworkCliIndex + "/packages/framework/cli".length);
+		return path.normalize(root);
 	}
 
-	const cliIndex =
-		normalizedPath.indexOf(
-			"/packages/cli/",
-		);
-	if (
-		cliIndex !==
-		-1
-	) {
-		const root =
-			normalizedPath.substring(
-				0,
-				cliIndex +
-					"/packages/cli"
-						.length,
-			);
-		return path.normalize(
-			root,
-		);
+	const cliIndex = normalizedPath.indexOf("/packages/cli/");
+	if (cliIndex !== -1) {
+		const root = normalizedPath.substring(0, cliIndex + "/packages/cli".length);
+		return path.normalize(root);
 	}
 
 	// Fallback: use relative paths
-	const isBuilt =
-		normalizedPath.includes(
-			"/dist/",
-		);
-	if (
-		isBuilt
-	) {
+	const isBuilt = normalizedPath.includes("/dist/");
+	if (isBuilt) {
 		// Find dist/ and go up to package root
-		const distIndex =
-			normalizedPath.indexOf(
-				"/dist/",
-			);
-		if (
-			distIndex !==
-			-1
-		) {
-			return path.normalize(
-				normalizedPath.substring(
-					0,
-					distIndex,
-				),
-			);
+		const distIndex = normalizedPath.indexOf("/dist/");
+		if (distIndex !== -1) {
+			return path.normalize(normalizedPath.substring(0, distIndex));
 		}
-		return path.join(
-			__dirname,
-			"..",
-			"..",
-		); // dist/../.. = package root
+		return path.join(__dirname, "..", ".."); // dist/../.. = package root
 	}
-	return path.join(
-		__dirname,
-		"../..",
-	); // src/../.. = package root
+	return path.join(__dirname, "../.."); // src/../.. = package root
 }
 
 /**
@@ -152,47 +79,20 @@ export function getCliPackageRoot(): string {
  * @param maxDepth - Maximum directory levels to traverse (default: 10)
  * @returns Workspace root path or null if not found
  */
-export async function findWorkspaceRoot(
-	startPath: string,
-	maxDepth: number = 10,
-): Promise<
-	| string
-	| null
-> {
-	let currentPath =
-		startPath;
+export async function findWorkspaceRoot(startPath: string, maxDepth: number = 10): Promise<string | null> {
+	let currentPath = startPath;
 
-	for (
-		let i = 0;
-		i <
-		maxDepth;
-		i++
-	) {
-		const packagesDir =
-			path.join(
-				currentPath,
-				"packages",
-			);
-		if (
-			await fs.pathExists(
-				packagesDir,
-			)
-		) {
+	for (let i = 0; i < maxDepth; i++) {
+		const packagesDir = path.join(currentPath, "packages");
+		if (await fs.pathExists(packagesDir)) {
 			return currentPath;
 		}
 
-		const parent =
-			path.dirname(
-				currentPath,
-			);
-		if (
-			parent ===
-			currentPath
-		) {
+		const parent = path.dirname(currentPath);
+		if (parent === currentPath) {
 			break; // Reached filesystem root
 		}
-		currentPath =
-			parent;
+		currentPath = parent;
 	}
 
 	return null;
@@ -208,39 +108,18 @@ export async function findWorkspaceRoot(
  * @param filePath - Path to resolve (may start with `/` or be relative)
  * @returns Absolute resolved path
  */
-export function resolveProjectPath(
-	projectPath: string,
-	filePath: string,
-): string {
-	if (
-		path.isAbsolute(
-			filePath,
-		)
-	) {
+export function resolveProjectPath(projectPath: string, filePath: string): string {
+	if (path.isAbsolute(filePath)) {
 		// Already absolute, but might be a project-relative path with leading /
 		// Check if it exists, otherwise treat as project-relative
-		if (
-			fs.existsSync(
-				filePath,
-			)
-		) {
+		if (fs.existsSync(filePath)) {
 			return filePath;
 		}
 	}
 
 	// Remove leading / if present (project-relative convention)
-	const normalizedPath =
-		filePath.startsWith(
-			"/",
-		)
-			? filePath.slice(
-					1,
-				)
-			: filePath;
-	return path.join(
-		projectPath,
-		normalizedPath,
-	);
+	const normalizedPath = filePath.startsWith("/") ? filePath.slice(1) : filePath;
+	return path.join(projectPath, normalizedPath);
 }
 
 /**
@@ -249,27 +128,12 @@ export function resolveProjectPath(
  * @param cliPackageRoot - CLI package root directory
  * @returns Object with dist and assets font paths
  */
-export function getBitCellFontPaths(
-	cliPackageRoot: string,
-): {
+export function getBitCellFontPaths(cliPackageRoot: string): {
 	dist: string;
 	assets: string;
 } {
 	return {
-		dist:
-			path.join(
-				cliPackageRoot,
-				"dist",
-				"assets",
-				"fonts",
-				DEFAULT_FILES.BITCELL_FONT,
-			),
-		assets:
-			path.join(
-				cliPackageRoot,
-				"assets",
-				"fonts",
-				DEFAULT_FILES.BITCELL_FONT,
-			),
+		dist: path.join(cliPackageRoot, "dist", "assets", "fonts", DEFAULT_FILES.BITCELL_FONT),
+		assets: path.join(cliPackageRoot, "assets", "fonts", DEFAULT_FILES.BITCELL_FONT),
 	};
 }

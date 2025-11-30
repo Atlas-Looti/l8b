@@ -6,31 +6,17 @@
  * Note: 3D Models and WASM are out of scope for L8B (2D only).
  */
 
-import {
-	APIErrorCode,
-	createDiagnostic,
-	formatForBrowser,
-} from "@l8b/diagnostics";
+import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
 import { Image } from "@l8b/sprites";
-import type {
-	ImageLoaderResult,
-	JSONLoaderResult,
-	Runtime,
-	TextLoaderResult,
-} from "../types";
+import type { ImageLoaderResult, JSONLoaderResult, Runtime, TextLoaderResult } from "../types";
 
-export type {
-	Runtime,
-};
+export type { Runtime };
 
 export class AssetManager {
 	private runtime: Runtime;
 
-	constructor(
-		runtime: Runtime,
-	) {
-		this.runtime =
-			runtime;
+	constructor(runtime: Runtime) {
+		this.runtime = runtime;
 	}
 
 	/**
@@ -38,200 +24,60 @@ export class AssetManager {
 	 */
 	getInterface() {
 		return {
-			loadFont:
-				(
-					font: string,
-				) =>
-					this.loadFont(
-						font,
-					),
-			loadImage:
-				(
-					path: string,
-					callback?: (
-						image: Image,
-					) => void,
-				) =>
-					this.loadImage(
-						path,
-						callback,
-					),
-			loadJSON:
-				(
-					path: string,
-					callback?: (
-						data: any,
-					) => void,
-				) =>
-					this.loadJSON(
-						path,
-						callback,
-					),
-			loadText:
-				(
-					path: string,
-					callback?: (
-						text: string,
-					) => void,
-					ext?: string,
-				) =>
-					this.loadText(
-						path,
-						callback,
-						ext,
-					),
-			loadCSV:
-				(
-					path: string,
-					callback?: (
-						text: string,
-					) => void,
-				) =>
-					this.loadCSV(
-						path,
-						callback,
-					),
-			loadMarkdown:
-				(
-					path: string,
-					callback?: (
-						text: string,
-					) => void,
-				) =>
-					this.loadMarkdown(
-						path,
-						callback,
-					),
+			loadFont: (font: string) => this.loadFont(font),
+			loadImage: (path: string, callback?: (image: Image) => void) => this.loadImage(path, callback),
+			loadJSON: (path: string, callback?: (data: any) => void) => this.loadJSON(path, callback),
+			loadText: (path: string, callback?: (text: string) => void, ext?: string) => this.loadText(path, callback, ext),
+			loadCSV: (path: string, callback?: (text: string) => void) => this.loadCSV(path, callback),
+			loadMarkdown: (path: string, callback?: (text: string) => void) => this.loadMarkdown(path, callback),
 		};
 	}
 
 	/**
 	 * Load a font
 	 */
-	loadFont(
-		font: string,
-	): void {
-		if (
-			typeof font !==
-			"string"
-		) {
+	loadFont(font: string): void {
+		if (typeof font !== "string") {
 			return;
 		}
 
-		const file =
-			font.replace(
-				/\//g,
-				"-",
-			);
-		const split =
-			file.split(
-				"-",
-			);
-		const name =
-			split[
-				split.length -
-					1
-			];
+		const file = font.replace(/\//g, "-");
+		const split = file.split("-");
+		const name = split[split.length - 1];
 
 		try {
-			const fontFace =
-				new FontFace(
-					name,
-					`url(assets/${file}.ttf)`,
-				);
+			const fontFace = new FontFace(name, `url(assets/${file}.ttf)`);
 			fontFace
 				.load()
-				.then(
-					() => {
-						if (
-							document.fonts &&
-							(
-								document.fonts as any
-							)
-								.add
-						) {
-							(
-								document.fonts as any
-							).add(
-								fontFace,
-							);
-						}
-					},
-				)
-				.catch(
-					(
-						err,
-					) => {
-						const diagnostic =
-							createDiagnostic(
-								APIErrorCode.E7042,
-								{
-									data:
-										{
-											assetName: `font: ${font}`,
-											error:
-												String(
-													err,
-												),
-										},
-								},
-							);
-						const formatted =
-							formatForBrowser(
-								diagnostic,
-							);
+				.then(() => {
+					if (document.fonts && (document.fonts as any).add) {
+						(document.fonts as any).add(fontFace);
+					}
+				})
+				.catch((err) => {
+					const diagnostic = createDiagnostic(APIErrorCode.E7042, {
+						data: {
+							assetName: `font: ${font}`,
+							error: String(err),
+						},
+					});
+					const formatted = formatForBrowser(diagnostic);
 
-						if (
-							(
-								this
-									.runtime as any
-							)
-								?.listener
-								?.reportError
-						) {
-							(
-								this
-									.runtime as any
-							).listener.reportError(
-								formatted,
-							);
-						}
-					},
-				);
+					if ((this.runtime as any)?.listener?.reportError) {
+						(this.runtime as any).listener.reportError(formatted);
+					}
+				});
 		} catch (err) {
-			const diagnostic =
-				createDiagnostic(
-					APIErrorCode.E7042,
-					{
-						data:
-							{
-								assetName: `font: ${font}`,
-								error:
-									String(
-										err,
-									),
-							},
-					},
-				);
-			const formatted =
-				formatForBrowser(
-					diagnostic,
-				);
+			const diagnostic = createDiagnostic(APIErrorCode.E7042, {
+				data: {
+					assetName: `font: ${font}`,
+					error: String(err),
+				},
+			});
+			const formatted = formatForBrowser(diagnostic);
 
-			if (
-				(
-					this
-						.runtime as any
-				)
-					?.listener
-					?.reportError
-			) {
-				(
-					this
-						.runtime as any
-				).listener.reportError(
-					formatted,
-				);
+			if ((this.runtime as any)?.listener?.reportError) {
+				(this.runtime as any).listener.reportError(formatted);
 			}
 		}
 	}
@@ -242,103 +88,43 @@ export class AssetManager {
 	 * @param callback Optional callback when image is loaded
 	 * @returns Loader result object with Image instance
 	 */
-	loadImage(
-		path: string,
-		callback?: (
-			image: Image,
-		) => void,
-	): ImageLoaderResult {
-		const loader: ImageLoaderResult =
-			{
-				ready: 0,
-			};
+	loadImage(path: string, callback?: (image: Image) => void): ImageLoaderResult {
+		const loader: ImageLoaderResult = {
+			ready: 0,
+		};
 
-		let actualPath =
-			path;
-		if (
-			this
-				.runtime
-				.assets[
-				path
-			]
-		) {
-			actualPath =
-				this
-					.runtime
-					.assets[
-					path
-				]
-					.file;
+		let actualPath = path;
+		if (this.runtime.assets[path]) {
+			actualPath = this.runtime.assets[path].file;
 		}
 
-		const img =
-			document.createElement(
-				"img",
-			);
+		const img = document.createElement("img");
 		// Handle CORS for cross-origin images
-		if (
-			typeof window !==
-				"undefined" &&
-			window
-				.location
-				.protocol !==
-				"file:"
-		) {
-			img.crossOrigin =
-				"Anonymous";
+		if (typeof window !== "undefined" && window.location.protocol !== "file:") {
+			img.crossOrigin = "Anonymous";
 		}
 		img.src = `assets/${actualPath}`;
-		img.onload =
-			() => {
-				const image =
-					new Image(
-						img,
-					);
-				loader.image =
-					image;
-				loader.ready = 1;
-				if (
-					callback
-				) {
-					callback(
-						image,
-					);
-				}
-			};
-		img.onerror =
-			() => {
-				const diagnostic =
-					createDiagnostic(
-						APIErrorCode.E7042,
-						{
-							data:
-								{
-									assetName: `image: ${actualPath}`,
-								},
-						},
-					);
-				const formatted =
-					formatForBrowser(
-						diagnostic,
-					);
+		img.onload = () => {
+			const image = new Image(img);
+			loader.image = image;
+			loader.ready = 1;
+			if (callback) {
+				callback(image);
+			}
+		};
+		img.onerror = () => {
+			const diagnostic = createDiagnostic(APIErrorCode.E7042, {
+				data: {
+					assetName: `image: ${actualPath}`,
+				},
+			});
+			const formatted = formatForBrowser(diagnostic);
 
-				if (
-					(
-						this
-							.runtime as any
-					)
-						?.listener
-						?.reportError
-				) {
-					(
-						this
-							.runtime as any
-					).listener.reportError(
-						formatted,
-					);
-				}
-				loader.ready = 1; // Mark as ready even on error to avoid blocking
-			};
+			if ((this.runtime as any)?.listener?.reportError) {
+				(this.runtime as any).listener.reportError(formatted);
+			}
+			loader.ready = 1; // Mark as ready even on error to avoid blocking
+		};
 
 		return loader;
 	}
@@ -349,90 +135,37 @@ export class AssetManager {
 	 * @param callback Optional callback when JSON is loaded
 	 * @returns Loader result object
 	 */
-	loadJSON(
-		path: string,
-		callback?: (
-			data: any,
-		) => void,
-	): JSONLoaderResult {
-		const loader: JSONLoaderResult =
-			{
-				ready: 0,
-			};
+	loadJSON(path: string, callback?: (data: any) => void): JSONLoaderResult {
+		const loader: JSONLoaderResult = {
+			ready: 0,
+		};
 
 		// Convert path separators to dashes and add .json extension
-		const actualPath =
-			path.replace(
-				/\//g,
-				"-",
-			);
+		const actualPath = path.replace(/\//g, "-");
 		const url = `assets/${actualPath}.json`;
 
-		fetch(
-			url,
-		)
-			.then(
-				(
-					result,
-				) =>
-					result.json(),
-			)
-			.then(
-				(
-					data,
-				) => {
-					loader.data =
-						data;
-					loader.ready = 1;
-					if (
-						callback
-					) {
-						callback(
-							data,
-						);
-					}
-				},
-			)
-			.catch(
-				(
-					err,
-				) => {
-					const diagnostic =
-						createDiagnostic(
-							APIErrorCode.E7042,
-							{
-								data:
-									{
-										assetName: `JSON: ${path}`,
-										error:
-											String(
-												err,
-											),
-									},
-							},
-						);
-					const formatted =
-						formatForBrowser(
-							diagnostic,
-						);
+		fetch(url)
+			.then((result) => result.json())
+			.then((data) => {
+				loader.data = data;
+				loader.ready = 1;
+				if (callback) {
+					callback(data);
+				}
+			})
+			.catch((err) => {
+				const diagnostic = createDiagnostic(APIErrorCode.E7042, {
+					data: {
+						assetName: `JSON: ${path}`,
+						error: String(err),
+					},
+				});
+				const formatted = formatForBrowser(diagnostic);
 
-					if (
-						(
-							this
-								.runtime as any
-						)
-							?.listener
-							?.reportError
-					) {
-						(
-							this
-								.runtime as any
-						).listener.reportError(
-							formatted,
-						);
-					}
-				},
-			);
+				if ((this.runtime as any)?.listener?.reportError) {
+					(this.runtime as any).listener.reportError(formatted);
+				}
+			});
 
 		return loader;
 	}
@@ -444,91 +177,37 @@ export class AssetManager {
 	 * @param ext File extension (default: "txt")
 	 * @returns Loader result object
 	 */
-	loadText(
-		path: string,
-		callback?: (
-			text: string,
-		) => void,
-		ext: string = "txt",
-	): TextLoaderResult {
-		const loader: TextLoaderResult =
-			{
-				ready: 0,
-			};
+	loadText(path: string, callback?: (text: string) => void, ext: string = "txt"): TextLoaderResult {
+		const loader: TextLoaderResult = {
+			ready: 0,
+		};
 
 		// Convert path separators to dashes and add extension
-		const actualPath =
-			path.replace(
-				/\//g,
-				"-",
-			);
+		const actualPath = path.replace(/\//g, "-");
 		const url = `assets/${actualPath}.${ext}`;
 
-		fetch(
-			url,
-		)
-			.then(
-				(
-					result,
-				) =>
-					result.text(),
-			)
-			.then(
-				(
-					text,
-				) => {
-					loader.text =
-						text;
-					loader.ready = 1;
-					if (
-						callback
-					) {
-						callback(
-							text,
-						);
-					}
-				},
-			)
-			.catch(
-				(
-					err,
-				) => {
-					const diagnostic =
-						createDiagnostic(
-							APIErrorCode.E7042,
-							{
-								data:
-									{
-										assetName: `text: ${path}`,
-										error:
-											String(
-												err,
-											),
-									},
-							},
-						);
-					const formatted =
-						formatForBrowser(
-							diagnostic,
-						);
+		fetch(url)
+			.then((result) => result.text())
+			.then((text) => {
+				loader.text = text;
+				loader.ready = 1;
+				if (callback) {
+					callback(text);
+				}
+			})
+			.catch((err) => {
+				const diagnostic = createDiagnostic(APIErrorCode.E7042, {
+					data: {
+						assetName: `text: ${path}`,
+						error: String(err),
+					},
+				});
+				const formatted = formatForBrowser(diagnostic);
 
-					if (
-						(
-							this
-								.runtime as any
-						)
-							?.listener
-							?.reportError
-					) {
-						(
-							this
-								.runtime as any
-						).listener.reportError(
-							formatted,
-						);
-					}
-				},
-			);
+				if ((this.runtime as any)?.listener?.reportError) {
+					(this.runtime as any).listener.reportError(formatted);
+				}
+			});
 
 		return loader;
 	}
@@ -539,17 +218,8 @@ export class AssetManager {
 	 * @param callback Optional callback when CSV is loaded
 	 * @returns Loader result object
 	 */
-	loadCSV(
-		path: string,
-		callback?: (
-			text: string,
-		) => void,
-	): TextLoaderResult {
-		return this.loadText(
-			path,
-			callback,
-			"csv",
-		);
+	loadCSV(path: string, callback?: (text: string) => void): TextLoaderResult {
+		return this.loadText(path, callback, "csv");
 	}
 
 	/**
@@ -558,16 +228,7 @@ export class AssetManager {
 	 * @param callback Optional callback when Markdown is loaded
 	 * @returns Loader result object
 	 */
-	loadMarkdown(
-		path: string,
-		callback?: (
-			text: string,
-		) => void,
-	): TextLoaderResult {
-		return this.loadText(
-			path,
-			callback,
-			"md",
-		);
+	loadMarkdown(path: string, callback?: (text: string) => void): TextLoaderResult {
+		return this.loadText(path, callback, "md");
 	}
 }

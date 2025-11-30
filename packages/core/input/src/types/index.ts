@@ -3,17 +3,10 @@
  */
 
 export interface KeyboardPressRelease {
-	[
-		key: string
-	]: number;
+	[key: string]: number;
 }
 
-export interface KeyboardState
-	extends Record<
-		string,
-		| number
-		| KeyboardPressRelease
-	> {
+export interface KeyboardState extends Record<string, number | KeyboardPressRelease> {
 	press: KeyboardPressRelease;
 	release: KeyboardPressRelease;
 	UP: number;
@@ -37,9 +30,7 @@ export interface MouseState {
 export interface TouchPoint {
 	x: number;
 	y: number;
-	id:
-		| number
-		| string;
+	id: number | string;
 }
 
 export interface TouchState {
@@ -51,6 +42,4 @@ export interface TouchState {
 	touches: TouchPoint[];
 }
 
-export type PointerIdentifier =
-	| number
-	| string;
+export type PointerIdentifier = number | string;

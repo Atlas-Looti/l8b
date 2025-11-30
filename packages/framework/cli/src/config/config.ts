@@ -5,10 +5,7 @@ export interface OGImageOptions {
 	/** Route path (e.g., "/level/5") */
 	routePath: string;
 	/** Route parameters extracted from path */
-	params: Record<
-		string,
-		string
-	>;
+	params: Record<string, string>;
 	/** Image width (default: 1200 for 3:2 aspect ratio) */
 	width?: number;
 	/** Image height (default: 800 for 3:2 aspect ratio) */
@@ -53,9 +50,7 @@ export interface FarcasterEmbedConfig {
 	/** Button title (max 32 characters) */
 	buttonTitle: string;
 	/** Action type - "launch_frame" or "view_token" */
-	actionType?:
-		| "launch_frame"
-		| "view_token";
+	actionType?: "launch_frame" | "view_token";
 	/** URL to open when button is clicked (defaults to current page URL) */
 	actionUrl?: string;
 	/** App name (defaults to config.name) */
@@ -125,10 +120,7 @@ export interface FarcasterManifestConfig {
 
 export interface LootiConfig {
 	name: string;
-	orientation:
-		| "portrait"
-		| "landscape"
-		| "any";
+	orientation: "portrait" | "landscape" | "any";
 	aspect: string;
 	canvas?: {
 		id?: string;
@@ -140,9 +132,7 @@ export interface LootiConfig {
 	url?: string;
 	dev?: {
 		port?: number;
-		host?:
-			| string
-			| boolean;
+		host?: string | boolean;
 		watch?: boolean;
 		hotReload?: boolean;
 	};
@@ -152,9 +142,6 @@ export interface LootiConfig {
 		/** Manifest configuration (one per domain) */
 		manifest?: FarcasterManifestConfig;
 		/** Embed configurations per route (key is route path) */
-		embeds?: Record<
-			string,
-			FarcasterEmbedConfig
-		>;
+		embeds?: Record<string, FarcasterEmbedConfig>;
 	};
 }

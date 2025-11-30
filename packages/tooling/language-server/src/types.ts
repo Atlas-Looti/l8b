@@ -15,19 +15,12 @@ export interface ASTNode {
 
 export interface Scope {
 	parent?: Scope;
-	symbols: Map<
-		string,
-		SymbolInfo
-	>;
+	symbols: Map<string, SymbolInfo>;
 }
 
 export interface SymbolInfo {
 	name: string;
-	type:
-		| "function"
-		| "variable"
-		| "argument"
-		| "global";
+	type: "function" | "variable" | "argument" | "global";
 	range: Range;
 	documentUri: string;
 }
@@ -56,27 +49,15 @@ export interface LootiScriptSettings {
 	};
 }
 
-export type PartialLootiScriptSettings =
-	{
-		diagnostics?: Partial<
-			LootiScriptSettings["diagnostics"]
-		>;
-		completion?: Partial<
-			LootiScriptSettings["completion"]
-		>;
-		signatureHelp?: Partial<
-			LootiScriptSettings["signatureHelp"]
-		>;
-		format?: Partial<
-			LootiScriptSettings["format"]
-		>;
-	};
+export type PartialLootiScriptSettings = {
+	diagnostics?: Partial<LootiScriptSettings["diagnostics"]>;
+	completion?: Partial<LootiScriptSettings["completion"]>;
+	signatureHelp?: Partial<LootiScriptSettings["signatureHelp"]>;
+	format?: Partial<LootiScriptSettings["format"]>;
+};
 
 export interface CompletionContext {
-	type:
-		| "property"
-		| "function_call"
-		| "default";
+	type: "property" | "function_call" | "default";
 	object?: string;
 	inFunctionCall?: boolean;
 }
@@ -95,8 +76,4 @@ export interface ApiDefinition {
 	>;
 }
 
-export type GlobalApi =
-	Record<
-		string,
-		ApiDefinition
-	>;
+export type GlobalApi = Record<string, ApiDefinition>;

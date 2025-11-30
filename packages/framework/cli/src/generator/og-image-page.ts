@@ -5,10 +5,7 @@
  * This page is loaded by the /og-image endpoint and executes in browser
  */
 
-import type {
-	LootiConfig,
-	OGImageOptions,
-} from "../config";
+import type { LootiConfig, OGImageOptions } from "../config";
 
 /**
  * Generate HTML page for OG image generation
@@ -24,77 +21,31 @@ import type {
  * @param sources - Source files map
  * @returns HTML string
  */
-export function generateOGImagePage(
-	config: LootiConfig,
-	options: OGImageOptions,
-	sources: Record<
-		string,
-		string
-	>,
-): string {
-	const canvasId =
-		"og-image-canvas";
-	const width =
-		options.width ||
-		1200;
-	const height =
-		options.height ||
-		800;
+export function generateOGImagePage(config: LootiConfig, options: OGImageOptions, sources: Record<string, string>): string {
+	const canvasId = "og-image-canvas";
+	const width = options.width || 1200;
+	const height = options.height || 800;
 
 	// Find OG image function name from embed config
-	const routePath =
-		options.routePath;
-	const embedConfig =
-		config
-			.farcaster
-			?.embeds?.[
-			routePath
-		];
-	const ogImageFunction =
-		embedConfig?.ogImageFunction ||
-		"generateOGImage";
+	const routePath = options.routePath;
+	const embedConfig = config.farcaster?.embeds?.[routePath];
+	const ogImageFunction = embedConfig?.ogImageFunction || "generateOGImage";
 
 	// Generate source imports
-	const sourceEntries =
-		Object.entries(
-			sources,
-		);
-	const sourceImports =
-		sourceEntries
-			.map(
-				([
-					name,
-					filePath,
-				]) => {
-					const varName =
-						name.replace(
-							/[^a-zA-Z0-9]/g,
-							"_",
-						);
-					return `import ${varName} from '${filePath}?raw';`;
-				},
-			)
-			.join(
-				"\n      ",
-			);
+	const sourceEntries = Object.entries(sources);
+	const sourceImports = sourceEntries
+		.map(([name, filePath]) => {
+			const varName = name.replace(/[^a-zA-Z0-9]/g, "_");
+			return `import ${varName} from '${filePath}?raw';`;
+		})
+		.join("\n      ");
 
-	const sourceMap =
-		sourceEntries
-			.map(
-				([
-					name,
-				]) => {
-					const varName =
-						name.replace(
-							/[^a-zA-Z0-9]/g,
-							"_",
-						);
-					return `'${name}': ${varName}`;
-				},
-			)
-			.join(
-				",\n          ",
-			);
+	const sourceMap = sourceEntries
+		.map(([name]) => {
+			const varName = name.replace(/[^a-zA-Z0-9]/g, "_");
+			return `'${name}': ${varName}`;
+		})
+		.join(",\n          ");
 
 	return `<!DOCTYPE html>
 <html lang="en">

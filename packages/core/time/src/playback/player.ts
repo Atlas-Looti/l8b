@@ -10,51 +10,32 @@
 import type { StateSnapshot } from "../types";
 
 export class StatePlayer {
-	private looping =
-		false;
-	private loopStart =
-		0;
-	private loopIndex =
-		0;
+	private looping = false;
+	private loopStart = 0;
+	private loopIndex = 0;
 	private loopLength: number;
-	private loopCallback:
-		| (() => void)
-		| null =
-		null;
+	private loopCallback: (() => void) | null = null;
 
-	constructor(
-		loopLength = 60 *
-			4,
-	) {
+	constructor(loopLength = 60 * 4) {
 		// Default loop buffer size: 4 seconds at 60fps (240 frames)
-		this.loopLength =
-			loopLength;
+		this.loopLength = loopLength;
 	}
 
 	/**
 	 * Check if currently looping
 	 */
 	isLooping(): boolean {
-		return this
-			.looping;
+		return this.looping;
 	}
 
 	/**
 	 * Start loop playback
 	 */
-	startLoop(
-		position: number,
-		callback: () => void,
-	): void {
+	startLoop(position: number, callback: () => void): void {
 		this.looping = true;
-		this.loopStart =
-			Math.max(
-				position,
-				1,
-			);
+		this.loopStart = Math.max(position, 1);
 		this.loopIndex = 0;
-		this.loopCallback =
-			callback;
+		this.loopCallback = callback;
 	}
 
 	/**
@@ -62,64 +43,37 @@ export class StatePlayer {
 	 */
 	stopLoop(): number {
 		this.looping = false;
-		this.loopCallback =
-			null;
-		return this
-			.loopStart;
+		this.loopCallback = null;
+		return this.loopStart;
 	}
 
 	/**
 	 * Update loop (call each frame)
 	 * Returns position to replay, or null if not looping
 	 */
-	updateLoop():
-		| number
-		| null {
-		if (
-			!this
-				.looping
-		) {
+	updateLoop(): number | null {
+		if (!this.looping) {
 			return null;
 		}
 
-		if (
-			this
-				.loopIndex ===
-			0
-		) {
-			this
-				.loopIndex++;
-			return this
-				.loopStart;
+		if (this.loopIndex === 0) {
+			this.loopIndex++;
+			return this.loopStart;
 		}
 
-		this
-			.loopIndex++;
-		if (
-			this
-				.loopIndex >
-			this
-				.loopLength
-		) {
+		this.loopIndex++;
+		if (this.loopIndex > this.loopLength) {
 			this.loopIndex = 0;
 		}
 
-		return (
-			this
-				.loopStart -
-			this
-				.loopIndex
-		);
+		return this.loopStart - this.loopIndex;
 	}
 
 	/**
 	 * Execute loop callback
 	 */
 	executeCallback(): void {
-		if (
-			this
-				.loopCallback
-		) {
+		if (this.loopCallback) {
 			this.loopCallback();
 		}
 	}
@@ -127,50 +81,22 @@ export class StatePlayer {
 	/**
 	 * Restore state to target object
 	 */
-	restoreState(
-		target: any,
-		snapshot: StateSnapshot,
-	): void {
-		if (
-			!snapshot ||
-			!target
-		) {
+	restoreState(target: any, snapshot: StateSnapshot): void {
+		if (!snapshot || !target) {
 			return;
 		}
 
 		// Remove all existing properties except protected system APIs
 		for (const key in target) {
-			if (
-				Object.hasOwn(
-					target,
-					key,
-				) &&
-				!this.isProtectedKey(
-					key,
-				)
-			) {
-				delete target[
-					key
-				];
+			if (Object.hasOwn(target, key) && !this.isProtectedKey(key)) {
+				delete target[key];
 			}
 		}
 
 		// Apply snapshot properties to target object via deep copy
 		for (const key in snapshot) {
-			if (
-				Object.hasOwn(
-					snapshot,
-					key,
-				)
-			) {
-				target[
-					key
-				] =
-					this.deepCopy(
-						snapshot[
-							key
-						],
-					);
+			if (Object.hasOwn(snapshot, key)) {
+				target[key] = this.deepCopy(snapshot[key]);
 			}
 		}
 	}
@@ -178,91 +104,33 @@ export class StatePlayer {
 	/**
 	 * Check if key should be protected from restoration
 	 */
-	private isProtectedKey(
-		key: string,
-	): boolean {
+	private isProtectedKey(key: string): boolean {
 		// Prevent system APIs and runtime objects from being overwritten during restore
-		const protected_keys =
-			[
-				"screen",
-				"audio",
-				"keyboard",
-				"mouse",
-				"touch",
-				"gamepad",
-				"system",
-				"storage",
-				"sprites",
-				"maps",
-				"sounds",
-				"music",
-				"assets",
-			];
-		return protected_keys.includes(
-			key,
-		);
+		const protected_keys = ["screen", "audio", "keyboard", "mouse", "touch", "gamepad", "system", "storage", "sprites", "maps", "sounds", "music", "assets"];
+		return protected_keys.includes(key);
 	}
 
 	/**
 	 * Deep copy a value
 	 */
-	private deepCopy(
-		value: any,
-	): any {
-		if (
-			value ==
-			null
-		) {
+	private deepCopy(value: any): any {
+		if (value == null) {
 			return value;
 		}
 
-		if (
-			typeof value ===
-				"string" ||
-			typeof value ===
-				"number" ||
-			typeof value ===
-				"boolean"
-		) {
+		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
 			return value;
 		}
 
-		if (
-			Array.isArray(
-				value,
-			)
-		) {
-			return value.map(
-				(
-					item,
-				) =>
-					this.deepCopy(
-						item,
-					),
-			);
+		if (Array.isArray(value)) {
+			return value.map((item) => this.deepCopy(item));
 		}
 
-		if (
-			typeof value ===
-			"object"
-		) {
-			const result: any =
-				{};
+		if (typeof value === "object") {
+			const result: any = {};
 			for (const key in value) {
-				if (
-					Object.hasOwn(
-						value,
-						key,
-					)
-				) {
-					result[
-						key
-					] =
-						this.deepCopy(
-							value[
-								key
-							],
-						);
+				if (Object.hasOwn(value, key)) {
+					result[key] = this.deepCopy(value[key]);
 				}
 			}
 			return result;

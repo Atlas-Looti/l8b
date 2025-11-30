@@ -7,12 +7,7 @@
  * - Provide unified input interface
  */
 
-import {
-	GamepadInput,
-	KeyboardInput,
-	MouseInput,
-	TouchInput,
-} from "@l8b/input";
+import { GamepadInput, KeyboardInput, MouseInput, TouchInput } from "@l8b/input";
 
 export class InputManager {
 	public keyboard: KeyboardInput;
@@ -20,46 +15,27 @@ export class InputManager {
 	public touch: TouchInput;
 	public gamepad: GamepadInput;
 
-	constructor(
-		canvas?: HTMLCanvasElement,
-	) {
+	constructor(canvas?: HTMLCanvasElement) {
 		// Initialize all input subsystems
 		// Each system handles its own event listeners and state management
-		this.keyboard =
-			new KeyboardInput();
-		this.mouse =
-			new MouseInput();
-		this.touch =
-			new TouchInput(
-				this
-					.mouse,
-			);
-		this.gamepad =
-			new GamepadInput();
+		this.keyboard = new KeyboardInput();
+		this.mouse = new MouseInput();
+		this.touch = new TouchInput(this.mouse);
+		this.gamepad = new GamepadInput();
 
 		// Attach event listeners to canvas if provided
 		// Canvas is required for mouse and touch input
-		if (
-			canvas
-		) {
-			this.attachCanvas(
-				canvas,
-			);
+		if (canvas) {
+			this.attachCanvas(canvas);
 		}
 	}
 
 	/**
 	 * Attach input systems to canvas
 	 */
-	attachCanvas(
-		canvas: HTMLCanvasElement,
-	): void {
-		this.mouse.setCanvas(
-			canvas,
-		);
-		this.touch.setCanvas(
-			canvas,
-		);
+	attachCanvas(canvas: HTMLCanvasElement): void {
+		this.mouse.setCanvas(canvas);
+		this.touch.setCanvas(canvas);
 	}
 
 	/**
@@ -82,22 +58,10 @@ export class InputManager {
 		gamepad: any;
 	} {
 		return {
-			keyboard:
-				this
-					.keyboard
-					.state,
-			mouse:
-				this
-					.mouse
-					.state,
-			touch:
-				this
-					.touch
-					.state,
-			gamepad:
-				this
-					.gamepad
-					.status,
+			keyboard: this.keyboard.state,
+			mouse: this.mouse.state,
+			touch: this.touch.state,
+			gamepad: this.gamepad.status,
 		};
 	}
 }
