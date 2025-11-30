@@ -6,7 +6,10 @@ import { type Position, TextDocument } from "vscode-languageserver-textdocument"
  */
 export interface LanguageMode {
 	getId(): string;
-	doComplete?(document: TextDocument, position: Position): CompletionList | CompletionItem[] | null | Promise<CompletionList | CompletionItem[] | null>;
+	doComplete?(
+		document: TextDocument,
+		position: Position,
+	): CompletionList | CompletionItem[] | null | Promise<CompletionList | CompletionItem[] | null>;
 	doHover?(document: TextDocument, position: Position): Hover | null | Promise<Hover | null>;
 	doValidation?(document: TextDocument): Diagnostic[] | Promise<Diagnostic[]>;
 	findDocumentSymbols?(document: TextDocument): DocumentSymbol[] | Promise<DocumentSymbol[]>;

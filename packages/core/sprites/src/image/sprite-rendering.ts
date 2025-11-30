@@ -107,6 +107,16 @@ export function drawSpritePart(
 		context.drawImage(canvas, sx, sy, sw, sh, -w / 2 - (state.anchor_x * w) / 2, -h / 2 + (state.anchor_y * h) / 2, w, h);
 		closeDrawOp(context);
 	} else {
-		context.drawImage(canvas, sx, sy, sw, sh, x - w / 2 - (state.anchor_x * w) / 2, y - h / 2 + (state.anchor_y * h) / 2, w, h);
+		context.drawImage(
+			canvas,
+			sx,
+			sy,
+			sw,
+			sh,
+			x - w / 2 - (state.anchor_x * w) / 2,
+			y - h / 2 + (state.anchor_y * h) / 2,
+			w,
+			h,
+		);
 	}
 }

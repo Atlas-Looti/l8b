@@ -47,7 +47,8 @@ export const MathLib = {
 
 	distance: (x1: number, y1: number, x2: number, y2: number): number => Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2),
 
-	distance3D: (x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): number => Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2),
+	distance3D: (x1: number, y1: number, z1: number, x2: number, y2: number, z2: number): number =>
+		Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2),
 
 	angleBetween: (x1: number, y1: number, x2: number, y2: number): number => Math.atan2(y2 - y1, x2 - x1),
 

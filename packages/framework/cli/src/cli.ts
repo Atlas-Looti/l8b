@@ -91,7 +91,12 @@ function logProjectBanner(projectPath: string): void {
 }
 
 function handleCliError(error: unknown, fallbackMessage: string): never {
-	if (error instanceof ServerError || error instanceof ConfigError || error instanceof BuildError || error instanceof CompilationError) {
+	if (
+		error instanceof ServerError ||
+		error instanceof ConfigError ||
+		error instanceof BuildError ||
+		error instanceof CompilationError
+	) {
 		console.error(error.format());
 	} else {
 		console.error(pc.red(`\n✗ ${fallbackMessage}\n`));

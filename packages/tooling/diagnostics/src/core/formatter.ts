@@ -51,7 +51,9 @@ export function formatForCLI(diagnostic: Diagnostic): string {
 	// Add related location information if available
 	if (diagnostic.related) {
 		lines.push("");
-		lines.push(`Related: ${diagnostic.related.message} at ${diagnostic.related.file}:${diagnostic.related.line}:${diagnostic.related.column}`);
+		lines.push(
+			`Related: ${diagnostic.related.message} at ${diagnostic.related.file}:${diagnostic.related.line}:${diagnostic.related.column}`,
+		);
 	}
 
 	// Add stack trace for runtime errors

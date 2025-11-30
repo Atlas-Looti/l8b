@@ -61,7 +61,9 @@ export class ApiProvider implements vscode.TreeDataProvider<ApiItem> {
 		}
 
 		if (!element) {
-			const categories = Object.entries(this.apiData).filter(([, entry]) => entry.properties && Object.keys(entry.properties).length > 0);
+			const categories = Object.entries(this.apiData).filter(
+				([, entry]) => entry.properties && Object.keys(entry.properties).length > 0,
+			);
 
 			if (categories.length === 0) {
 				return Promise.resolve([ApiItem.message("No API sections registered", true)]);
@@ -75,7 +77,9 @@ export class ApiProvider implements vscode.TreeDataProvider<ApiItem> {
 			return Promise.resolve([]);
 		}
 
-		return Promise.resolve(Object.entries(entry.properties).map(([name, prop]) => ApiItem.member(element.category!, name, prop)));
+		return Promise.resolve(
+			Object.entries(entry.properties).map(([name, prop]) => ApiItem.member(element.category!, name, prop)),
+		);
 	}
 }
 
@@ -118,6 +122,12 @@ class ApiItem extends vscode.TreeItem {
 	}
 
 	static message(label: string, isError = false): ApiItem {
-		return new ApiItem(label, undefined, vscode.TreeItemCollapsibleState.None, undefined, isError ? "error" : "loading~spin");
+		return new ApiItem(
+			label,
+			undefined,
+			vscode.TreeItemCollapsibleState.None,
+			undefined,
+			isError ? "error" : "loading~spin",
+		);
 	}
 }

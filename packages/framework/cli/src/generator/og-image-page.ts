@@ -21,7 +21,11 @@ import type { LootiConfig, OGImageOptions } from "../config";
  * @param sources - Source files map
  * @returns HTML string
  */
-export function generateOGImagePage(config: LootiConfig, options: OGImageOptions, sources: Record<string, string>): string {
+export function generateOGImagePage(
+	config: LootiConfig,
+	options: OGImageOptions,
+	sources: Record<string, string>,
+): string {
 	const canvasId = "og-image-canvas";
 	const width = options.width || 1200;
 	const height = options.height || 800;

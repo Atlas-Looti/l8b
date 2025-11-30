@@ -195,7 +195,11 @@ export class WalletService {
 					};
 				} catch (err: any) {
 					// Fallback: if wallet_sendCalls is not supported, send transactions sequentially
-					if (err?.code === -32601 || err?.message?.includes("not supported") || err?.message?.includes("Method not found")) {
+					if (
+						err?.code === -32601 ||
+						err?.message?.includes("not supported") ||
+						err?.message?.includes("Method not found")
+					) {
 						const hashes: string[] = [];
 						for (const call of calls) {
 							const hash = await this.provider.request({

@@ -426,7 +426,9 @@ export class RuntimeOrchestrator {
 			sceneNames: registeredScenes,
 		});
 		this.sceneManager.router.init();
-		const activeScene = this.sceneManager.hasActiveScene() ? (this.sceneManager as any).getCurrentSceneName?.() || "unknown" : null;
+		const activeScene = this.sceneManager.hasActiveScene()
+			? (this.sceneManager as any).getCurrentSceneName?.() || "unknown"
+			: null;
 		const routerState = this.sceneManager.router.getState();
 		this.logStep("router: initialized", {
 			activeScene: activeScene || "none",
@@ -714,7 +716,9 @@ export class RuntimeOrchestrator {
 		return Object.keys(snapshot).length === 0 ? null : snapshot;
 	}
 
-	private getEnabledInputChannels(setting: NonNullable<RuntimeDebugOptions["input"]>): Array<"keyboard" | "mouse" | "touch" | "gamepad"> {
+	private getEnabledInputChannels(
+		setting: NonNullable<RuntimeDebugOptions["input"]>,
+	): Array<"keyboard" | "mouse" | "touch" | "gamepad"> {
 		if (typeof setting === "boolean") {
 			return setting ? ["keyboard", "mouse", "touch", "gamepad"] : [];
 		}

@@ -324,7 +324,12 @@ export class BaseScreen {
 	}
 
 	protected updateScreenTransform(): void {
-		this.screen_transform = this.translation_x !== 0 || this.translation_y !== 0 || this.scale_x !== 1 || this.scale_y !== 1 || this.rotation !== 0;
+		this.screen_transform =
+			this.translation_x !== 0 ||
+			this.translation_y !== 0 ||
+			this.scale_x !== 1 ||
+			this.scale_y !== 1 ||
+			this.rotation !== 0;
 	}
 
 	setDrawAnchor(ax: number, ay: number): void {

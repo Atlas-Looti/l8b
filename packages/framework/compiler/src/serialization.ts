@@ -72,5 +72,7 @@ export function isValidRoutine(routine: any): boolean {
 
 	// Check for essential routine properties
 	// These are based on the Routine structure from @l8b/lootiscript
-	return "bytecode" in routine && "constants" in routine && Array.isArray(routine.bytecode) && Array.isArray(routine.constants);
+	return (
+		"bytecode" in routine && "constants" in routine && Array.isArray(routine.bytecode) && Array.isArray(routine.constants)
+	);
 }

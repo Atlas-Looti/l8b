@@ -7,7 +7,11 @@ import type { LanguageModes } from "../embedded/mode-manager";
 import type { SymbolInfo } from "../types";
 import { getWordAtPosition } from "../utils";
 
-export function setupHoverHandler(connection: any, documents: TextDocuments<TextDocument>, languageModes: LanguageModes) {
+export function setupHoverHandler(
+	connection: any,
+	documents: TextDocuments<TextDocument>,
+	languageModes: LanguageModes,
+) {
 	connection.onHover(async (params: HoverParams): Promise<Hover | null> => {
 		const document = documents.get(params.textDocument.uri);
 		if (!document) return null;

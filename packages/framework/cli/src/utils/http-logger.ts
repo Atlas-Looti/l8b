@@ -60,9 +60,22 @@ class HttpLogger {
 	 */
 	private printLog(entry: HttpLogEntry): void {
 		const methodColor =
-			entry.method === "GET" ? pc.blue : entry.method === "POST" ? pc.green : entry.method === "PUT" ? pc.yellow : entry.method === "DELETE" ? pc.red : pc.gray;
+			entry.method === "GET"
+				? pc.blue
+				: entry.method === "POST"
+					? pc.green
+					: entry.method === "PUT"
+						? pc.yellow
+						: entry.method === "DELETE"
+							? pc.red
+							: pc.gray;
 
-		const statusColor = entry.status && entry.status >= 200 && entry.status < 300 ? pc.green : entry.status && entry.status >= 400 ? pc.red : pc.yellow;
+		const statusColor =
+			entry.status && entry.status >= 200 && entry.status < 300
+				? pc.green
+				: entry.status && entry.status >= 400
+					? pc.red
+					: pc.yellow;
 
 		let output = pc.gray("[HTTP] ") + methodColor(entry.method.padEnd(6));
 
@@ -78,7 +91,11 @@ class HttpLogger {
 
 		if (entry.size !== undefined) {
 			const sizeStr =
-				entry.size < 1024 ? `${entry.size}B` : entry.size < 1024 * 1024 ? `${(entry.size / 1024).toFixed(1)}KB` : `${(entry.size / (1024 * 1024)).toFixed(1)}MB`;
+				entry.size < 1024
+					? `${entry.size}B`
+					: entry.size < 1024 * 1024
+						? `${(entry.size / 1024).toFixed(1)}KB`
+						: `${(entry.size / (1024 * 1024)).toFixed(1)}MB`;
 			output += pc.gray(` ${sizeStr}`);
 		}
 

@@ -20,7 +20,11 @@ export const paletteMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid palette format: ${args.format || "unknown"}`,
 		description: "The palette format is not supported",
-		suggestions: ["Use a supported palette format", "Check palette format documentation", "Verify the palette file format"],
+		suggestions: [
+			"Use a supported palette format",
+			"Check palette format documentation",
+			"Verify the palette file format",
+		],
 	},
 	[APIErrorCode.E7073]: {
 		code: APIErrorCode.E7073,
@@ -36,7 +40,12 @@ export const paletteMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Palette loading failed: ${args.paletteName || "unknown"}`,
 		description: "The palette could not be loaded",
-		suggestions: ["Check if the palette file exists", "Verify the palette file format", "Check file permissions", "Check network connection if loading from URL"],
+		suggestions: [
+			"Check if the palette file exists",
+			"Verify the palette file format",
+			"Check file permissions",
+			"Check network connection if loading from URL",
+		],
 	},
 	[APIErrorCode.E7075]: {
 		code: APIErrorCode.E7075,
@@ -44,6 +53,10 @@ export const paletteMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid palette size: ${args.size || "unknown"} (expected: ${args.expectedSize || "256"})`,
 		description: "The palette size is invalid",
-		suggestions: ["Check palette size matches expected size", "Verify palette data is complete", "Check palette initialization"],
+		suggestions: [
+			"Check palette size matches expected size",
+			"Verify palette data is complete",
+			"Check palette initialization",
+		],
 	},
 };

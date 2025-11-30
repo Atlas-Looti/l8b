@@ -161,7 +161,10 @@ function collectSymbols(ast: ASTNode | null, uri: string): SymbolInfo[] {
 function buildRange(node: ASTNode): Range {
 	return Range.create(
 		Position.create(Math.max(node.line - 1, 0), Math.max(node.column, 0)),
-		Position.create(Math.max((node.endLine || node.line) - 1, 0), Math.max(node.endColumn || node.column + (node.name?.length || 1), 0)),
+		Position.create(
+			Math.max((node.endLine || node.line) - 1, 0),
+			Math.max(node.endColumn || node.column + (node.name?.length || 1), 0),
+		),
 	);
 }
 

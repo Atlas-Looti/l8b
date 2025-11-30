@@ -34,7 +34,12 @@ export class L8BVM {
 	public storage_service: StorageService;
 	public error_info: ErrorInfo | null = null;
 
-	constructor(meta: Partial<MetaFunctions> = {}, global: Partial<GlobalAPI> = {}, namespace = "/l8b", preserve_ls = false) {
+	constructor(
+		meta: Partial<MetaFunctions> = {},
+		global: Partial<GlobalAPI> = {},
+		namespace = "/l8b",
+		preserve_ls = false,
+	) {
 		// Initialize VM execution context with meta functions and global API
 		this.context = createVMContext(meta, global);
 
@@ -79,7 +84,10 @@ export class L8BVM {
 			}
 			return null;
 		} catch (err: any) {
-			const errorMessage = (typeof err === "object" && err !== null && "error" in err && typeof err.error === "string" ? err.error : err.message) || String(err);
+			const errorMessage =
+				(typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
+					? err.error
+					: err.message) || String(err);
 
 			// Extract stack trace from processor for better error debugging
 			let stackTrace = err.stackTrace;
@@ -122,7 +130,10 @@ export class L8BVM {
 			this.storage_service.check();
 			return result;
 		} catch (err: any) {
-			const errorMessage = (typeof err === "object" && err !== null && "error" in err && typeof err.error === "string" ? err.error : err.message) || String(err);
+			const errorMessage =
+				(typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
+					? err.error
+					: err.message) || String(err);
 
 			// Extract stack trace from processor for better error debugging
 			let stackTrace = err.stackTrace;
@@ -172,7 +183,10 @@ export class L8BVM {
 			this.runner.main_thread.addCall(routine);
 			this.runner.tick();
 		} catch (err: any) {
-			const errorMessage = (typeof err === "object" && err !== null && "error" in err && typeof err.error === "string" ? err.error : err.message) || String(err);
+			const errorMessage =
+				(typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
+					? err.error
+					: err.message) || String(err);
 
 			this.error_info = {
 				error: errorMessage,

@@ -1,4 +1,10 @@
-import { type Connection, type SemanticTokens, SemanticTokensBuilder, type SemanticTokensParams, type TextDocuments } from "vscode-languageserver/node";
+import {
+	type Connection,
+	type SemanticTokens,
+	SemanticTokensBuilder,
+	type SemanticTokensParams,
+	type TextDocuments,
+} from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 
 // Token types (must match client configuration)
@@ -27,7 +33,22 @@ export const TOKEN_MODIFIERS = [
 ];
 
 // API objects for semantic highlighting
-const API_OBJECTS = ["screen", "audio", "keyboard", "mouse", "touch", "gamepad", "sprites", "maps", "sounds", "music", "assets", "system", "storage", "router"];
+const API_OBJECTS = [
+	"screen",
+	"audio",
+	"keyboard",
+	"mouse",
+	"touch",
+	"gamepad",
+	"sprites",
+	"maps",
+	"sounds",
+	"music",
+	"assets",
+	"system",
+	"storage",
+	"router",
+];
 
 const CONSTRUCTORS = ["Random", "ObjectPool", "Image", "Sprite", "Map", "Sound", "List", "Math", "String", "JSON"];
 

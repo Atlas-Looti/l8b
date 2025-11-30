@@ -99,7 +99,10 @@ export class StorageService {
 
 		// Schedule batch write
 		if (this.writeTimer === null) {
-			const schedule = typeof window !== "undefined" && typeof window.setTimeout === "function" ? window.setTimeout.bind(window) : setTimeout;
+			const schedule =
+				typeof window !== "undefined" && typeof window.setTimeout === "function"
+					? window.setTimeout.bind(window)
+					: setTimeout;
 
 			this.writeTimer = schedule(() => {
 				this.flush();

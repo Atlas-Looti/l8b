@@ -1,8 +1,19 @@
-import { type Connection, type DocumentFormattingParams, Position, Range, type TextDocuments, TextEdit } from "vscode-languageserver/node";
+import {
+	type Connection,
+	type DocumentFormattingParams,
+	Position,
+	Range,
+	type TextDocuments,
+	TextEdit,
+} from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { getDocumentSettings } from "../settings";
 
-export function setupFormattingHandler(connection: Connection, documents: TextDocuments<TextDocument>, hasConfigurationCapability: boolean) {
+export function setupFormattingHandler(
+	connection: Connection,
+	documents: TextDocuments<TextDocument>,
+	hasConfigurationCapability: boolean,
+) {
 	connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
 		const doc = documents.get(params.textDocument.uri);
 		if (!doc) return [];

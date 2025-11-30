@@ -9,7 +9,9 @@ type PackageJson = {
 
 const pkg: PackageJson = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf-8"));
 
-const externalDeps = Array.from(new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]));
+const externalDeps = Array.from(
+	new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]),
+);
 
 export default defineConfig({
 	entry: ["src/index.ts", "src/cli.ts", "src/build/compile-worker.ts"],

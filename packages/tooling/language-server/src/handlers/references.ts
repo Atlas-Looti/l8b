@@ -24,7 +24,10 @@ export function setupReferencesHandler(connection: Connection, documents: TextDo
 			let match;
 			while ((match = wordRegex.exec(line)) !== null) {
 				locations.push(
-					Location.create(params.textDocument.uri, Range.create(Position.create(lineIndex, match.index), Position.create(lineIndex, match.index + word.length))),
+					Location.create(
+						params.textDocument.uri,
+						Range.create(Position.create(lineIndex, match.index), Position.create(lineIndex, match.index + word.length)),
+					),
 				);
 			}
 		});

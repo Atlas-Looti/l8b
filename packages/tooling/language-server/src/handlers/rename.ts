@@ -111,7 +111,10 @@ export function setupRenameHandler(connection: Connection, documents: TextDocume
 			if (wordIndex === -1) return null;
 
 			return {
-				range: Range.create(Position.create(params.position.line, wordIndex), Position.create(params.position.line, wordIndex + word.length)),
+				range: Range.create(
+					Position.create(params.position.line, wordIndex),
+					Position.create(params.position.line, wordIndex + word.length),
+				),
 				placeholder: word,
 			};
 		},
@@ -141,7 +144,12 @@ export function setupRenameHandler(connection: Connection, documents: TextDocume
 		lines.forEach((line, lineIndex) => {
 			let match;
 			while ((match = wordRegex.exec(line)) !== null) {
-				edits.push(TextEdit.replace(Range.create(Position.create(lineIndex, match.index), Position.create(lineIndex, match.index + word.length)), newName));
+				edits.push(
+					TextEdit.replace(
+						Range.create(Position.create(lineIndex, match.index), Position.create(lineIndex, match.index + word.length)),
+						newName,
+					),
+				);
 			}
 		});
 

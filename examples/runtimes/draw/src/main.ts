@@ -38,7 +38,9 @@ const runtime = new Runtime({
 });
 
 const logCanvasSize = () => {
-	console.log(`Canvas internal size: ${canvas.width}x${canvas.height}, display size: ${canvas.clientWidth}x${canvas.clientHeight}`);
+	console.log(
+		`Canvas internal size: ${canvas.width}x${canvas.height}, display size: ${canvas.clientWidth}x${canvas.clientHeight}`,
+	);
 };
 
 // Start the game

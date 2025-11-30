@@ -12,7 +12,11 @@ export const runtimeMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.Runtime,
 		message: (args) => `Undefined variable '${args.variableName}'`,
 		description: "A variable was referenced but not defined",
-		suggestions: ["Check if the variable name is spelled correctly", "Verify the variable is defined before use", "Check the variable scope"],
+		suggestions: [
+			"Check if the variable name is spelled correctly",
+			"Verify the variable is defined before use",
+			"Check the variable scope",
+		],
 	},
 	[RuntimeErrorCode.E2002]: {
 		code: RuntimeErrorCode.E2002,

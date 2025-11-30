@@ -5,7 +5,13 @@
 
 import type { ImageContextState } from "./context";
 
-export function initDrawOp(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, object_transform = true): boolean {
+export function initDrawOp(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	object_transform = true,
+): boolean {
 	let res = false;
 
 	if (state.image_transform) {
@@ -38,7 +44,14 @@ export function closeDrawOp(context: CanvasRenderingContext2D): void {
 	context.restore();
 }
 
-export function fillRect(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, w: number, h: number): void {
+export function fillRect(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+): void {
 	context.globalAlpha = state.alpha;
 	if (initDrawOp(context, state, x, y)) {
 		context.fillRect(-w / 2 - (state.anchor_x * w) / 2, -h / 2 + (state.anchor_y * h) / 2, w, h);
@@ -48,17 +61,38 @@ export function fillRect(context: CanvasRenderingContext2D, state: ImageContextS
 	}
 }
 
-export function fillRoundRect(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, w: number, h: number, round: number): void {
+export function fillRoundRect(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+	round: number,
+): void {
 	context.globalAlpha = state.alpha;
 	if (initDrawOp(context, state, x, y)) {
 		(context as any).fillRoundRect(-w / 2 - (state.anchor_x * w) / 2, -h / 2 + (state.anchor_y * h) / 2, w, h, round);
 		closeDrawOp(context);
 	} else {
-		(context as any).fillRoundRect(x - w / 2 - (state.anchor_x * w) / 2, y - h / 2 + (state.anchor_y * h) / 2, w, h, round);
+		(context as any).fillRoundRect(
+			x - w / 2 - (state.anchor_x * w) / 2,
+			y - h / 2 + (state.anchor_y * h) / 2,
+			w,
+			h,
+			round,
+		);
 	}
 }
 
-export function fillRound(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, w: number, h: number): void {
+export function fillRound(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+): void {
 	context.globalAlpha = state.alpha;
 	w = Math.abs(w);
 	h = Math.abs(h);
@@ -74,7 +108,14 @@ export function fillRound(context: CanvasRenderingContext2D, state: ImageContext
 	}
 }
 
-export function drawRect(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, w: number, h: number): void {
+export function drawRect(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+): void {
 	context.globalAlpha = state.alpha;
 	context.lineWidth = state.line_width;
 	if (initDrawOp(context, state, x, y)) {
@@ -85,18 +126,39 @@ export function drawRect(context: CanvasRenderingContext2D, state: ImageContextS
 	}
 }
 
-export function drawRoundRect(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, w: number, h: number, round: number): void {
+export function drawRoundRect(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+	round: number,
+): void {
 	context.globalAlpha = state.alpha;
 	context.lineWidth = state.line_width;
 	if (initDrawOp(context, state, x, y)) {
 		(context as any).strokeRoundRect(-w / 2 - (state.anchor_x * w) / 2, -h / 2 + (state.anchor_y * h) / 2, w, h, round);
 		closeDrawOp(context);
 	} else {
-		(context as any).strokeRoundRect(x - w / 2 - (state.anchor_x * w) / 2, y - h / 2 + (state.anchor_y * h) / 2, w, h, round);
+		(context as any).strokeRoundRect(
+			x - w / 2 - (state.anchor_x * w) / 2,
+			y - h / 2 + (state.anchor_y * h) / 2,
+			w,
+			h,
+			round,
+		);
 	}
 }
 
-export function drawRound(context: CanvasRenderingContext2D, state: ImageContextState, x: number, y: number, w: number, h: number): void {
+export function drawRound(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+): void {
 	context.globalAlpha = state.alpha;
 	context.lineWidth = state.line_width;
 	w = Math.abs(w);
@@ -113,7 +175,14 @@ export function drawRound(context: CanvasRenderingContext2D, state: ImageContext
 	}
 }
 
-export function drawLine(context: CanvasRenderingContext2D, state: ImageContextState, x1: number, y1: number, x2: number, y2: number): void {
+export function drawLine(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number,
+): void {
 	context.globalAlpha = state.alpha;
 	context.lineWidth = state.line_width;
 	const transform = initDrawOp(context, state, 0, 0, false);

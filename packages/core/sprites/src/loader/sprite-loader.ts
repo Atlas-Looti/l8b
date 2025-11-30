@@ -60,7 +60,12 @@ export function loadSprite(url: string, properties?: SpriteProperties, loaded?: 
 	return sprite;
 }
 
-export function updateSprite(sprite: Sprite, img: HTMLImageElement, properties?: SpriteProperties, runtime?: any): void {
+export function updateSprite(
+	sprite: Sprite,
+	img: HTMLImageElement,
+	properties?: SpriteProperties,
+	runtime?: any,
+): void {
 	if (!(img.width > 0 && img.height > 0)) {
 		return;
 	}

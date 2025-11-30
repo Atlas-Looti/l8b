@@ -76,7 +76,13 @@
 	},
 	"Mouse Check": {
 		"prefix": "mouse",
-		"body": ["if input.mouse.pressed then", "\tx = input.mouse.x", "\ty = input.mouse.y", "\t${1:// handle mouse}", "end"],
+		"body": [
+			"if input.mouse.pressed then",
+			"\tx = input.mouse.x",
+			"\ty = input.mouse.y",
+			"\t${1:// handle mouse}",
+			"end"
+		],
 		"description": "Check for mouse input"
 	},
 	"Game Object": {
@@ -106,7 +112,12 @@
 	},
 	"Comment Block": {
 		"prefix": "comment",
-		"body": ["-- ========================================", "-- ${1:Section Name}", "-- ========================================", "${2}"],
+		"body": [
+			"-- ========================================",
+			"-- ${1:Section Name}",
+			"-- ========================================",
+			"${2}"
+		],
 		"description": "Create a comment section divider"
 	},
 	"Arrow Function": {
@@ -270,27 +281,59 @@
 	},
 	"Wallet Connect": {
 		"prefix": "walletconnect",
-		"body": ["await wallet.connect()", "if wallet.isConnected() then", "\tlocal address = await wallet.getAddress()", "\t${1:// handle connected wallet}", "end"],
+		"body": [
+			"await wallet.connect()",
+			"if wallet.isConnected() then",
+			"\tlocal address = await wallet.getAddress()",
+			"\t${1:// handle connected wallet}",
+			"end"
+		],
 		"description": "Connect to wallet"
 	},
 	"Wallet Send Transaction": {
 		"prefix": "walletsend",
-		"body": ["local txHash = await wallet.sendTransaction({", "\tto = \"${1:address}\",", "\tvalue = \"${2:amount}\"", "})", "${3:// handle transaction hash}"],
+		"body": [
+			"local txHash = await wallet.sendTransaction({",
+			"\tto = \"${1:address}\",",
+			"\tvalue = \"${2:amount}\"",
+			"})",
+			"${3:// handle transaction hash}"
+		],
 		"description": "Send transaction"
 	},
 	"EVM Read Contract": {
 		"prefix": "evmread",
-		"body": ["local result = await evm.read(", "\t\"${1:contractAddress}\",", "\t${2:abi},", "\t\"${3:functionName}\"", ")", "${4:// handle result}"],
+		"body": [
+			"local result = await evm.read(",
+			"\t\"${1:contractAddress}\",",
+			"\t${2:abi},",
+			"\t\"${3:functionName}\"",
+			")",
+			"${4:// handle result}"
+		],
 		"description": "Read from smart contract"
 	},
 	"EVM Write Contract": {
 		"prefix": "evmwrite",
-		"body": ["local txHash = await evm.write(", "\t\"${1:contractAddress}\",", "\t${2:abi},", "\t\"${3:functionName}\"", ")", "${4:// handle transaction hash}"],
+		"body": [
+			"local txHash = await evm.write(",
+			"\t\"${1:contractAddress}\",",
+			"\t${2:abi},",
+			"\t\"${3:functionName}\"",
+			")",
+			"${4:// handle transaction hash}"
+		],
 		"description": "Write to smart contract"
 	},
 	"Player Context": {
 		"prefix": "player",
-		"body": ["if player.isInMiniApp() then", "\tlocal fid = player.getFid()", "\tlocal username = player.getUsername()", "\t${1:// handle player info}", "end"],
+		"body": [
+			"if player.isInMiniApp() then",
+			"\tlocal fid = player.getFid()",
+			"\tlocal username = player.getUsername()",
+			"\t${1:// handle player info}",
+			"end"
+		],
 		"description": "Get player context"
 	},
 	"Await Expression": {

@@ -21,7 +21,14 @@ const ASSET_SUBDIRS = {
 } as const;
 
 // Known directories to skip when scanning root public
-const KNOWN_DIRS = new Set([ASSET_SUBDIRS.SPRITES, ASSET_SUBDIRS.MAPS, ASSET_SUBDIRS.FONTS, ASSET_SUBDIRS.SOUNDS, ASSET_SUBDIRS.MUSIC, "l8b"]);
+const KNOWN_DIRS = new Set([
+	ASSET_SUBDIRS.SPRITES,
+	ASSET_SUBDIRS.MAPS,
+	ASSET_SUBDIRS.FONTS,
+	ASSET_SUBDIRS.SOUNDS,
+	ASSET_SUBDIRS.MUSIC,
+	"l8b",
+]);
 
 /**
  * Scan a single directory for files with matching extensions

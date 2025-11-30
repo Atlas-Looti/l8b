@@ -12,7 +12,11 @@ export function isBrowser(): boolean {
 /**
  * Safely execute a function with error handling
  */
-export function safeExecute<T>(fn: () => T, errorHandler: (error: unknown, context?: string) => void, context?: string): T | undefined {
+export function safeExecute<T>(
+	fn: () => T,
+	errorHandler: (error: unknown, context?: string) => void,
+	context?: string,
+): T | undefined {
 	try {
 		return fn();
 	} catch (error) {

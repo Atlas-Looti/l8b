@@ -42,7 +42,8 @@ export class AudioCore {
 		return {
 			beep: (sequence: string) => this.beep(sequence),
 			cancelBeeps: () => this.cancelBeeps(),
-			playSound: (sound: any, volume?: number, pitch?: number, pan?: number, loopit?: boolean) => this.playSound(sound, volume, pitch, pan, loopit),
+			playSound: (sound: any, volume?: number, pitch?: number, pan?: number, loopit?: boolean) =>
+				this.playSound(sound, volume, pitch, pan, loopit),
 			playMusic: (music: any, volume?: number, loopit?: boolean) => this.playMusic(music, volume, loopit),
 		};
 	}

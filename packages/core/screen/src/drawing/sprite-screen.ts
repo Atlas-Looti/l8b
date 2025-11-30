@@ -105,7 +105,17 @@ export class SpriteScreen extends PrimitiveScreen {
 		this.drawSprite(sprite, x, y, w, h);
 	}
 
-	drawSpritePart(sprite: Sprite | string | any, sx: number, sy: number, sw: number, sh: number, x: number, y: number, w?: number, h?: number): void {
+	drawSpritePart(
+		sprite: Sprite | string | any,
+		sx: number,
+		sy: number,
+		sw: number,
+		sh: number,
+		x: number,
+		y: number,
+		w?: number,
+		h?: number,
+	): void {
 		const canvas = this.getSpriteFrame(sprite);
 		if (!canvas) return;
 
@@ -119,14 +129,44 @@ export class SpriteScreen extends PrimitiveScreen {
 		this.context.globalAlpha = this.alpha;
 		this.context.imageSmoothingEnabled = !this.pixelated;
 		if (this.initDrawOp(x, -y)) {
-			this.context.drawImage(canvas, sx, sy, sw, sh, -w / 2 - (this.anchor_x * w) / 2, -h / 2 + (this.anchor_y * h) / 2, w, h);
+			this.context.drawImage(
+				canvas,
+				sx,
+				sy,
+				sw,
+				sh,
+				-w / 2 - (this.anchor_x * w) / 2,
+				-h / 2 + (this.anchor_y * h) / 2,
+				w,
+				h,
+			);
 			this.closeDrawOp();
 		} else {
-			this.context.drawImage(canvas, sx, sy, sw, sh, x - w / 2 - (this.anchor_x * w) / 2, -y - h / 2 + (this.anchor_y * h) / 2, w, h);
+			this.context.drawImage(
+				canvas,
+				sx,
+				sy,
+				sw,
+				sh,
+				x - w / 2 - (this.anchor_x * w) / 2,
+				-y - h / 2 + (this.anchor_y * h) / 2,
+				w,
+				h,
+			);
 		}
 	}
 
-	drawImagePart(sprite: Sprite | string | any, sx: number, sy: number, sw: number, sh: number, x: number, y: number, w?: number, h?: number): void {
+	drawImagePart(
+		sprite: Sprite | string | any,
+		sx: number,
+		sy: number,
+		sw: number,
+		sh: number,
+		x: number,
+		y: number,
+		w?: number,
+		h?: number,
+	): void {
 		this.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h);
 	}
 

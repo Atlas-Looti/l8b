@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
 
 export class ActionsProvider implements vscode.TreeDataProvider<ActionItem> {
-	private _onDidChangeTreeData: vscode.EventEmitter<ActionItem | undefined | void> = new vscode.EventEmitter<ActionItem | undefined | void>();
+	private _onDidChangeTreeData: vscode.EventEmitter<ActionItem | undefined | void> = new vscode.EventEmitter<
+		ActionItem | undefined | void
+	>();
 	readonly onDidChangeTreeData: vscode.Event<ActionItem | undefined | void> = this._onDidChangeTreeData.event;
 
 	refresh(): void {
@@ -26,10 +28,15 @@ export class ActionsProvider implements vscode.TreeDataProvider<ActionItem> {
 				command: "lootiscript.runScript",
 				title: "Run Script",
 			}),
-			new ActionItem("Restart Language Server", "Restart LootiScript Language Server", vscode.TreeItemCollapsibleState.None, {
-				command: "lootiscript.restartLanguageServer",
-				title: "Restart Language Server",
-			}),
+			new ActionItem(
+				"Restart Language Server",
+				"Restart LootiScript Language Server",
+				vscode.TreeItemCollapsibleState.None,
+				{
+					command: "lootiscript.restartLanguageServer",
+					title: "Restart Language Server",
+				},
+			),
 		]);
 	}
 }

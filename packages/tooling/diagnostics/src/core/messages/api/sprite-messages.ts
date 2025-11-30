@@ -25,7 +25,11 @@ export const spriteMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid sprite properties: ${args.error || "unknown"}`,
 		description: "Sprite properties are invalid",
-		suggestions: ["Check frames is a positive number", "Check fps is a positive number", "Verify all required properties are set"],
+		suggestions: [
+			"Check frames is a positive number",
+			"Check fps is a positive number",
+			"Verify all required properties are set",
+		],
 	},
 	[APIErrorCode.E7023]: {
 		code: APIErrorCode.E7023,
@@ -33,7 +37,11 @@ export const spriteMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid sprite URL: ${args.url}`,
 		description: "The sprite URL is invalid or malformed",
-		suggestions: ["Use a valid URL or relative path", "Check if the URL is properly formatted", "Verify the file extension is correct"],
+		suggestions: [
+			"Use a valid URL or relative path",
+			"Check if the URL is properly formatted",
+			"Verify the file extension is correct",
+		],
 	},
 	[APIErrorCode.E7024]: {
 		code: APIErrorCode.E7024,
@@ -41,6 +49,9 @@ export const spriteMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Sprite frame out of bounds: frame ${args.frame} of ${args.totalFrames}`,
 		description: "The requested frame index is out of range",
-		suggestions: ["Check frame index is between 0 and totalFrames-1", "Verify the sprite has the expected number of frames"],
+		suggestions: [
+			"Check frame index is between 0 and totalFrames-1",
+			"Verify the sprite has the expected number of frames",
+		],
 	},
 };

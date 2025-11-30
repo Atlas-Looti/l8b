@@ -289,11 +289,22 @@ export class Routine {
 	resolveLabels(): void {
 		for (let i = 0; i < this.opcodes.length; i++) {
 			const opcode = this.opcodes[i];
-			if (opcode === OPCODES.JUMP || opcode === OPCODES.JUMPY || opcode === OPCODES.JUMPN || opcode === OPCODES.JUMPY_NOPOP || opcode === OPCODES.JUMPN_NOPOP) {
+			if (
+				opcode === OPCODES.JUMP ||
+				opcode === OPCODES.JUMPY ||
+				opcode === OPCODES.JUMPN ||
+				opcode === OPCODES.JUMPY_NOPOP ||
+				opcode === OPCODES.JUMPN_NOPOP
+			) {
 				if (this.labels[this.arg1[i]]) {
 					this.arg1[i] = this.labels[this.arg1[i] as string];
 				}
-			} else if (opcode === OPCODES.FORLOOP_CONTROL || opcode === OPCODES.FORLOOP_INIT || opcode === OPCODES.FORIN_CONTROL || opcode === OPCODES.FORIN_INIT) {
+			} else if (
+				opcode === OPCODES.FORLOOP_CONTROL ||
+				opcode === OPCODES.FORLOOP_INIT ||
+				opcode === OPCODES.FORIN_CONTROL ||
+				opcode === OPCODES.FORIN_INIT
+			) {
 				const args = this.arg1[i] as any[];
 				if (args && this.labels[args[1]]) {
 					args[1] = this.labels[args[1]];
@@ -623,7 +634,15 @@ export class Routine {
 		};
 	}
 
-	import(src: { num_args: number; ops: number[]; args: any[]; import_refs: any[]; import_values: any[]; import_self: number; locals_size?: number }): Routine {
+	import(src: {
+		num_args: number;
+		ops: number[];
+		args: any[];
+		import_refs: any[];
+		import_values: any[];
+		import_self: number;
+		locals_size?: number;
+	}): Routine {
 		this.num_args = src.num_args;
 		this.opcodes = src.ops;
 		this.arg1 = src.args;

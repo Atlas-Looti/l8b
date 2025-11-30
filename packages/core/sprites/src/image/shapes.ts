@@ -133,7 +133,14 @@ export function drawBezierCurve(context: CanvasRenderingContext2D, state: ImageC
 
 	let index = 2;
 	while (index <= args.length - 6) {
-		context.bezierCurveTo(args[index], args[index + 1], args[index + 2], args[index + 3], args[index + 4], args[index + 5]);
+		context.bezierCurveTo(
+			args[index],
+			args[index + 1],
+			args[index + 2],
+			args[index + 3],
+			args[index + 4],
+			args[index + 5],
+		);
 		index += 6;
 	}
 

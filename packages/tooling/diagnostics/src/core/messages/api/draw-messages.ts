@@ -20,7 +20,11 @@ export const drawMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: "Invalid drawing context",
 		description: "The drawing context is invalid or not available",
-		suggestions: ["Check if canvas context is initialized", "Verify context is not destroyed", "Reinitialize drawing context"],
+		suggestions: [
+			"Check if canvas context is initialized",
+			"Verify context is not destroyed",
+			"Reinitialize drawing context",
+		],
 	},
 	[APIErrorCode.E7093]: {
 		code: APIErrorCode.E7093,

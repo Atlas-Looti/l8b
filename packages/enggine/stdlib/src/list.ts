@@ -69,7 +69,8 @@ export const ListLib = {
 		return arr;
 	},
 
-	splice: (arr: any[], start: number, deleteCount?: number, ...items: any[]): any[] => arr.splice(start, deleteCount ?? arr.length - start, ...items),
+	splice: (arr: any[], start: number, deleteCount?: number, ...items: any[]): any[] =>
+		arr.splice(start, deleteCount ?? arr.length - start, ...items),
 
 	// Utility methods for common array operations
 	fill: (arr: any[], value: any, start?: number, end?: number): any[] => [...arr].fill(value, start, end),

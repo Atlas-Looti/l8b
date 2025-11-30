@@ -87,7 +87,12 @@ function generateRuntimeScript(
 	const showTerminalCanvasLogs = terminalLogging.canvas ?? false;
 	const mirrorListenerLogs = terminalLogging.listener ?? false;
 	const mirrorListenerErrors = terminalLogging.errors ?? false;
-	const terminalLoggingEnabled = [showTerminalLifecycleLogs, showTerminalCanvasLogs, mirrorListenerLogs, mirrorListenerErrors].some(Boolean);
+	const terminalLoggingEnabled = [
+		showTerminalLifecycleLogs,
+		showTerminalCanvasLogs,
+		mirrorListenerLogs,
+		mirrorListenerErrors,
+	].some(Boolean);
 
 	// Prepare resources object
 	const resourcesObj = {
@@ -393,10 +398,22 @@ export function generateHTML(
 	}
 
 	// Escape config.name for HTML to prevent XSS
-	const escapedName = config.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+	const escapedName = config.name
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
 
 	const styles = generateStyles(canvasId);
-	const script = generateRuntimeScript(config, resources, isProduction ?? false, sourceImports, sourceMap, compiledRoutinesMap);
+	const script = generateRuntimeScript(
+		config,
+		resources,
+		isProduction ?? false,
+		sourceImports,
+		sourceMap,
+		compiledRoutinesMap,
+	);
 
 	// Generate Farcaster embed meta tag for this route
 	const embedTag = generateFarcasterEmbedTag(config, routePath);

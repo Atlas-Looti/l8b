@@ -20,7 +20,11 @@ export const timeMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Time playback failed: ${args.error || "unknown"}`,
 		description: "Time playback operation could not be completed",
-		suggestions: ["Check if time playback is initialized", "Verify playback state", "Check for conflicting time operations"],
+		suggestions: [
+			"Check if time playback is initialized",
+			"Verify playback state",
+			"Check for conflicting time operations",
+		],
 	},
 	[APIErrorCode.E7083]: {
 		code: APIErrorCode.E7083,

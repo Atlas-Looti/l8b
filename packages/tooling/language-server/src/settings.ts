@@ -36,7 +36,11 @@ export function getDocumentSettingsMap(): Map<string, LootiScriptSettings> {
 	return documentSettings;
 }
 
-export async function getDocumentSettings(connection: Connection, hasConfigurationCapability: boolean, resource: string): Promise<LootiScriptSettings> {
+export async function getDocumentSettings(
+	connection: Connection,
+	hasConfigurationCapability: boolean,
+	resource: string,
+): Promise<LootiScriptSettings> {
 	if (!hasConfigurationCapability) {
 		return globalSettings;
 	}

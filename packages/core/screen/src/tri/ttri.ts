@@ -342,7 +342,14 @@ export function drawTriangle(context: CanvasRenderingContext2D, v0: Vec2, v1: Ve
 /**
  * Draw triangle outline
  */
-export function drawTriangleOutline(context: CanvasRenderingContext2D, v0: Vec2, v1: Vec2, v2: Vec2, color: string, lineWidth: number = 1): void {
+export function drawTriangleOutline(
+	context: CanvasRenderingContext2D,
+	v0: Vec2,
+	v1: Vec2,
+	v2: Vec2,
+	color: string,
+	lineWidth: number = 1,
+): void {
 	context.strokeStyle = color;
 	context.lineWidth = lineWidth;
 	context.beginPath();

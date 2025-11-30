@@ -1,9 +1,20 @@
-import { type Connection, type ParameterInformation, Position, type SignatureHelp, SignatureInformation, type TextDocuments } from "vscode-languageserver/node";
+import {
+	type Connection,
+	type ParameterInformation,
+	Position,
+	type SignatureHelp,
+	SignatureInformation,
+	type TextDocuments,
+} from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { GLOBAL_API } from "../api-definitions/index";
 import { getDocumentSettings } from "../settings";
 
-export function setupSignatureHelpHandler(connection: Connection, documents: TextDocuments<TextDocument>, hasConfigurationCapability: boolean) {
+export function setupSignatureHelpHandler(
+	connection: Connection,
+	documents: TextDocuments<TextDocument>,
+	hasConfigurationCapability: boolean,
+) {
 	// Signature help provides parameter information when typing function calls
 	connection.onSignatureHelp(async (params): Promise<SignatureHelp | null> => {
 		const document = documents.get(params.textDocument.uri);

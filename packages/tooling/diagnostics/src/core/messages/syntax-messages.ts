@@ -25,7 +25,10 @@ export const syntaxMessages: Record<string, MessageTemplate> = {
 					"Verify all nested blocks (if, for, while) are properly closed",
 				];
 			}
-			return [`Add 'end' to close the '${args.blockType || "block"}' statement`, "Check if you have nested blocks that need to be closed first"];
+			return [
+				`Add 'end' to close the '${args.blockType || "block"}' statement`,
+				"Check if you have nested blocks that need to be closed first",
+			];
 		},
 	},
 	[SyntaxErrorCode.E1002]: {
@@ -34,7 +37,10 @@ export const syntaxMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.Syntax,
 		message: "Too many 'end' statements",
 		description: "An 'end' keyword was found without a matching opening statement",
-		suggestions: ["Remove the extra 'end' statement", "Check if you have a missing opening statement (if, for, while, function)"],
+		suggestions: [
+			"Remove the extra 'end' statement",
+			"Check if you have a missing opening statement (if, for, while, function)",
+		],
 	},
 	[SyntaxErrorCode.E1003]: {
 		code: SyntaxErrorCode.E1003,

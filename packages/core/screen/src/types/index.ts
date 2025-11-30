@@ -40,8 +40,28 @@ export interface ScreenInterface {
 	drawRound: (x: number, y: number, w: number, h: number, c?: string | number) => void;
 	drawSprite: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) => void;
 	drawImage: (sprite: Sprite | string | any, x: number, y: number, w?: number, h?: number) => void;
-	drawSpritePart: (sprite: Sprite | string | any, sx: number, sy: number, sw: number, sh: number, x: number, y: number, w?: number, h?: number) => void;
-	drawImagePart: (sprite: Sprite | string | any, sx: number, sy: number, sw: number, sh: number, x: number, y: number, w?: number, h?: number) => void;
+	drawSpritePart: (
+		sprite: Sprite | string | any,
+		sx: number,
+		sy: number,
+		sw: number,
+		sh: number,
+		x: number,
+		y: number,
+		w?: number,
+		h?: number,
+	) => void;
+	drawImagePart: (
+		sprite: Sprite | string | any,
+		sx: number,
+		sy: number,
+		sw: number,
+		sh: number,
+		x: number,
+		y: number,
+		w?: number,
+		h?: number,
+	) => void;
 	drawMap: (map: Map | string, x: number, y: number, w: number, h: number) => void;
 	drawText: (text: string, x: number, y: number, size: number, color?: string | number) => void;
 	drawTextOutline: (text: string, x: number, y: number, size: number, color?: string | number) => void;
@@ -54,8 +74,24 @@ export interface ScreenInterface {
 	fillPolygon: (...args: any[]) => void;
 	drawQuadCurve: (...args: any[]) => void;
 	drawBezierCurve: (...args: any[]) => void;
-	drawArc: (x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string | number) => void;
-	fillArc: (x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string | number) => void;
+	drawArc: (
+		x: number,
+		y: number,
+		radius: number,
+		angle1: number,
+		angle2: number,
+		ccw: boolean,
+		color?: string | number,
+	) => void;
+	fillArc: (
+		x: number,
+		y: number,
+		radius: number,
+		angle1: number,
+		angle2: number,
+		ccw: boolean,
+		color?: string | number,
+	) => void;
 	setCursorVisible: (visible: boolean) => void;
 	loadFont: (font: string) => void;
 	isFontReady: (font?: string) => number;

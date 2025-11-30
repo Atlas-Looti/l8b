@@ -106,7 +106,21 @@ export class StatePlayer {
 	 */
 	private isProtectedKey(key: string): boolean {
 		// Prevent system APIs and runtime objects from being overwritten during restore
-		const protected_keys = ["screen", "audio", "keyboard", "mouse", "touch", "gamepad", "system", "storage", "sprites", "maps", "sounds", "music", "assets"];
+		const protected_keys = [
+			"screen",
+			"audio",
+			"keyboard",
+			"mouse",
+			"touch",
+			"gamepad",
+			"system",
+			"storage",
+			"sprites",
+			"maps",
+			"sounds",
+			"music",
+			"assets",
+		];
 		return protected_keys.includes(key);
 	}
 

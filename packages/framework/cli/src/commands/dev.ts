@@ -56,7 +56,11 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 		const host = options.host !== undefined ? options.host : (config.dev?.host ?? DEFAULT_SERVER.HOST);
 
 		// Setup file watcher for HMR
-		const watchPaths = [path.join(projectPath, DEFAULT_DIRS.PUBLIC), path.join(projectPath, DEFAULT_DIRS.SCRIPTS), path.join(projectPath, DEFAULT_FILES.CONFIG)];
+		const watchPaths = [
+			path.join(projectPath, DEFAULT_DIRS.PUBLIC),
+			path.join(projectPath, DEFAULT_DIRS.SCRIPTS),
+			path.join(projectPath, DEFAULT_FILES.CONFIG),
+		];
 
 		const watcher = chokidar.watch(watchPaths, {
 			ignored: /(^|[/\\])\../, // ignore dotfiles
@@ -178,7 +182,9 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 										console.error("[L8B CLI] Error serving BitCell font:", error);
 									}
 								} else {
-									console.warn(`[L8B CLI] BitCell font not found. Tried:\n  ${normalizedDistFontPath}\n  ${normalizedAssetsFontPath}`);
+									console.warn(
+										`[L8B CLI] BitCell font not found. Tried:\n  ${normalizedDistFontPath}\n  ${normalizedAssetsFontPath}`,
+									);
 								}
 							}
 
@@ -189,12 +195,17 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 
 							// Only handle root/index.html or paths that don't have file extensions
 							const isHtmlRequest =
-								url === "/" || url === `/${DEFAULT_FILES.INDEX_HTML}` || (!path.extname(routePath) && !url.startsWith("/compiled/") && !url.startsWith("/runtime.js"));
+								url === "/" ||
+								url === `/${DEFAULT_FILES.INDEX_HTML}` ||
+								(!path.extname(routePath) && !url.startsWith("/compiled/") && !url.startsWith("/runtime.js"));
 
 							if (isHtmlRequest) {
 								try {
 									// Load sources and resources
-									const [currentSources, currentResources] = await Promise.all([loadSources(projectPath), detectResources(projectPath)]);
+									const [currentSources, currentResources] = await Promise.all([
+										loadSources(projectPath),
+										detectResources(projectPath),
+									]);
 
 									const html = generateHTML(
 										config,
@@ -226,7 +237,17 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 			],
 			// Optimize dependencies for faster startup
 			optimizeDeps: {
-				include: ["@l8b/runtime", "@l8b/vm", "@l8b/screen", "@l8b/audio", "@l8b/input", "@l8b/time", "@l8b/sprites", "@l8b/map", "@l8b/io"],
+				include: [
+					"@l8b/runtime",
+					"@l8b/vm",
+					"@l8b/screen",
+					"@l8b/audio",
+					"@l8b/input",
+					"@l8b/time",
+					"@l8b/sprites",
+					"@l8b/map",
+					"@l8b/io",
+				],
 				esbuildOptions: {
 					target: "es2022",
 				},
@@ -257,7 +278,11 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 					tunnelProcess = tunnel.process;
 					tunnelUrl = tunnel.url;
 
-					console.log(pc.green("\n🔗 Tunnel active!\n"), pc.cyan(`   Tunnel URL: ${tunnelUrl}\n`), pc.gray("   Use this URL in Farcaster Mini App preview tool\n"));
+					console.log(
+						pc.green("\n🔗 Tunnel active!\n"),
+						pc.cyan(`   Tunnel URL: ${tunnelUrl}\n`),
+						pc.gray("   Use this URL in Farcaster Mini App preview tool\n"),
+					);
 
 					// Generate QR code for mobile testing (optional)
 					// Note: qrcode-terminal is not a dependency - users can install it separately

@@ -90,7 +90,11 @@ export class Transpiler {
 			const op = OPCODES[r.opcodes[i] as keyof typeof OPCODES] as string;
 			if (this.transpilable(op, r.arg1[i])) {
 				let j = i + 1;
-				while (j < r.opcodes.length && r.removeable(j) && this.transpilable(OPCODES[r.opcodes[j] as keyof typeof OPCODES] as string, r.arg1[j])) {
+				while (
+					j < r.opcodes.length &&
+					r.removeable(j) &&
+					this.transpilable(OPCODES[r.opcodes[j] as keyof typeof OPCODES] as string, r.arg1[j])
+				) {
 					j += 1;
 				}
 				j -= 1;
@@ -213,7 +217,18 @@ export class Transpiler {
 			return "if (typeof " + v + ' != "object") { ' + v + " = locals[locals_offset+" + arg + "] = {} } ;";
 		} else {
 			v = this.createVariable();
-			res = "let " + v + " = locals[locals_offset+" + arg + "] ;\nif (typeof " + v + ' != "object") { ' + v + " = locals[locals_offset+" + arg + "] = {} } ;";
+			res =
+				"let " +
+				v +
+				" = locals[locals_offset+" +
+				arg +
+				"] ;\nif (typeof " +
+				v +
+				' != "object") { ' +
+				v +
+				" = locals[locals_offset+" +
+				arg +
+				"] = {} } ;";
 			this.stack!.push(v);
 			this.locals![arg] = v;
 			return res;
@@ -253,7 +268,18 @@ export class Transpiler {
 		let res: string;
 		let v: string;
 		v = this.createVariable();
-		res = "let " + v + " = " + this.stack!.get(-1) + "[" + this.stack!.get() + "] ; // LOAD_PROPERTY\nif (" + v + " == null) { " + v + " = 0 ; }";
+		res =
+			"let " +
+			v +
+			" = " +
+			this.stack!.get(-1) +
+			"[" +
+			this.stack!.get() +
+			"] ; // LOAD_PROPERTY\nif (" +
+			v +
+			" == null) { " +
+			v +
+			" = 0 ; }";
 		this.stack!.pop();
 		this.stack!.pop();
 		this.stack!.push(v);
@@ -267,7 +293,18 @@ export class Transpiler {
 		let res: string;
 		let v: string;
 		v = this.createVariable();
-		res = "let " + v + " = " + this.stack!.get(-1) + "[" + this.stack!.get() + "] ; // LOAD_PROPERTY_ATOP\nif (" + v + " == null) { " + v + " = 0 ; }";
+		res =
+			"let " +
+			v +
+			" = " +
+			this.stack!.get(-1) +
+			"[" +
+			this.stack!.get() +
+			"] ; // LOAD_PROPERTY_ATOP\nif (" +
+			v +
+			" == null) { " +
+			v +
+			" = 0 ; }";
 		this.stack!.push(v);
 		return res;
 	}
@@ -321,7 +358,16 @@ export class Transpiler {
 		let res: string;
 		let v: string;
 		v = this.createVariable();
-		res = "let " + v + " = " + this.stack!.get(-2) + "[" + this.stack!.get(-1) + "] = " + this.stack!.get(0) + " ; // STORE_PROPERTY";
+		res =
+			"let " +
+			v +
+			" = " +
+			this.stack!.get(-2) +
+			"[" +
+			this.stack!.get(-1) +
+			"] = " +
+			this.stack!.get(0) +
+			" ; // STORE_PROPERTY";
 		this.stack!.pop();
 		this.stack!.pop();
 		this.stack!.pop();

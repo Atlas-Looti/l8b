@@ -7,7 +7,11 @@ interface RelativePosition {
 
 export const hasDocument = typeof document !== "undefined";
 
-export const computeRelativePosition = (canvas: HTMLCanvasElement, clientX: number, clientY: number): RelativePosition => {
+export const computeRelativePosition = (
+	canvas: HTMLCanvasElement,
+	clientX: number,
+	clientY: number,
+): RelativePosition => {
 	const rect = canvas.getBoundingClientRect();
 	const min = Math.min(canvas.clientWidth, canvas.clientHeight) || 1;
 	const x = ((clientX - rect.left - canvas.clientWidth / 2) / min) * NORMALIZED_SCALE;

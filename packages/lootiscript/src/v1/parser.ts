@@ -101,7 +101,13 @@ export class LootiSyntaxError extends LootiScriptError {
 /**
  * Helper to format source context around an error
  */
-export function formatSourceContext(source: string, line: number, column: number, contextLines: number = 3, errorLength: number = 1): string {
+export function formatSourceContext(
+	source: string,
+	line: number,
+	column: number,
+	contextLines: number = 3,
+	errorLength: number = 1,
+): string {
 	const lines = source.split("\n");
 	const startLine = Math.max(0, line - contextLines - 1);
 	const endLine = Math.min(lines.length - 1, line + contextLines - 1);
@@ -376,7 +382,10 @@ export class Parser {
 					};
 				} else {
 					errorMessage = `Unterminated '${nt.value}' ; no matching 'end' found`;
-					suggestions = [`Add 'end' to close the '${nt.value}' statement`, `Check if you have nested blocks that need to be closed first`];
+					suggestions = [
+						`Add 'end' to close the '${nt.value}' statement`,
+						`Check if you have nested blocks that need to be closed first`,
+					];
 				}
 
 				return (this.error_info = {
@@ -464,7 +473,11 @@ export class Parser {
 				} else {
 					this.tokenizer.changeNumberToIdentifier();
 					identifier = this.assertBroadIdentifier("Expected identifier");
-					return Program.CreateFieldAccess(token, expression, new Value(identifier, Value.TYPE_STRING, identifier.value as string));
+					return Program.CreateFieldAccess(
+						token,
+						expression,
+						new Value(identifier, Value.TYPE_STRING, identifier.value as string),
+					);
 				}
 				break;
 			case Token.TYPE_OPEN_BRACKET:

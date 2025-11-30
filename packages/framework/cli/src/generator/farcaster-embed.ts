@@ -11,7 +11,12 @@ import type { FarcasterEmbedConfig, LootiConfig } from "../config";
  * Escape HTML attribute value to prevent XSS
  */
 function escapeHtmlAttr(value: string): string {
-	return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+	return value
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
 }
 
 /**
@@ -23,7 +28,11 @@ function escapeHtmlAttr(value: string): string {
  * @param embedConfig - Embed configuration for this route (optional, falls back to manifest defaults)
  * @returns HTML meta tag string or empty string if no config
  */
-export function generateFarcasterEmbedTag(config: LootiConfig, routePath: string = "/", embedConfig?: FarcasterEmbedConfig): string {
+export function generateFarcasterEmbedTag(
+	config: LootiConfig,
+	routePath: string = "/",
+	embedConfig?: FarcasterEmbedConfig,
+): string {
 	const farcaster = config.farcaster;
 
 	// If no farcaster config at all, return empty

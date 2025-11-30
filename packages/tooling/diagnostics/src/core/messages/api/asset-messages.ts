@@ -20,7 +20,12 @@ export const assetMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Asset loading failed: ${args.assetName || "unknown"}`,
 		description: "The asset could not be loaded",
-		suggestions: ["Check if the asset URL is correct", "Verify the file exists", "Check network connection", "Check CORS settings"],
+		suggestions: [
+			"Check if the asset URL is correct",
+			"Verify the file exists",
+			"Check network connection",
+			"Check CORS settings",
+		],
 	},
 	[APIErrorCode.E7043]: {
 		code: APIErrorCode.E7043,

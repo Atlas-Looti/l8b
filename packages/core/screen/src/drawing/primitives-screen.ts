@@ -81,7 +81,16 @@ export class PrimitiveScreen extends BaseScreen {
 			this.closeDrawOp();
 		} else {
 			this.context.beginPath();
-			this.context.ellipse(x - (this.anchor_x * w) / 2, -y + (this.anchor_y * h) / 2, w / 2, h / 2, 0, 0, Math.PI * 2, false);
+			this.context.ellipse(
+				x - (this.anchor_x * w) / 2,
+				-y + (this.anchor_y * h) / 2,
+				w / 2,
+				h / 2,
+				0,
+				0,
+				Math.PI * 2,
+				false,
+			);
 			this.context.fill();
 		}
 	}
@@ -139,7 +148,16 @@ export class PrimitiveScreen extends BaseScreen {
 			this.closeDrawOp();
 		} else {
 			this.context.beginPath();
-			this.context.ellipse(x - (this.anchor_x * w) / 2, -y + (this.anchor_y * h) / 2, w / 2, h / 2, 0, 0, Math.PI * 2, false);
+			this.context.ellipse(
+				x - (this.anchor_x * w) / 2,
+				-y + (this.anchor_y * h) / 2,
+				w / 2,
+				h / 2,
+				0,
+				0,
+				Math.PI * 2,
+				false,
+			);
 			this.context.stroke();
 		}
 	}
@@ -246,14 +264,29 @@ export class PrimitiveScreen extends BaseScreen {
 		this.context.moveTo(points[0], -points[1]);
 		let index = 2;
 		while (index <= points.length - 6) {
-			this.context.bezierCurveTo(points[index], -points[index + 1], points[index + 2], -points[index + 3], points[index + 4], -points[index + 5]);
+			this.context.bezierCurveTo(
+				points[index],
+				-points[index + 1],
+				points[index + 2],
+				-points[index + 3],
+				points[index + 4],
+				-points[index + 5],
+			);
 			index += 6;
 		}
 		this.context.stroke();
 		if (transform) this.closeDrawOp();
 	}
 
-	drawArc(x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string | number): void {
+	drawArc(
+		x: number,
+		y: number,
+		radius: number,
+		angle1: number,
+		angle2: number,
+		ccw: boolean,
+		color?: string | number,
+	): void {
 		if (color) this.setColor(color);
 		this.context.globalAlpha = this.alpha;
 		this.context.lineWidth = this.line_width;
@@ -270,7 +303,15 @@ export class PrimitiveScreen extends BaseScreen {
 		}
 	}
 
-	fillArc(x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string | number): void {
+	fillArc(
+		x: number,
+		y: number,
+		radius: number,
+		angle1: number,
+		angle2: number,
+		ccw: boolean,
+		color?: string | number,
+	): void {
 		if (color) this.setColor(color);
 		this.context.globalAlpha = this.alpha;
 

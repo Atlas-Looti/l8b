@@ -43,7 +43,10 @@ const DEFAULT_OG_HEIGHT = 800;
  * @param renderCallback - Function that receives screen interface and renders the image
  * @returns PNG image data URL or null if generation fails
  */
-export async function generateOGImage(options: OGImageOptions, renderCallback: (screen: any) => void | Promise<void>): Promise<string | null> {
+export async function generateOGImage(
+	options: OGImageOptions,
+	renderCallback: (screen: any) => void | Promise<void>,
+): Promise<string | null> {
 	// Only work in browser environment
 	if (typeof document === "undefined") {
 		return null;

@@ -45,7 +45,8 @@ export class Token {
 			this.reserved_keyword = true;
 		}
 
-		this.is_binary_operator = (this.type >= 30 && this.type <= 39) || (this.type >= 200 && this.type <= 201) || (this.type >= 2 && this.type <= 7);
+		this.is_binary_operator =
+			(this.type >= 30 && this.type <= 39) || (this.type >= 200 && this.type <= 201) || (this.type >= 2 && this.type <= 7);
 	}
 
 	toString(): string {

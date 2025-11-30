@@ -281,7 +281,13 @@ export class Tokenizer implements ITokenizer {
 			}
 			c = this.nextChar();
 			code = c.charCodeAt(0);
-			if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122) || code === 95 || (code >= 48 && code <= 57) || this.letter_regex.test(c)) {
+			if (
+				(code >= 65 && code <= 90) ||
+				(code >= 97 && code <= 122) ||
+				code === 95 ||
+				(code >= 48 && code <= 57) ||
+				this.letter_regex.test(c)
+			) {
 				s += c;
 			} else {
 				this.rewind();
@@ -354,7 +360,11 @@ export class Tokenizer implements ITokenizer {
 
 		if (close === '"') {
 			// Check for triple-quoted string
-			if (this.input.charAt(this.index) === '"' && this.input.charAt(this.index + 1) === '"' && this.input.charAt(this.index + 2) !== '"') {
+			if (
+				this.input.charAt(this.index) === '"' &&
+				this.input.charAt(this.index + 1) === '"' &&
+				this.input.charAt(this.index + 2) !== '"'
+			) {
 				close = '"""';
 				this.nextChar(true);
 				this.nextChar(true);

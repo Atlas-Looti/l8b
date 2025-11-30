@@ -33,7 +33,13 @@ export class AssetLoader {
 	 * Load all assets
 	 */
 	async loadAll(): Promise<AssetCollections> {
-		await Promise.all([this.loadSprites(), this.loadMaps(), this.loadSounds(), this.loadMusic(), this.loadGenericAssets()]);
+		await Promise.all([
+			this.loadSprites(),
+			this.loadMaps(),
+			this.loadSounds(),
+			this.loadMusic(),
+			this.loadGenericAssets(),
+		]);
 
 		return this.collections;
 	}

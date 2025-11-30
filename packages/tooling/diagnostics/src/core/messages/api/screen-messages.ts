@@ -12,7 +12,11 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: "Failed to get 2D canvas context",
 		description: "The browser could not create a 2D rendering context for the canvas",
-		suggestions: ["Check if the canvas element is valid", "Verify the browser supports canvas 2D rendering", "Check for conflicting canvas contexts"],
+		suggestions: [
+			"Check if the canvas element is valid",
+			"Verify the browser supports canvas 2D rendering",
+			"Check for conflicting canvas contexts",
+		],
 	},
 	[APIErrorCode.E7002]: {
 		code: APIErrorCode.E7002,
@@ -28,7 +32,11 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid color format: ${args.color}`,
 		description: "The color value provided is not in a valid format",
-		suggestions: ["Use hex format: '#RRGGBB' or '#RGB'", "Use named colors: 'red', 'blue', etc.", "Use numeric format for palette colors"],
+		suggestions: [
+			"Use hex format: '#RRGGBB' or '#RGB'",
+			"Use named colors: 'red', 'blue', etc.",
+			"Use numeric format for palette colors",
+		],
 	},
 	[APIErrorCode.E7004]: {
 		code: APIErrorCode.E7004,
@@ -36,7 +44,11 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Sprite not found: '${args.spriteName}'`,
 		description: "The requested sprite does not exist in the sprite collection",
-		suggestions: ["Check if the sprite name is spelled correctly", "Verify the sprite was loaded before use", "Check if the sprite is in the correct namespace"],
+		suggestions: [
+			"Check if the sprite name is spelled correctly",
+			"Verify the sprite was loaded before use",
+			"Check if the sprite is in the correct namespace",
+		],
 	},
 	[APIErrorCode.E7005]: {
 		code: APIErrorCode.E7005,
@@ -44,7 +56,11 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Sprite '${args.spriteName}' is not ready`,
 		description: "The sprite exists but has not finished loading",
-		suggestions: ["Wait for the sprite to finish loading", "Check sprite.ready before using it", "Use a callback or promise to wait for loading"],
+		suggestions: [
+			"Wait for the sprite to finish loading",
+			"Check sprite.ready before using it",
+			"Use a callback or promise to wait for loading",
+		],
 	},
 	[APIErrorCode.E7006]: {
 		code: APIErrorCode.E7006,
@@ -60,6 +76,9 @@ export const screenMessages: Record<string, MessageTemplate> = {
 		category: DiagnosticCategory.API,
 		message: (args) => `Invalid blend mode: '${args.blendMode}'`,
 		description: "The blend mode is not supported",
-		suggestions: ["Use a valid blend mode: 'normal', 'additive', 'multiply', etc.", "Check the list of supported blend modes"],
+		suggestions: [
+			"Use a valid blend mode: 'normal', 'additive', 'multiply', etc.",
+			"Check the list of supported blend modes",
+		],
 	},
 };

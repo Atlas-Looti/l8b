@@ -6,12 +6,24 @@
 import type { ImageContextState } from "./context";
 import { closeDrawOp, initDrawOp } from "./drawing";
 
-export function textWidth(context: CanvasRenderingContext2D, state: ImageContextState, text: string, size: number): number {
+export function textWidth(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	text: string,
+	size: number,
+): number {
 	context.font = `${size}pt ${state.font}`;
 	return context.measureText(text).width;
 }
 
-export function drawText(context: CanvasRenderingContext2D, state: ImageContextState, text: string, x: number, y: number, size: number): void {
+export function drawText(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	text: string,
+	x: number,
+	y: number,
+	size: number,
+): void {
 	context.globalAlpha = state.alpha;
 	context.font = `${size}pt ${state.font}`;
 	context.textAlign = "center";
@@ -28,7 +40,14 @@ export function drawText(context: CanvasRenderingContext2D, state: ImageContextS
 	}
 }
 
-export function drawTextOutline(context: CanvasRenderingContext2D, state: ImageContextState, text: string, x: number, y: number, size: number): void {
+export function drawTextOutline(
+	context: CanvasRenderingContext2D,
+	state: ImageContextState,
+	text: string,
+	x: number,
+	y: number,
+	size: number,
+): void {
 	context.globalAlpha = state.alpha;
 	context.font = `${size}pt ${state.font}`;
 	context.lineWidth = state.line_width;

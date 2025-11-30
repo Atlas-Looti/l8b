@@ -105,7 +105,12 @@ var DocumentRegions = class {
 		const text = this.document.getText();
 		const languageRegions = this.getRegionsForLanguage(languageId);
 		if (languageRegions.length === 0) {
-			return import_vscode_languageserver_textdocument.TextDocument.create(this.document.uri + "." + languageId, languageId, this.document.version, "");
+			return import_vscode_languageserver_textdocument.TextDocument.create(
+				this.document.uri + "." + languageId,
+				languageId,
+				this.document.version,
+				"",
+			);
 		}
 		let result = "";
 		let lastOffset = 0;
@@ -120,7 +125,12 @@ var DocumentRegions = class {
 		if (lastOffset < text.length) {
 			result += " ".repeat(text.length - lastOffset);
 		}
-		return import_vscode_languageserver_textdocument.TextDocument.create(this.document.uri + "." + languageId, languageId, this.document.version, result);
+		return import_vscode_languageserver_textdocument.TextDocument.create(
+			this.document.uri + "." + languageId,
+			languageId,
+			this.document.version,
+			result,
+		);
 	}
 	/**
 	 * Check if position is inside any embedded region
@@ -1735,7 +1745,8 @@ var actionsApi = {
 			},
 			composeCast: {
 				type: "method",
-				signature: "actions.composeCast({text?: string, embeds?: string[], parent?: {type: string, hash: string}, close?: boolean, channelKey?: string})",
+				signature:
+					"actions.composeCast({text?: string, embeds?: string[], parent?: {type: string, hash: string}, close?: boolean, channelKey?: string})",
 				description: "Open cast composer with suggested content",
 			},
 		},
@@ -1940,7 +1951,10 @@ __name(collectSymbols, "collectSymbols");
 function buildRange(node) {
 	return import_node.Range.create(
 		import_node.Position.create(Math.max(node.line - 1, 0), Math.max(node.column, 0)),
-		import_node.Position.create(Math.max((node.endLine || node.line) - 1, 0), Math.max(node.endColumn || node.column + (node.name?.length || 1), 0)),
+		import_node.Position.create(
+			Math.max((node.endLine || node.line) - 1, 0),
+			Math.max(node.endColumn || node.column + (node.name?.length || 1), 0),
+		),
 	);
 }
 __name(buildRange, "buildRange");
@@ -2123,7 +2137,13 @@ function sanitizeSettings(settings) {
 __name(sanitizeSettings, "sanitizeSettings");
 
 // src/validation.ts
-async function validateTextDocument(textDocument, connection2, hasConfigurationCapability2, languageModes2, documentRegionsCache2) {
+async function validateTextDocument(
+	textDocument,
+	connection2,
+	hasConfigurationCapability2,
+	languageModes2,
+	documentRegionsCache2,
+) {
 	const settings = await getDocumentSettings(connection2, hasConfigurationCapability2, textDocument.uri);
 	if (!settings.diagnostics.enable) {
 		connection2.sendDiagnostics({
@@ -2301,7 +2321,8 @@ function setupCompletionHandlers(connection2, documents2, languageModes2, hasCon
 		state?.symbols.forEach((symbol) => {
 			items.push({
 				label: symbol.name,
-				kind: symbol.type === "function" ? import_node4.CompletionItemKind.Function : import_node4.CompletionItemKind.Variable,
+				kind:
+					symbol.type === "function" ? import_node4.CompletionItemKind.Function : import_node4.CompletionItemKind.Variable,
 				detail: symbol.type,
 				data: symbol.name,
 				sortText: `0_${symbol.name}`,
@@ -2344,11 +2365,13 @@ function getPropertyCompletions(objectName) {
 		for (const [propName, propInfo] of Object.entries(api.properties)) {
 			items.push({
 				label: propName,
-				kind: propInfo.type === "method" ? import_node4.CompletionItemKind.Method : import_node4.CompletionItemKind.Property,
+				kind:
+					propInfo.type === "method" ? import_node4.CompletionItemKind.Method : import_node4.CompletionItemKind.Property,
 				detail: propInfo.description,
 				documentation: propInfo.signature,
 				insertText: propInfo.type === "method" ? `${propName}($0)` : propName,
-				insertTextFormat: propInfo.type === "method" ? import_node4.InsertTextFormat.Snippet : import_node4.InsertTextFormat.PlainText,
+				insertTextFormat:
+					propInfo.type === "method" ? import_node4.InsertTextFormat.Snippet : import_node4.InsertTextFormat.PlainText,
 			});
 		}
 	}
@@ -2707,7 +2730,9 @@ function setupCodeActionsHandler(connection2, documents2) {
 					kind: import_node8.CodeActionKind.QuickFix,
 					edit: {
 						changes: {
-							[params.textDocument.uri]: [import_node8.TextEdit.insert(import_node8.Position.create(diagnostic.range.end.line + 1, 0), "end\n")],
+							[params.textDocument.uri]: [
+								import_node8.TextEdit.insert(import_node8.Position.create(diagnostic.range.end.line + 1, 0), "end\n"),
+							],
 						},
 					},
 					diagnostics: [diagnostic],
@@ -2738,7 +2763,10 @@ function setupCodeActionsHandler(connection2, documents2) {
 				}
 			}
 		}
-		if (params.range && (params.range.start.line !== params.range.end.line || params.range.start.character !== params.range.end.character)) {
+		if (
+			params.range &&
+			(params.range.start.line !== params.range.end.line || params.range.start.character !== params.range.end.character)
+		) {
 			const document = documents2.get(params.textDocument.uri);
 			if (document) {
 				const selectedText = document.getText(params.range);
@@ -2815,7 +2843,10 @@ function setupReferencesHandler(connection2, documents2) {
 				locations.push(
 					import_node10.Location.create(
 						params.textDocument.uri,
-						import_node10.Range.create(import_node10.Position.create(lineIndex, match.index), import_node10.Position.create(lineIndex, match.index + word.length)),
+						import_node10.Range.create(
+							import_node10.Position.create(lineIndex, match.index),
+							import_node10.Position.create(lineIndex, match.index + word.length),
+						),
 					),
 				);
 			}
@@ -2931,7 +2962,10 @@ function setupRenameHandler(connection2, documents2) {
 			while ((match = wordRegex.exec(line)) !== null) {
 				edits.push(
 					import_node11.TextEdit.replace(
-						import_node11.Range.create(import_node11.Position.create(lineIndex, match.index), import_node11.Position.create(lineIndex, match.index + word.length)),
+						import_node11.Range.create(
+							import_node11.Position.create(lineIndex, match.index),
+							import_node11.Position.create(lineIndex, match.index + word.length),
+						),
 						newName,
 					),
 				);
@@ -2948,9 +2982,43 @@ __name(setupRenameHandler, "setupRenameHandler");
 
 // src/handlers/semantic-tokens.ts
 var import_node12 = require("vscode-languageserver/node");
-var TOKEN_TYPES = ["namespace", "class", "function", "variable", "parameter", "property", "keyword", "number", "string", "comment"];
-var TOKEN_MODIFIERS = ["declaration", "readonly", "static", "deprecated", "modification", "documentation", "defaultLibrary"];
-var API_OBJECTS = ["screen", "audio", "keyboard", "mouse", "touch", "gamepad", "sprites", "maps", "sounds", "music", "assets", "system", "storage", "router"];
+var TOKEN_TYPES = [
+	"namespace",
+	"class",
+	"function",
+	"variable",
+	"parameter",
+	"property",
+	"keyword",
+	"number",
+	"string",
+	"comment",
+];
+var TOKEN_MODIFIERS = [
+	"declaration",
+	"readonly",
+	"static",
+	"deprecated",
+	"modification",
+	"documentation",
+	"defaultLibrary",
+];
+var API_OBJECTS = [
+	"screen",
+	"audio",
+	"keyboard",
+	"mouse",
+	"touch",
+	"gamepad",
+	"sprites",
+	"maps",
+	"sounds",
+	"music",
+	"assets",
+	"system",
+	"storage",
+	"router",
+];
 var CONSTRUCTORS = ["Random", "ObjectPool", "Image", "Sprite", "Map", "Sound", "List", "Math", "String", "JSON"];
 function setupSemanticTokensHandler(connection2, documents2) {
 	connection2.languages.semanticTokens.on((params) => {

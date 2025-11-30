@@ -62,5 +62,10 @@ export function createDefaultContextState(centered: boolean): ImageContextState 
 }
 
 export function updateImageTransform(state: ImageContextState): void {
-	state.image_transform = state.translation_x !== 0 || state.translation_y !== 0 || state.scale_x !== 1 || state.scale_y !== 1 || state.rotation !== 0;
+	state.image_transform =
+		state.translation_x !== 0 ||
+		state.translation_y !== 0 ||
+		state.scale_x !== 1 ||
+		state.scale_y !== 1 ||
+		state.rotation !== 0;
 }

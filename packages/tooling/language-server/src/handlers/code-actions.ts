@@ -1,4 +1,11 @@
-import { type CodeAction, CodeActionKind, type CodeActionParams, Position, type TextDocuments, TextEdit } from "vscode-languageserver/node";
+import {
+	type CodeAction,
+	CodeActionKind,
+	type CodeActionParams,
+	Position,
+	type TextDocuments,
+	TextEdit,
+} from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { getWordAtPosition } from "../utils";
 
@@ -91,7 +98,9 @@ export function setupCodeActionsHandler(connection: any, documents: TextDocument
 							kind: CodeActionKind.QuickFix,
 							edit: {
 								changes: {
-									[params.textDocument.uri]: [TextEdit.insert(Position.create(diagnostic.range.start.line, 0), `local ${word} = nil\n`)],
+									[params.textDocument.uri]: [
+										TextEdit.insert(Position.create(diagnostic.range.start.line, 0), `local ${word} = nil\n`),
+									],
 								},
 							},
 							diagnostics: [diagnostic],
@@ -102,7 +111,10 @@ export function setupCodeActionsHandler(connection: any, documents: TextDocument
 		}
 
 		// Refactor action: Extract to function (if there's a selection)
-		if (params.range && (params.range.start.line !== params.range.end.line || params.range.start.character !== params.range.end.character)) {
+		if (
+			params.range &&
+			(params.range.start.line !== params.range.end.line || params.range.start.character !== params.range.end.character)
+		) {
 			const document = documents.get(params.textDocument.uri);
 			if (document) {
 				const selectedText = document.getText(params.range);
@@ -116,7 +128,10 @@ export function setupCodeActionsHandler(connection: any, documents: TextDocument
 									// Replace selection with function call
 									TextEdit.replace(params.range, "extracted_function()"),
 									// Insert function definition at end
-									TextEdit.insert(Position.create(document.lineCount, 0), `\n\nextracted_function = function()\n\t${selectedText.replace(/\n/g, "\n\t")}\nend\n`),
+									TextEdit.insert(
+										Position.create(document.lineCount, 0),
+										`\n\nextracted_function = function()\n\t${selectedText.replace(/\n/g, "\n\t")}\nend\n`,
+									),
 								],
 							},
 						},

@@ -12,7 +12,14 @@ export interface StateSnapshot {
 /**
  * Time machine command types
  */
-export type TimeMachineCommand = "start_recording" | "stop_recording" | "step_backward" | "step_forward" | "replay_position" | "start_looping" | "stop_looping";
+export type TimeMachineCommand =
+	| "start_recording"
+	| "stop_recording"
+	| "step_backward"
+	| "step_forward"
+	| "replay_position"
+	| "start_looping"
+	| "stop_looping";
 
 /**
  * Message format for time machine control

@@ -71,7 +71,8 @@ export const actionsApi: Partial<GlobalApi> = {
 			},
 			composeCast: {
 				type: "method",
-				signature: "actions.composeCast({text?: string, embeds?: string[], parent?: {type: string, hash: string}, close?: boolean, channelKey?: string})",
+				signature:
+					"actions.composeCast({text?: string, embeds?: string[], parent?: {type: string, hash: string}, close?: boolean, channelKey?: string})",
 				description: "Open cast composer with suggested content",
 			},
 		},

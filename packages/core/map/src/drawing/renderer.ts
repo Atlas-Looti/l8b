@@ -8,7 +8,13 @@ export interface RenderState {
 	animated: AnimatedTile[];
 }
 
-export const ensureCanvas = (state: RenderState, width: number, height: number, blockWidth: number, blockHeight: number): CanvasRenderingContext2D => {
+export const ensureCanvas = (
+	state: RenderState,
+	width: number,
+	height: number,
+	blockWidth: number,
+	blockHeight: number,
+): CanvasRenderingContext2D => {
 	if (!state.canvas) {
 		state.canvas = document.createElement("canvas");
 	}
@@ -46,7 +52,17 @@ export const drawTile = (
 		const [sx, sy] = parts[1].split(",");
 		const tx = Number.parseInt(sx, 10) * blockWidth;
 		const ty = Number.parseInt(sy, 10) * blockHeight;
-		ctx.drawImage(canvas, tx, ty, blockWidth, blockHeight, blockWidth * gridX, blockHeight * gridY, blockWidth, blockHeight);
+		ctx.drawImage(
+			canvas,
+			tx,
+			ty,
+			blockWidth,
+			blockHeight,
+			blockWidth * gridX,
+			blockHeight * gridY,
+			blockWidth,
+			blockHeight,
+		);
 	} else {
 		ctx.drawImage(canvas, blockWidth * gridX, blockHeight * gridY);
 	}

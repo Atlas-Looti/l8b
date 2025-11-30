@@ -271,7 +271,11 @@ export class Compiler {
 					this.compile(statement.expression); // then compile function which may refer to itself
 					this.routine.arg1[this.routine.arg1.length - 1].import_self = index;
 					this.routine.STORE_LOCAL(index, statement);
-				} else if (statement.expression instanceof After || statement.expression instanceof Do || statement.expression instanceof Every) {
+				} else if (
+					statement.expression instanceof After ||
+					statement.expression instanceof Do ||
+					statement.expression instanceof Every
+				) {
 					index = this.locals.register(statement.field.identifier); // register thread locally first
 					arg_index = this.routine.arg1.length; // thread main routine will land here
 					this.compile(statement.expression); // then compile function which may refer to itself
@@ -404,10 +408,25 @@ export class Compiler {
 	 */
 	compileOperation(op: Operation): void {
 		let jump: string, ref: string, ref1: string;
-		if ((ref = op.operation) === "+" || ref === "-" || ref === "*" || ref === "/" || ref === "%" || ref === "&" || ref === "|" || ref === "<<" || ref === ">>") {
+		if (
+			(ref = op.operation) === "+" ||
+			ref === "-" ||
+			ref === "*" ||
+			ref === "/" ||
+			ref === "%" ||
+			ref === "&" ||
+			ref === "|" ||
+			ref === "<<" ||
+			ref === ">>"
+		) {
 			// OPTIMIZATION: Constant Folding
 			// If both operands are constant values, compute the result at compile time
-			if (op.term1 instanceof Value && op.term1.type === Value.TYPE_NUMBER && op.term2 instanceof Value && op.term2.type === Value.TYPE_NUMBER) {
+			if (
+				op.term1 instanceof Value &&
+				op.term1.type === Value.TYPE_NUMBER &&
+				op.term2 instanceof Value &&
+				op.term2.type === Value.TYPE_NUMBER
+			) {
 				let result: number;
 				const v1 = op.term1.value as number;
 				const v2 = op.term2.value as number;
@@ -477,7 +496,14 @@ export class Compiler {
 				case ">>":
 					this.routine.SHIFT_RIGHT(op);
 			}
-		} else if ((ref1 = op.operation) === "==" || ref1 === "!=" || ref1 === "<" || ref1 === ">" || ref1 === "<=" || ref1 === ">=") {
+		} else if (
+			(ref1 = op.operation) === "==" ||
+			ref1 === "!=" ||
+			ref1 === "<" ||
+			ref1 === ">" ||
+			ref1 === "<=" ||
+			ref1 === ">="
+		) {
 			this.compile(op.term1);
 			this.compile(op.term2);
 			switch (op.operation) {
@@ -580,8 +606,19 @@ export class Compiler {
 	}
 
 	compileField(field: Field): void {
-		var c: Statement, i: number, id: string, index: number, j: number, k: number, len: number, ref: number, ref1: Statement[];
-		if ((field.expression as Variable).identifier === "keyboard" || (field.expression as Variable).identifier === "gamepad") {
+		var c: Statement,
+			i: number,
+			id: string,
+			index: number,
+			j: number,
+			k: number,
+			len: number,
+			ref: number,
+			ref1: Statement[];
+		if (
+			(field.expression as Variable).identifier === "keyboard" ||
+			(field.expression as Variable).identifier === "gamepad"
+		) {
 			field.nowarning = true;
 		}
 		c = field.chain[field.chain.length - 1];
@@ -762,7 +799,12 @@ export class Compiler {
 		}
 
 		// Standard loop compilation (not unrolled)
-		var for_continue: string, for_end: string, for_start: string, iterator: number, save_break: string | null, save_continue: string | null;
+		var for_continue: string,
+			for_end: string,
+			for_start: string,
+			iterator: number,
+			save_break: string | null,
+			save_continue: string | null;
 		iterator = this.locals.register(forloop.iterator);
 		this.locals.allocate(); // range_to
 		this.locals.allocate(); // step
@@ -795,7 +837,12 @@ export class Compiler {
 	}
 
 	compileForIn(forloop: ForIn): void {
-		var for_continue: string, for_end: string, for_start: string, iterator: number, save_break: string | null, save_continue: string | null;
+		var for_continue: string,
+			for_end: string,
+			for_start: string,
+			iterator: number,
+			save_break: string | null,
+			save_continue: string | null;
 		iterator = this.locals.register(forloop.iterator);
 		this.locals.allocate(); // array
 		this.locals.allocate(); // index

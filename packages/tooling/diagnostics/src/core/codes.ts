@@ -163,7 +163,13 @@ export enum WarningCode {
 /**
  * Union type of all error codes
  */
-export type ErrorCode = SyntaxErrorCode | RuntimeErrorCode | CompilationErrorCode | SceneErrorCode | CLIErrorCode | APIErrorCode;
+export type ErrorCode =
+	| SyntaxErrorCode
+	| RuntimeErrorCode
+	| CompilationErrorCode
+	| SceneErrorCode
+	| CLIErrorCode
+	| APIErrorCode;
 
 /**
  * Union type of all diagnostic codes

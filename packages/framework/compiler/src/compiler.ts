@@ -5,7 +5,13 @@
  * plus serialization utilities for routines.
  */
 
-import { CompilationErrorCode, createDiagnostic, type Diagnostic, SyntaxErrorCode, WarningCode } from "@l8b/diagnostics";
+import {
+	CompilationErrorCode,
+	createDiagnostic,
+	type Diagnostic,
+	SyntaxErrorCode,
+	WarningCode,
+} from "@l8b/diagnostics";
 import { Compiler, Parser } from "@l8b/lootiscript";
 
 /**

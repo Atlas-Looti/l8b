@@ -1,7 +1,12 @@
 import { existsSync } from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { LanguageClient, type LanguageClientOptions, type ServerOptions, TransportKind } from "vscode-languageclient/node";
+import {
+	LanguageClient,
+	type LanguageClientOptions,
+	type ServerOptions,
+	TransportKind,
+} from "vscode-languageclient/node";
 import { ActionsProvider } from "./views/actionsProvider";
 import type { GlobalApiMap } from "./views/apiProvider";
 import { ApiProvider } from "./views/apiProvider";

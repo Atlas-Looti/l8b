@@ -25,7 +25,13 @@ export class TileMap {
 		animated: [],
 	};
 
-	constructor(width: number, height: number, block_width: number, block_height: number, sprites?: Record<string, Sprite>) {
+	constructor(
+		width: number,
+		height: number,
+		block_width: number,
+		block_height: number,
+		sprites?: Record<string, Sprite>,
+	) {
 		// Validate map dimensions to ensure positive, finite values
 		if (width <= 0 || height <= 0 || !isFinite(width) || !isFinite(height)) {
 			const diagnostic = createDiagnostic(APIErrorCode.E7034, {

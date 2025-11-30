@@ -67,7 +67,9 @@ export class HttpService {
 			ensureOk: () => {
 				if (!response.ok) {
 					throw new Error(
-						`HTTP ${response.status}: Request failed\n` + (requestUrl ? `  URL: ${requestUrl}\n` : "") + `  Response: ${responseText.substring(0, 200)}`,
+						`HTTP ${response.status}: Request failed\n` +
+							(requestUrl ? `  URL: ${requestUrl}\n` : "") +
+							`  Response: ${responseText.substring(0, 200)}`,
 					);
 				}
 				return this.createResponse(response, responseText, requestUrl);
@@ -143,7 +145,14 @@ export class HttpService {
 			// Log failed request in dev mode
 			if (httpLogger) {
 				const time = Date.now() - startTime;
-				httpLogger.logRequest(method, url, undefined, time, undefined, error instanceof Error ? error.message : String(error));
+				httpLogger.logRequest(
+					method,
+					url,
+					undefined,
+					time,
+					undefined,
+					error instanceof Error ? error.message : String(error),
+				);
 			}
 
 			// Enhanced error messages for better DX
@@ -151,7 +160,11 @@ export class HttpService {
 				let enhancedMessage = `HTTP request failed: ${error.message}`;
 
 				// CORS errors
-				if (error.message.includes("CORS") || error.message.includes("cross-origin") || error.message.includes("Access-Control")) {
+				if (
+					error.message.includes("CORS") ||
+					error.message.includes("cross-origin") ||
+					error.message.includes("Access-Control")
+				) {
 					enhancedMessage =
 						`[E7xxx] CORS error: API server needs to allow requests from your domain.\n` +
 						`  URL: ${url}\n` +
@@ -170,9 +183,15 @@ export class HttpService {
 				}
 
 				// Network errors
-				if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError") || error.message.includes("network")) {
+				if (
+					error.message.includes("Failed to fetch") ||
+					error.message.includes("NetworkError") ||
+					error.message.includes("network")
+				) {
 					enhancedMessage =
-						`[E7xxx] Network error: Unable to reach server.\n` + `  URL: ${url}\n` + `  Suggestion: Check internet connection and server availability`;
+						`[E7xxx] Network error: Unable to reach server.\n` +
+						`  URL: ${url}\n` +
+						`  Suggestion: Check internet connection and server availability`;
 				}
 
 				throw new Error(enhancedMessage);
@@ -197,7 +216,11 @@ export class HttpService {
 				});
 			},
 
-			post: async (url: string, body?: any, options: Omit<HttpRequestOptions, "method" | "body"> = {}): Promise<HttpResponse> => {
+			post: async (
+				url: string,
+				body?: any,
+				options: Omit<HttpRequestOptions, "method" | "body"> = {},
+			): Promise<HttpResponse> => {
 				return this.makeRequest(url, {
 					...options,
 					method: "POST",
@@ -205,7 +228,11 @@ export class HttpService {
 				});
 			},
 
-			put: async (url: string, body?: any, options: Omit<HttpRequestOptions, "method" | "body"> = {}): Promise<HttpResponse> => {
+			put: async (
+				url: string,
+				body?: any,
+				options: Omit<HttpRequestOptions, "method" | "body"> = {},
+			): Promise<HttpResponse> => {
 				return this.makeRequest(url, {
 					...options,
 					method: "PUT",

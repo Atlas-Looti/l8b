@@ -7,7 +7,10 @@ import type { DocumentRegionsCache } from "./mode-manager";
 /**
  * JSON language mode for embedded JSON support
  */
-export function getJSONMode(jsonLanguageService: LanguageService, documentRegionsCache: DocumentRegionsCache): LanguageMode {
+export function getJSONMode(
+	jsonLanguageService: LanguageService,
+	documentRegionsCache: DocumentRegionsCache,
+): LanguageMode {
 	return {
 		getId() {
 			return "json";

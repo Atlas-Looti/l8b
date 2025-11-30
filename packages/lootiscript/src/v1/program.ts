@@ -401,7 +401,14 @@ export class For extends Expression {
 	range_by: Statement | null;
 	sequence: Statement[];
 
-	constructor(token: Token, iterator: string, range_from: Statement, range_to: Statement, range_by: Statement | null, sequence: Statement[]) {
+	constructor(
+		token: Token,
+		iterator: string,
+		range_from: Statement,
+		range_to: Statement,
+		range_by: Statement | null,
+		sequence: Statement[],
+	) {
 		super();
 		this.token = token;
 		this.iterator = iterator;

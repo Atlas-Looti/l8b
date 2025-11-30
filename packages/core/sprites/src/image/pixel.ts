@@ -15,7 +15,14 @@ export interface RGBAColor extends RGBColor {
 
 let pixelDataCache: ImageData | null = null;
 
-export function setRGB(context: CanvasRenderingContext2D, x: number, y: number, r: number | RGBColor, g?: number, b?: number): void {
+export function setRGB(
+	context: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	r: number | RGBColor,
+	g?: number,
+	b?: number,
+): void {
 	if (pixelDataCache == null) {
 		pixelDataCache = context.createImageData(1, 1);
 	}
@@ -34,7 +41,15 @@ export function setRGB(context: CanvasRenderingContext2D, x: number, y: number, 
 	context.putImageData(pixelDataCache, x, y);
 }
 
-export function setRGBA(context: CanvasRenderingContext2D, x: number, y: number, r: number | RGBAColor, g?: number, b?: number, a?: number): void {
+export function setRGBA(
+	context: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	r: number | RGBAColor,
+	g?: number,
+	b?: number,
+	a?: number,
+): void {
 	if (pixelDataCache == null) {
 		pixelDataCache = context.createImageData(1, 1);
 	}

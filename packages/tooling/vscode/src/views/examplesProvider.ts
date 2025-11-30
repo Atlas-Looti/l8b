@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
 
 export class ExamplesProvider implements vscode.TreeDataProvider<ExampleItem> {
-	private _onDidChangeTreeData: vscode.EventEmitter<ExampleItem | undefined | void> = new vscode.EventEmitter<ExampleItem | undefined | void>();
+	private _onDidChangeTreeData: vscode.EventEmitter<ExampleItem | undefined | void> = new vscode.EventEmitter<
+		ExampleItem | undefined | void
+	>();
 	readonly onDidChangeTreeData: vscode.Event<ExampleItem | undefined | void> = this._onDidChangeTreeData.event;
 
 	refresh(): void {
