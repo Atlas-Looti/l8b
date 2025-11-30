@@ -1,6 +1,6 @@
 {
       "name": "@l8b/language-server",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "description": "LSP server for LootiScript",
       "bin": {
             "l8b-language-server": "./dist/server.js"
