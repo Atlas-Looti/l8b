@@ -7,22 +7,22 @@ const packageName = process.argv[2];
 const workspace = process.argv[3] || "packages";
 
 if (!packageName) {
-      console.error("❌ Error: Package name is required!");
-      console.log("Usage: bun run new <package-name> [workspace]");
-      console.log("  workspace options: 'packages' (default) or 'lootiscripts'");
-      process.exit(1);
+    console.error("❌ Error: Package name is required!");
+    console.log("Usage: bun run new <package-name> [workspace]");
+    console.log("  workspace options: 'packages' (default) or 'lootiscripts'");
+    process.exit(1);
 }
 
 // Validate package name
 if (!/^[a-z0-9-]+$/.test(packageName)) {
-      console.error("❌ Error: Package name must contain only lowercase letters, numbers, and hyphens");
-      process.exit(1);
+    console.error("❌ Error: Package name must contain only lowercase letters, numbers, and hyphens");
+    process.exit(1);
 }
 
 // Determine workspace directory
 let workspaceDir = "packages";
 if (workspace === "lootiscripts" || workspace === "lang") {
-      workspaceDir = "packages/LootiScripts";
+    workspaceDir = "packages/LootiScripts";
 }
 
 const packageDir = join(process.cwd(), workspaceDir, packageName);
@@ -30,8 +30,8 @@ const srcDir = join(packageDir, "src");
 
 // Check if package already exists
 if (existsSync(packageDir)) {
-      console.error(`❌ Error: Package "${packageName}" already exists!`);
-      process.exit(1);
+    console.error(`❌ Error: Package "${packageName}" already exists!`);
+    process.exit(1);
 }
 
 console.log(`📦 Creating new package: @l8b/${packageName}`);
@@ -42,20 +42,20 @@ mkdirSync(srcDir, { recursive: true });
 
 // Create package.json
 const packageJson = {
-      name: `@l8b/${packageName}`,
-      version: "0.0.1",
-      sideEffects: false,
-      files: ["dist/**/*", "README.md", "package.json"],
-      scripts: {
-            build: "tsup",
-            clean: "rm -rf dist",
-            test: "vitest run --passWithNoTests",
-      },
-      main: "./dist/index.js",
-      module: "./dist/index.mjs",
-      types: "./dist/index.d.ts",
-      dependencies: {},
-      keywords: [packageName],
+    name: `@l8b/${packageName}`,
+    version: "0.0.1",
+    sideEffects: false,
+    files: ["dist/**/*", "README.md", "package.json"],
+    scripts: {
+        build: "tsup",
+        clean: "rm -rf dist",
+        test: "vitest run --passWithNoTests",
+    },
+    main: "./dist/index.js",
+    module: "./dist/index.mjs",
+    types: "./dist/index.d.ts",
+    dependencies: {},
+    keywords: [packageName],
 };
 
 writeFileSync(join(packageDir, "package.json"), JSON.stringify(packageJson, null, 4));
@@ -64,10 +64,10 @@ writeFileSync(join(packageDir, "package.json"), JSON.stringify(packageJson, null
 // Calculate relative path to tsconfig.base.json based on workspace depth
 const tsConfigBasePath = workspaceDir === "packages" ? "../../tsconfig.base.json" : "../../../tsconfig.base.json";
 const tsConfig = {
-      $schema: "https://json.schemastore.org/tsconfig",
-      extends: tsConfigBasePath,
-      include: ["src/**/*"],
-      exclude: ["node_modules", "dist"],
+    $schema: "https://json.schemastore.org/tsconfig",
+    extends: tsConfigBasePath,
+    include: ["src/**/*"],
+    exclude: ["node_modules", "dist"],
 };
 
 writeFileSync(join(packageDir, "tsconfig.json"), JSON.stringify(tsConfig, null, 4));

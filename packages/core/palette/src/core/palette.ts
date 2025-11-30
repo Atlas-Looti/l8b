@@ -6,302 +6,302 @@ import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnosti
 import type { ColorHex, ColorRGB, PaletteData } from "../types";
 
 export interface PaletteOptions {
-      colors?: ColorHex[];
-      name?: string;
+    colors?: ColorHex[];
+    name?: string;
 }
 
 export class Palette {
-      private colors: ColorHex[];
-      private name: string;
-      private rgbCache: Map<number, ColorRGB>;
-      private runtime?: any;
+    private colors: ColorHex[];
+    private name: string;
+    private rgbCache: Map<number, ColorRGB>;
+    private runtime?: any;
 
-      constructor(options: PaletteOptions | PaletteData = {}, runtime?: any) {
-            this.runtime = runtime;
+    constructor(options: PaletteOptions | PaletteData = {}, runtime?: any) {
+        this.runtime = runtime;
 
-            if ("colors" in options && Array.isArray(options.colors)) {
-                  // Validate palette format to ensure all colors are valid hex strings
-                  if (!this.validatePaletteFormat(options.colors)) {
-                        const diagnostic = createDiagnostic(APIErrorCode.E7072, {
-                              data: { format: "invalid color array" },
-                        });
-                        const formatted = formatForBrowser(diagnostic);
-
-                        if (this.runtime?.listener?.reportError) {
-                              this.runtime.listener.reportError(formatted);
-                        }
-                        this.colors = [];
-                        this.name = "Invalid";
-                  } else {
-                        this.colors = [...options.colors];
-                        this.name = options.name || "Custom";
-                  }
-            } else {
-                  // Initialize with empty palette when no valid colors provided
-                  this.colors = [];
-                  this.name = "Empty";
-            }
-
-            this.rgbCache = new Map();
-      }
-
-      /**
-       * Validate palette format
-       */
-      private validatePaletteFormat(colors: any[]): boolean {
-            if (!Array.isArray(colors)) return false;
-            return colors.every((color) => typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color));
-      }
-
-      /**
-       * Get color by index
-       */
-      get(index: number): ColorHex {
-            // Validate color index is a finite, non-negative number
-            if (!isFinite(index) || index < 0) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7073, {
-                        data: { index, maxIndex: this.colors.length - 1 },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
-
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  return "#000000";
-            }
-
-            if (this.colors.length === 0) {
-                  return "#000000";
-            }
-
-            return this.colors[index % this.colors.length] || "#000000";
-      }
-
-      /**
-       * Get color as RGB object
-       */
-      getRGB(index: number): ColorRGB {
-            if (this.rgbCache.has(index)) {
-                  return this.rgbCache.get(index)!;
-            }
-
-            const hex = this.get(index);
-            const rgb = this.hexToRGB(hex);
-            this.rgbCache.set(index, rgb);
-            return rgb;
-      }
-
-      /**
-       * Get all colors
-       */
-      getAll(): ColorHex[] {
-            return [...this.colors];
-      }
-
-      /**
-       * Get palette size
-       */
-      get size(): number {
-            return this.colors.length;
-      }
-
-      /**
-       * Get palette name
-       */
-      get paletteName(): string {
-            return this.name;
-      }
-
-      /**
-       * Set color at index (expands palette if needed)
-       */
-      set(index: number, color: ColorHex): void {
-            // Validate color index is a finite, non-negative number
-            if (!isFinite(index) || index < 0) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7073, {
-                        data: { index, maxIndex: this.colors.length - 1 },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
-
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  return;
-            }
-
-            // Validate color format matches hex pattern (#RRGGBB)
-            if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7072, {
-                        data: { format: color },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
-
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  return;
-            }
-
-            // Expand palette with black (#000000) if index exceeds current size
-            while (this.colors.length <= index) {
-                  this.colors.push("#000000");
-            }
-            this.colors[index] = color;
-            this.rgbCache.delete(index);
-      }
-
-      /**
-       * Add color to palette
-       */
-      add(color: ColorHex): number {
-            this.colors.push(color);
-            return this.colors.length - 1;
-      }
-
-      /**
-       * Remove color at index
-       */
-      remove(index: number): void {
-            if (index >= 0 && index < this.colors.length) {
-                  this.colors.splice(index, 1);
-                  this.rgbCache.clear();
-            }
-      }
-
-      /**
-       * Replace entire palette
-       */
-      setPalette(colors: ColorHex[]): void {
+        if ("colors" in options && Array.isArray(options.colors)) {
             // Validate palette format to ensure all colors are valid hex strings
-            if (!this.validatePaletteFormat(colors)) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7072, {
-                        data: { format: "invalid color array" },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
+            if (!this.validatePaletteFormat(options.colors)) {
+                const diagnostic = createDiagnostic(APIErrorCode.E7072, {
+                    data: { format: "invalid color array" },
+                });
+                const formatted = formatForBrowser(diagnostic);
 
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  return;
+                if (this.runtime?.listener?.reportError) {
+                    this.runtime.listener.reportError(formatted);
+                }
+                this.colors = [];
+                this.name = "Invalid";
+            } else {
+                this.colors = [...options.colors];
+                this.name = options.name || "Custom";
             }
+        } else {
+            // Initialize with empty palette when no valid colors provided
+            this.colors = [];
+            this.name = "Empty";
+        }
 
-            this.colors = [...colors];
+        this.rgbCache = new Map();
+    }
+
+    /**
+     * Validate palette format
+     */
+    private validatePaletteFormat(colors: any[]): boolean {
+        if (!Array.isArray(colors)) return false;
+        return colors.every((color) => typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color));
+    }
+
+    /**
+     * Get color by index
+     */
+    get(index: number): ColorHex {
+        // Validate color index is a finite, non-negative number
+        if (!isFinite(index) || index < 0) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7073, {
+                data: { index, maxIndex: this.colors.length - 1 },
+            });
+            const formatted = formatForBrowser(diagnostic);
+
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
+            }
+            return "#000000";
+        }
+
+        if (this.colors.length === 0) {
+            return "#000000";
+        }
+
+        return this.colors[index % this.colors.length] || "#000000";
+    }
+
+    /**
+     * Get color as RGB object
+     */
+    getRGB(index: number): ColorRGB {
+        if (this.rgbCache.has(index)) {
+            return this.rgbCache.get(index)!;
+        }
+
+        const hex = this.get(index);
+        const rgb = this.hexToRGB(hex);
+        this.rgbCache.set(index, rgb);
+        return rgb;
+    }
+
+    /**
+     * Get all colors
+     */
+    getAll(): ColorHex[] {
+        return [...this.colors];
+    }
+
+    /**
+     * Get palette size
+     */
+    get size(): number {
+        return this.colors.length;
+    }
+
+    /**
+     * Get palette name
+     */
+    get paletteName(): string {
+        return this.name;
+    }
+
+    /**
+     * Set color at index (expands palette if needed)
+     */
+    set(index: number, color: ColorHex): void {
+        // Validate color index is a finite, non-negative number
+        if (!isFinite(index) || index < 0) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7073, {
+                data: { index, maxIndex: this.colors.length - 1 },
+            });
+            const formatted = formatForBrowser(diagnostic);
+
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
+            }
+            return;
+        }
+
+        // Validate color format matches hex pattern (#RRGGBB)
+        if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7072, {
+                data: { format: color },
+            });
+            const formatted = formatForBrowser(diagnostic);
+
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
+            }
+            return;
+        }
+
+        // Expand palette with black (#000000) if index exceeds current size
+        while (this.colors.length <= index) {
+            this.colors.push("#000000");
+        }
+        this.colors[index] = color;
+        this.rgbCache.delete(index);
+    }
+
+    /**
+     * Add color to palette
+     */
+    add(color: ColorHex): number {
+        this.colors.push(color);
+        return this.colors.length - 1;
+    }
+
+    /**
+     * Remove color at index
+     */
+    remove(index: number): void {
+        if (index >= 0 && index < this.colors.length) {
+            this.colors.splice(index, 1);
             this.rgbCache.clear();
-      }
+        }
+    }
 
-      /**
-       * Reset to original colors
-       */
-      reset(paletteData?: PaletteData): void {
-            if (paletteData) {
-                  this.colors = [...paletteData.colors];
-                  this.name = paletteData.name;
+    /**
+     * Replace entire palette
+     */
+    setPalette(colors: ColorHex[]): void {
+        // Validate palette format to ensure all colors are valid hex strings
+        if (!this.validatePaletteFormat(colors)) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7072, {
+                data: { format: "invalid color array" },
+            });
+            const formatted = formatForBrowser(diagnostic);
+
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
             }
-            this.rgbCache.clear();
-      }
+            return;
+        }
 
-      /**
-       * Convert hex to RGB
-       */
-      private hexToRGB(hex: ColorHex): ColorRGB {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result
-                  ? {
-                          r: Number.parseInt(result[1], 16),
-                          g: Number.parseInt(result[2], 16),
-                          b: Number.parseInt(result[3], 16),
-                    }
-                  : { r: 0, g: 0, b: 0 };
-      }
+        this.colors = [...colors];
+        this.rgbCache.clear();
+    }
 
-      /**
-       * Convert RGB to hex
-       */
-      static rgbToHex(r: number, g: number, b: number): ColorHex {
-            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-      }
+    /**
+     * Reset to original colors
+     */
+    reset(paletteData?: PaletteData): void {
+        if (paletteData) {
+            this.colors = [...paletteData.colors];
+            this.name = paletteData.name;
+        }
+        this.rgbCache.clear();
+    }
 
-      /**
-       * Find closest color in palette
-       */
-      findClosest(targetHex: ColorHex): number {
-            const target = this.hexToRGB(targetHex);
-            let closestIndex = 0;
-            let closestDistance = Number.POSITIVE_INFINITY;
+    /**
+     * Convert hex to RGB
+     */
+    private hexToRGB(hex: ColorHex): ColorRGB {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result
+            ? {
+                  r: Number.parseInt(result[1], 16),
+                  g: Number.parseInt(result[2], 16),
+                  b: Number.parseInt(result[3], 16),
+              }
+            : { r: 0, g: 0, b: 0 };
+    }
 
-            for (let i = 0; i < this.colors.length; i++) {
-                  const color = this.getRGB(i);
-                  const distance = (target.r - color.r) ** 2 + (target.g - color.g) ** 2 + (target.b - color.b) ** 2;
+    /**
+     * Convert RGB to hex
+     */
+    static rgbToHex(r: number, g: number, b: number): ColorHex {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    }
 
-                  if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestIndex = i;
-                  }
+    /**
+     * Find closest color in palette
+     */
+    findClosest(targetHex: ColorHex): number {
+        const target = this.hexToRGB(targetHex);
+        let closestIndex = 0;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        for (let i = 0; i < this.colors.length; i++) {
+            const color = this.getRGB(i);
+            const distance = (target.r - color.r) ** 2 + (target.g - color.g) ** 2 + (target.b - color.b) ** 2;
+
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = i;
             }
+        }
 
-            return closestIndex;
-      }
+        return closestIndex;
+    }
 
-      /**
-       * Create a gradient between two palette colors
-       */
-      gradient(startIndex: number, endIndex: number, steps: number): ColorHex[] {
-            const start = this.getRGB(startIndex);
-            const end = this.getRGB(endIndex);
-            const gradient: ColorHex[] = [];
+    /**
+     * Create a gradient between two palette colors
+     */
+    gradient(startIndex: number, endIndex: number, steps: number): ColorHex[] {
+        const start = this.getRGB(startIndex);
+        const end = this.getRGB(endIndex);
+        const gradient: ColorHex[] = [];
 
-            for (let i = 0; i < steps; i++) {
-                  const t = i / (steps - 1);
-                  const r = Math.round(start.r + (end.r - start.r) * t);
-                  const g = Math.round(start.g + (end.g - start.g) * t);
-                  const b = Math.round(start.b + (end.b - start.b) * t);
-                  gradient.push(Palette.rgbToHex(r, g, b));
-            }
+        for (let i = 0; i < steps; i++) {
+            const t = i / (steps - 1);
+            const r = Math.round(start.r + (end.r - start.r) * t);
+            const g = Math.round(start.g + (end.g - start.g) * t);
+            const b = Math.round(start.b + (end.b - start.b) * t);
+            gradient.push(Palette.rgbToHex(r, g, b));
+        }
 
-            return gradient;
-      }
+        return gradient;
+    }
 
-      /**
-       * Lighten a color
-       */
-      lighten(index: number, amount: number = 0.2): ColorHex {
-            const color = this.getRGB(index);
-            const r = Math.min(255, Math.round(color.r + (255 - color.r) * amount));
-            const g = Math.min(255, Math.round(color.g + (255 - color.g) * amount));
-            const b = Math.min(255, Math.round(color.b + (255 - color.b) * amount));
-            return Palette.rgbToHex(r, g, b);
-      }
+    /**
+     * Lighten a color
+     */
+    lighten(index: number, amount: number = 0.2): ColorHex {
+        const color = this.getRGB(index);
+        const r = Math.min(255, Math.round(color.r + (255 - color.r) * amount));
+        const g = Math.min(255, Math.round(color.g + (255 - color.g) * amount));
+        const b = Math.min(255, Math.round(color.b + (255 - color.b) * amount));
+        return Palette.rgbToHex(r, g, b);
+    }
 
-      /**
-       * Darken a color
-       */
-      darken(index: number, amount: number = 0.2): ColorHex {
-            const color = this.getRGB(index);
-            const r = Math.max(0, Math.round(color.r * (1 - amount)));
-            const g = Math.max(0, Math.round(color.g * (1 - amount)));
-            const b = Math.max(0, Math.round(color.b * (1 - amount)));
-            return Palette.rgbToHex(r, g, b);
-      }
+    /**
+     * Darken a color
+     */
+    darken(index: number, amount: number = 0.2): ColorHex {
+        const color = this.getRGB(index);
+        const r = Math.max(0, Math.round(color.r * (1 - amount)));
+        const g = Math.max(0, Math.round(color.g * (1 - amount)));
+        const b = Math.max(0, Math.round(color.b * (1 - amount)));
+        return Palette.rgbToHex(r, g, b);
+    }
 
-      /**
-       * Mix two colors
-       */
-      mix(index1: number, index2: number, ratio: number = 0.5): ColorHex {
-            const color1 = this.getRGB(index1);
-            const color2 = this.getRGB(index2);
-            const r = Math.round(color1.r + (color2.r - color1.r) * ratio);
-            const g = Math.round(color1.g + (color2.g - color1.g) * ratio);
-            const b = Math.round(color1.b + (color2.b - color1.b) * ratio);
-            return Palette.rgbToHex(r, g, b);
-      }
+    /**
+     * Mix two colors
+     */
+    mix(index1: number, index2: number, ratio: number = 0.5): ColorHex {
+        const color1 = this.getRGB(index1);
+        const color2 = this.getRGB(index2);
+        const r = Math.round(color1.r + (color2.r - color1.r) * ratio);
+        const g = Math.round(color1.g + (color2.g - color1.g) * ratio);
+        const b = Math.round(color1.b + (color2.b - color1.b) * ratio);
+        return Palette.rgbToHex(r, g, b);
+    }
 
-      /**
-       * Export palette data
-       */
-      toData(): PaletteData {
-            return {
-                  name: this.name,
-                  colors: this.getAll(),
-            };
-      }
+    /**
+     * Export palette data
+     */
+    toData(): PaletteData {
+        return {
+            name: this.name,
+            colors: this.getAll(),
+        };
+    }
 }

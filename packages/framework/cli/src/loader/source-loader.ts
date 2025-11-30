@@ -16,42 +16,42 @@ import { DEFAULT_DIRS } from "../utils/paths";
  * @returns Array of absolute file paths
  */
 async function findLootFiles(dir: string): Promise<string[]> {
-      if (!(await fs.pathExists(dir))) {
-            return [];
-      }
+    if (!(await fs.pathExists(dir))) {
+        return [];
+    }
 
-      const results: string[] = [];
+    const results: string[] = [];
 
-      try {
-            const entries = await fs.readdir(dir, { withFileTypes: true });
+    try {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
 
-            // Process entries in parallel where possible
-            const fileTasks: Promise<string[]>[] = [];
+        // Process entries in parallel where possible
+        const fileTasks: Promise<string[]>[] = [];
 
-            for (const entry of entries) {
-                  const filePath = path.join(dir, entry.name);
+        for (const entry of entries) {
+            const filePath = path.join(dir, entry.name);
 
-                  if (entry.isDirectory()) {
-                        // Recursively scan subdirectories
-                        fileTasks.push(findLootFiles(filePath));
-                  } else if (entry.isFile() && entry.name.endsWith(".loot")) {
-                        results.push(filePath);
-                  }
+            if (entry.isDirectory()) {
+                // Recursively scan subdirectories
+                fileTasks.push(findLootFiles(filePath));
+            } else if (entry.isFile() && entry.name.endsWith(".loot")) {
+                results.push(filePath);
             }
+        }
 
-            // Wait for all subdirectory scans to complete
-            if (fileTasks.length > 0) {
-                  const subResults = await Promise.all(fileTasks);
-                  results.push(...subResults.flat());
-            }
-      } catch (error) {
-            // Directory might have been removed, silently ignore
-            if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-                  console.warn(`Warning: Failed to scan directory ${dir}:`, error);
-            }
-      }
+        // Wait for all subdirectory scans to complete
+        if (fileTasks.length > 0) {
+            const subResults = await Promise.all(fileTasks);
+            results.push(...subResults.flat());
+        }
+    } catch (error) {
+        // Directory might have been removed, silently ignore
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+            console.warn(`Warning: Failed to scan directory ${dir}:`, error);
+        }
+    }
 
-      return results;
+    return results;
 }
 
 /**
@@ -64,28 +64,28 @@ async function findLootFiles(dir: string): Promise<string[]> {
  * @returns Map of module names to file paths (relative to project root with leading `/`)
  */
 export async function loadSources(projectPath: string = process.cwd()): Promise<Record<string, string>> {
-      const sources: Record<string, string> = {};
+    const sources: Record<string, string> = {};
 
-      // Check for standard location
-      const scriptsDir = path.join(projectPath, DEFAULT_DIRS.SCRIPTS);
+    // Check for standard location
+    const scriptsDir = path.join(projectPath, DEFAULT_DIRS.SCRIPTS);
 
-      // Scan for .loot files
-      const allFiles = await findLootFiles(scriptsDir);
+    // Scan for .loot files
+    const allFiles = await findLootFiles(scriptsDir);
 
-      // Process files to create module names
-      for (const file of allFiles) {
-            // Create a module name relative to the scripts directory
-            // e.g. src/main.loot -> main
-            // src/scenes/level1.loot -> scenes/level1
-            const relativePath = path.relative(scriptsDir, file);
-            const name = relativePath.replace(/\.loot$/, "").replace(/\\/g, "/");
+    // Process files to create module names
+    for (const file of allFiles) {
+        // Create a module name relative to the scripts directory
+        // e.g. src/main.loot -> main
+        // src/scenes/level1.loot -> scenes/level1
+        const relativePath = path.relative(scriptsDir, file);
+        const name = relativePath.replace(/\.loot$/, "").replace(/\\/g, "/");
 
-            // For dev server with Vite, we return the file path (relative to project root)
-            const relativeToProject = path.relative(projectPath, file).replace(/\\/g, "/");
-            sources[name] = "/" + relativeToProject;
-      }
+        // For dev server with Vite, we return the file path (relative to project root)
+        const relativeToProject = path.relative(projectPath, file).replace(/\\/g, "/");
+        sources[name] = "/" + relativeToProject;
+    }
 
-      return sources;
+    return sources;
 }
 
 /**
@@ -96,5 +96,5 @@ export async function loadSources(projectPath: string = process.cwd()): Promise<
  * @throws {Error} If file cannot be read
  */
 export async function readSourceContent(filePath: string): Promise<string> {
-      return await fs.readFile(filePath, "utf-8");
+    return await fs.readFile(filePath, "utf-8");
 }

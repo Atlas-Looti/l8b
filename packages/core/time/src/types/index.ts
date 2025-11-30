@@ -3,8 +3,8 @@
  */
 
 export type {
-      StateSnapshot,
-      TimeMachineCommand,
-      TimeMachineMessage,
-      TimeMachineStatus,
+    StateSnapshot,
+    TimeMachineCommand,
+    TimeMachineMessage,
+    TimeMachineStatus,
 } from "./state";

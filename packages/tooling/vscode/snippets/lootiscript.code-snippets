@@ -1,344 +1,326 @@
 {
-      "Function Definition": {
-            "prefix": "func",
-            "body": ["${1:name} = function(${2:args})", "\t${3:// function body}", "end"],
-            "description": "Create a function"
-      },
-      "Update Loop": {
-            "prefix": "update",
-            "body": ["update = function()", "\t${1:// update logic}", "end"],
-            "description": "Game update function called every frame"
-      },
-      "Draw Loop": {
-            "prefix": "draw",
-            "body": ["draw = function()", "\t${1:// draw logic}", "end"],
-            "description": "Game draw function for rendering"
-      },
-      "Init Function": {
-            "prefix": "init",
-            "body": ["init = function()", "\t${1:// initialization}", "end"],
-            "description": "Game initialization function"
-      },
-      "If Statement": {
-            "prefix": "if",
-            "body": ["if ${1:condition} then", "\t${2:// code}", "end"],
-            "description": "If conditional statement"
-      },
-      "If-Else Statement": {
-            "prefix": "ifelse",
-            "body": ["if ${1:condition} then", "\t${2:// true branch}", "else", "\t${3:// false branch}", "end"],
-            "description": "If-else conditional statement"
-      },
-      "For Loop": {
-            "prefix": "for",
-            "body": ["for ${1:i} in ${2:list} do", "\t${3:// loop body}", "end"],
-            "description": "For loop iteration"
-      },
-      "While Loop": {
-            "prefix": "while",
-            "body": ["while ${1:condition} do", "\t${2:// loop body}", "end"],
-            "description": "While loop"
-      },
-      "Draw Sprite": {
-            "prefix": "sprite",
-            "body": ["screen.drawSprite(\"${1:spriteName}\", ${2:x}, ${3:y}, ${4:width}, ${5:height})"],
-            "description": "Draw a sprite on screen"
-      },
-      "Fill Rectangle": {
-            "prefix": "fillrect",
-            "body": ["screen.fillRect(${1:x}, ${2:y}, ${3:width}, ${4:height}, \"${5:#FFFFFF}\")"],
-            "description": "Draw a filled rectangle"
-      },
-      "Draw Text": {
-            "prefix": "text",
-            "body": ["screen.drawText(\"${1:text}\", ${2:x}, ${3:y}, \"${4:#FFFFFF}\", ${5:16})"],
-            "description": "Draw text on screen"
-      },
-      "Clear Screen": {
-            "prefix": "clear",
-            "body": ["screen.clearScreen(\"${1:#000000}\")"],
-            "description": "Clear the screen with a color"
-      },
-      "Play Sound": {
-            "prefix": "sound",
-            "body": ["audio.playSound(\"${1:soundName}\", ${2:1.0}, ${3:false})"],
-            "description": "Play a sound effect"
-      },
-      "Play Music": {
-            "prefix": "music",
-            "body": ["audio.playMusic(\"${1:musicName}\", ${2:1.0}, ${3:true})"],
-            "description": "Play background music"
-      },
-      "Input Check": {
-            "prefix": "input",
-            "body": ["if keyboard.${1:SPACE} == 1 then", "\t${2:// handle input}", "end"],
-            "description": "Check for keyboard input"
-      },
-      "Mouse Check": {
-            "prefix": "mouse",
-            "body": [
-                  "if input.mouse.pressed then",
-                  "\tx = input.mouse.x",
-                  "\ty = input.mouse.y",
-                  "\t${1:// handle mouse}",
-                  "end"
-            ],
-            "description": "Check for mouse input"
-      },
-      "Game Object": {
-            "prefix": "object",
-            "body": [
-                  "${1:ObjectName} = object(\"${2:sprite}\")",
-                  "${1:ObjectName}.x = ${3:0}",
-                  "${1:ObjectName}.y = ${4:0}",
-                  "${1:ObjectName}.update = function(self)",
-                  "\t${5:// update logic}",
-                  "end",
-                  "${1:ObjectName}.draw = function(self)",
-                  "\tscreen.drawSprite(self.sprite, self.x, self.y)",
-                  "end"
-            ],
-            "description": "Create a game object with update and draw methods"
-      },
-      "Local Variable": {
-            "prefix": "local",
-            "body": ["local ${1:name} = ${2:value}"],
-            "description": "Declare a local variable"
-      },
-      "Print Debug": {
-            "prefix": "print",
-            "body": ["print(${1:message})"],
-            "description": "Print debug message to console"
-      },
-      "Comment Block": {
-            "prefix": "comment",
-            "body": [
-                  "-- ========================================",
-                  "-- ${1:Section Name}",
-                  "-- ========================================",
-                  "${2}"
-            ],
-            "description": "Create a comment section divider"
-      },
-      "Arrow Function": {
-            "prefix": "arrow",
-            "body": ["${1:name} = (${2:args}) => ${3:expression}"],
-            "description": "Create an arrow function"
-      },
-      "Arrow Function Block": {
-            "prefix": "arrowblock",
-            "body": ["${1:name} = (${2:args}) => {", "\t${3:// function body}", "}"],
-            "description": "Create an arrow function with block body"
-      },
-      "Template Literal": {
-            "prefix": "template",
-            "body": ["`${1:text} $${${2:variable}}`"],
-            "description": "Create a template literal with interpolation"
-      },
-      "Complete Game Template": {
-            "prefix": "game",
-            "body": [
-                  "// Game State",
-                  "local state = {",
-                  "\tscore = 0,",
-                  "\tplayer = { x = 0, y = 0 }",
-                  "}",
-                  "",
-                  "// Initialize game",
-                  "init = function()",
-                  "\tstate.player.x = screen.width / 2",
-                  "\tstate.player.y = screen.height / 2",
-                  "end",
-                  "",
-                  "// Update game logic",
-                  "update = function()",
-                  "\t${1:// update logic}",
-                  "end",
-                  "",
-                  "// Render graphics",
-                  "draw = function()",
-                  "\tscreen.clearScreen(\"#000000\")",
-                  "\t${2:// draw logic}",
-                  "end"
-            ],
-            "description": "Complete game template with init, update, and draw"
-      },
-      "Sprite Animation": {
-            "prefix": "animate",
-            "body": [
-                  "${1:sprite} = {",
-                  "\tframes = [\"${2:frame1}\", \"${3:frame2}\"],",
-                  "\tcurrentFrame = 0,",
-                  "\tframeTime = 0,",
-                  "\tframeDuration = ${4:200},",
-                  "\tupdate = function(self)",
-                  "\t\tself.frameTime = self.frameTime + system.deltaTime * 1000",
-                  "\t\tif self.frameTime >= self.frameDuration then",
-                  "\t\t\tself.frameTime = 0",
-                  "\t\t\tself.currentFrame = (self.currentFrame + 1) % #self.frames",
-                  "\t\tend",
-                  "\tend,",
-                  "\tdraw = function(self, x, y)",
-                  "\t\tscreen.drawSprite(self.frames[self.currentFrame + 1], x, y)",
-                  "\tend",
-                  "}"
-            ],
-            "description": "Create an animated sprite with frame animation"
-      },
-      "Collision Detection": {
-            "prefix": "collision",
-            "body": [
-                  "checkCollision = function(a, b)",
-                  "\treturn a.x < b.x + b.width and",
-                  "\t       a.x + a.width > b.x and",
-                  "\t       a.y < b.y + b.height and",
-                  "\t       a.y + a.height > b.y",
-                  "end"
-            ],
-            "description": "AABB collision detection function"
-      },
-      "Object Literal": {
-            "prefix": "obj",
-            "body": ["${1:name} = {", "\t${2:key} = ${3:value}", "}"],
-            "description": "Create an object literal"
-      },
-      "Class Definition": {
-            "prefix": "class",
-            "body": ["${1:ClassName} = class", "\tinit = function()", "\t\t${2:// initialization}", "\tend", "end"],
-            "description": "Create a class with init method"
-      },
-      "Class Extends": {
-            "prefix": "extends",
-            "body": ["${1:ChildClass} = class extends ${2:ParentClass}", "\t${3:// override methods}", "end"],
-            "description": "Create a class that extends another"
-      },
-      "After Delay": {
-            "prefix": "after",
-            "body": ["after ${1:1000} do", "\t${2:// execute after delay}", "end"],
-            "description": "Execute code after delay (milliseconds)"
-      },
-      "Every Interval": {
-            "prefix": "every",
-            "body": ["every ${1:1000} do", "\t${2:// execute every interval}", "end"],
-            "description": "Execute code every interval (milliseconds)"
-      },
-      "For Range Loop": {
-            "prefix": "forto",
-            "body": ["for ${1:i} = ${2:1} to ${3:10} do", "\t${4:// loop body}", "end"],
-            "description": "For loop with range (to)"
-      },
-      "For Range with Step": {
-            "prefix": "fortostep",
-            "body": ["for ${1:i} = ${2:1} to ${3:10} by ${4:2} do", "\t${5:// loop body}", "end"],
-            "description": "For loop with range and step"
-      },
-      "HTTP GET Request": {
-            "prefix": "httpget",
-            "body": [
-                  "local response = await http.get(\"${1:url}\")",
-                  "if response.ok() == 1 then",
-                  "\tlocal data = response.json()",
-                  "\t${2:// handle data}",
-                  "else",
-                  "\tprint(\"Error: \" .. response.status)",
-                  "end"
-            ],
-            "description": "Make HTTP GET request"
-      },
-      "HTTP POST Request": {
-            "prefix": "httppost",
-            "body": [
-                  "local response = await http.post(\"${1:url}\", {",
-                  "\t${2:key} = ${3:value}",
-                  "})",
-                  "if response.ok() == 1 then",
-                  "\tlocal result = response.json()",
-                  "\t${4:// handle result}",
-                  "end"
-            ],
-            "description": "Make HTTP POST request"
-      },
-      "Actions Ready": {
-            "prefix": "actionsready",
-            "body": ["await actions.ready(${1:false})"],
-            "description": "Hide splash screen and display app"
-      },
-      "Actions Sign In": {
-            "prefix": "actionssignin",
-            "body": [
-                  "local result = await actions.signIn({",
-                  "\tnonce = \"${1:nonce}\",",
-                  "\tacceptAuthAddress = ${2:true}",
-                  "})",
-                  "${3:// result.signature, result.message}"
-            ],
-            "description": "Sign in with Farcaster credential"
-      },
-      "Actions Compose Cast": {
-            "prefix": "actionscast",
-            "body": ["await actions.composeCast({", "\ttext = \"${1:text}\",", "\tembeds = {\"${2:url}\"}", "})"],
-            "description": "Open cast composer"
-      },
-      "Wallet Connect": {
-            "prefix": "walletconnect",
-            "body": [
-                  "await wallet.connect()",
-                  "if wallet.isConnected() then",
-                  "\tlocal address = await wallet.getAddress()",
-                  "\t${1:// handle connected wallet}",
-                  "end"
-            ],
-            "description": "Connect to wallet"
-      },
-      "Wallet Send Transaction": {
-            "prefix": "walletsend",
-            "body": [
-                  "local txHash = await wallet.sendTransaction({",
-                  "\tto = \"${1:address}\",",
-                  "\tvalue = \"${2:amount}\"",
-                  "})",
-                  "${3:// handle transaction hash}"
-            ],
-            "description": "Send transaction"
-      },
-      "EVM Read Contract": {
-            "prefix": "evmread",
-            "body": [
-                  "local result = await evm.read(",
-                  "\t\"${1:contractAddress}\",",
-                  "\t${2:abi},",
-                  "\t\"${3:functionName}\"",
-                  ")",
-                  "${4:// handle result}"
-            ],
-            "description": "Read from smart contract"
-      },
-      "EVM Write Contract": {
-            "prefix": "evmwrite",
-            "body": [
-                  "local txHash = await evm.write(",
-                  "\t\"${1:contractAddress}\",",
-                  "\t${2:abi},",
-                  "\t\"${3:functionName}\"",
-                  ")",
-                  "${4:// handle transaction hash}"
-            ],
-            "description": "Write to smart contract"
-      },
-      "Player Context": {
-            "prefix": "player",
-            "body": [
-                  "if player.isInMiniApp() then",
-                  "\tlocal fid = player.getFid()",
-                  "\tlocal username = player.getUsername()",
-                  "\t${1:// handle player info}",
-                  "end"
-            ],
-            "description": "Get player context"
-      },
-      "Await Expression": {
-            "prefix": "await",
-            "body": ["local ${1:result} = await ${2:promise}"],
-            "description": "Await Promise-based operation"
-      }
+    "Function Definition": {
+        "prefix": "func",
+        "body": ["${1:name} = function(${2:args})", "\t${3:// function body}", "end"],
+        "description": "Create a function"
+    },
+    "Update Loop": {
+        "prefix": "update",
+        "body": ["update = function()", "\t${1:// update logic}", "end"],
+        "description": "Game update function called every frame"
+    },
+    "Draw Loop": {
+        "prefix": "draw",
+        "body": ["draw = function()", "\t${1:// draw logic}", "end"],
+        "description": "Game draw function for rendering"
+    },
+    "Init Function": {
+        "prefix": "init",
+        "body": ["init = function()", "\t${1:// initialization}", "end"],
+        "description": "Game initialization function"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": ["if ${1:condition} then", "\t${2:// code}", "end"],
+        "description": "If conditional statement"
+    },
+    "If-Else Statement": {
+        "prefix": "ifelse",
+        "body": ["if ${1:condition} then", "\t${2:// true branch}", "else", "\t${3:// false branch}", "end"],
+        "description": "If-else conditional statement"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": ["for ${1:i} in ${2:list} do", "\t${3:// loop body}", "end"],
+        "description": "For loop iteration"
+    },
+    "While Loop": {
+        "prefix": "while",
+        "body": ["while ${1:condition} do", "\t${2:// loop body}", "end"],
+        "description": "While loop"
+    },
+    "Draw Sprite": {
+        "prefix": "sprite",
+        "body": ["screen.drawSprite(\"${1:spriteName}\", ${2:x}, ${3:y}, ${4:width}, ${5:height})"],
+        "description": "Draw a sprite on screen"
+    },
+    "Fill Rectangle": {
+        "prefix": "fillrect",
+        "body": ["screen.fillRect(${1:x}, ${2:y}, ${3:width}, ${4:height}, \"${5:#FFFFFF}\")"],
+        "description": "Draw a filled rectangle"
+    },
+    "Draw Text": {
+        "prefix": "text",
+        "body": ["screen.drawText(\"${1:text}\", ${2:x}, ${3:y}, \"${4:#FFFFFF}\", ${5:16})"],
+        "description": "Draw text on screen"
+    },
+    "Clear Screen": {
+        "prefix": "clear",
+        "body": ["screen.clearScreen(\"${1:#000000}\")"],
+        "description": "Clear the screen with a color"
+    },
+    "Play Sound": {
+        "prefix": "sound",
+        "body": ["audio.playSound(\"${1:soundName}\", ${2:1.0}, ${3:false})"],
+        "description": "Play a sound effect"
+    },
+    "Play Music": {
+        "prefix": "music",
+        "body": ["audio.playMusic(\"${1:musicName}\", ${2:1.0}, ${3:true})"],
+        "description": "Play background music"
+    },
+    "Input Check": {
+        "prefix": "input",
+        "body": ["if keyboard.${1:SPACE} == 1 then", "\t${2:// handle input}", "end"],
+        "description": "Check for keyboard input"
+    },
+    "Mouse Check": {
+        "prefix": "mouse",
+        "body": ["if input.mouse.pressed then", "\tx = input.mouse.x", "\ty = input.mouse.y", "\t${1:// handle mouse}", "end"],
+        "description": "Check for mouse input"
+    },
+    "Game Object": {
+        "prefix": "object",
+        "body": [
+            "${1:ObjectName} = object(\"${2:sprite}\")",
+            "${1:ObjectName}.x = ${3:0}",
+            "${1:ObjectName}.y = ${4:0}",
+            "${1:ObjectName}.update = function(self)",
+            "\t${5:// update logic}",
+            "end",
+            "${1:ObjectName}.draw = function(self)",
+            "\tscreen.drawSprite(self.sprite, self.x, self.y)",
+            "end"
+        ],
+        "description": "Create a game object with update and draw methods"
+    },
+    "Local Variable": {
+        "prefix": "local",
+        "body": ["local ${1:name} = ${2:value}"],
+        "description": "Declare a local variable"
+    },
+    "Print Debug": {
+        "prefix": "print",
+        "body": ["print(${1:message})"],
+        "description": "Print debug message to console"
+    },
+    "Comment Block": {
+        "prefix": "comment",
+        "body": ["-- ========================================", "-- ${1:Section Name}", "-- ========================================", "${2}"],
+        "description": "Create a comment section divider"
+    },
+    "Arrow Function": {
+        "prefix": "arrow",
+        "body": ["${1:name} = (${2:args}) => ${3:expression}"],
+        "description": "Create an arrow function"
+    },
+    "Arrow Function Block": {
+        "prefix": "arrowblock",
+        "body": ["${1:name} = (${2:args}) => {", "\t${3:// function body}", "}"],
+        "description": "Create an arrow function with block body"
+    },
+    "Template Literal": {
+        "prefix": "template",
+        "body": ["`${1:text} $${${2:variable}}`"],
+        "description": "Create a template literal with interpolation"
+    },
+    "Complete Game Template": {
+        "prefix": "game",
+        "body": [
+            "// Game State",
+            "local state = {",
+            "\tscore = 0,",
+            "\tplayer = { x = 0, y = 0 }",
+            "}",
+            "",
+            "// Initialize game",
+            "init = function()",
+            "\tstate.player.x = screen.width / 2",
+            "\tstate.player.y = screen.height / 2",
+            "end",
+            "",
+            "// Update game logic",
+            "update = function()",
+            "\t${1:// update logic}",
+            "end",
+            "",
+            "// Render graphics",
+            "draw = function()",
+            "\tscreen.clearScreen(\"#000000\")",
+            "\t${2:// draw logic}",
+            "end"
+        ],
+        "description": "Complete game template with init, update, and draw"
+    },
+    "Sprite Animation": {
+        "prefix": "animate",
+        "body": [
+            "${1:sprite} = {",
+            "\tframes = [\"${2:frame1}\", \"${3:frame2}\"],",
+            "\tcurrentFrame = 0,",
+            "\tframeTime = 0,",
+            "\tframeDuration = ${4:200},",
+            "\tupdate = function(self)",
+            "\t\tself.frameTime = self.frameTime + system.deltaTime * 1000",
+            "\t\tif self.frameTime >= self.frameDuration then",
+            "\t\t\tself.frameTime = 0",
+            "\t\t\tself.currentFrame = (self.currentFrame + 1) % #self.frames",
+            "\t\tend",
+            "\tend,",
+            "\tdraw = function(self, x, y)",
+            "\t\tscreen.drawSprite(self.frames[self.currentFrame + 1], x, y)",
+            "\tend",
+            "}"
+        ],
+        "description": "Create an animated sprite with frame animation"
+    },
+    "Collision Detection": {
+        "prefix": "collision",
+        "body": [
+            "checkCollision = function(a, b)",
+            "\treturn a.x < b.x + b.width and",
+            "\t       a.x + a.width > b.x and",
+            "\t       a.y < b.y + b.height and",
+            "\t       a.y + a.height > b.y",
+            "end"
+        ],
+        "description": "AABB collision detection function"
+    },
+    "Object Literal": {
+        "prefix": "obj",
+        "body": ["${1:name} = {", "\t${2:key} = ${3:value}", "}"],
+        "description": "Create an object literal"
+    },
+    "Class Definition": {
+        "prefix": "class",
+        "body": ["${1:ClassName} = class", "\tinit = function()", "\t\t${2:// initialization}", "\tend", "end"],
+        "description": "Create a class with init method"
+    },
+    "Class Extends": {
+        "prefix": "extends",
+        "body": ["${1:ChildClass} = class extends ${2:ParentClass}", "\t${3:// override methods}", "end"],
+        "description": "Create a class that extends another"
+    },
+    "After Delay": {
+        "prefix": "after",
+        "body": ["after ${1:1000} do", "\t${2:// execute after delay}", "end"],
+        "description": "Execute code after delay (milliseconds)"
+    },
+    "Every Interval": {
+        "prefix": "every",
+        "body": ["every ${1:1000} do", "\t${2:// execute every interval}", "end"],
+        "description": "Execute code every interval (milliseconds)"
+    },
+    "For Range Loop": {
+        "prefix": "forto",
+        "body": ["for ${1:i} = ${2:1} to ${3:10} do", "\t${4:// loop body}", "end"],
+        "description": "For loop with range (to)"
+    },
+    "For Range with Step": {
+        "prefix": "fortostep",
+        "body": ["for ${1:i} = ${2:1} to ${3:10} by ${4:2} do", "\t${5:// loop body}", "end"],
+        "description": "For loop with range and step"
+    },
+    "HTTP GET Request": {
+        "prefix": "httpget",
+        "body": [
+            "local response = await http.get(\"${1:url}\")",
+            "if response.ok() == 1 then",
+            "\tlocal data = response.json()",
+            "\t${2:// handle data}",
+            "else",
+            "\tprint(\"Error: \" .. response.status)",
+            "end"
+        ],
+        "description": "Make HTTP GET request"
+    },
+    "HTTP POST Request": {
+        "prefix": "httppost",
+        "body": [
+            "local response = await http.post(\"${1:url}\", {",
+            "\t${2:key} = ${3:value}",
+            "})",
+            "if response.ok() == 1 then",
+            "\tlocal result = response.json()",
+            "\t${4:// handle result}",
+            "end"
+        ],
+        "description": "Make HTTP POST request"
+    },
+    "Actions Ready": {
+        "prefix": "actionsready",
+        "body": ["await actions.ready(${1:false})"],
+        "description": "Hide splash screen and display app"
+    },
+    "Actions Sign In": {
+        "prefix": "actionssignin",
+        "body": [
+            "local result = await actions.signIn({",
+            "\tnonce = \"${1:nonce}\",",
+            "\tacceptAuthAddress = ${2:true}",
+            "})",
+            "${3:// result.signature, result.message}"
+        ],
+        "description": "Sign in with Farcaster credential"
+    },
+    "Actions Compose Cast": {
+        "prefix": "actionscast",
+        "body": ["await actions.composeCast({", "\ttext = \"${1:text}\",", "\tembeds = {\"${2:url}\"}", "})"],
+        "description": "Open cast composer"
+    },
+    "Wallet Connect": {
+        "prefix": "walletconnect",
+        "body": [
+            "await wallet.connect()",
+            "if wallet.isConnected() then",
+            "\tlocal address = await wallet.getAddress()",
+            "\t${1:// handle connected wallet}",
+            "end"
+        ],
+        "description": "Connect to wallet"
+    },
+    "Wallet Send Transaction": {
+        "prefix": "walletsend",
+        "body": [
+            "local txHash = await wallet.sendTransaction({",
+            "\tto = \"${1:address}\",",
+            "\tvalue = \"${2:amount}\"",
+            "})",
+            "${3:// handle transaction hash}"
+        ],
+        "description": "Send transaction"
+    },
+    "EVM Read Contract": {
+        "prefix": "evmread",
+        "body": ["local result = await evm.read(", "\t\"${1:contractAddress}\",", "\t${2:abi},", "\t\"${3:functionName}\"", ")", "${4:// handle result}"],
+        "description": "Read from smart contract"
+    },
+    "EVM Write Contract": {
+        "prefix": "evmwrite",
+        "body": [
+            "local txHash = await evm.write(",
+            "\t\"${1:contractAddress}\",",
+            "\t${2:abi},",
+            "\t\"${3:functionName}\"",
+            ")",
+            "${4:// handle transaction hash}"
+        ],
+        "description": "Write to smart contract"
+    },
+    "Player Context": {
+        "prefix": "player",
+        "body": [
+            "if player.isInMiniApp() then",
+            "\tlocal fid = player.getFid()",
+            "\tlocal username = player.getUsername()",
+            "\t${1:// handle player info}",
+            "end"
+        ],
+        "description": "Get player context"
+    },
+    "Await Expression": {
+        "prefix": "await",
+        "body": ["local ${1:result} = await ${2:promise}"],
+        "description": "Await Promise-based operation"
+    }
 }

@@ -1,16 +1,16 @@
 {
-      "name": "fish",
-      "private": true,
-      "version": "1.0.0",
-      "type": "module",
-      "scripts": {
-            "dev": "l8b dev",
-            "start": "l8b start"
-      },
-      "dependencies": {
-            "@l8b/runtime": "workspace:*"
-      },
-      "devDependencies": {
-            "l8b": "workspace:*"
-      }
+    "name": "fish",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "l8b dev",
+        "start": "l8b start"
+    },
+    "dependencies": {
+        "@l8b/runtime": "workspace:*"
+    },
+    "devDependencies": {
+        "l8b": "workspace:*"
+    }
 }

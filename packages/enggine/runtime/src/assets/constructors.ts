@@ -12,7 +12,7 @@ import { Image, Sprite } from "@l8b/sprites";
  * Create Sound constructor wrapper
  */
 export function createSoundClass(_audio: any): typeof Sound {
-      return Sound;
+    return Sound;
 }
 
 /**

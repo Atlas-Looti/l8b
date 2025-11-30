@@ -1,25 +1,25 @@
 {
-      "name": "@l8b/actions",
-      "version": "1.0.0",
-      "sideEffects": false,
-      "files": [
-            "dist/**/*",
-            "README.md",
-            "package.json"
-      ],
-      "scripts": {
-            "build": "tsup",
-            "clean": "rm -rf dist",
-            "test": "vitest run --passWithNoTests"
-      },
-      "main": "./dist/index.js",
-      "module": "./dist/index.mjs",
-      "types": "./dist/index.d.ts",
-      "dependencies": {
-            "@farcaster/miniapp-sdk": "0.2.1"
-      },
-      "keywords": [
-            "actions",
-            "farcaster"
-      ]
+    "name": "@l8b/actions",
+    "version": "1.0.0",
+    "sideEffects": false,
+    "files": [
+        "dist/**/*",
+        "README.md",
+        "package.json"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "rm -rf dist",
+        "test": "vitest run --passWithNoTests"
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "dependencies": {
+        "@farcaster/miniapp-sdk": "0.2.1"
+    },
+    "keywords": [
+        "actions",
+        "farcaster"
+    ]
 }

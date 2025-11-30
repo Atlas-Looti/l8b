@@ -1,29 +1,29 @@
 {
-      "name": "@l8b/stdlib",
-      "version": "1.0.0",
-      "description": "Standard library for LootiScript",
-      "type": "module",
-      "main": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "exports": {
-            ".": {
-                  "types": "./dist/index.d.ts",
-                  "default": "./dist/index.js"
-            }
-      },
-      "scripts": {
-            "build": "tsup"
-      },
-      "keywords": [
-            "lootiscript",
-            "stdlib",
-            "game",
-            "scripting"
-      ],
-      "author": "nonom",
-      "license": "MIT",
-      "devDependencies": {
-            "tsup": "^8.0.0",
-            "typescript": "^5.0.0"
-      }
+    "name": "@l8b/stdlib",
+    "version": "1.0.0",
+    "description": "Standard library for LootiScript",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsup"
+    },
+    "keywords": [
+        "lootiscript",
+        "stdlib",
+        "game",
+        "scripting"
+    ],
+    "author": "nonom",
+    "license": "MIT",
+    "devDependencies": {
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0"
+    }
 }

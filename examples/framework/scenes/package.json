@@ -1,12 +1,12 @@
 {
-      "name": "example-scenes",
-      "version": "1.0.0",
-      "private": true,
-      "scripts": {
-            "dev": "l8b dev",
-            "start": "l8b start"
-      },
-      "devDependencies": {
-            "l8b": "workspace:*"
-      }
+    "name": "example-scenes",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "l8b dev",
+        "start": "l8b start"
+    },
+    "devDependencies": {
+        "l8b": "workspace:*"
+    }
 }

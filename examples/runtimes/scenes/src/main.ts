@@ -27,43 +27,41 @@ canvas.height = height;
 
 // Create runtime with multiple source files
 const runtime = new Runtime({
-      canvas,
-      width,
-      height,
-      sources: {
-            main: mainLootiScript,
-            "scenes/home": homeScene,
-            "scenes/battle": battleScene,
-            "scenes/player": playerScene,
-      },
-      listener: {
-            log: (message) => {
-                  console.log("[GAME]", message);
-            },
-            reportError: (error) => {
-                  console.error("[GAME ERROR]", error);
-            },
-            postMessage: (msg) => {
-                  console.log("[GAME MESSAGE]", msg);
-            },
-      },
+    canvas,
+    width,
+    height,
+    sources: {
+        main: mainLootiScript,
+        "scenes/home": homeScene,
+        "scenes/battle": battleScene,
+        "scenes/player": playerScene,
+    },
+    listener: {
+        log: (message) => {
+            console.log("[GAME]", message);
+        },
+        reportError: (error) => {
+            console.error("[GAME ERROR]", error);
+        },
+        postMessage: (msg) => {
+            console.log("[GAME MESSAGE]", msg);
+        },
+    },
 });
 
 const logCanvasSize = () => {
-      console.log(
-            `Canvas internal size: ${canvas.width}x${canvas.height}, display size: ${canvas.clientWidth}x${canvas.clientHeight}`,
-      );
+    console.log(`Canvas internal size: ${canvas.width}x${canvas.height}, display size: ${canvas.clientWidth}x${canvas.clientHeight}`);
 };
 
 // Start the game
 console.log("Starting L8B Runtime with Scene Routing...");
 try {
-      await runtime.start();
-      console.log("Runtime started successfully!");
-      console.log("Game is running...");
-      logCanvasSize();
+    await runtime.start();
+    console.log("Runtime started successfully!");
+    console.log("Game is running...");
+    logCanvasSize();
 } catch (err) {
-      console.error(err);
+    console.error(err);
 }
 
 // Make runtime accessible from console for debugging
@@ -73,12 +71,12 @@ console.log("Try: runtime.sceneManager.router.push('/battle')");
 
 // Handle window resize - update canvas size dynamically
 const handleResize = () => {
-      const newWidth = window.innerWidth;
-      const newHeight = window.innerHeight;
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      // Runtime will automatically use canvas dimensions
-      logCanvasSize();
+    const newWidth = window.innerWidth;
+    const newHeight = window.innerHeight;
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    // Runtime will automatically use canvas dimensions
+    logCanvasSize();
 };
 
 window.addEventListener("resize", handleResize);

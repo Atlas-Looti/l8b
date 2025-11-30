@@ -24,22 +24,22 @@ import { walletApi } from "./wallet";
  * Global API list for suggestions and hover info
  */
 export const GLOBAL_API: GlobalApi = {
-      ...coreApi,
-      ...screenApi,
-      ...audioApi,
-      ...inputApi,
-      ...systemApi,
-      ...sceneApi,
-      ...spritesApi,
-      ...mapApi,
-      ...timeApi,
-      ...assetsApi,
-      ...paletteApi,
-      ...playerApi,
-      ...walletApi,
-      ...evmApi,
-      ...actionsApi,
-      ...httpApi,
+    ...coreApi,
+    ...screenApi,
+    ...audioApi,
+    ...inputApi,
+    ...systemApi,
+    ...sceneApi,
+    ...spritesApi,
+    ...mapApi,
+    ...timeApi,
+    ...assetsApi,
+    ...paletteApi,
+    ...playerApi,
+    ...walletApi,
+    ...evmApi,
+    ...actionsApi,
+    ...httpApi,
 } as GlobalApi;
 
 /**

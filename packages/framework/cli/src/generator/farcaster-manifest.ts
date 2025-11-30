@@ -14,19 +14,19 @@ import type { FarcasterManifestConfig, LootiConfig } from "../config";
  * @returns Manifest JSON object or null if no manifest config
  */
 export function generateFarcasterManifest(config: LootiConfig): FarcasterManifestConfig | null {
-      const manifest = config.farcaster?.manifest;
+    const manifest = config.farcaster?.manifest;
 
-      if (!manifest) {
-            return null;
-      }
+    if (!manifest) {
+        return null;
+    }
 
-      // Validate required fields
-      if (!manifest.accountAssociation || !manifest.miniapp) {
-            return null;
-      }
+    // Validate required fields
+    if (!manifest.accountAssociation || !manifest.miniapp) {
+        return null;
+    }
 
-      // Return manifest as-is (validation should happen at config level)
-      return manifest;
+    // Return manifest as-is (validation should happen at config level)
+    return manifest;
 }
 
 /**
@@ -36,11 +36,11 @@ export function generateFarcasterManifest(config: LootiConfig): FarcasterManifes
  * @returns JSON string or null
  */
 export function generateFarcasterManifestJSON(config: LootiConfig): string | null {
-      const manifest = generateFarcasterManifest(config);
+    const manifest = generateFarcasterManifest(config);
 
-      if (!manifest) {
-            return null;
-      }
+    if (!manifest) {
+        return null;
+    }
 
-      return JSON.stringify(manifest, null, 2);
+    return JSON.stringify(manifest, null, 2);
 }

@@ -10,10 +10,10 @@
 
 export { Screen, Screen as default } from "./core";
 export {
-      type TextureSource,
-      type TexVert,
-      type Vec2,
-      type Vec3,
-      ZBuffer,
+    type TextureSource,
+    type TexVert,
+    type Vec2,
+    type Vec3,
+    ZBuffer,
 } from "./tri";
 export * from "./types";

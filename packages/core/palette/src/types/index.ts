@@ -3,16 +3,16 @@
  */
 
 export interface ColorRGB {
-      r: number;
-      g: number;
-      b: number;
+    r: number;
+    g: number;
+    b: number;
 }
 
 export type ColorHex = string;
 
 export interface PaletteData {
-      name: string;
-      colors: ColorHex[];
-      author?: string;
-      url?: string;
+    name: string;
+    colors: ColorHex[];
+    author?: string;
+    url?: string;
 }

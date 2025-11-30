@@ -9,98 +9,98 @@ import type { KeyboardState, MouseState, TouchState } from "../types";
  * Input manager - orchestrates keyboard, mouse, touch, and gamepad handlers.
  */
 export class Input {
-      private readonly keyboard: KeyboardInput;
-      private readonly mouse: MouseInput;
-      private readonly touch: TouchInput;
-      private readonly gamepad: GamepadInput;
-      private runtime?: any;
+    private readonly keyboard: KeyboardInput;
+    private readonly mouse: MouseInput;
+    private readonly touch: TouchInput;
+    private readonly gamepad: GamepadInput;
+    private runtime?: any;
 
-      constructor(canvas?: HTMLCanvasElement, runtime?: any) {
-            this.runtime = runtime;
-            this.keyboard = new KeyboardInput();
-            this.mouse = new MouseInput(canvas);
-            this.touch = new TouchInput(this.mouse, canvas);
-            this.gamepad = new GamepadInput();
-      }
+    constructor(canvas?: HTMLCanvasElement, runtime?: any) {
+        this.runtime = runtime;
+        this.keyboard = new KeyboardInput();
+        this.mouse = new MouseInput(canvas);
+        this.touch = new TouchInput(this.mouse, canvas);
+        this.gamepad = new GamepadInput();
+    }
 
-      /**
-       * Poll all devices for state updates.
-       */
-      public update(): void {
-            this.keyboard.update();
-            this.mouse.update();
-            this.touch.update();
-            this.gamepad.update();
-      }
+    /**
+     * Poll all devices for state updates.
+     */
+    public update(): void {
+        this.keyboard.update();
+        this.mouse.update();
+        this.touch.update();
+        this.gamepad.update();
+    }
 
-      public getKeyboard(): KeyboardState {
-            // Validate keyboard state exists before returning
-            if (!this.keyboard || !this.keyboard.state) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7052, {
-                        data: { error: "Keyboard state not available" },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
+    public getKeyboard(): KeyboardState {
+        // Validate keyboard state exists before returning
+        if (!this.keyboard || !this.keyboard.state) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7052, {
+                data: { error: "Keyboard state not available" },
+            });
+            const formatted = formatForBrowser(diagnostic);
 
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  // Return empty state as fallback to prevent crashes
-                  return {} as KeyboardState;
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
             }
-            return this.keyboard.state;
-      }
+            // Return empty state as fallback to prevent crashes
+            return {} as KeyboardState;
+        }
+        return this.keyboard.state;
+    }
 
-      public getMouse(): MouseState {
-            // Validate mouse state exists before returning
-            if (!this.mouse || !this.mouse.state) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7052, {
-                        data: { error: "Mouse state not available" },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
+    public getMouse(): MouseState {
+        // Validate mouse state exists before returning
+        if (!this.mouse || !this.mouse.state) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7052, {
+                data: { error: "Mouse state not available" },
+            });
+            const formatted = formatForBrowser(diagnostic);
 
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  // Return empty state as fallback to prevent crashes
-                  return {} as MouseState;
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
             }
-            return this.mouse.state;
-      }
+            // Return empty state as fallback to prevent crashes
+            return {} as MouseState;
+        }
+        return this.mouse.state;
+    }
 
-      public getTouch(): TouchState {
-            // Validate touch state exists before returning
-            if (!this.touch || !this.touch.state) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7052, {
-                        data: { error: "Touch state not available" },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
+    public getTouch(): TouchState {
+        // Validate touch state exists before returning
+        if (!this.touch || !this.touch.state) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7052, {
+                data: { error: "Touch state not available" },
+            });
+            const formatted = formatForBrowser(diagnostic);
 
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
-                  // Return empty state as fallback to prevent crashes
-                  return {} as TouchState;
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
             }
-            return this.touch.state;
-      }
+            // Return empty state as fallback to prevent crashes
+            return {} as TouchState;
+        }
+        return this.touch.state;
+    }
 
-      public getGamepad(): GamepadInput {
-            // Check if gamepad API is available in the browser
-            if (!this.gamepad || !navigator.getGamepads) {
-                  const diagnostic = createDiagnostic(APIErrorCode.E7051, {
-                        data: { device: "gamepad" },
-                  });
-                  const formatted = formatForBrowser(diagnostic);
+    public getGamepad(): GamepadInput {
+        // Check if gamepad API is available in the browser
+        if (!this.gamepad || !navigator.getGamepads) {
+            const diagnostic = createDiagnostic(APIErrorCode.E7051, {
+                data: { device: "gamepad" },
+            });
+            const formatted = formatForBrowser(diagnostic);
 
-                  if (this.runtime?.listener?.reportError) {
-                        this.runtime.listener.reportError(formatted);
-                  }
+            if (this.runtime?.listener?.reportError) {
+                this.runtime.listener.reportError(formatted);
             }
-            return this.gamepad;
-      }
+        }
+        return this.gamepad;
+    }
 
-      public setCanvas(canvas: HTMLCanvasElement): void {
-            this.mouse.setCanvas(canvas);
-            this.touch.setCanvas(canvas);
-      }
+    public setCanvas(canvas: HTMLCanvasElement): void {
+        this.mouse.setCanvas(canvas);
+        this.touch.setCanvas(canvas);
+    }
 }

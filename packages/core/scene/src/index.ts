@@ -35,14 +35,14 @@ export { Router } from "./router";
 export { SceneManager } from "./scene-manager";
 export { SceneRegistry } from "./scene-registry";
 export type {
-      RouteDefinition,
-      RouterState,
-      SceneConfig,
-      SceneData,
-      SceneDefinition,
-      SceneEvents,
-      SceneInterface,
-      SceneManagerOptions,
-      SceneStatus,
-      SceneTransitionOptions,
+    RouteDefinition,
+    RouterState,
+    SceneConfig,
+    SceneData,
+    SceneDefinition,
+    SceneEvents,
+    SceneInterface,
+    SceneManagerOptions,
+    SceneStatus,
+    SceneTransitionOptions,
 } from "./types";

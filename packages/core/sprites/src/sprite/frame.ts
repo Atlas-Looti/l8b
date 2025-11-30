@@ -6,13 +6,13 @@
 import type { Image } from "../image";
 
 export interface SpriteFrame {
-      canvas: HTMLCanvasElement;
-      image: Image;
+    canvas: HTMLCanvasElement;
+    image: Image;
 }
 
 export function createFrame(image: Image): SpriteFrame {
-      return {
-            canvas: image.canvas,
-            image,
-      };
+    return {
+        canvas: image.canvas,
+        image,
+    };
 }

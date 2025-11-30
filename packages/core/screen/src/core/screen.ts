@@ -5,172 +5,91 @@ import { TriangleScreen } from "../tri/triangle-screen";
 import type { ScreenInterface } from "../types";
 
 export class Screen extends TriangleScreen {
-      getInterface(): ScreenInterface {
-            if (this.interfaceCache) {
-                  return this.interfaceCache;
-            }
-
-            const screen = this;
-            this.interfaceCache = {
-                  get width() {
-                        return screen.width;
-                  },
-                  get height() {
-                        return screen.height;
-                  },
-                  clear: (color?: string) => screen.clear(color),
-                  setColor: (color: string | number) => screen.setColor(color),
-                  setAlpha: (alpha: number) => screen.setAlpha(alpha),
-                  setPixelated: (pixelated: number) => screen.setPixelated(pixelated),
-                  setBlending: (blending: string) => screen.setBlending(blending),
-                  setLinearGradient: (x1: number, y1: number, x2: number, y2: number, c1: string, c2: string) =>
-                        screen.setLinearGradient(x1, y1, x2, y2, c1, c2),
-                  setRadialGradient: (x: number, y: number, radius: number, c1: string, c2: string) =>
-                        screen.setRadialGradient(x, y, radius, c1, c2),
-                  setFont: (font: string) => screen.setFont(font),
-                  setTranslation: (tx: number, ty: number) => screen.setTranslation(tx, ty),
-                  setScale: (x: number, y: number) => screen.setScale(x, y),
-                  setRotation: (rotation: number) => screen.setRotation(rotation),
-                  setDrawAnchor: (ax: number, ay: number) => screen.setDrawAnchor(ax, ay),
-                  setDrawRotation: (rotation: number) => screen.setDrawRotation(rotation),
-                  setDrawScale: (x: number, y?: number) => screen.setDrawScale(x, y),
-                  fillRect: (x: number, y: number, w: number, h: number, c?: string | number) =>
-                        screen.fillRect(x, y, w, h, c),
-                  fillRoundRect: (x: number, y: number, w: number, h: number, r?: number, c?: string | number) =>
-                        screen.fillRoundRect(x, y, w, h, r, c),
-                  fillRound: (x: number, y: number, w: number, h: number, c?: string | number) =>
-                        screen.fillRound(x, y, w, h, c),
-                  drawRect: (x: number, y: number, w: number, h: number, c?: string | number) =>
-                        screen.drawRect(x, y, w, h, c),
-                  drawRoundRect: (x: number, y: number, w: number, h: number, r?: number, c?: string | number) =>
-                        screen.drawRoundRect(x, y, w, h, r, c),
-                  drawRound: (x: number, y: number, w: number, h: number, c?: string | number) =>
-                        screen.drawRound(x, y, w, h, c),
-                  drawSprite: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) =>
-                        screen.drawSprite(sprite, x, y, w, h),
-                  drawImage: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) =>
-                        screen.drawSprite(sprite, x, y, w, h),
-                  drawSpritePart: (
-                        sprite: Sprite | string,
-                        sx: number,
-                        sy: number,
-                        sw: number,
-                        sh: number,
-                        x: number,
-                        y: number,
-                        w?: number,
-                        h?: number,
-                  ) => screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h),
-                  drawImagePart: (
-                        sprite: Sprite | string,
-                        sx: number,
-                        sy: number,
-                        sw: number,
-                        sh: number,
-                        x: number,
-                        y: number,
-                        w?: number,
-                        h?: number,
-                  ) => screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h),
-                  drawMap: (map: Map | string, x: number, y: number, w: number, h: number) =>
-                        screen.drawMap(map, x, y, w, h),
-                  drawText: (text: string, x: number, y: number, size: number, color?: string | number) =>
-                        screen.drawText(text, x, y, size, color),
-                  drawTextOutline: (text: string, x: number, y: number, size: number, color?: string | number) =>
-                        screen.drawTextOutline(text, x, y, size, color),
-                  textWidth: (text: string, size: number) => screen.textWidth(text, size),
-                  setLineWidth: (width: number) => screen.setLineWidth(width),
-                  setLineDash: (dash: number[] | null) => screen.setLineDash(dash),
-                  drawLine: (x1: number, y1: number, x2: number, y2: number, color?: string | number) =>
-                        screen.drawLine(x1, y1, x2, y2, color),
-                  drawPolygon: (...args: any[]) => screen.drawPolygon(args),
-                  drawPolyline: (...args: any[]) => screen.drawPolyline(args),
-                  fillPolygon: (...args: any[]) => screen.fillPolygon(args),
-                  drawQuadCurve: (...args: any[]) => screen.drawQuadCurve(args),
-                  drawBezierCurve: (...args: any[]) => screen.drawBezierCurve(args),
-                  drawArc: (
-                        x: number,
-                        y: number,
-                        radius: number,
-                        angle1: number,
-                        angle2: number,
-                        ccw: boolean,
-                        color?: string | number,
-                  ) => screen.drawArc(x, y, radius, angle1, angle2, ccw, color),
-                  fillArc: (
-                        x: number,
-                        y: number,
-                        radius: number,
-                        angle1: number,
-                        angle2: number,
-                        ccw: boolean,
-                        color?: string | number,
-                  ) => screen.fillArc(x, y, radius, angle1, angle2, ccw, color),
-                  setCursorVisible: (visible: boolean) => screen.setCursorVisible(visible),
-                  loadFont: (font: string) => screen.loadFont(font),
-                  isFontReady: (font?: string) => screen.isFontReady(font),
-                  tri: (
-                        x1: number,
-                        y1: number,
-                        x2: number,
-                        y2: number,
-                        x3: number,
-                        y3: number,
-                        color?: string | number,
-                  ) => screen.tri(x1, y1, x2, y2, x3, y3, color),
-                  trib: (
-                        x1: number,
-                        y1: number,
-                        x2: number,
-                        y2: number,
-                        x3: number,
-                        y3: number,
-                        color?: string | number,
-                  ) => screen.trib(x1, y1, x2, y2, x3, y3, color),
-                  ttri: (
-                        x1: number,
-                        y1: number,
-                        x2: number,
-                        y2: number,
-                        x3: number,
-                        y3: number,
-                        u1: number,
-                        v1: number,
-                        u2: number,
-                        v2: number,
-                        u3: number,
-                        v3: number,
-                        texture: Sprite | Map | string,
-                        textureSource?: TextureSource,
-                        z1?: number,
-                        z2?: number,
-                        z3?: number,
-                        useDepth?: boolean,
-                  ) =>
-                        screen.ttri(
-                              x1,
-                              y1,
-                              x2,
-                              y2,
-                              x3,
-                              y3,
-                              u1,
-                              v1,
-                              u2,
-                              v2,
-                              u3,
-                              v3,
-                              texture,
-                              textureSource,
-                              z1,
-                              z2,
-                              z3,
-                              useDepth,
-                        ),
-            };
-
+    getInterface(): ScreenInterface {
+        if (this.interfaceCache) {
             return this.interfaceCache;
-      }
+        }
+
+        const screen = this;
+        this.interfaceCache = {
+            get width() {
+                return screen.width;
+            },
+            get height() {
+                return screen.height;
+            },
+            clear: (color?: string) => screen.clear(color),
+            setColor: (color: string | number) => screen.setColor(color),
+            setAlpha: (alpha: number) => screen.setAlpha(alpha),
+            setPixelated: (pixelated: number) => screen.setPixelated(pixelated),
+            setBlending: (blending: string) => screen.setBlending(blending),
+            setLinearGradient: (x1: number, y1: number, x2: number, y2: number, c1: string, c2: string) => screen.setLinearGradient(x1, y1, x2, y2, c1, c2),
+            setRadialGradient: (x: number, y: number, radius: number, c1: string, c2: string) => screen.setRadialGradient(x, y, radius, c1, c2),
+            setFont: (font: string) => screen.setFont(font),
+            setTranslation: (tx: number, ty: number) => screen.setTranslation(tx, ty),
+            setScale: (x: number, y: number) => screen.setScale(x, y),
+            setRotation: (rotation: number) => screen.setRotation(rotation),
+            setDrawAnchor: (ax: number, ay: number) => screen.setDrawAnchor(ax, ay),
+            setDrawRotation: (rotation: number) => screen.setDrawRotation(rotation),
+            setDrawScale: (x: number, y?: number) => screen.setDrawScale(x, y),
+            fillRect: (x: number, y: number, w: number, h: number, c?: string | number) => screen.fillRect(x, y, w, h, c),
+            fillRoundRect: (x: number, y: number, w: number, h: number, r?: number, c?: string | number) => screen.fillRoundRect(x, y, w, h, r, c),
+            fillRound: (x: number, y: number, w: number, h: number, c?: string | number) => screen.fillRound(x, y, w, h, c),
+            drawRect: (x: number, y: number, w: number, h: number, c?: string | number) => screen.drawRect(x, y, w, h, c),
+            drawRoundRect: (x: number, y: number, w: number, h: number, r?: number, c?: string | number) => screen.drawRoundRect(x, y, w, h, r, c),
+            drawRound: (x: number, y: number, w: number, h: number, c?: string | number) => screen.drawRound(x, y, w, h, c),
+            drawSprite: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) => screen.drawSprite(sprite, x, y, w, h),
+            drawImage: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) => screen.drawSprite(sprite, x, y, w, h),
+            drawSpritePart: (sprite: Sprite | string, sx: number, sy: number, sw: number, sh: number, x: number, y: number, w?: number, h?: number) =>
+                screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h),
+            drawImagePart: (sprite: Sprite | string, sx: number, sy: number, sw: number, sh: number, x: number, y: number, w?: number, h?: number) =>
+                screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h),
+            drawMap: (map: Map | string, x: number, y: number, w: number, h: number) => screen.drawMap(map, x, y, w, h),
+            drawText: (text: string, x: number, y: number, size: number, color?: string | number) => screen.drawText(text, x, y, size, color),
+            drawTextOutline: (text: string, x: number, y: number, size: number, color?: string | number) => screen.drawTextOutline(text, x, y, size, color),
+            textWidth: (text: string, size: number) => screen.textWidth(text, size),
+            setLineWidth: (width: number) => screen.setLineWidth(width),
+            setLineDash: (dash: number[] | null) => screen.setLineDash(dash),
+            drawLine: (x1: number, y1: number, x2: number, y2: number, color?: string | number) => screen.drawLine(x1, y1, x2, y2, color),
+            drawPolygon: (...args: any[]) => screen.drawPolygon(args),
+            drawPolyline: (...args: any[]) => screen.drawPolyline(args),
+            fillPolygon: (...args: any[]) => screen.fillPolygon(args),
+            drawQuadCurve: (...args: any[]) => screen.drawQuadCurve(args),
+            drawBezierCurve: (...args: any[]) => screen.drawBezierCurve(args),
+            drawArc: (x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string | number) =>
+                screen.drawArc(x, y, radius, angle1, angle2, ccw, color),
+            fillArc: (x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string | number) =>
+                screen.fillArc(x, y, radius, angle1, angle2, ccw, color),
+            setCursorVisible: (visible: boolean) => screen.setCursorVisible(visible),
+            loadFont: (font: string) => screen.loadFont(font),
+            isFontReady: (font?: string) => screen.isFontReady(font),
+            tri: (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, color?: string | number) => screen.tri(x1, y1, x2, y2, x3, y3, color),
+            trib: (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, color?: string | number) =>
+                screen.trib(x1, y1, x2, y2, x3, y3, color),
+            ttri: (
+                x1: number,
+                y1: number,
+                x2: number,
+                y2: number,
+                x3: number,
+                y3: number,
+                u1: number,
+                v1: number,
+                u2: number,
+                v2: number,
+                u3: number,
+                v3: number,
+                texture: Sprite | Map | string,
+                textureSource?: TextureSource,
+                z1?: number,
+                z2?: number,
+                z3?: number,
+                useDepth?: boolean,
+            ) => screen.ttri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, texture, textureSource, z1, z2, z3, useDepth),
+        };
+
+        return this.interfaceCache;
+    }
 }
 
 export default Screen;

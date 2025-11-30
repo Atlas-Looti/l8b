@@ -1,12 +1,12 @@
 import {
-      CodeActionKind,
-      createConnection,
-      DidChangeConfigurationNotification,
-      type InitializeParams,
-      type InitializeResult,
-      ProposedFeatures,
-      TextDocumentSyncKind,
-      TextDocuments,
+    CodeActionKind,
+    createConnection,
+    DidChangeConfigurationNotification,
+    type InitializeParams,
+    type InitializeResult,
+    ProposedFeatures,
+    TextDocumentSyncKind,
+    TextDocuments,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { GLOBAL_API } from "./api-definitions/index";
@@ -47,116 +47,98 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 
 connection.onInitialize((params: InitializeParams) => {
-      const capabilities = params.capabilities;
+    const capabilities = params.capabilities;
 
-      // Check if client supports workspace/configuration requests
-      // If not supported, fall back to global settings
-      hasConfigurationCapability = !!(capabilities.workspace && !!capabilities.workspace.configuration);
-      hasWorkspaceFolderCapability = !!(capabilities.workspace && !!capabilities.workspace.workspaceFolders);
+    // Check if client supports workspace/configuration requests
+    // If not supported, fall back to global settings
+    hasConfigurationCapability = !!(capabilities.workspace && !!capabilities.workspace.configuration);
+    hasWorkspaceFolderCapability = !!(capabilities.workspace && !!capabilities.workspace.workspaceFolders);
 
-      const result: InitializeResult = {
-            capabilities: {
-                  textDocumentSync: TextDocumentSyncKind.Incremental,
-                  // Declare all LSP features this server implements
-                  completionProvider: {
-                        resolveProvider: true,
-                        triggerCharacters: ["."],
-                  },
-                  signatureHelpProvider: {
-                        triggerCharacters: ["(", ","],
-                  },
-                  hoverProvider: true,
-                  definitionProvider: true,
-                  documentSymbolProvider: true,
-                  workspaceSymbolProvider: true,
-                  referencesProvider: true,
-                  documentFormattingProvider: true,
-                  renameProvider: {
-                        prepareProvider: true,
-                  },
-                  codeActionProvider: {
-                        codeActionKinds: [CodeActionKind.QuickFix, CodeActionKind.Refactor],
-                  },
-                  semanticTokensProvider: {
-                        legend: {
-                              tokenTypes: TOKEN_TYPES,
-                              tokenModifiers: TOKEN_MODIFIERS,
-                        },
-                        full: true,
-                  },
+    const result: InitializeResult = {
+        capabilities: {
+            textDocumentSync: TextDocumentSyncKind.Incremental,
+            // Declare all LSP features this server implements
+            completionProvider: {
+                resolveProvider: true,
+                triggerCharacters: ["."],
             },
-      };
-      if (hasWorkspaceFolderCapability) {
-            result.capabilities.workspace = {
-                  workspaceFolders: {
-                        supported: true,
-                  },
-            };
-      }
-      return result;
+            signatureHelpProvider: {
+                triggerCharacters: ["(", ","],
+            },
+            hoverProvider: true,
+            definitionProvider: true,
+            documentSymbolProvider: true,
+            workspaceSymbolProvider: true,
+            referencesProvider: true,
+            documentFormattingProvider: true,
+            renameProvider: {
+                prepareProvider: true,
+            },
+            codeActionProvider: {
+                codeActionKinds: [CodeActionKind.QuickFix, CodeActionKind.Refactor],
+            },
+            semanticTokensProvider: {
+                legend: {
+                    tokenTypes: TOKEN_TYPES,
+                    tokenModifiers: TOKEN_MODIFIERS,
+                },
+                full: true,
+            },
+        },
+    };
+    if (hasWorkspaceFolderCapability) {
+        result.capabilities.workspace = {
+            workspaceFolders: {
+                supported: true,
+            },
+        };
+    }
+    return result;
 });
 
 connection.onInitialized(() => {
-      if (hasConfigurationCapability) {
-            // Subscribe to configuration change notifications from the client
-            connection.client.register(DidChangeConfigurationNotification.type, undefined);
-      }
-      if (hasWorkspaceFolderCapability) {
-            connection.workspace.onDidChangeWorkspaceFolders((_event) => {
-                  connection.console.log("Workspace folder change event received.");
-            });
-      }
+    if (hasConfigurationCapability) {
+        // Subscribe to configuration change notifications from the client
+        connection.client.register(DidChangeConfigurationNotification.type, undefined);
+    }
+    if (hasWorkspaceFolderCapability) {
+        connection.workspace.onDidChangeWorkspaceFolders((_event) => {
+            connection.console.log("Workspace folder change event received.");
+        });
+    }
 });
 
 connection.onDidChangeConfiguration(async (change) => {
-      if (hasConfigurationCapability) {
-            clearDocumentSettings();
-      } else {
-            setGlobalSettings(sanitizeSettings(change.settings?.lootiscript));
-      }
+    if (hasConfigurationCapability) {
+        clearDocumentSettings();
+    } else {
+        setGlobalSettings(sanitizeSettings(change.settings?.lootiscript));
+    }
 
-      for (const doc of documents.all()) {
-            await validateTextDocument(
-                  doc,
-                  connection,
-                  hasConfigurationCapability,
-                  languageModes,
-                  documentRegionsCache,
-            );
-      }
+    for (const doc of documents.all()) {
+        await validateTextDocument(doc, connection, hasConfigurationCapability, languageModes, documentRegionsCache);
+    }
 });
 
 // Triggered when document content changes (typing, paste, etc.)
 documents.onDidChangeContent((change) => {
-      updateDocumentState(change.document, connection);
-      validateTextDocument(
-            change.document,
-            connection,
-            hasConfigurationCapability,
-            languageModes,
-            documentRegionsCache,
-      );
+    updateDocumentState(change.document, connection);
+    validateTextDocument(change.document, connection, hasConfigurationCapability, languageModes, documentRegionsCache);
 });
 
 documents.onDidOpen((change) => {
-      updateDocumentState(change.document, connection);
-      validateTextDocument(
-            change.document,
-            connection,
-            hasConfigurationCapability,
-            languageModes,
-            documentRegionsCache,
-      );
+    updateDocumentState(change.document, connection);
+    validateTextDocument(change.document, connection, hasConfigurationCapability, languageModes, documentRegionsCache);
 });
 
 documents.onDidClose((change) => {
-      deleteDocumentState(change.document.uri);
-      connection.sendDiagnostics({ uri: change.document.uri, diagnostics: [] });
+    deleteDocumentState(change.document.uri);
+    connection.sendDiagnostics({ uri: change.document.uri, diagnostics: [] });
 });
 
 connection.onDidChangeWatchedFiles((_change) => {
-      // React to file system changes for watched files (e.g., .loot files)
-      connection.console.log("We received an file change event");
+    // React to file system changes for watched files (e.g., .loot files)
+    connection.console.log("We received an file change event");
 });
 
 // Register all LSP feature handlers

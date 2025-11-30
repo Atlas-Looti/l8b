@@ -7,17 +7,17 @@
 
 // Compiler API
 export {
-      type CompileError,
-      type CompileResult,
-      type CompileWarning,
-      compileFile,
-      compileSource,
+    type CompileError,
+    type CompileResult,
+    type CompileWarning,
+    compileFile,
+    compileSource,
 } from "./compiler";
 
 // Serialization utilities
 export {
-      deserializeRoutine,
-      isValidRoutine,
-      serializeRoutine,
-      serializeRoutineToModule,
+    deserializeRoutine,
+    isValidRoutine,
+    serializeRoutine,
+    serializeRoutineToModule,
 } from "./serialization";

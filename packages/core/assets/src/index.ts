@@ -8,14 +8,14 @@
 
 export type { Runtime } from "./core/asset-manager";
 export {
-      AssetManager,
-      AssetManager as default,
+    AssetManager,
+    AssetManager as default,
 } from "./core/asset-manager";
 export type {
-      AssetManagerOptions,
-      ImageLoaderResult,
-      JSONLoaderResult,
-      LoaderResult,
-      Runtime as AssetManagerRuntime,
-      TextLoaderResult,
+    AssetManagerOptions,
+    ImageLoaderResult,
+    JSONLoaderResult,
+    LoaderResult,
+    Runtime as AssetManagerRuntime,
+    TextLoaderResult,
 } from "./types";

@@ -9,7 +9,7 @@
  * @returns JSON string representation
  */
 export function serializeRoutine(routine: any): string {
-      return JSON.stringify(routine);
+    return JSON.stringify(routine);
 }
 
 /**
@@ -19,7 +19,7 @@ export function serializeRoutine(routine: any): string {
  * @returns Routine data that can be imported via Routine.import()
  */
 export function deserializeRoutine(json: string): any {
-      return JSON.parse(json);
+    return JSON.parse(json);
 }
 
 /**
@@ -33,26 +33,26 @@ export function deserializeRoutine(json: string): any {
  * @returns JavaScript module code as string
  */
 export function serializeRoutineToModule(
-      routine: any,
-      moduleName?: string,
-      filename?: string,
-      options?: {
-            /**
-             * Minify JSON output (default: true)
-             */
-            minify?: boolean;
-      },
+    routine: any,
+    moduleName?: string,
+    filename?: string,
+    options?: {
+        /**
+         * Minify JSON output (default: true)
+         */
+        minify?: boolean;
+    },
 ): string {
-      const data = {
-            ...(moduleName && { name: moduleName }),
-            ...(filename && { filename }),
-            routine,
-      };
+    const data = {
+        ...(moduleName && { name: moduleName }),
+        ...(filename && { filename }),
+        routine,
+    };
 
-      const minify = options?.minify !== undefined ? options.minify : true;
-      const json = minify ? JSON.stringify(data) : JSON.stringify(data, null, 2);
+    const minify = options?.minify !== undefined ? options.minify : true;
+    const json = minify ? JSON.stringify(data) : JSON.stringify(data, null, 2);
 
-      return `export default ${json};`;
+    return `export default ${json};`;
 }
 
 /**
@@ -62,16 +62,11 @@ export function serializeRoutineToModule(
  * @returns True if valid, false otherwise
  */
 export function isValidRoutine(routine: any): boolean {
-      if (!routine || typeof routine !== "object") {
-            return false;
-      }
+    if (!routine || typeof routine !== "object") {
+        return false;
+    }
 
-      // Check for essential routine properties
-      // These are based on the Routine structure from @l8b/lootiscript
-      return (
-            "bytecode" in routine &&
-            "constants" in routine &&
-            Array.isArray(routine.bytecode) &&
-            Array.isArray(routine.constants)
-      );
+    // Check for essential routine properties
+    // These are based on the Routine structure from @l8b/lootiscript
+    return "bytecode" in routine && "constants" in routine && Array.isArray(routine.bytecode) && Array.isArray(routine.constants);
 }

@@ -9,10 +9,10 @@
  */
 
 export {
-      LoadMap as loadMap,
-      SaveMap as saveMap,
-      TileMap as Map,
-      TileMap as default,
-      UpdateMap as updateMap,
+    LoadMap as loadMap,
+    SaveMap as saveMap,
+    TileMap as Map,
+    TileMap as default,
+    UpdateMap as updateMap,
 } from "./core/tile-map";
 export type { MapData } from "./data/types";

@@ -1,59 +1,59 @@
 {
-      "name": "l8b",
-      "version": "1.0.0",
-      "description": "Looti Engine",
-      "private": false,
-      "scripts": {
-            "docs:dev": "vitepress dev docs",
-            "docs:build": "vitepress build docs",
-            "docs:preview": "vitepress preview docs",
-            "build": "turbo run build ",
-            "dev": "turbo run dev --concurrency=15",
-            "lint": " biome check --write .",
-            "lint:check": " biome check .",
-            "format": " biome format --write .",
-            "format:check": " biome format --check .",
-            "check-types": "turbo run check-types",
-            "test": "turbo run test",
-            "test:watch": "turbo run test:watch",
-            "test:coverage": "turbo run test:coverage",
-            "new": "node scripts/new-package.mjs",
-            "clean": "node scripts/clean.mjs --all",
-            "ci": "bun run lint:check && bun run format:check && bun run check-types && bun run build && bun run test",
-            "changeset": "changeset",
-            "changeset:version": "changeset version",
-            "changeset:publish": "changeset publish",
-            "changeset:prepublish": "bun run build",
-            "publish-packages": "turbo run build lint && changeset version && changeset publish"
-      },
-      "devDependencies": {
-            "@changesets/cli": "^2.29.8",
-            "@vitest/ui": "^4.0.7",
-            "jsdom": "^27.1.0",
-            "prettier": "^3.6.2",
-            "turbo": "2.6.1",
-            "typescript": "5.9.2"
-      },
-      "engines": {
-            "node": ">=18"
-      },
-      "packageManager": "bun@1.2.18",
-      "workspaces": [
-            "examples/**/*",
-            "packages/**/*",
-            "scripts/**/*",
-            "apps/**/*",
-            "!next/**/*",
-            "!dist/**/*",
-            "!l8b/**/*",
-            "!**/.vscode-test/**/*"
-      ],
-      "dependencies": {
-            "@swc/core": "^1.15.0",
-            "changeset": "^0.2.6",
-            "sirv": "^3.0.2",
-            "tsup": "^8.5.0",
-            "vitepress": "^1.6.4",
-            "vitest": "^4.0.7"
-      }
+    "name": "l8b",
+    "version": "1.0.0",
+    "description": "Looti Engine",
+    "private": false,
+    "scripts": {
+        "docs:dev": "vitepress dev docs",
+        "docs:build": "vitepress build docs",
+        "docs:preview": "vitepress preview docs",
+        "build": "turbo run build ",
+        "dev": "turbo run dev --concurrency=15",
+        "lint": " biome check --write .",
+        "lint:check": " biome check .",
+        "format": " biome format --write .",
+        "format:check": " biome format --check .",
+        "check-types": "turbo run check-types",
+        "test": "turbo run test",
+        "test:watch": "turbo run test:watch",
+        "test:coverage": "turbo run test:coverage",
+        "new": "node scripts/new-package.mjs",
+        "clean": "node scripts/clean.mjs --all",
+        "ci": "bun run lint:check && bun run format:check && bun run check-types && bun run build && bun run test",
+        "changeset": "changeset",
+        "changeset:version": "changeset version",
+        "changeset:publish": "changeset publish",
+        "changeset:prepublish": "bun run build",
+        "publish-packages": "turbo run build lint && changeset version && changeset publish"
+    },
+    "devDependencies": {
+        "@changesets/cli": "^2.29.8",
+        "@vitest/ui": "^4.0.7",
+        "jsdom": "^27.1.0",
+        "prettier": "^3.6.2",
+        "turbo": "2.6.1",
+        "typescript": "5.9.2"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "packageManager": "bun@1.2.18",
+    "workspaces": [
+        "examples/**/*",
+        "packages/**/*",
+        "scripts/**/*",
+        "apps/**/*",
+        "!next/**/*",
+        "!dist/**/*",
+        "!l8b/**/*",
+        "!**/.vscode-test/**/*"
+    ],
+    "dependencies": {
+        "@swc/core": "^1.15.0",
+        "changeset": "^0.2.6",
+        "sirv": "^3.0.2",
+        "tsup": "^8.5.0",
+        "vitepress": "^1.6.4",
+        "vitest": "^4.0.7"
+    }
 }

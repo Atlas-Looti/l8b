@@ -10,8 +10,8 @@ export { StatePlayer } from "./playback";
 export { StateRecorder } from "./recording";
 
 export type {
-      StateSnapshot,
-      TimeMachineCommand,
-      TimeMachineMessage,
-      TimeMachineStatus,
+    StateSnapshot,
+    TimeMachineCommand,
+    TimeMachineMessage,
+    TimeMachineStatus,
 } from "./types";

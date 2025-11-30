@@ -1,39 +1,39 @@
 {
-      "name": "l8b",
-      "version": "1.0.0",
-      "description": "LootiScript CLI and Dev Server",
-      "type": "module",
-      "files": [
-            "dist/**/*",
-            "package.json",
-            "README.md"
-      ],
-      "bin": {
-            "l8b": "./dist/cli.js"
-      },
-      "exports": {
-            ".": "./dist/index.js"
-      },
-      "scripts": {
-            "build": "tsup",
-            "typecheck": "tsc --noEmit"
-      },
-      "dependencies": {
-            "@l8b/compiler": "workspace:*",
-            "@l8b/diagnostics": "workspace:*",
-            "@l8b/runtime": "workspace:*",
-            "chokidar": "^3.5.3",
-            "esbuild": "^0.19.0",
-            "fs-extra": "^11.2.0",
-            "picocolors": "^1.0.0",
-            "vite": "^5.0.0",
-            "yargs": "^17.7.2"
-      },
-      "devDependencies": {
-            "@types/yargs": "^17.0.33",
-            "@types/fs-extra": "^11.0.4",
-            "@types/node": "^20.0.0",
-            "tsup": "^8.0.0",
-            "typescript": "^5.0.0"
-      }
+    "name": "l8b",
+    "version": "1.0.0",
+    "description": "LootiScript CLI and Dev Server",
+    "type": "module",
+    "files": [
+        "dist/**/*",
+        "package.json",
+        "README.md"
+    ],
+    "bin": {
+        "l8b": "./dist/cli.js"
+    },
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "scripts": {
+        "build": "tsup",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@l8b/compiler": "workspace:*",
+        "@l8b/diagnostics": "workspace:*",
+        "@l8b/runtime": "workspace:*",
+        "chokidar": "^3.5.3",
+        "esbuild": "^0.19.0",
+        "fs-extra": "^11.2.0",
+        "picocolors": "^1.0.0",
+        "vite": "^5.0.0",
+        "yargs": "^17.7.2"
+    },
+    "devDependencies": {
+        "@types/yargs": "^17.0.33",
+        "@types/fs-extra": "^11.0.4",
+        "@types/node": "^20.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0"
+    }
 }

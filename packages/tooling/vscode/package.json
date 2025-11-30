@@ -1,178 +1,178 @@
 {
-      "name": "lootiscript-vscode",
-      "displayName": "LootiScript",
-      "description": "Language support for LootiScript - L8B Game Framework",
-      "version": "1.0.0",
-      "publisher": "atlas-games",
-      "license": "MIT",
-      "icon": "icon.png",
-      "galleryBanner": {
-            "color": "#1e1e1e",
-            "theme": "dark"
-      },
-      "repository": {
-            "type": "git",
-            "url": "https://github.com/Atlas-Looti/l8b"
-      },
-      "homepage": "https://github.com/Atlas-Looti/l8b",
-      "bugs": {
-            "url": "https://github.com/Atlas-Looti/l8b/issues"
-      },
-      "keywords": [
-            "lootiscript",
-            "l8b",
-            "game development",
-            "scripting",
-            "retro games",
-            "game engine"
-      ],
-      "engines": {
-            "vscode": "^1.90.0"
-      },
-      "categories": [
-            "Programming Languages",
-            "Snippets"
-      ],
-      "activationEvents": [
-            "workspaceContains:**/*.loot"
-      ],
-      "main": "./dist/extension.js",
-      "contributes": {
-            "languages": [
-                  {
-                        "id": "lootiscript",
-                        "aliases": [
-                              "LootiScript",
-                              "loot"
-                        ],
-                        "extensions": [
-                              ".loot"
-                        ],
-                        "configuration": "./language-configuration.json",
-                        "icon": {
-                              "light": "./icon.png",
-                              "dark": "./icon.png"
-                        }
-                  }
-            ],
-            "snippets": [
-                  {
-                        "language": "lootiscript",
-                        "path": "./snippets/lootiscript.code-snippets"
-                  }
-            ],
-            "viewsContainers": {
-                  "activitybar": [
-                        {
-                              "id": "lootiscript-explorer",
-                              "title": "LootiScript",
-                              "icon": "$(game)"
-                        }
-                  ]
-            },
-            "views": {
-                  "lootiscript-explorer": [
-                        {
-                              "id": "lootiscript-actions",
-                              "name": "Quick Actions"
-                        },
-                        {
-                              "id": "lootiscript-api",
-                              "name": "API Reference"
-                        },
-                        {
-                              "id": "lootiscript-examples",
-                              "name": "Code Examples"
-                        }
-                  ]
-            },
-            "grammars": [
-                  {
-                        "language": "lootiscript",
-                        "scopeName": "source.lootiscript",
-                        "path": "./syntaxes/lootiscript.tmLanguage.json"
-                  }
-            ],
-            "configuration": {
-                  "title": "LootiScript",
-                  "properties": {
-                        "lootiscript.format.enable": {
-                              "type": "boolean",
-                              "default": true,
-                              "description": "Enable code formatting"
-                        },
-                        "lootiscript.completion.enable": {
-                              "type": "boolean",
-                              "default": true,
-                              "description": "Enable autocomplete and IntelliSense"
-                        },
-                        "lootiscript.diagnostics.enable": {
-                              "type": "boolean",
-                              "default": true,
-                              "description": "Enable error checking and diagnostics"
-                        },
-                        "lootiscript.format.indentSize": {
-                              "type": "number",
-                              "default": 1,
-                              "description": "Indentation size (number of tabs)",
-                              "minimum": 1,
-                              "maximum": 4
-                        },
-                        "lootiscript.signatureHelp.enable": {
-                              "type": "boolean",
-                              "default": true,
-                              "description": "Enable signature help (parameter hints)"
-                        }
-                  }
-            },
-            "commands": [
-                  {
-                        "command": "lootiscript.formatDocument",
-                        "title": "LootiScript: Format Document",
-                        "icon": "$(symbol-method)"
-                  },
-                  {
-                        "command": "lootiscript.runScript",
-                        "title": "LootiScript: Run Script",
-                        "icon": "$(play)"
-                  },
-                  {
-                        "command": "lootiscript.restartLanguageServer",
-                        "title": "LootiScript: Restart Language Server",
-                        "icon": "$(debug-restart)"
-                  }
+    "name": "lootiscript-vscode",
+    "displayName": "LootiScript",
+    "description": "Language support for LootiScript - L8B Game Framework",
+    "version": "1.0.0",
+    "publisher": "atlas-games",
+    "license": "MIT",
+    "icon": "icon.png",
+    "galleryBanner": {
+        "color": "#1e1e1e",
+        "theme": "dark"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Atlas-Looti/l8b"
+    },
+    "homepage": "https://github.com/Atlas-Looti/l8b",
+    "bugs": {
+        "url": "https://github.com/Atlas-Looti/l8b/issues"
+    },
+    "keywords": [
+        "lootiscript",
+        "l8b",
+        "game development",
+        "scripting",
+        "retro games",
+        "game engine"
+    ],
+    "engines": {
+        "vscode": "^1.90.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "activationEvents": [
+        "workspaceContains:**/*.loot"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "lootiscript",
+                "aliases": [
+                    "LootiScript",
+                    "loot"
+                ],
+                "extensions": [
+                    ".loot"
+                ],
+                "configuration": "./language-configuration.json",
+                "icon": {
+                    "light": "./icon.png",
+                    "dark": "./icon.png"
+                }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "lootiscript",
+                "path": "./snippets/lootiscript.code-snippets"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "lootiscript-explorer",
+                    "title": "LootiScript",
+                    "icon": "$(game)"
+                }
             ]
-      },
-      "scripts": {
-            "vscode:prepublish": "npm run package",
-            "compile": "npm run check-types && node esbuild.js",
-            "check-types": "tsc --noEmit",
-            "watch": "npm-run-all -p watch:*",
-            "watch:esbuild": "node esbuild.js --watch",
-            "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-            "package": "npm run check-types && node esbuild.js --production && npm run bundle-server",
-            "bundle-server": "cd ../language-server && bun run build && cd ../vscode && rm -rf server && cp -r ../language-server/dist ./server",
-            "compile-tests": "tsc -p . --outDir out",
-            "pretest": "npm run compile-tests && npm run lint",
-            "lint": "eslint src",
-            "test": "vscode-test"
-      },
-      "devDependencies": {
-            "@types/glob": "^9.0.0",
-            "@types/mocha": "^10.0.10",
-            "@types/node": "22.x",
-            "@types/vscode": "^1.90.0",
-            "@vscode/test-cli": "^0.0.12",
-            "@vscode/test-electron": "^2.5.2",
-            "esbuild": "^0.27.0",
-            "eslint": "^9.39.1",
-            "glob": "^13.0.0",
-            "mocha": "^11.7.5",
-            "npm-run-all": "^4.1.5",
-            "typescript": "^5.9.3",
-            "typescript-eslint": "^8.46.3"
-      },
-      "dependencies": {
-            "vscode-languageclient": "^9.0.1"
-      }
+        },
+        "views": {
+            "lootiscript-explorer": [
+                {
+                    "id": "lootiscript-actions",
+                    "name": "Quick Actions"
+                },
+                {
+                    "id": "lootiscript-api",
+                    "name": "API Reference"
+                },
+                {
+                    "id": "lootiscript-examples",
+                    "name": "Code Examples"
+                }
+            ]
+        },
+        "grammars": [
+            {
+                "language": "lootiscript",
+                "scopeName": "source.lootiscript",
+                "path": "./syntaxes/lootiscript.tmLanguage.json"
+            }
+        ],
+        "configuration": {
+            "title": "LootiScript",
+            "properties": {
+                "lootiscript.format.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable code formatting"
+                },
+                "lootiscript.completion.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable autocomplete and IntelliSense"
+                },
+                "lootiscript.diagnostics.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable error checking and diagnostics"
+                },
+                "lootiscript.format.indentSize": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Indentation size (number of tabs)",
+                    "minimum": 1,
+                    "maximum": 4
+                },
+                "lootiscript.signatureHelp.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable signature help (parameter hints)"
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "lootiscript.formatDocument",
+                "title": "LootiScript: Format Document",
+                "icon": "$(symbol-method)"
+            },
+            {
+                "command": "lootiscript.runScript",
+                "title": "LootiScript: Run Script",
+                "icon": "$(play)"
+            },
+            {
+                "command": "lootiscript.restartLanguageServer",
+                "title": "LootiScript: Restart Language Server",
+                "icon": "$(debug-restart)"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run package",
+        "compile": "npm run check-types && node esbuild.js",
+        "check-types": "tsc --noEmit",
+        "watch": "npm-run-all -p watch:*",
+        "watch:esbuild": "node esbuild.js --watch",
+        "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+        "package": "npm run check-types && node esbuild.js --production && npm run bundle-server",
+        "bundle-server": "cd ../language-server && bun run build && cd ../vscode && rm -rf server && cp -r ../language-server/dist ./server",
+        "compile-tests": "tsc -p . --outDir out",
+        "pretest": "npm run compile-tests && npm run lint",
+        "lint": "eslint src",
+        "test": "vscode-test"
+    },
+    "devDependencies": {
+        "@types/glob": "^9.0.0",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "22.x",
+        "@types/vscode": "^1.90.0",
+        "@vscode/test-cli": "^0.0.12",
+        "@vscode/test-electron": "^2.5.2",
+        "esbuild": "^0.27.0",
+        "eslint": "^9.39.1",
+        "glob": "^13.0.0",
+        "mocha": "^11.7.5",
+        "npm-run-all": "^4.1.5",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.46.3"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^9.0.1"
+    }
 }

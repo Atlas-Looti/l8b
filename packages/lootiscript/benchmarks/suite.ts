@@ -48,53 +48,53 @@ end
 `;
 
 async function runBenchmark(name: string, source: string, iterations: number = 5) {
-      console.log(`Running benchmark: ${name}`);
+    console.log(`Running benchmark: ${name}`);
 
-      const context = {
-            global: {},
-            meta: { print: () => {} },
-            warnings: {
-                  using_undefined_variable: {},
-                  assigning_field_to_undefined: {},
-                  invoking_non_function: {},
-                  assigning_api_variable: {},
-                  assignment_as_condition: {},
-            },
-      };
+    const context = {
+        global: {},
+        meta: { print: () => {} },
+        warnings: {
+            using_undefined_variable: {},
+            assigning_field_to_undefined: {},
+            invoking_non_function: {},
+            assigning_api_variable: {},
+            assignment_as_condition: {},
+        },
+    };
 
-      const runner = new Runner({ context });
-      runner.init();
+    const runner = new Runner({ context });
+    runner.init();
 
-      // Enable profiling
-      runner.system.profiler.start();
+    // Enable profiling
+    runner.system.profiler.start();
 
-      const start = performance.now();
-      for (let i = 0; i < iterations; i++) {
-            try {
-                  runner.run(source);
-            } catch (e) {
-                  console.error(e);
-            }
-      }
-      const end = performance.now();
+    const start = performance.now();
+    for (let i = 0; i < iterations; i++) {
+        try {
+            runner.run(source);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    const end = performance.now();
 
-      const metrics = runner.system.profiler.stop();
+    const metrics = runner.system.profiler.stop();
 
-      console.log(`  Time: ${(end - start).toFixed(2)}ms`);
-      console.log(`  Ops: ${metrics.ops}`);
-      console.log(`  Ops/sec: ${metrics.opsPerSec.toFixed(2)}`);
-      console.log(`  Allocations: ${metrics.allocations}`);
-      console.log("-------------------");
+    console.log(`  Time: ${(end - start).toFixed(2)}ms`);
+    console.log(`  Ops: ${metrics.ops}`);
+    console.log(`  Ops/sec: ${metrics.opsPerSec.toFixed(2)}`);
+    console.log(`  Allocations: ${metrics.allocations}`);
+    console.log("-------------------");
 
-      return metrics;
+    return metrics;
 }
 
 async function main() {
-      console.log("Starting L8B Performance Benchmarks\n");
+    console.log("Starting L8B Performance Benchmarks\n");
 
-      await runBenchmark("Fibonacci (Recursive)", FIBONACCI_SOURCE);
-      await runBenchmark("Property Access", PROPERTY_ACCESS_SOURCE);
-      await runBenchmark("Array Operations", ARRAY_OPS_SOURCE);
+    await runBenchmark("Fibonacci (Recursive)", FIBONACCI_SOURCE);
+    await runBenchmark("Property Access", PROPERTY_ACCESS_SOURCE);
+    await runBenchmark("Array Operations", ARRAY_OPS_SOURCE);
 }
 
 main().catch(console.error);

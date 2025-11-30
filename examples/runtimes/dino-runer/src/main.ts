@@ -17,49 +17,47 @@ canvas.height = 1080;
 
 // Create runtime
 const runtime = new Runtime({
-      canvas,
-      width: 1920,
-      height: 1080,
-      url: "/",
-      sources: {
-            main: mainLootiScript,
-      },
-      resources: {
-            images: [
-                  { file: "hero.png", version: 1 },
-                  { file: "wall.png", version: 1 },
-                  { file: "blade.png", version: 1 },
-                  { file: "icon.png", version: 1 },
-            ],
-      },
-      listener: {
-            log: (message) => {
-                  console.log("[GAME]", message);
-            },
-            reportError: (error) => {
-                  console.error("[GAME ERROR]", error);
-            },
-            postMessage: (msg) => {
-                  console.log("[GAME MESSAGE]", msg);
-            },
-      },
+    canvas,
+    width: 1920,
+    height: 1080,
+    url: "/",
+    sources: {
+        main: mainLootiScript,
+    },
+    resources: {
+        images: [
+            { file: "hero.png", version: 1 },
+            { file: "wall.png", version: 1 },
+            { file: "blade.png", version: 1 },
+            { file: "icon.png", version: 1 },
+        ],
+    },
+    listener: {
+        log: (message) => {
+            console.log("[GAME]", message);
+        },
+        reportError: (error) => {
+            console.error("[GAME ERROR]", error);
+        },
+        postMessage: (msg) => {
+            console.log("[GAME MESSAGE]", msg);
+        },
+    },
 });
 
 const logCanvasSize = () => {
-      console.log(
-            `Canvas internal size: ${canvas.width}x${canvas.height}, display size: ${canvas.clientWidth}x${canvas.clientHeight}`,
-      );
+    console.log(`Canvas internal size: ${canvas.width}x${canvas.height}, display size: ${canvas.clientWidth}x${canvas.clientHeight}`);
 };
 
 // Start the game
 console.log("Starting L8B Runtime...");
 try {
-      await runtime.start();
-      console.log("Runtime started successfully!");
-      console.log("Game is running...");
-      logCanvasSize();
+    await runtime.start();
+    console.log("Runtime started successfully!");
+    console.log("Game is running...");
+    logCanvasSize();
 } catch (err) {
-      console.error(err);
+    console.error(err);
 }
 
 // Make runtime accessible from console for debugging

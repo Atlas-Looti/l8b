@@ -6,15 +6,15 @@
 
 export { ActionsService } from "./actions-service";
 export type {
-      ActionsAPI,
-      ComposeCastOptions,
-      OpenMiniAppOptions,
-      OpenUrlOptions,
-      SendTokenOptions,
-      ShareOptions,
-      SignInOptions,
-      SwapTokenOptions,
-      ViewCastOptions,
-      ViewProfileOptions,
-      ViewTokenOptions,
+    ActionsAPI,
+    ComposeCastOptions,
+    OpenMiniAppOptions,
+    OpenUrlOptions,
+    SendTokenOptions,
+    ShareOptions,
+    SignInOptions,
+    SwapTokenOptions,
+    ViewCastOptions,
+    ViewProfileOptions,
+    ViewTokenOptions,
 } from "./types";

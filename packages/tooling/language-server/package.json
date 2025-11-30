@@ -1,27 +1,27 @@
 {
-      "name": "@l8b/language-server",
-      "version": "1.0.0",
-      "description": "LSP server for LootiScript",
-      "bin": {
-            "l8b-language-server": "./dist/server.js"
-      },
-      "files": [
-            "dist/**/*"
-      ],
-      "scripts": {
-            "build": "tsup",
-            "clean": "rm -rf dist"
-      },
-      "dependencies": {
-            "@l8b/lootiscript": "workspace:*",
-            "@l8b/diagnostics": "workspace:*",
-            "vscode-json-languageservice": "^5.6.3",
-            "vscode-languageserver": "^9.0.1",
-            "vscode-languageserver-textdocument": "^1.0.11"
-      },
-      "devDependencies": {
-            "tsup": "^8.0.0",
-            "typescript": "^5.0.0",
-            "@types/node": "^20.0.0"
-      }
+    "name": "@l8b/language-server",
+    "version": "1.0.0",
+    "description": "LSP server for LootiScript",
+    "bin": {
+        "l8b-language-server": "./dist/server.js"
+    },
+    "files": [
+        "dist/**/*"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "rm -rf dist"
+    },
+    "dependencies": {
+        "@l8b/lootiscript": "workspace:*",
+        "@l8b/diagnostics": "workspace:*",
+        "vscode-json-languageservice": "^5.6.3",
+        "vscode-languageserver": "^9.0.1",
+        "vscode-languageserver-textdocument": "^1.0.11"
+    },
+    "devDependencies": {
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "@types/node": "^20.0.0"
+    }
 }

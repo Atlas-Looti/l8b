@@ -5,9 +5,9 @@
  */
 
 export type {
-      BatchCall,
-      BatchTransactionResult,
-      TransactionRequest,
-      WalletAPI,
+    BatchCall,
+    BatchTransactionResult,
+    TransactionRequest,
+    WalletAPI,
 } from "./types";
 export { WalletService } from "./wallet-service";

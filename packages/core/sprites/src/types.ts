@@ -1,11 +1,11 @@
 import type { Image } from "./image";
 
 export interface SpriteProperties {
-      frames?: number;
-      fps?: number;
+    frames?: number;
+    fps?: number;
 }
 
 export interface SpriteFrame {
-      canvas: HTMLCanvasElement;
-      image: Image;
+    canvas: HTMLCanvasElement;
+    image: Image;
 }

@@ -1,42 +1,42 @@
 {
-      "name": "@l8b/runtime",
-      "version": "1.0.0",
-      "sideEffects": false,
-      "files": [
-            "dist/**/*",
-            "README.md",
-            "package.json"
-      ],
-      "scripts": {
-            "build": "tsup",
-            "clean": "rm -rf dist",
-            "test": "vitest run --passWithNoTests"
-      },
-      "main": "./dist/index.js",
-      "module": "./dist/index.mjs",
-      "types": "./dist/index.d.ts",
-      "dependencies": {
-            "@l8b/vm": "workspace:*",
-            "@l8b/io": "workspace:*",
-            "@l8b/lootiscript": "workspace:*",
-            "@l8b/screen": "workspace:*",
-            "@l8b/audio": "workspace:*",
-            "@l8b/input": "workspace:*",
-            "@l8b/time": "workspace:*",
-            "@l8b/sprites": "workspace:*",
-            "@l8b/map": "workspace:*",
-            "@l8b/scene": "workspace:*",
-            "@l8b/diagnostics": "workspace:*",
-            "@l8b/player": "workspace:*",
-            "@l8b/wallet": "workspace:*",
-            "@l8b/evm": "workspace:*",
-            "@l8b/actions": "workspace:*",
-            "@l8b/http": "workspace:*"
-      },
-      "keywords": [
-            "runtime",
-            "game-engine",
-            "game-loop",
-            "vm"
-      ]
+    "name": "@l8b/runtime",
+    "version": "1.0.0",
+    "sideEffects": false,
+    "files": [
+        "dist/**/*",
+        "README.md",
+        "package.json"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "rm -rf dist",
+        "test": "vitest run --passWithNoTests"
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "dependencies": {
+        "@l8b/vm": "workspace:*",
+        "@l8b/io": "workspace:*",
+        "@l8b/lootiscript": "workspace:*",
+        "@l8b/screen": "workspace:*",
+        "@l8b/audio": "workspace:*",
+        "@l8b/input": "workspace:*",
+        "@l8b/time": "workspace:*",
+        "@l8b/sprites": "workspace:*",
+        "@l8b/map": "workspace:*",
+        "@l8b/scene": "workspace:*",
+        "@l8b/diagnostics": "workspace:*",
+        "@l8b/player": "workspace:*",
+        "@l8b/wallet": "workspace:*",
+        "@l8b/evm": "workspace:*",
+        "@l8b/actions": "workspace:*",
+        "@l8b/http": "workspace:*"
+    },
+    "keywords": [
+        "runtime",
+        "game-engine",
+        "game-loop",
+        "vm"
+    ]
 }

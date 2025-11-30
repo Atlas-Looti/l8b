@@ -1,30 +1,30 @@
 {
-      "name": "@l8b/lootiscript",
-      "version": "1.0.0",
-      "sideEffects": false,
-      "files": [
-            "dist/**/*",
-            "README.md",
-            "package.json"
-      ],
-      "scripts": {
-            "build": "tsup",
-            "clean": "rm -rf dist",
-            "test": "vitest run --passWithNoTests",
-            "check-types": "tsc --noEmit"
-      },
-      "main": "./dist/index.js",
-      "module": "./dist/index.mjs",
-      "types": "./dist/index.d.ts",
-      "devDependencies": {
-            "tsup": "^8.0.0",
-            "typescript": "^5.0.0"
-      },
-      "dependencies": {
-            "@l8b/stdlib": "workspace:*",
-            "@l8b/diagnostics": "workspace:*"
-      },
-      "keywords": [
-            "lootiscript"
-      ]
+    "name": "@l8b/lootiscript",
+    "version": "1.0.0",
+    "sideEffects": false,
+    "files": [
+        "dist/**/*",
+        "README.md",
+        "package.json"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "rm -rf dist",
+        "test": "vitest run --passWithNoTests",
+        "check-types": "tsc --noEmit"
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "devDependencies": {
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@l8b/stdlib": "workspace:*",
+        "@l8b/diagnostics": "workspace:*"
+    },
+    "keywords": [
+        "lootiscript"
+    ]
 }
