@@ -52,13 +52,13 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/enggine/runtime
     devDependencies:
-      l8b:
+      '@l8b/cli':
         specifier: workspace:*
         version: link:../../../packages/framework/cli
 
   examples/framework/scenes:
     devDependencies:
-      l8b:
+      '@l8b/cli':
         specifier: workspace:*
         version: link:../../../packages/framework/cli
 
