@@ -44,7 +44,7 @@ jobs:
           version: bun run changeset:version
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Set up bun for prerelease
         if: steps.changesets.outputs.published != 'true'
@@ -62,6 +62,7 @@ jobs:
           npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
           git reset --hard origin/main
           bun run clean
+          bun install
           bun changeset version --no-git-tag --snapshot canary
           bun run changeset:prepublish
           bun changeset publish --no-git-tag --snapshot canary --tag canary
