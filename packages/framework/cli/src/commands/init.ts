@@ -245,7 +245,7 @@ dist
 				{},
 			devDependencies:
 				{
-					l8b: "workspace:*",
+					"@l8b/cli": "workspace:*",
 				},
 		};
 

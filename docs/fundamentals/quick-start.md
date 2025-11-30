@@ -9,7 +9,7 @@ This guide will help you get started with your first L8B game project. For an ov
 Install L8B CLI as a dev dependency:
 
 ```bash
-npm install @l8b/cli --save-dev
+npm install l8b --save-dev
 ```
 
 **Note:** The runtime is automatically bundled with your project. You don't need to install it separately.
@@ -91,7 +91,7 @@ Add scripts for development and build in `package.json`:
     "start": "l8b start"
   },
   "devDependencies": {
-    "@l8b/cli": "^0.0.1"
+    "l8b": "^0.0.1"
   }
 }
 ```

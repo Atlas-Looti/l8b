@@ -2,7 +2,7 @@
 	"name": "l8b",
 	"version": "1.0.1",
 	"description": "Looti Engine",
-	"private": false,
+	"private": true,
 	"scripts": {
 		"docs:dev": "vitepress dev docs",
 		"docs:build": "vitepress build docs",

@@ -46,7 +46,7 @@ L8B is not just a 2D game engine; it's a bridge between 2D gameplay, on-chain in
 1. **Install L8B CLI**:
 
    ```bash
-   npm install @l8b/cli --save-dev
+   npm install l8b --save-dev
    ```
 
 2. **Create a new project**:
