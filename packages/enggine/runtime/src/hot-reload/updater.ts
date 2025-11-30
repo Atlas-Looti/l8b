@@ -6,8 +6,14 @@ import type { L8BVM } from "@l8b/vm";
 import type { RuntimeListener } from "../types";
 
 export class SourceUpdater {
-	private updateMemory: Record<string, string> = {};
-	private previousInit: string | null = null;
+	private updateMemory: Record<
+		string,
+		string
+	> = {};
+	private previousInit:
+		| string
+		| null =
+		null;
 
 	constructor(
 		private vm: L8BVM,
@@ -17,45 +23,120 @@ export class SourceUpdater {
 	/**
 	 * Update source code (hot reload)
 	 */
-	updateSource(file: string, src: string, reinit = false): boolean {
+	updateSource(
+		file: string,
+		src: string,
+		reinit = false,
+	): boolean {
 		// Skip update if source code hasn't changed (optimization)
-		if (src === this.updateMemory[file]) return false;
+		if (
+			src ===
+			this
+				.updateMemory[
+				file
+			]
+		)
+			return false;
 
-		this.updateMemory[file] = src;
+		this.updateMemory[
+			file
+		] = src;
 
 		try {
 			// Compile and execute updated source code
 			// Timeout of 3000ms prevents infinite loops during hot reload
-			this.vm.run(src, 3000, file);
+			this.vm.run(
+				src,
+				3000,
+				file,
+			);
 
 			// Notify parent process of successful compilation
-			if (this.listener.postMessage) {
-				this.listener.postMessage({
-					name: "compile_success",
-					file: file,
-				});
+			if (
+				this
+					.listener
+					.postMessage
+			) {
+				this.listener.postMessage(
+					{
+						name:
+							"compile_success",
+						file:
+							file,
+					},
+				);
 			}
 
 			// Check for compilation or runtime errors from VM
-			if (this.vm.error_info) {
-				const err: any = Object.assign({}, this.vm.error_info);
-				err.type = "init";
-				err.file = file;
-				this.reportError(err);
+			if (
+				this
+					.vm
+					.error_info
+			) {
+				const err: any =
+					Object.assign(
+						{},
+						this
+							.vm
+							.error_info,
+					);
+				err.type =
+					"init";
+				err.file =
+					file;
+				this.reportError(
+					err,
+				);
 				return false;
 			}
 
 			// Re-run init() function if it was modified during hot reload
 			// This allows reinitialization without full page refresh
-			if (reinit && (this.vm.runner as any).getFunctionSource) {
-				const init = (this.vm.runner as any).getFunctionSource("init");
-				if (init && init !== this.previousInit) {
-					this.previousInit = init;
-					this.vm.call("init");
-					if (this.vm.error_info) {
-						const err: any = Object.assign({}, this.vm.error_info);
-						err.type = "init";
-						this.reportError(err);
+			if (
+				reinit &&
+				(
+					this
+						.vm
+						.runner as any
+				)
+					.getFunctionSource
+			) {
+				const init =
+					(
+						this
+							.vm
+							.runner as any
+					).getFunctionSource(
+						"init",
+					);
+				if (
+					init &&
+					init !==
+						this
+							.previousInit
+				) {
+					this.previousInit =
+						init;
+					this.vm.call(
+						"init",
+					);
+					if (
+						this
+							.vm
+							.error_info
+					) {
+						const err: any =
+							Object.assign(
+								{},
+								this
+									.vm
+									.error_info,
+							);
+						err.type =
+							"init";
+						this.reportError(
+							err,
+						);
 					}
 				}
 			}
@@ -64,45 +145,97 @@ export class SourceUpdater {
 		} catch (err: any) {
 			// Handle exceptions during compilation or execution
 			// Error object structure varies, so we normalize it
-			console.error("Parse/Runtime error:", err);
+			console.error(
+				"Parse/Runtime error:",
+				err,
+			);
 
-			const vmError = this.vm.error_info ? { ...this.vm.error_info } : null;
+			const vmError =
+				this
+					.vm
+					.error_info
+					? {
+							...this
+								.vm
+								.error_info,
+						}
+					: null;
 
-			const getMessage = (): string => {
-				if (typeof err === "string") return err;
-				if (err?.message) return err.message;
-				if (typeof err?.error === "string") return err.error;
-				if (typeof err?.error === "function") return "Parse error (function)";
-				if (err?.error) {
-					try {
-						return JSON.stringify(err.error);
-					} catch {
-						return String(err.error);
+			const getMessage =
+				(): string => {
+					if (
+						typeof err ===
+						"string"
+					)
+						return err;
+					if (
+						err?.message
+					)
+						return err.message;
+					if (
+						typeof err?.error ===
+						"string"
+					)
+						return err.error;
+					if (
+						typeof err?.error ===
+						"function"
+					)
+						return "Parse error (function)";
+					if (
+						err?.error
+					) {
+						try {
+							return JSON.stringify(
+								err.error,
+							);
+						} catch {
+							return String(
+								err.error,
+							);
+						}
 					}
-				}
-				try {
-					return JSON.stringify(err);
-				} catch {
-					return String(err);
-				}
-			};
+					try {
+						return JSON.stringify(
+							err,
+						);
+					} catch {
+						return String(
+							err,
+						);
+					}
+				};
 
-			const errorPayload = vmError || {
-				error: getMessage(),
-				type: err?.type || "init",
-				file: err?.file || file,
-				line: err?.line,
-				column: err?.column,
-				stack: err?.stack,
-			};
+			const errorPayload =
+				vmError || {
+					error:
+						getMessage(),
+					type:
+						err?.type ||
+						"init",
+					file:
+						err?.file ||
+						file,
+					line:
+						err?.line,
+					column:
+						err?.column,
+					stack:
+						err?.stack,
+				};
 
 			// Ensure filename is always set for error reporting
 			// Helps with debugging in multi-file projects
-			if (!errorPayload.file) {
-				errorPayload.file = file;
+			if (
+				!errorPayload.file
+			) {
+				errorPayload.file =
+					file;
 			}
 
-			this.reportError(errorPayload);
+			this.reportError(
+				errorPayload,
+			);
 			return false;
 		}
 	}
@@ -110,9 +243,17 @@ export class SourceUpdater {
 	/**
 	 * Report error to listener
 	 */
-	private reportError(error: any): void {
-		if (this.listener.reportError) {
-			this.listener.reportError(error);
+	private reportError(
+		error: any,
+	): void {
+		if (
+			this
+				.listener
+				.reportError
+		) {
+			this.listener.reportError(
+				error,
+			);
 		}
 	}
 }

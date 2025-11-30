@@ -5,4 +5,8 @@
  */
 
 export { HttpService } from "./http-service";
-export type { HttpAPI, HttpRequestOptions, HttpResponse } from "./types";
+export type {
+	HttpAPI,
+	HttpRequestOptions,
+	HttpResponse,
+} from "./types";

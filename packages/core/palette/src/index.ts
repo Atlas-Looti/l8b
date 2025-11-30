@@ -6,5 +6,12 @@
  * - types/: Shared color types
  */
 
-export { Palette, type PaletteOptions } from "./core/palette";
-export type { ColorHex, ColorRGB, PaletteData } from "./types";
+export {
+	Palette,
+	type PaletteOptions,
+} from "./core/palette";
+export type {
+	ColorHex,
+	ColorRGB,
+	PaletteData,
+} from "./types";

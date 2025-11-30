@@ -27,7 +27,9 @@ export interface ResourceFile {
 	/** File name */
 	file: string;
 	/** Version/hash for cache busting */
-	version?: string | number;
+	version?:
+		| string
+		| number;
 	/** Additional properties (for sprites, etc) */
 	properties?: any;
 }
@@ -36,9 +38,24 @@ export interface ResourceFile {
  * Asset collections
  */
 export interface AssetCollections {
-	sprites: Record<string, any>;
-	maps: Record<string, any>;
-	sounds: Record<string, any>;
-	music: Record<string, any>;
-	assets: Record<string, any>;
+	sprites: Record<
+		string,
+		any
+	>;
+	maps: Record<
+		string,
+		any
+	>;
+	sounds: Record<
+		string,
+		any
+	>;
+	music: Record<
+		string,
+		any
+	>;
+	assets: Record<
+		string,
+		any
+	>;
 }

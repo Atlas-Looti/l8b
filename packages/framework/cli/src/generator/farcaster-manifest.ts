@@ -5,7 +5,10 @@
  * according to Farcaster Mini Apps specification.
  */
 
-import type { FarcasterManifestConfig, LootiConfig } from "../config";
+import type {
+	FarcasterManifestConfig,
+	LootiConfig,
+} from "../config";
 
 /**
  * Generate Farcaster Mini App manifest JSON
@@ -13,15 +16,25 @@ import type { FarcasterManifestConfig, LootiConfig } from "../config";
  * @param config - LootiScript configuration
  * @returns Manifest JSON object or null if no manifest config
  */
-export function generateFarcasterManifest(config: LootiConfig): FarcasterManifestConfig | null {
-	const manifest = config.farcaster?.manifest;
+export function generateFarcasterManifest(
+	config: LootiConfig,
+): FarcasterManifestConfig | null {
+	const manifest =
+		config
+			.farcaster
+			?.manifest;
 
-	if (!manifest) {
+	if (
+		!manifest
+	) {
 		return null;
 	}
 
 	// Validate required fields
-	if (!manifest.accountAssociation || !manifest.miniapp) {
+	if (
+		!manifest.accountAssociation ||
+		!manifest.miniapp
+	) {
 		return null;
 	}
 
@@ -35,12 +48,25 @@ export function generateFarcasterManifest(config: LootiConfig): FarcasterManifes
  * @param config - LootiScript configuration
  * @returns JSON string or null
  */
-export function generateFarcasterManifestJSON(config: LootiConfig): string | null {
-	const manifest = generateFarcasterManifest(config);
+export function generateFarcasterManifestJSON(
+	config: LootiConfig,
+):
+	| string
+	| null {
+	const manifest =
+		generateFarcasterManifest(
+			config,
+		);
 
-	if (!manifest) {
+	if (
+		!manifest
+	) {
 		return null;
 	}
 
-	return JSON.stringify(manifest, null, 2);
+	return JSON.stringify(
+		manifest,
+		null,
+		2,
+	);
 }

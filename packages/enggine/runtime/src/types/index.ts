@@ -2,7 +2,11 @@
  * Type definitions for @l8b/runtime
  */
 
-export type { AssetCollections, ResourceFile, Resources } from "./assets";
+export type {
+	AssetCollections,
+	ResourceFile,
+	Resources,
+} from "./assets";
 export type {
 	ErrorInfo,
 	InputDebugSetting,
@@ -12,4 +16,8 @@ export type {
 	RuntimeState,
 } from "./runtime";
 export type { SystemAPI } from "./system";
-export type { GlobalAPI, MetaFunctions, VMContext } from "./vm";
+export type {
+	GlobalAPI,
+	MetaFunctions,
+	VMContext,
+} from "./vm";

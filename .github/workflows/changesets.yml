@@ -40,17 +40,11 @@ jobs:
           title: 'chore: version packages'
           commit: 'chore: version packages'
           createGithubReleases: ${{ github.ref == 'refs/heads/main' }}
-          publish: bun run changeset:publish
-          version: bun run changeset:version
+          publish: pnpm changeset:publish
+          version: pnpm changeset:version
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: Set up bun for prerelease
-        if: steps.changesets.outputs.published != 'true'
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - name: Publish prerelease
         if: steps.changesets.outputs.published != 'true'
@@ -61,8 +55,7 @@ jobs:
         run: |
           npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
           git reset --hard origin/main
-          bun run clean
-          bun install
-          bun changeset version --no-git-tag --snapshot canary
-          bun run changeset:prepublish
-          bun changeset publish --no-git-tag --snapshot canary --tag canary
+          pnpm clean
+          pnpm changeset version --no-git-tag --snapshot canary
+          pnpm changeset:prepublish
+          pnpm changeset publish --no-git-tag --snapshot canary --tag canary

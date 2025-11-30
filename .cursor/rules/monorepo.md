@@ -7,12 +7,12 @@ globs: package.json, turbo.json, **/package.json
 
 ## Package Manager
 
-**ALWAYS use Bun**, never npm/yarn/pnpm:
+**ALWAYS use pnpm**, never npm/yarn/bun:
 
 ```bash
-bun install
-bun add <package>
-bun run <script>
+pnpm install
+pnpm add <package>
+pnpm run <script>
 ```
 
 ## Workspace Dependencies
@@ -44,19 +44,19 @@ Build orchestration is handled by Turbo. See `turbo.json` for pipeline configura
 ## Creating New Packages
 
 ```bash
-bun run new
+pnpm run new
 ```
 
 Follow prompts to create package with proper structure.
 
 ## Build Commands
 
-- `bun run build` - Build all packages
-- `bun run dev` - Watch mode for all packages
-- `bun run check-types` - Type check all packages
-- `bun run test` - Run all tests
-- `bun run format` - Format all code
-- `bun run lint` - Lint all code
+- `pnpm run build` - Build all packages
+- `pnpm run dev` - Watch mode for all packages
+- `pnpm run check-types` - Type check all packages
+- `pnpm run test` - Run all tests
+- `pnpm run format` - Format all code
+- `pnpm run lint` - Lint all code
 
 ## Package Structure
 

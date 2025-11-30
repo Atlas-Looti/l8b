@@ -16,29 +16,89 @@
  * extractParams("/level/:id", "/level/5") // { id: "5" }
  * extractParams("/player/:playerId/inventory", "/player/123/inventory") // { playerId: "123" }
  */
-export function extractRouteParams(pattern: string, path: string): Record<string, string> | null {
+export function extractRouteParams(
+	pattern: string,
+	path: string,
+): Record<
+	string,
+	string
+> | null {
 	// Remove leading slash from pattern
-	const cleanPattern = pattern.startsWith("/") ? pattern.slice(1) : pattern;
-	const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+	const cleanPattern =
+		pattern.startsWith(
+			"/",
+		)
+			? pattern.slice(
+					1,
+				)
+			: pattern;
+	const cleanPath =
+		path.startsWith(
+			"/",
+		)
+			? path.slice(
+					1,
+				)
+			: path;
 
-	const patternSegments = cleanPattern.split("/");
-	const pathSegments = cleanPath.split("/").filter(Boolean);
+	const patternSegments =
+		cleanPattern.split(
+			"/",
+		);
+	const pathSegments =
+		cleanPath
+			.split(
+				"/",
+			)
+			.filter(
+				Boolean,
+			);
 
-	if (patternSegments.length !== pathSegments.length) {
+	if (
+		patternSegments.length !==
+		pathSegments.length
+	) {
 		return null;
 	}
 
-	const params: Record<string, string> = {};
+	const params: Record<
+		string,
+		string
+	> = {};
 
-	for (let i = 0; i < patternSegments.length; i++) {
-		const patternSeg = patternSegments[i];
-		const pathSeg = pathSegments[i];
+	for (
+		let i = 0;
+		i <
+		patternSegments.length;
+		i++
+	) {
+		const patternSeg =
+			patternSegments[
+				i
+			];
+		const pathSeg =
+			pathSegments[
+				i
+			];
 
-		if (patternSeg.startsWith(":")) {
+		if (
+			patternSeg.startsWith(
+				":",
+			)
+		) {
 			// This is a parameter
-			const paramName = patternSeg.slice(1);
-			params[paramName] = pathSeg;
-		} else if (patternSeg !== pathSeg) {
+			const paramName =
+				patternSeg.slice(
+					1,
+				);
+			params[
+				paramName
+			] =
+				pathSeg;
+		} else if (
+			patternSeg !==
+			pathSeg
+		) {
 			// Static segment doesn't match
 			return null;
 		}
@@ -58,11 +118,30 @@ export function extractRouteParams(pattern: string, path: string): Record<string
  * findMatchingRoute(["/", "/level/:id", "/player/:id/inventory"], "/level/5")
  * // { pattern: "/level/:id", params: { id: "5" } }
  */
-export function findMatchingRoute(patterns: string[], path: string): { pattern: string; params: Record<string, string> } | null {
+export function findMatchingRoute(
+	patterns: string[],
+	path: string,
+): {
+	pattern: string;
+	params: Record<
+		string,
+		string
+	>;
+} | null {
 	for (const pattern of patterns) {
-		const params = extractRouteParams(pattern, path);
-		if (params !== null) {
-			return { pattern, params };
+		const params =
+			extractRouteParams(
+				pattern,
+				path,
+			);
+		if (
+			params !==
+			null
+		) {
+			return {
+				pattern,
+				params,
+			};
 		}
 	}
 	return null;

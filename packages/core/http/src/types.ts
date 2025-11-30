@@ -6,7 +6,10 @@ export interface HttpRequestOptions {
 	/** HTTP method (GET, POST, PUT, DELETE, etc.) */
 	method?: string;
 	/** Request headers */
-	headers?: Record<string, string>;
+	headers?: Record<
+		string,
+		string
+	>;
 	/** Request body (will be JSON stringified if object) */
 	body?: any;
 	/** Timeout in milliseconds */
@@ -17,7 +20,10 @@ export interface HttpResponse {
 	/** HTTP status code */
 	status: number;
 	/** Response headers */
-	headers: Record<string, string>;
+	headers: Record<
+		string,
+		string
+	>;
 	/** Response body as text */
 	text(): string;
 	/** Response body as JSON (parsed) */
@@ -25,7 +31,9 @@ export interface HttpResponse {
 	/** Response body as JSON (throws if not ok or invalid JSON) */
 	jsonOrThrow(): any;
 	/** Response body as JSON (returns null if not ok or invalid JSON) */
-	jsonOrNull(): any | null;
+	jsonOrNull():
+		| any
+		| null;
 	/** Response body as text (alias for text()) */
 	data(): string;
 	/** Check if response is OK (status 200-299) */
@@ -44,7 +52,10 @@ export interface HttpAPI {
 	 * @param options - Request options (method, headers, body, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	request(url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
+	request(
+		url: string,
+		options?: HttpRequestOptions,
+	): Promise<HttpResponse>;
 
 	/**
 	 * Make a GET request
@@ -52,7 +63,14 @@ export interface HttpAPI {
 	 * @param options - Request options (headers, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	get(url: string, options?: Omit<HttpRequestOptions, "method" | "body">): Promise<HttpResponse>;
+	get(
+		url: string,
+		options?: Omit<
+			HttpRequestOptions,
+			| "method"
+			| "body"
+		>,
+	): Promise<HttpResponse>;
 
 	/**
 	 * Make a POST request
@@ -61,7 +79,15 @@ export interface HttpAPI {
 	 * @param options - Request options (headers, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	post(url: string, body?: any, options?: Omit<HttpRequestOptions, "method" | "body">): Promise<HttpResponse>;
+	post(
+		url: string,
+		body?: any,
+		options?: Omit<
+			HttpRequestOptions,
+			| "method"
+			| "body"
+		>,
+	): Promise<HttpResponse>;
 
 	/**
 	 * Make a PUT request
@@ -70,7 +96,15 @@ export interface HttpAPI {
 	 * @param options - Request options (headers, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	put(url: string, body?: any, options?: Omit<HttpRequestOptions, "method" | "body">): Promise<HttpResponse>;
+	put(
+		url: string,
+		body?: any,
+		options?: Omit<
+			HttpRequestOptions,
+			| "method"
+			| "body"
+		>,
+	): Promise<HttpResponse>;
 
 	/**
 	 * Make a DELETE request
@@ -78,5 +112,12 @@ export interface HttpAPI {
 	 * @param options - Request options (headers, timeout)
 	 * @returns Promise resolving to HttpResponse
 	 */
-	delete(url: string, options?: Omit<HttpRequestOptions, "method" | "body">): Promise<HttpResponse>;
+	delete(
+		url: string,
+		options?: Omit<
+			HttpRequestOptions,
+			| "method"
+			| "body"
+		>,
+	): Promise<HttpResponse>;
 }

@@ -30,18 +30,29 @@ export interface WalletAPI {
 	connect(): Promise<void>;
 
 	// Account
-	getAddress(): Promise<string | null>;
+	getAddress(): Promise<
+		| string
+		| null
+	>;
 	getChainId(): Promise<number>;
 
 	// Transactions
-	sendTransaction(tx: TransactionRequest): Promise<string>;
-	signMessage(message: string): Promise<string>;
+	sendTransaction(
+		tx: TransactionRequest,
+	): Promise<string>;
+	signMessage(
+		message: string,
+	): Promise<string>;
 
 	// Batch transactions (EIP-5792)
-	sendBatch(calls: BatchCall[]): Promise<BatchTransactionResult>;
+	sendBatch(
+		calls: BatchCall[],
+	): Promise<BatchTransactionResult>;
 
 	// Chain management
-	switchChain(chainId: number): Promise<void>;
+	switchChain(
+		chainId: number,
+	): Promise<void>;
 
 	// Transaction waiting
 	waitForTx(
@@ -49,12 +60,23 @@ export interface WalletAPI {
 		confirmations?: number,
 		timeout?: number,
 	): Promise<{
-		status: "confirmed" | "failed" | "timeout";
+		status:
+			| "confirmed"
+			| "failed"
+			| "timeout";
 		blockNumber?: number;
 		confirmations?: number;
 	}>;
 
 	// Events (callbacks not directly exposed to LootiScript, but available for internal use)
-	onAccountsChanged(callback: (accounts: string[]) => void): void;
-	onChainChanged(callback: (chainId: number) => void): void;
+	onAccountsChanged(
+		callback: (
+			accounts: string[],
+		) => void,
+	): void;
+	onChainChanged(
+		callback: (
+			chainId: number,
+		) => void,
+	): void;
 }

@@ -18,7 +18,11 @@ interface FileCacheEntry {
 }
 
 // Simple cache for file reads (cleared on file changes via HMR)
-const fileCache = new Map<string, FileCacheEntry>();
+const fileCache =
+	new Map<
+		string,
+		FileCacheEntry
+	>();
 
 /**
  * Vite plugin for LootiScript files
@@ -26,89 +30,193 @@ const fileCache = new Map<string, FileCacheEntry>();
  * @returns Vite plugin instance
  */
 export function lootiScriptPlugin(): Plugin {
-	let root: string = "";
+	let root: string =
+		"";
 
 	return {
-		name: "vite-plugin-lootiscript",
-		enforce: "pre",
+		name:
+			"vite-plugin-lootiscript",
+		enforce:
+			"pre",
 
-		configResolved(config: any) {
-			root = config.root;
+		configResolved(
+			config: any,
+		) {
+			root =
+				config.root;
 		},
 
-		async load(id: string) {
+		async load(
+			id: string,
+		) {
 			// Handle .loot?raw imports - return the file content as a string
-			if (!id.endsWith(".loot") && !id.includes(".loot?")) {
+			if (
+				!id.endsWith(
+					".loot",
+				) &&
+				!id.includes(
+					".loot?",
+				)
+			) {
 				return null;
 			}
 
 			// Remove query params and get clean file path
-			let filePath = id.replace(/\?raw$/, "").replace(/\?.*$/, "");
+			let filePath =
+				id
+					.replace(
+						/\?raw$/,
+						"",
+					)
+					.replace(
+						/\?.*$/,
+						"",
+					);
 
 			// Resolve path relative to root if it's a relative/absolute path from Vite
-			if (!path.isAbsolute(filePath)) {
-				if (filePath.startsWith("/")) {
+			if (
+				!path.isAbsolute(
+					filePath,
+				)
+			) {
+				if (
+					filePath.startsWith(
+						"/",
+					)
+				) {
 					// Vite sometimes passes paths starting with /, resolve from root
-					filePath = path.join(root, filePath.slice(1));
+					filePath =
+						path.join(
+							root,
+							filePath.slice(
+								1,
+							),
+						);
 				} else {
 					// Relative path, resolve from root
-					filePath = path.join(root, filePath);
+					filePath =
+						path.join(
+							root,
+							filePath,
+						);
 				}
 			}
 
 			// Normalize path
-			filePath = path.normalize(filePath);
+			filePath =
+				path.normalize(
+					filePath,
+				);
 
 			// Check cache first
 			try {
-				const stat = await fs.stat(filePath);
-				const cached = fileCache.get(filePath);
+				const stat =
+					await fs.stat(
+						filePath,
+					);
+				const cached =
+					fileCache.get(
+						filePath,
+					);
 
-				if (cached && cached.mtime === stat.mtimeMs) {
+				if (
+					cached &&
+					cached.mtime ===
+						stat.mtimeMs
+				) {
 					// Return cached content
 					return `export default ${JSON.stringify(cached.content)};`;
 				}
 
 				// Read and cache file
-				const content = await fs.readFile(filePath, "utf-8");
-				fileCache.set(filePath, { content, mtime: stat.mtimeMs });
+				const content =
+					await fs.readFile(
+						filePath,
+						"utf-8",
+					);
+				fileCache.set(
+					filePath,
+					{
+						content,
+						mtime:
+							stat.mtimeMs,
+					},
+				);
 
 				// Return as string export for ?raw imports
 				return `export default ${JSON.stringify(content)};`;
 			} catch (error) {
 				// File doesn't exist or can't be read
-				const err = error as NodeJS.ErrnoException;
-				if (err.code === "ENOENT") {
+				const err =
+					error as NodeJS.ErrnoException;
+				if (
+					err.code ===
+					"ENOENT"
+				) {
 					return null;
 				}
-				console.error(`Error reading .loot file ${filePath}:`, error);
+				console.error(
+					`Error reading .loot file ${filePath}:`,
+					error,
+				);
 				return null;
 			}
 		},
 
-		async handleHotUpdate({ file, server }: { file: string; server: any }) {
+		async handleHotUpdate({
+			file,
+			server,
+		}: {
+			file: string;
+			server: any;
+		}) {
 			// Handle .loot file changes
-			if (file.endsWith(".loot")) {
+			if (
+				file.endsWith(
+					".loot",
+				)
+			) {
 				// Clear cache for changed file
-				fileCache.delete(file);
+				fileCache.delete(
+					file,
+				);
 
 				// Always full reload for now since we don't track dependencies
-				server.ws.send({
-					type: "full-reload",
-					path: "*",
-				});
+				server.ws.send(
+					{
+						type:
+							"full-reload",
+						path:
+							"*",
+					},
+				);
 				return [];
 			}
 		},
 
-		configureServer(server: any) {
+		configureServer(
+			server: any,
+		) {
 			// Ensure .loot files are served with correct MIME type
-			server.middlewares.use((req: any, res: any, next: any) => {
-				if (req.url?.endsWith(".loot")) {
-					res.setHeader("Content-Type", "text/plain");
-				}
-				next();
-			});
+			server.middlewares.use(
+				(
+					req: any,
+					res: any,
+					next: any,
+				) => {
+					if (
+						req.url?.endsWith(
+							".loot",
+						)
+					) {
+						res.setHeader(
+							"Content-Type",
+							"text/plain",
+						);
+					}
+					next();
+				},
+			);
 		},
 	};
 }

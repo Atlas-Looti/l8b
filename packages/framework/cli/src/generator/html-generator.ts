@@ -15,14 +15,21 @@ import { generateFarcasterEmbedTag } from "./farcaster-embed";
 /**
  * Generate variable name from module name (sanitized for JavaScript)
  */
-function sanitizeVarName(name: string): string {
-	return name.replace(/[^a-zA-Z0-9]/g, "_");
+function sanitizeVarName(
+	name: string,
+): string {
+	return name.replace(
+		/[^a-zA-Z0-9]/g,
+		"_",
+	);
 }
 
 /**
  * Generate CSS styles for the HTML page
  */
-function generateStyles(canvasId: string): string {
+function generateStyles(
+	canvasId: string,
+): string {
 	return `
       @font-face {
         font-family: "BitCell";
@@ -72,31 +79,82 @@ function generateRuntimeScript(
 	sourceMap: string,
 	compiledRoutinesMap: string,
 ): string {
-	const { width, height } = getCanvasSize(config);
-	const canvasId = config.canvas?.id || "game";
-	const isFreeAspect = config.aspect === "free";
-	const baseUrl = config.url || "/";
+	const {
+		width,
+		height,
+	} =
+		getCanvasSize(
+			config,
+		);
+	const canvasId =
+		config
+			.canvas
+			?.id ||
+		"game";
+	const isFreeAspect =
+		config.aspect ===
+		"free";
+	const baseUrl =
+		config.url ||
+		"/";
 
 	// Logging configuration
-	const logging = config.logging || {};
-	const browserLogging = logging.browser || {};
-	const terminalLogging = logging.terminal || {};
-	const showBrowserLifecycleLogs = browserLogging.lifecycle ?? false;
-	const showBrowserCanvasLogs = browserLogging.canvas ?? false;
-	const showTerminalLifecycleLogs = terminalLogging.lifecycle ?? false;
-	const showTerminalCanvasLogs = terminalLogging.canvas ?? false;
-	const mirrorListenerLogs = terminalLogging.listener ?? false;
-	const mirrorListenerErrors = terminalLogging.errors ?? false;
-	const terminalLoggingEnabled = [showTerminalLifecycleLogs, showTerminalCanvasLogs, mirrorListenerLogs, mirrorListenerErrors].some(Boolean);
+	const logging =
+		config.logging ||
+		{};
+	const browserLogging =
+		logging.browser ||
+		{};
+	const terminalLogging =
+		logging.terminal ||
+		{};
+	const showBrowserLifecycleLogs =
+		browserLogging.lifecycle ??
+		false;
+	const showBrowserCanvasLogs =
+		browserLogging.canvas ??
+		false;
+	const showTerminalLifecycleLogs =
+		terminalLogging.lifecycle ??
+		false;
+	const showTerminalCanvasLogs =
+		terminalLogging.canvas ??
+		false;
+	const mirrorListenerLogs =
+		terminalLogging.listener ??
+		false;
+	const mirrorListenerErrors =
+		terminalLogging.errors ??
+		false;
+	const terminalLoggingEnabled =
+		[
+			showTerminalLifecycleLogs,
+			showTerminalCanvasLogs,
+			mirrorListenerLogs,
+			mirrorListenerErrors,
+		].some(
+			Boolean,
+		);
 
 	// Prepare resources object
-	const resourcesObj = {
-		images: resources.images ?? [],
-		maps: resources.maps ?? [],
-		sounds: resources.sounds ?? [],
-		music: resources.music ?? [],
-		assets: resources.assets ?? [],
-	};
+	const resourcesObj =
+		{
+			images:
+				resources.images ??
+				[],
+			maps:
+				resources.maps ??
+				[],
+			sounds:
+				resources.sounds ??
+				[],
+			music:
+				resources.music ??
+				[],
+			assets:
+				resources.assets ??
+				[],
+		};
 
 	return `
       // Farcaster Mini App SDK is automatically available in all L8B games
@@ -343,63 +401,161 @@ import { Runtime } from '@l8b/runtime';`
  */
 export function generateHTML(
 	config: LootiConfig,
-	sources: Record<string, string>,
+	sources: Record<
+		string,
+		string
+	>,
 	resources: Resources,
 	compiledModules?: CompiledModule[],
 	routePath: string = "/",
 ): string {
-	const canvasId = config.canvas?.id || "game";
+	const canvasId =
+		config
+			.canvas
+			?.id ||
+		"game";
 
 	// Determine if we're using pre-compiled routines (production) or sources (development)
-	const isProduction = compiledModules && compiledModules.length > 0;
+	const isProduction =
+		compiledModules &&
+		compiledModules.length >
+			0;
 
-	let sourceImports = "";
-	let sourceMap = "";
-	let compiledRoutinesMap = "";
+	let sourceImports =
+		"";
+	let sourceMap =
+		"";
+	let compiledRoutinesMap =
+		"";
 
-	if (isProduction && compiledModules) {
+	if (
+		isProduction &&
+		compiledModules
+	) {
 		// Production: Use pre-compiled routines
-		const compiledImports = compiledModules
-			.map((module) => {
-				const varName = sanitizeVarName(module.name);
-				return `import ${varName} from '/compiled/${module.name}.js';`;
-			})
-			.join("\n      ");
+		const compiledImports =
+			compiledModules
+				.map(
+					(
+						module,
+					) => {
+						const varName =
+							sanitizeVarName(
+								module.name,
+							);
+						return `import ${varName} from '/compiled/${module.name}.js';`;
+					},
+				)
+				.join(
+					"\n      ",
+				);
 
-		sourceImports = compiledImports;
+		sourceImports =
+			compiledImports;
 
-		compiledRoutinesMap = compiledModules
-			.map((module) => {
-				const varName = sanitizeVarName(module.name);
-				return `'${module.name}': new Routine(0).import(${varName}.routine)`;
-			})
-			.join(",\n          ");
+		compiledRoutinesMap =
+			compiledModules
+				.map(
+					(
+						module,
+					) => {
+						const varName =
+							sanitizeVarName(
+								module.name,
+							);
+						return `'${module.name}': new Routine(0).import(${varName}.routine)`;
+					},
+				)
+				.join(
+					",\n          ",
+				);
 	} else {
 		// Development: Use source files
-		const sourceEntries = Object.entries(sources);
-		sourceImports = sourceEntries
-			.map(([name, filePath]) => {
-				const varName = sanitizeVarName(name);
-				return `import ${varName} from '${filePath}?raw';`;
-			})
-			.join("\n      ");
+		const sourceEntries =
+			Object.entries(
+				sources,
+			);
+		sourceImports =
+			sourceEntries
+				.map(
+					([
+						name,
+						filePath,
+					]) => {
+						const varName =
+							sanitizeVarName(
+								name,
+							);
+						return `import ${varName} from '${filePath}?raw';`;
+					},
+				)
+				.join(
+					"\n      ",
+				);
 
-		sourceMap = sourceEntries
-			.map(([name]) => {
-				const varName = sanitizeVarName(name);
-				return `'${name}': ${varName}`;
-			})
-			.join(",\n          ");
+		sourceMap =
+			sourceEntries
+				.map(
+					([
+						name,
+					]) => {
+						const varName =
+							sanitizeVarName(
+								name,
+							);
+						return `'${name}': ${varName}`;
+					},
+				)
+				.join(
+					",\n          ",
+				);
 	}
 
 	// Escape config.name for HTML to prevent XSS
-	const escapedName = config.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+	const escapedName =
+		config.name
+			.replace(
+				/&/g,
+				"&amp;",
+			)
+			.replace(
+				/</g,
+				"&lt;",
+			)
+			.replace(
+				/>/g,
+				"&gt;",
+			)
+			.replace(
+				/"/g,
+				"&quot;",
+			)
+			.replace(
+				/'/g,
+				"&#39;",
+			);
 
-	const styles = generateStyles(canvasId);
-	const script = generateRuntimeScript(config, resources, isProduction ?? false, sourceImports, sourceMap, compiledRoutinesMap);
+	const styles =
+		generateStyles(
+			canvasId,
+		);
+	const script =
+		generateRuntimeScript(
+			config,
+			resources,
+			isProduction ??
+				false,
+			sourceImports,
+			sourceMap,
+			compiledRoutinesMap,
+		);
 
 	// Generate Farcaster embed meta tag for this route
-	const embedTag = generateFarcasterEmbedTag(config, routePath);
+	const embedTag =
+		generateFarcasterEmbedTag(
+			config,
+			routePath,
+		);
 
 	return `<!DOCTYPE html>
 <html lang="en">

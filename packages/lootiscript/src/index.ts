@@ -7,7 +7,11 @@
 // Core language components
 export { Random } from "./random";
 // Compiler
-export { Compiler, LocalLayer, Locals } from "./v1/compiler";
+export {
+	Compiler,
+	LocalLayer,
+	Locals,
+} from "./v1/compiler";
 export { Parser } from "./v1/parser";
 // Runtime
 export { Processor } from "./v1/processor";
@@ -45,9 +49,18 @@ export {
 } from "./v1/program";
 
 // VM and bytecode
-export { OPCODES, Routine } from "./v1/routine";
-export { Runner, Thread } from "./v1/runner";
+export {
+	OPCODES,
+	Routine,
+} from "./v1/routine";
+export {
+	Runner,
+	Thread,
+} from "./v1/runner";
 // Lexer and Parser
-export { Token, type Tokenizer as ITokenizer } from "./v1/token";
+export {
+	Token,
+	type Tokenizer as ITokenizer,
+} from "./v1/token";
 export { Tokenizer } from "./v1/tokenizer";
 export { Transpiler } from "./v1/transpiler";

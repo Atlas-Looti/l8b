@@ -11,15 +11,18 @@ export interface LoaderResult {
 	ready: number;
 }
 
-export interface ImageLoaderResult extends LoaderResult {
+export interface ImageLoaderResult
+	extends LoaderResult {
 	image?: any;
 }
 
-export interface JSONLoaderResult extends LoaderResult {
+export interface JSONLoaderResult
+	extends LoaderResult {
 	data?: any;
 }
 
-export interface TextLoaderResult extends LoaderResult {
+export interface TextLoaderResult
+	extends LoaderResult {
 	text?: string;
 }
 

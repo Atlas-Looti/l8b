@@ -3,7 +3,13 @@
 	"orientation": "any",
 	"aspect": "free",
 	"logging": {
-		"browser": { "lifecycle": false, "canvas": false },
-		"terminal": { "listener": true, "errors": true }
+		"browser": {
+			"lifecycle": false,
+			"canvas": false
+		},
+		"terminal": {
+			"listener": true,
+			"errors": true
+		}
 	}
 }

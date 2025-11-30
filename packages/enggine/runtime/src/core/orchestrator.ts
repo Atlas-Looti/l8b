@@ -19,23 +19,43 @@
 
 import { ActionsService } from "@l8b/actions";
 import { AudioCore } from "@l8b/audio";
-import { createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import {
+	createDiagnostic,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 import { EVMService } from "@l8b/evm";
 import { HttpService } from "@l8b/http";
-import { Random, Routine } from "@l8b/lootiscript";
+import {
+	Random,
+	Routine,
+} from "@l8b/lootiscript";
 import { Palette } from "@l8b/palette";
 import { PlayerService } from "@l8b/player";
 import { SceneManager } from "@l8b/scene";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
-import { type GlobalAPI, L8BVM, type MetaFunctions } from "@l8b/vm";
+import {
+	type GlobalAPI,
+	L8BVM,
+	type MetaFunctions,
+} from "@l8b/vm";
 import { WalletService } from "@l8b/wallet";
-import { AssetLoader, createSoundClass, Image, Map, Sprite } from "../assets";
+import {
+	AssetLoader,
+	createSoundClass,
+	Image,
+	Map,
+	Sprite,
+} from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
 import { GameLoop } from "../loop";
 import { System } from "../system";
-import type { RuntimeDebugOptions, RuntimeListener, RuntimeOptions } from "../types";
+import type {
+	RuntimeDebugOptions,
+	RuntimeListener,
+	RuntimeOptions,
+} from "../types";
 import { ObjectPool } from "../utils/object-pool";
 
 /**
@@ -69,20 +89,39 @@ export class RuntimeOrchestrator {
 	public evm: EVMService;
 	public actions: ActionsService;
 	public http: HttpService;
-	public vm: L8BVM | null = null;
+	public vm: L8BVM | null =
+		null;
 
 	// Asset collections (populated by AssetLoader)
-	public sprites: Record<string, any> = {};
-	public maps: Record<string, any> = {};
-	public sounds: Record<string, any> = {};
-	public music: Record<string, any> = {};
-	public assets: Record<string, any> = {};
+	public sprites: Record<
+		string,
+		any
+	> = {};
+	public maps: Record<
+		string,
+		any
+	> = {};
+	public sounds: Record<
+		string,
+		any
+	> = {};
+	public music: Record<
+		string,
+		any
+	> = {};
+	public assets: Record<
+		string,
+		any
+	> = {};
 
 	// Internal components
 	private assetLoader: AssetLoader;
-	private gameLoop: GameLoop | null = null;
-	private sourceUpdater: SourceUpdater | null = null;
-	public timeMachine: TimeMachine | null = null;
+	private gameLoop: GameLoop | null =
+		null;
+	private sourceUpdater: SourceUpdater | null =
+		null;
+	public timeMachine: TimeMachine | null =
+		null;
 	private lastInputDebug?: any;
 	private lastScreenDebug?: {
 		width: number;
@@ -91,54 +130,117 @@ export class RuntimeOrchestrator {
 		canvasHeight: number;
 	};
 	// Frame counter for batch debug updates
-	private frameCount: number = 0;
+	private frameCount: number =
+		0;
 	// Debug update frequency (log every N frames)
-	private readonly DEBUG_UPDATE_FREQUENCY = 10;
+	private readonly DEBUG_UPDATE_FREQUENCY =
+		10;
 
-	constructor(options: RuntimeOptions = {}) {
-		this.options = options;
-		this.listener = options.listener || {};
+	constructor(
+		options: RuntimeOptions = {},
+	) {
+		this.options =
+			options;
+		this.listener =
+			options.listener ||
+			{};
 
 		// Initialize core subsystems in dependency order
 		// Screen must be first as other systems may need canvas context
-		this.screen = new Screen({
-			runtime: this,
-			canvas: options.canvas,
-			width: options.width || 400,
-			height: options.height || 400,
-		});
+		this.screen =
+			new Screen(
+				{
+					runtime:
+						this,
+					canvas:
+						options.canvas,
+					width:
+						options.width ||
+						400,
+					height:
+						options.height ||
+						400,
+				},
+			);
 
 		// Audio system for sound and music playback
-		this.audio = new AudioCore(this);
+		this.audio =
+			new AudioCore(
+				this,
+			);
 
 		// Input manager for keyboard, mouse, touch, and gamepad
-		this.input = new InputManager(this.screen.getCanvas());
+		this.input =
+			new InputManager(
+				this.screen.getCanvas(),
+			);
 
 		// System API for exposing runtime state to game code
-		this.system = new System(this.listener);
+		this.system =
+			new System(
+				this
+					.listener,
+			);
 
 		// Scene manager for routing and scene lifecycle
-		this.sceneManager = new SceneManager();
+		this.sceneManager =
+			new SceneManager();
 
 		// Farcaster Mini Apps integration
-		this.player = new PlayerService();
-		this.wallet = new WalletService();
-		this.evm = new EVMService();
-		this.actions = new ActionsService();
-		this.http = new HttpService();
+		this.player =
+			new PlayerService();
+		this.wallet =
+			new WalletService();
+		this.evm =
+			new EVMService();
+		this.actions =
+			new ActionsService();
+		this.http =
+			new HttpService();
 
 		// Asset loader for sprites, maps, sounds, and other resources
-		this.assetLoader = new AssetLoader(options.url || "", options.resources || {});
+		this.assetLoader =
+			new AssetLoader(
+				options.url ||
+					"",
+				options.resources ||
+					{},
+			);
 
-		this.logStep("RuntimeOrchestrator constructed", {
-			width: this.screen.width,
-			height: this.screen.height,
-			resources: {
-				images: options.resources?.images?.length ?? 0,
-				sounds: options.resources?.sounds?.length ?? 0,
-				music: options.resources?.music?.length ?? 0,
+		this.logStep(
+			"RuntimeOrchestrator constructed",
+			{
+				width:
+					this
+						.screen
+						.width,
+				height:
+					this
+						.screen
+						.height,
+				resources:
+					{
+						images:
+							options
+								.resources
+								?.images
+								?.length ??
+							0,
+						sounds:
+							options
+								.resources
+								?.sounds
+								?.length ??
+							0,
+						music:
+							options
+								.resources
+								?.music
+								?.length ??
+							0,
+					},
 			},
-		});
+		);
 	}
 
 	/**
@@ -153,35 +255,87 @@ export class RuntimeOrchestrator {
 	 * @returns {Promise<void>} Resolves when startup is complete and loop is running
 	 */
 	async start(): Promise<void> {
-		this.logStep("startup: begin");
-		this.logStep("startup: loading assets");
+		this.logStep(
+			"startup: begin",
+		);
+		this.logStep(
+			"startup: loading assets",
+		);
 		// Step 1: Load assets
 		await this.loadAssets();
 
-		this.logStep("startup: assets loaded", {
-			sprites: Object.keys(this.sprites).length,
-			maps: Object.keys(this.maps).length,
-			sounds: Object.keys(this.sounds).length,
-			music: Object.keys(this.music).length,
-			assets: Object.keys(this.assets).length,
-		});
+		this.logStep(
+			"startup: assets loaded",
+			{
+				sprites:
+					Object.keys(
+						this
+							.sprites,
+					)
+						.length,
+				maps:
+					Object.keys(
+						this
+							.maps,
+					)
+						.length,
+				sounds:
+					Object.keys(
+						this
+							.sounds,
+					)
+						.length,
+				music:
+					Object.keys(
+						this
+							.music,
+					)
+						.length,
+				assets:
+					Object.keys(
+						this
+							.assets,
+					)
+						.length,
+			},
+		);
 
-		this.logStep("startup: waiting for asset readiness");
+		this.logStep(
+			"startup: waiting for asset readiness",
+		);
 		// Step 2: Wait for assets to be ready
 		await this.waitForAssetsReady();
-		this.logStep("startup: assets ready");
+		this.logStep(
+			"startup: assets ready",
+		);
 
-		this.logStep("startup: initializing VM");
+		this.logStep(
+			"startup: initializing VM",
+		);
 		// Step 3: Initialize VM and execute code
 		this.initializeVM();
-		this.logStep("startup: VM ready", {
-			sourceFiles: Object.keys(this.options.sources || {}).length,
-		});
+		this.logStep(
+			"startup: VM ready",
+			{
+				sourceFiles:
+					Object.keys(
+						this
+							.options
+							.sources ||
+							{},
+					)
+						.length,
+			},
+		);
 
-		this.logStep("startup: starting game loop");
+		this.logStep(
+			"startup: starting game loop",
+		);
 		// Step 4: Start game loop
 		this.startGameLoop();
-		this.logStep("startup: completed");
+		this.logStep(
+			"startup: completed",
+		);
 	}
 
 	/**
@@ -191,14 +345,20 @@ export class RuntimeOrchestrator {
 	 * Populates the runtime's asset collections (sprites, maps, sounds, etc.).
 	 */
 	private async loadAssets(): Promise<void> {
-		const collections = await this.assetLoader.loadAll();
+		const collections =
+			await this.assetLoader.loadAll();
 
 		// Populate runtime asset collections from loader results
-		this.sprites = collections.sprites;
-		this.maps = collections.maps;
-		this.sounds = collections.sounds;
-		this.music = collections.music;
-		this.assets = collections.assets;
+		this.sprites =
+			collections.sprites;
+		this.maps =
+			collections.maps;
+		this.sounds =
+			collections.sounds;
+		this.music =
+			collections.music;
+		this.assets =
+			collections.assets;
 	}
 
 	/**
@@ -210,25 +370,44 @@ export class RuntimeOrchestrator {
 	 * @returns {Promise<void>} Resolves when all assets are ready
 	 */
 	private async waitForAssetsReady(): Promise<void> {
-		return new Promise((resolve) => {
-			const checkReady = () => {
-				if (this.assetLoader.isReady()) {
-					this.system.setLoading(100);
-					resolve();
-					return;
-				}
+		return new Promise(
+			(
+				resolve,
+			) => {
+				const checkReady =
+					() => {
+						if (
+							this.assetLoader.isReady()
+						) {
+							this.system.setLoading(
+								100,
+							);
+							resolve();
+							return;
+						}
 
-				// Update loading progress and display loading bar
-				const progress = this.assetLoader.getProgress();
-				this.system.setLoading(Math.floor(progress * 100));
-				this.assetLoader.showLoadingBar(this.screen.getInterface());
+						// Update loading progress and display loading bar
+						const progress =
+							this.assetLoader.getProgress();
+						this.system.setLoading(
+							Math.floor(
+								progress *
+									100,
+							),
+						);
+						this.assetLoader.showLoadingBar(
+							this.screen.getInterface(),
+						);
 
-				// Poll asset readiness on next animation frame
-				requestAnimationFrame(checkReady);
-			};
+						// Poll asset readiness on next animation frame
+						requestAnimationFrame(
+							checkReady,
+						);
+					};
 
-			checkReady();
-		});
+				checkReady();
+			},
+		);
 	}
 
 	/**
@@ -240,34 +419,82 @@ export class RuntimeOrchestrator {
 	 * @param def Scene definition object from LootiScript
 	 * @returns Converted scene definition with JavaScript functions
 	 */
-	private convertSceneDefinition(def: any): any {
-		if (!def || typeof def !== "object") {
+	private convertSceneDefinition(
+		def: any,
+	): any {
+		if (
+			!def ||
+			typeof def !==
+				"object"
+		) {
 			return def;
 		}
 
 		// Verify VM is fully initialized before converting scene definitions
 		// Scene conversion requires the processor to convert Routine objects to functions
-		if (!this.vm?.runner?.main_thread?.processor) {
-			console.warn(`[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.`);
+		if (
+			!this
+				.vm
+				?.runner
+				?.main_thread
+				?.processor
+		) {
+			console.warn(
+				`[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.`,
+			);
 			return def;
 		}
 
-		const processor = this.vm.runner.main_thread.processor;
-		const context = this.vm.context;
-		const converted: any = {};
+		const processor =
+			this.vm
+				.runner
+				.main_thread
+				.processor;
+		const context =
+			this.vm
+				.context;
+		const converted: any =
+			{};
 
 		for (const key in def) {
-			const value = def[key];
+			const value =
+				def[
+					key
+				];
 
 			// Convert Routine objects to JavaScript functions
-			if (value instanceof Routine) {
-				converted[key] = processor.routineAsFunction(value, context);
-			} else if (value && typeof value === "object" && !Array.isArray(value)) {
+			if (
+				value instanceof
+				Routine
+			) {
+				converted[
+					key
+				] =
+					processor.routineAsFunction(
+						value,
+						context,
+					);
+			} else if (
+				value &&
+				typeof value ===
+					"object" &&
+				!Array.isArray(
+					value,
+				)
+			) {
 				// Recursively convert nested objects
-				converted[key] = this.convertSceneDefinition(value);
+				converted[
+					key
+				] =
+					this.convertSceneDefinition(
+						value,
+					);
 			} else {
 				// Copy other values as-is
-				converted[key] = value;
+				converted[
+					key
+				] =
+					value;
 			}
 		}
 
@@ -284,159 +511,382 @@ export class RuntimeOrchestrator {
 	 * @throws {Error} If VM initialization or script execution fails
 	 */
 	private initializeVM(): void {
-		this.logStep("vm: building meta/global APIs");
+		this.logStep(
+			"vm: building meta/global APIs",
+		);
 		// Setup meta functions - built-in functions available to LootiScript code
-		const meta: Partial<MetaFunctions> = {
-			print: (text: any) => {
-				if ((typeof text === "object" || typeof text === "function") && this.vm) {
-					text = this.vm.toString(text);
-				}
-				if (this.listener.log) {
-					this.listener.log(String(text));
-				} else {
-					console.log(text);
-				}
-			},
-		};
+		const meta: Partial<MetaFunctions> =
+			{
+				print:
+					(
+						text: any,
+					) => {
+						if (
+							(typeof text ===
+								"object" ||
+								typeof text ===
+									"function") &&
+							this
+								.vm
+						) {
+							text =
+								this.vm.toString(
+									text,
+								);
+						}
+						if (
+							this
+								.listener
+								.log
+						) {
+							this.listener.log(
+								String(
+									text,
+								),
+							);
+						} else {
+							console.log(
+								text,
+							);
+						}
+					},
+			};
 
 		// Setup global API - these objects/functions are available to all LootiScript code
 		// This is the bridge between the runtime and the game code
-		const inputStates = this.input.getStates();
+		const inputStates =
+			this.input.getStates();
 		const global: Partial<GlobalAPI> & {
 			ObjectPool: typeof ObjectPool;
 			Palette: typeof Palette;
 		} = {
-			screen: this.screen.getInterface(),
-			audio: this.audio.getInterface(),
-			keyboard: inputStates.keyboard,
-			mouse: inputStates.mouse,
-			touch: inputStates.touch,
-			gamepad: inputStates.gamepad,
-			sprites: this.sprites,
-			maps: this.maps,
-			sounds: this.sounds,
-			music: this.music,
-			assets: this.assets,
-			system: this.system.getAPI(),
-			scene: (name: string, def: any) => {
-				// Convert Routine objects to JavaScript functions before registering
-				// Note: this.vm is available because scene() is called after VM creation
-				const convertedDef = this.convertSceneDefinition(def);
-				this.sceneManager.registerScene(name, convertedDef);
-			},
-			route: (path: string, sceneName: string) => this.sceneManager.registerRoute(path, sceneName),
-			router: this.sceneManager.router.getInterface(),
+			screen:
+				this.screen.getInterface(),
+			audio:
+				this.audio.getInterface(),
+			keyboard:
+				inputStates.keyboard,
+			mouse:
+				inputStates.mouse,
+			touch:
+				inputStates.touch,
+			gamepad:
+				inputStates.gamepad,
+			sprites:
+				this
+					.sprites,
+			maps:
+				this
+					.maps,
+			sounds:
+				this
+					.sounds,
+			music:
+				this
+					.music,
+			assets:
+				this
+					.assets,
+			system:
+				this.system.getAPI(),
+			scene:
+				(
+					name: string,
+					def: any,
+				) => {
+					// Convert Routine objects to JavaScript functions before registering
+					// Note: this.vm is available because scene() is called after VM creation
+					const convertedDef =
+						this.convertSceneDefinition(
+							def,
+						);
+					this.sceneManager.registerScene(
+						name,
+						convertedDef,
+					);
+				},
+			route:
+				(
+					path: string,
+					sceneName: string,
+				) =>
+					this.sceneManager.registerRoute(
+						path,
+						sceneName,
+					),
+			router:
+				this.sceneManager.router.getInterface(),
 			// Dynamic asset constructors - allow creating assets at runtime
 			// These wrap the core package constructors for use in LootiScript
-			Image: Image,
-			Sprite: Sprite,
+			Image:
+				Image,
+			Sprite:
+				Sprite,
 			Map: Map,
-			Sound: createSoundClass(this.audio),
-			Palette: Palette,
-			Random: Random,
-			ObjectPool: ObjectPool,
+			Sound:
+				createSoundClass(
+					this
+						.audio,
+				),
+			Palette:
+				Palette,
+			Random:
+				Random,
+			ObjectPool:
+				ObjectPool,
 			// Farcaster Mini Apps APIs
-			player: this.player.getInterface(),
-			wallet: this.wallet.getInterface(),
+			player:
+				this.player.getInterface(),
+			wallet:
+				this.wallet.getInterface(),
 			evm: this.evm.getInterface(),
-			actions: this.actions.getInterface(),
+			actions:
+				this.actions.getInterface(),
 			// HTTP client for external APIs
-			http: this.http.getInterface(),
+			http:
+				this.http.getInterface(),
 		};
 
 		// Initialize VM with meta functions and global API
 		// The VM executes compiled LootiScript bytecode
-		this.vm = new L8BVM(meta, global, this.options.namespace || "/l8b", this.options.preserveStorage || false);
+		this.vm =
+			new L8BVM(
+				meta,
+				global,
+				this
+					.options
+					.namespace ||
+					"/l8b",
+				this
+					.options
+					.preserveStorage ||
+					false,
+			);
 
 		// Create source updater for hot reload
-		this.sourceUpdater = new SourceUpdater(this.vm, this.listener);
+		this.sourceUpdater =
+			new SourceUpdater(
+				this
+					.vm,
+				this
+					.listener,
+			);
 
 		// Create time machine for debugging
-		this.timeMachine = new TimeMachine(this as any);
+		this.timeMachine =
+			new TimeMachine(
+				this as any,
+			);
 
 		// Setup time machine status callback
-		if (this.listener.postMessage) {
-			this.timeMachine.onStatus((status: any) => {
-				this.listener.postMessage?.({
-					name: "time_machine_status",
-					status,
-				});
-			});
+		if (
+			this
+				.listener
+				.postMessage
+		) {
+			this.timeMachine.onStatus(
+				(
+					status: any,
+				) => {
+					this.listener.postMessage?.(
+						{
+							name:
+								"time_machine_status",
+							status,
+						},
+					);
+				},
+			);
 		}
 
 		// Load pre-compiled routines (production) or source files (development)
-		const compiledRoutines = this.options.compiledRoutines || {};
-		const sources = this.options.sources || {};
+		const compiledRoutines =
+			this
+				.options
+				.compiledRoutines ||
+			{};
+		const sources =
+			this
+				.options
+				.sources ||
+			{};
 
-		if (Object.keys(compiledRoutines).length > 0) {
+		if (
+			Object.keys(
+				compiledRoutines,
+			)
+				.length >
+			0
+		) {
 			// Production: Load pre-compiled routines
-			this.logStep("vm: loading compiled routines", {
-				files: Object.keys(compiledRoutines),
-			});
-			for (const [file, routine] of Object.entries(compiledRoutines)) {
+			this.logStep(
+				"vm: loading compiled routines",
+				{
+					files:
+						Object.keys(
+							compiledRoutines,
+						),
+				},
+			);
+			for (const [
+				file,
+				routine,
+			] of Object.entries(
+				compiledRoutines,
+			)) {
 				try {
-					this.vm.loadRoutine(routine, file);
+					this.vm.loadRoutine(
+						routine,
+						file,
+					);
 				} catch (err: any) {
-					this.reportError({
-						error: err.message || String(err),
-						type: "compile",
-						stack: err.stack,
-						file,
-					});
-					this.logStep("vm: routine load error", {
-						file,
-						message: err?.message || String(err),
-					});
+					this.reportError(
+						{
+							error:
+								err.message ||
+								String(
+									err,
+								),
+							type:
+								"compile",
+							stack:
+								err.stack,
+							file,
+						},
+					);
+					this.logStep(
+						"vm: routine load error",
+						{
+							file,
+							message:
+								err?.message ||
+								String(
+									err,
+								),
+						},
+					);
 				}
 			}
-		} else if (Object.keys(sources).length > 0) {
+		} else if (
+			Object.keys(
+				sources,
+			)
+				.length >
+			0
+		) {
 			// Development: Compile and execute source files
-			this.logStep("vm: executing sources", {
-				files: Object.keys(sources),
-			});
-			for (const [file, src] of Object.entries(sources)) {
-				this.sourceUpdater.updateSource(file, src, false);
+			this.logStep(
+				"vm: executing sources",
+				{
+					files:
+						Object.keys(
+							sources,
+						),
+				},
+			);
+			for (const [
+				file,
+				src,
+			] of Object.entries(
+				sources,
+			)) {
+				this.sourceUpdater.updateSource(
+					file,
+					src,
+					false,
+				);
 			}
 		} else {
-			this.logStep("vm: no sources or compiled routines provided");
+			this.logStep(
+				"vm: no sources or compiled routines provided",
+			);
 		}
 
 		// Call init() if it exists
 		// This allows user code to do setup, but routes should already be registered
 		try {
-			this.vm.call("init");
-			this.logStep("vm: init() executed");
+			this.vm.call(
+				"init",
+			);
+			this.logStep(
+				"vm: init() executed",
+			);
 		} catch (err: any) {
-			this.reportError({
-				error: err.message || String(err),
-				type: "init",
-				stack: err.stack,
-			});
-			this.logStep("vm: init() error", {
-				message: err?.message || String(err),
-			});
+			this.reportError(
+				{
+					error:
+						err.message ||
+						String(
+							err,
+						),
+					type:
+						"init",
+					stack:
+						err.stack,
+				},
+			);
+			this.logStep(
+				"vm: init() error",
+				{
+					message:
+						err?.message ||
+						String(
+							err,
+						),
+				},
+			);
 		}
 
 		// Initialize router to handle initial URL
 		// This must be called after routes are registered (from source execution)
 		// but before the game loop starts, so the correct scene is active from the start
-		const registeredScenes = this.sceneManager.registry.getNames();
-		this.logStep("router: initializing", {
-			registeredScenes: registeredScenes.length,
-			sceneNames: registeredScenes,
-		});
+		const registeredScenes =
+			this.sceneManager.registry.getNames();
+		this.logStep(
+			"router: initializing",
+			{
+				registeredScenes:
+					registeredScenes.length,
+				sceneNames:
+					registeredScenes,
+			},
+		);
 		this.sceneManager.router.init();
-		const activeScene = this.sceneManager.hasActiveScene() ? (this.sceneManager as any).getCurrentSceneName?.() || "unknown" : null;
-		const routerState = this.sceneManager.router.getState();
-		this.logStep("router: initialized", {
-			activeScene: activeScene || "none",
-			path: routerState.path,
-			hasActiveScene: this.sceneManager.hasActiveScene(),
-		});
+		const activeScene =
+			this.sceneManager.hasActiveScene()
+				? (
+						this
+							.sceneManager as any
+					).getCurrentSceneName?.() ||
+					"unknown"
+				: null;
+		const routerState =
+			this.sceneManager.router.getState();
+		this.logStep(
+			"router: initialized",
+			{
+				activeScene:
+					activeScene ||
+					"none",
+				path:
+					routerState.path,
+				hasActiveScene:
+					this.sceneManager.hasActiveScene(),
+			},
+		);
 
 		// Notify listener that runtime startup is complete
-		if (this.listener.postMessage) {
-			this.listener.postMessage({ name: "started" });
+		if (
+			this
+				.listener
+				.postMessage
+		) {
+			this.listener.postMessage(
+				{
+					name:
+						"started",
+				},
+			);
 		}
 	}
 
@@ -447,15 +897,28 @@ export class RuntimeOrchestrator {
 	 * Binds update, draw, and tick handlers to the loop.
 	 */
 	private startGameLoop(): void {
-		this.logStep("loop: creating game loop");
-		this.gameLoop = new GameLoop({
-			onUpdate: () => this.handleUpdate(),
-			onDraw: () => this.handleDraw(),
-			onTick: () => this.handleTick(),
-		});
+		this.logStep(
+			"loop: creating game loop",
+		);
+		this.gameLoop =
+			new GameLoop(
+				{
+					onUpdate:
+						() =>
+							this.handleUpdate(),
+					onDraw:
+						() =>
+							this.handleDraw(),
+					onTick:
+						() =>
+							this.handleTick(),
+				},
+			);
 
 		this.gameLoop.start();
-		this.logStep("loop: started");
+		this.logStep(
+			"loop: started",
+		);
 	}
 
 	/**
@@ -468,45 +931,86 @@ export class RuntimeOrchestrator {
 	 * 4. Handles any runtime errors
 	 */
 	private handleUpdate(): void {
-		if (!this.vm) return;
+		if (
+			!this
+				.vm
+		)
+			return;
 
-		this.frameCount++;
+		this
+			.frameCount++;
 
 		// Poll input devices and update their state
 		this.input.update();
 
 		// Batch debug updates to reduce console spam (only log every N frames)
-		if (this.frameCount % this.DEBUG_UPDATE_FREQUENCY === 0) {
+		if (
+			this
+				.frameCount %
+				this
+					.DEBUG_UPDATE_FREQUENCY ===
+			0
+		) {
 			this.debugInputs();
 			this.debugScreen();
 		}
 
 		// Update system FPS metric for game code access
-		if (this.gameLoop) {
-			this.system.setFPS(this.gameLoop.getFPS());
+		if (
+			this
+				.gameLoop
+		) {
+			this.system.setFPS(
+				this.gameLoop.getFPS(),
+			);
 		}
 
 		try {
 			// Update scene manager (priority) - scenes handle their own update logic
-			if (this.sceneManager.hasActiveScene()) {
+			if (
+				this.sceneManager.hasActiveScene()
+			) {
 				this.sceneManager.update();
 			} else {
 				// Fallback: Call user's update() function when no scene is active
-				this.vm.call("update");
+				this.vm.call(
+					"update",
+				);
 			}
 
 			// Report any errors that occurred during update
-			if (this.vm.error_info) {
-				const err: any = Object.assign({}, this.vm.error_info);
-				err.type = "update";
-				this.reportError(err);
+			if (
+				this
+					.vm
+					.error_info
+			) {
+				const err: any =
+					Object.assign(
+						{},
+						this
+							.vm
+							.error_info,
+					);
+				err.type =
+					"update";
+				this.reportError(
+					err,
+				);
 			}
 		} catch (err: any) {
-			this.reportError({
-				error: err.message || String(err),
-				type: "update",
-				stack: err.stack,
-			});
+			this.reportError(
+				{
+					error:
+						err.message ||
+						String(
+							err,
+						),
+					type:
+						"update",
+					stack:
+						err.stack,
+				},
+			);
 		}
 	}
 
@@ -520,20 +1024,40 @@ export class RuntimeOrchestrator {
 	 * Performance sensitive: only runs if debug.input is true.
 	 */
 	private debugInputs(): void {
-		if (!this.options.debug?.input) {
+		if (
+			!this
+				.options
+				.debug
+				?.input
+		) {
 			return;
 		}
-		const snapshot = this.createInputSnapshot();
-		if (!snapshot) {
+		const snapshot =
+			this.createInputSnapshot();
+		if (
+			!snapshot
+		) {
 			return;
 		}
 
 		// Optimization: Shallow compare instead of JSON.stringify
-		if (this.lastInputDebug && this.shallowEqual(snapshot, this.lastInputDebug)) {
+		if (
+			this
+				.lastInputDebug &&
+			this.shallowEqual(
+				snapshot,
+				this
+					.lastInputDebug,
+			)
+		) {
 			return;
 		}
-		this.lastInputDebug = snapshot;
-		console.debug("[@l8b/runtime][input]", snapshot);
+		this.lastInputDebug =
+			snapshot;
+		console.debug(
+			"[@l8b/runtime][input]",
+			snapshot,
+		);
 	}
 
 	/**
@@ -543,44 +1067,95 @@ export class RuntimeOrchestrator {
 	 * Useful for debugging scaling and resizing issues.
 	 */
 	private debugScreen(): void {
-		if (!this.options.debug?.screen) {
-			return;
-		}
-		const canvas = this.screen.getCanvas();
-		const current = {
-			width: this.screen.width,
-			height: this.screen.height,
-			canvasWidth: canvas.width,
-			canvasHeight: canvas.height,
-		};
-
-		// Optimization: Shallow compare key metrics
 		if (
-			this.lastScreenDebug &&
-			current.width === this.lastScreenDebug.width &&
-			current.height === this.lastScreenDebug.height &&
-			current.canvasWidth === this.lastScreenDebug.canvasWidth &&
-			current.canvasHeight === this.lastScreenDebug.canvasHeight
+			!this
+				.options
+				.debug
+				?.screen
 		) {
 			return;
 		}
-		this.lastScreenDebug = current;
-		console.debug("[@l8b/runtime][screen]", {
-			screen: {
-				width: this.screen.width,
-				height: this.screen.height,
+		const canvas =
+			this.screen.getCanvas();
+		const current =
+			{
+				width:
+					this
+						.screen
+						.width,
+				height:
+					this
+						.screen
+						.height,
+				canvasWidth:
+					canvas.width,
+				canvasHeight:
+					canvas.height,
+			};
+
+		// Optimization: Shallow compare key metrics
+		if (
+			this
+				.lastScreenDebug &&
+			current.width ===
+				this
+					.lastScreenDebug
+					.width &&
+			current.height ===
+				this
+					.lastScreenDebug
+					.height &&
+			current.canvasWidth ===
+				this
+					.lastScreenDebug
+					.canvasWidth &&
+			current.canvasHeight ===
+				this
+					.lastScreenDebug
+					.canvasHeight
+		) {
+			return;
+		}
+		this.lastScreenDebug =
+			current;
+		console.debug(
+			"[@l8b/runtime][screen]",
+			{
+				screen:
+					{
+						width:
+							this
+								.screen
+								.width,
+						height:
+							this
+								.screen
+								.height,
+					},
+				canvas:
+					{
+						width:
+							canvas.width,
+						height:
+							canvas.height,
+						clientWidth:
+							canvas.clientWidth,
+						clientHeight:
+							canvas.clientHeight,
+						style:
+							{
+								width:
+									canvas
+										.style
+										.width,
+								height:
+									canvas
+										.style
+										.height,
+							},
+					},
 			},
-			canvas: {
-				width: canvas.width,
-				height: canvas.height,
-				clientWidth: canvas.clientWidth,
-				clientHeight: canvas.clientHeight,
-				style: {
-					width: canvas.style.width,
-					height: canvas.style.height,
-				},
-			},
-		});
+		);
 	}
 
 	/**
@@ -594,38 +1169,105 @@ export class RuntimeOrchestrator {
 	 * @param {any} obj2 - Second object
 	 * @returns {boolean} True if objects are shallowly equal
 	 */
-	private shallowEqual(obj1: any, obj2: any): boolean {
-		if (obj1 === obj2) return true;
-		if (!obj1 || !obj2 || typeof obj1 !== "object" || typeof obj2 !== "object") return false;
+	private shallowEqual(
+		obj1: any,
+		obj2: any,
+	): boolean {
+		if (
+			obj1 ===
+			obj2
+		)
+			return true;
+		if (
+			!obj1 ||
+			!obj2 ||
+			typeof obj1 !==
+				"object" ||
+			typeof obj2 !==
+				"object"
+		)
+			return false;
 
-		const keys1 = Object.keys(obj1);
-		const keys2 = Object.keys(obj2);
-		if (keys1.length !== keys2.length) return false;
+		const keys1 =
+			Object.keys(
+				obj1,
+			);
+		const keys2 =
+			Object.keys(
+				obj2,
+			);
+		if (
+			keys1.length !==
+			keys2.length
+		)
+			return false;
 
 		// Optimized: only check one level deep, avoid recursion for performance
 		for (const key of keys1) {
-			const val1 = obj1[key];
-			const val2 = obj2[key];
+			const val1 =
+				obj1[
+					key
+				];
+			const val2 =
+				obj2[
+					key
+				];
 
 			// Fast path for primitives
-			if (val1 === val2) continue;
+			if (
+				val1 ===
+				val2
+			)
+				continue;
 
 			// Handle null/undefined
-			if (val1 == null || val2 == null) {
-				if (val1 !== val2) return false;
+			if (
+				val1 ==
+					null ||
+				val2 ==
+					null
+			) {
+				if (
+					val1 !==
+					val2
+				)
+					return false;
 				continue;
 			}
 
 			// Only one level of nesting for performance
-			if (typeof val1 === "object" && typeof val2 === "object") {
+			if (
+				typeof val1 ===
+					"object" &&
+				typeof val2 ===
+					"object"
+			) {
 				// Quick check: same keys?
-				const keys1Nested = Object.keys(val1);
-				const keys2Nested = Object.keys(val2);
-				if (keys1Nested.length !== keys2Nested.length) return false;
+				const keys1Nested =
+					Object.keys(
+						val1,
+					);
+				const keys2Nested =
+					Object.keys(
+						val2,
+					);
+				if (
+					keys1Nested.length !==
+					keys2Nested.length
+				)
+					return false;
 
 				// Compare values (only one level deep)
 				for (const nestedKey of keys1Nested) {
-					if (val1[nestedKey] !== val2[nestedKey]) return false;
+					if (
+						val1[
+							nestedKey
+						] !==
+						val2[
+							nestedKey
+						]
+					)
+						return false;
 				}
 			} else {
 				return false;
@@ -648,16 +1290,29 @@ export class RuntimeOrchestrator {
 		touch?: any;
 		gamepad?: any;
 	} | null {
-		const inputDebug = this.options.debug?.input;
-		if (!inputDebug) {
+		const inputDebug =
+			this
+				.options
+				.debug
+				?.input;
+		if (
+			!inputDebug
+		) {
 			return null;
 		}
-		const enabledChannels = this.getEnabledInputChannels(inputDebug);
-		if (enabledChannels.length === 0) {
+		const enabledChannels =
+			this.getEnabledInputChannels(
+				inputDebug,
+			);
+		if (
+			enabledChannels.length ===
+			0
+		) {
 			return null;
 		}
 
-		const states = this.input.getStates();
+		const states =
+			this.input.getStates();
 		const snapshot: {
 			keyboard?: any;
 			mouse?: any;
@@ -665,62 +1320,219 @@ export class RuntimeOrchestrator {
 			gamepad?: any;
 		} = {};
 
-		if (enabledChannels.includes("touch")) {
-			snapshot.touch = {
-				touching: states.touch.touching,
-				press: states.touch.press,
-				release: states.touch.release,
-				x: Number(states.touch.x?.toFixed?.(2) ?? states.touch.x),
-				y: Number(states.touch.y?.toFixed?.(2) ?? states.touch.y),
-				count: states.touch.touches?.length ?? 0,
-			};
+		if (
+			enabledChannels.includes(
+				"touch",
+			)
+		) {
+			snapshot.touch =
+				{
+					touching:
+						states
+							.touch
+							.touching,
+					press:
+						states
+							.touch
+							.press,
+					release:
+						states
+							.touch
+							.release,
+					x: Number(
+						states.touch.x?.toFixed?.(
+							2,
+						) ??
+							states
+								.touch
+								.x,
+					),
+					y: Number(
+						states.touch.y?.toFixed?.(
+							2,
+						) ??
+							states
+								.touch
+								.y,
+					),
+					count:
+						states
+							.touch
+							.touches
+							?.length ??
+						0,
+				};
 		}
 
-		if (enabledChannels.includes("mouse")) {
-			snapshot.mouse = {
-				pressed: states.mouse.pressed,
-				left: states.mouse.left,
-				x: Number(states.mouse.x?.toFixed?.(2) ?? states.mouse.x),
-				y: Number(states.mouse.y?.toFixed?.(2) ?? states.mouse.y),
-				wheel: states.mouse.wheel,
-			};
+		if (
+			enabledChannels.includes(
+				"mouse",
+			)
+		) {
+			snapshot.mouse =
+				{
+					pressed:
+						states
+							.mouse
+							.pressed,
+					left:
+						states
+							.mouse
+							.left,
+					x: Number(
+						states.mouse.x?.toFixed?.(
+							2,
+						) ??
+							states
+								.mouse
+								.x,
+					),
+					y: Number(
+						states.mouse.y?.toFixed?.(
+							2,
+						) ??
+							states
+								.mouse
+								.y,
+					),
+					wheel:
+						states
+							.mouse
+							.wheel,
+				};
 		}
 
-		if (enabledChannels.includes("keyboard")) {
-			snapshot.keyboard = {
-				UP: states.keyboard.UP,
-				DOWN: states.keyboard.DOWN,
-				LEFT: states.keyboard.LEFT,
-				RIGHT: states.keyboard.RIGHT,
-				press: states.keyboard.press,
-				release: states.keyboard.release,
-			};
+		if (
+			enabledChannels.includes(
+				"keyboard",
+			)
+		) {
+			snapshot.keyboard =
+				{
+					UP: states
+						.keyboard
+						.UP,
+					DOWN:
+						states
+							.keyboard
+							.DOWN,
+					LEFT:
+						states
+							.keyboard
+							.LEFT,
+					RIGHT:
+						states
+							.keyboard
+							.RIGHT,
+					press:
+						states
+							.keyboard
+							.press,
+					release:
+						states
+							.keyboard
+							.release,
+				};
 		}
 
-		if (enabledChannels.includes("gamepad")) {
-			snapshot.gamepad = {
-				count: this.input.gamepad.count,
-				A: states.gamepad.A,
-				B: states.gamepad.B,
-				UP: states.gamepad.UP,
-				DOWN: states.gamepad.DOWN,
-				LEFT: states.gamepad.LEFT,
-				RIGHT: states.gamepad.RIGHT,
-			};
+		if (
+			enabledChannels.includes(
+				"gamepad",
+			)
+		) {
+			snapshot.gamepad =
+				{
+					count:
+						this
+							.input
+							.gamepad
+							.count,
+					A: states
+						.gamepad
+						.A,
+					B: states
+						.gamepad
+						.B,
+					UP: states
+						.gamepad
+						.UP,
+					DOWN:
+						states
+							.gamepad
+							.DOWN,
+					LEFT:
+						states
+							.gamepad
+							.LEFT,
+					RIGHT:
+						states
+							.gamepad
+							.RIGHT,
+				};
 		}
 
-		return Object.keys(snapshot).length === 0 ? null : snapshot;
+		return Object.keys(
+			snapshot,
+		)
+			.length ===
+			0
+			? null
+			: snapshot;
 	}
 
-	private getEnabledInputChannels(setting: NonNullable<RuntimeDebugOptions["input"]>): Array<"keyboard" | "mouse" | "touch" | "gamepad"> {
-		if (typeof setting === "boolean") {
-			return setting ? ["keyboard", "mouse", "touch", "gamepad"] : [];
+	private getEnabledInputChannels(
+		setting: NonNullable<
+			RuntimeDebugOptions["input"]
+		>,
+	): Array<
+		| "keyboard"
+		| "mouse"
+		| "touch"
+		| "gamepad"
+	> {
+		if (
+			typeof setting ===
+			"boolean"
+		) {
+			return setting
+				? [
+						"keyboard",
+						"mouse",
+						"touch",
+						"gamepad",
+					]
+				: [];
 		}
-		const channels: Array<"keyboard" | "mouse" | "touch" | "gamepad"> = [];
-		if (setting.keyboard) channels.push("keyboard");
-		if (setting.mouse) channels.push("mouse");
-		if (setting.touch) channels.push("touch");
-		if (setting.gamepad) channels.push("gamepad");
+		const channels: Array<
+			| "keyboard"
+			| "mouse"
+			| "touch"
+			| "gamepad"
+		> = [];
+		if (
+			setting.keyboard
+		)
+			channels.push(
+				"keyboard",
+			);
+		if (
+			setting.mouse
+		)
+			channels.push(
+				"mouse",
+			);
+		if (
+			setting.touch
+		)
+			channels.push(
+				"touch",
+			);
+		if (
+			setting.gamepad
+		)
+			channels.push(
+				"gamepad",
+			);
 		return channels;
 	}
 
@@ -728,33 +1540,65 @@ export class RuntimeOrchestrator {
 	 * Handle draw callback from game loop
 	 */
 	private handleDraw(): void {
-		if (!this.vm) return;
+		if (
+			!this
+				.vm
+		)
+			return;
 
 		try {
 			// Draw scene manager (priority) - scenes handle their own rendering
-			if (this.sceneManager.hasActiveScene()) {
+			if (
+				this.sceneManager.hasActiveScene()
+			) {
 				this.sceneManager.draw();
 			} else {
 				// Fallback: Call user's draw() function when no scene is active
-				this.vm.call("draw");
+				this.vm.call(
+					"draw",
+				);
 			}
 
 			// Report any errors that occurred during draw
-			if (this.vm.error_info) {
-				const err: any = Object.assign({}, this.vm.error_info);
-				err.type = "draw";
-				this.reportError(err);
+			if (
+				this
+					.vm
+					.error_info
+			) {
+				const err: any =
+					Object.assign(
+						{},
+						this
+							.vm
+							.error_info,
+					);
+				err.type =
+					"draw";
+				this.reportError(
+					err,
+				);
 			}
 		} catch (err: any) {
-			this.reportError({
-				error: err.message || String(err),
-				type: "draw",
-				stack: err.stack,
-			});
+			this.reportError(
+				{
+					error:
+						err.message ||
+						String(
+							err,
+						),
+					type:
+						"draw",
+					stack:
+						err.stack,
+				},
+			);
 		}
 
 		// Time machine step after draw completes (captures frame state for debugging)
-		if (this.timeMachine) {
+		if (
+			this
+				.timeMachine
+		) {
 			this.timeMachine.step();
 		}
 	}
@@ -763,8 +1607,15 @@ export class RuntimeOrchestrator {
 	 * Handle tick callback (for threads/coroutines)
 	 */
 	private handleTick(): void {
-		if (this.vm?.runner) {
-			(this.vm.runner as any).tick?.();
+		if (
+			this.vm
+				?.runner
+		) {
+			(
+				this
+					.vm
+					.runner as any
+			).tick?.();
 		}
 	}
 
@@ -785,17 +1636,38 @@ export class RuntimeOrchestrator {
 	/**
 	 * Update source code (hot reload)
 	 */
-	updateSource(file: string, src: string, reinit = false): boolean {
-		if (!this.sourceUpdater) return false;
-		return this.sourceUpdater.updateSource(file, src, reinit);
+	updateSource(
+		file: string,
+		src: string,
+		reinit = false,
+	): boolean {
+		if (
+			!this
+				.sourceUpdater
+		)
+			return false;
+		return this.sourceUpdater.updateSource(
+			file,
+			src,
+			reinit,
+		);
 	}
 
 	/**
 	 * Handle incoming messages (including time machine commands)
 	 */
-	handleMessage(message: any): void {
-		if (message.name === "time_machine" && this.timeMachine) {
-			this.timeMachine.messageReceived(message);
+	handleMessage(
+		message: any,
+	): void {
+		if (
+			message.name ===
+				"time_machine" &&
+			this
+				.timeMachine
+		) {
+			this.timeMachine.messageReceived(
+				message,
+			);
 		}
 	}
 
@@ -803,7 +1675,9 @@ export class RuntimeOrchestrator {
 	 * Stop runtime
 	 */
 	stop(): void {
-		this.logStep("lifecycle: stop requested");
+		this.logStep(
+			"lifecycle: stop requested",
+		);
 		this.gameLoop?.stop();
 	}
 
@@ -811,7 +1685,9 @@ export class RuntimeOrchestrator {
 	 * Resume runtime
 	 */
 	resume(): void {
-		this.logStep("lifecycle: resume requested");
+		this.logStep(
+			"lifecycle: resume requested",
+		);
 		this.gameLoop?.resume();
 	}
 
@@ -825,17 +1701,39 @@ export class RuntimeOrchestrator {
 	/**
 	 * Run command (for console)
 	 */
-	runCommand(command: string, callback?: (result: any) => void): void {
-		if (!this.vm) return;
+	runCommand(
+		command: string,
+		callback?: (
+			result: any,
+		) => void,
+	): void {
+		if (
+			!this
+				.vm
+		)
+			return;
 
 		try {
-			const result = this.vm.run(command, 3000, "console");
-			if (callback) {
-				callback(result);
+			const result =
+				this.vm.run(
+					command,
+					3000,
+					"console",
+				);
+			if (
+				callback
+			) {
+				callback(
+					result,
+				);
 			}
 		} catch (err: any) {
-			if (callback) {
-				callback(`Error: ${err.message || String(err)}`);
+			if (
+				callback
+			) {
+				callback(
+					`Error: ${err.message || String(err)}`,
+				);
 			}
 		}
 	}
@@ -846,36 +1744,63 @@ export class RuntimeOrchestrator {
 	 * Enhances error objects with diagnostic information including error codes,
 	 * context, suggestions, and formatted messages for better error reporting.
 	 */
-	private formatError(error: any): any {
+	private formatError(
+		error: any,
+	): any {
 		// If error already has enhanced info, return as-is
-		if (error.code || error.context || error.suggestions) {
+		if (
+			error.code ||
+			error.context ||
+			error.suggestions
+		) {
 			return error;
 		}
 
 		// Use diagnostics package to format error
-		const code = error.code || "E2005"; // Default to invalid operation
-		const diagnostic = createDiagnostic(code, {
-			file: error.file,
-			line: error.line,
-			column: error.column,
-			context: error.context,
-			suggestions: error.suggestions,
-			related: error.related,
-			stackTrace: error.stackTrace,
-			data: {
-				error: error.error || error.message,
-			},
-		});
+		const code =
+			error.code ||
+			"E2005"; // Default to invalid operation
+		const diagnostic =
+			createDiagnostic(
+				code,
+				{
+					file:
+						error.file,
+					line:
+						error.line,
+					column:
+						error.column,
+					context:
+						error.context,
+					suggestions:
+						error.suggestions,
+					related:
+						error.related,
+					stackTrace:
+						error.stackTrace,
+					data:
+						{
+							error:
+								error.error ||
+								error.message,
+						},
+				},
+			);
 
 		// Format for browser using diagnostics formatter
-		const formattedMessage = formatForBrowser(diagnostic);
+		const formattedMessage =
+			formatForBrowser(
+				diagnostic,
+			);
 
 		// Enhance error with formatted diagnostic information
-		const formatted: any = {
-			...error,
-			...diagnostic,
-			formatted: formattedMessage,
-		};
+		const formatted: any =
+			{
+				...error,
+				...diagnostic,
+				formatted:
+					formattedMessage,
+			};
 
 		return formatted;
 	}
@@ -883,30 +1808,70 @@ export class RuntimeOrchestrator {
 	/**
 	 * Report error to listener with enhanced formatting
 	 */
-	private reportError(error: any): void {
-		if (this.listener.reportError) {
-			const formatted = this.formatError(error);
-			this.listener.reportError(formatted);
+	private reportError(
+		error: any,
+	): void {
+		if (
+			this
+				.listener
+				.reportError
+		) {
+			const formatted =
+				this.formatError(
+					error,
+				);
+			this.listener.reportError(
+				formatted,
+			);
 		}
 	}
 
-	private logStep(message: string, payload?: unknown): void {
-		if (!this.options.debug?.lifecycle) {
+	private logStep(
+		message: string,
+		payload?: unknown,
+	): void {
+		if (
+			!this
+				.options
+				.debug
+				?.lifecycle
+		) {
 			return;
 		}
-		const prefix = "[@l8b/runtime][lifecycle]";
-		if (payload !== undefined) {
-			console.info(`${prefix} ${message}`, payload);
+		const prefix =
+			"[@l8b/runtime][lifecycle]";
+		if (
+			payload !==
+			undefined
+		) {
+			console.info(
+				`${prefix} ${message}`,
+				payload,
+			);
 		} else {
-			console.info(`${prefix} ${message}`);
+			console.info(
+				`${prefix} ${message}`,
+			);
 		}
 
-		if (this.listener.log) {
+		if (
+			this
+				.listener
+				.log
+		) {
 			try {
-				const serialized = payload === undefined ? "" : ` ${JSON.stringify(payload)}`;
-				this.listener.log(`${prefix} ${message}${serialized}`);
+				const serialized =
+					payload ===
+					undefined
+						? ""
+						: ` ${JSON.stringify(payload)}`;
+				this.listener.log(
+					`${prefix} ${message}${serialized}`,
+				);
 			} catch {
-				this.listener.log(`${prefix} ${message}`);
+				this.listener.log(
+					`${prefix} ${message}`,
+				);
 			}
 		}
 	}

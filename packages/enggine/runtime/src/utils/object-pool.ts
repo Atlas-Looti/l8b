@@ -10,10 +10,15 @@
  *
  * @template T - Type of objects in the pool
  */
-export class ObjectPool<T> {
-	private pool: T[] = [];
+export class ObjectPool<
+	T,
+> {
+	private pool: T[] =
+		[];
 	private factory: () => T;
-	private reset: (obj: T) => void;
+	private reset: (
+		obj: T,
+	) => void;
 	private maxSize: number;
 
 	/**
@@ -23,10 +28,19 @@ export class ObjectPool<T> {
 	 * @param reset - Function to reset object state for reuse
 	 * @param maxSize - Maximum pool size (default: 100)
 	 */
-	constructor(factory: () => T, reset: (obj: T) => void, maxSize: number = 100) {
-		this.factory = factory;
-		this.reset = reset;
-		this.maxSize = maxSize;
+	constructor(
+		factory: () => T,
+		reset: (
+			obj: T,
+		) => void,
+		maxSize: number = 100,
+	) {
+		this.factory =
+			factory;
+		this.reset =
+			reset;
+		this.maxSize =
+			maxSize;
 	}
 
 	/**
@@ -37,7 +51,12 @@ export class ObjectPool<T> {
 	 * @returns Object from pool or newly created
 	 */
 	acquire(): T {
-		if (this.pool.length > 0) {
+		if (
+			this
+				.pool
+				.length >
+			0
+		) {
 			return this.pool.pop()!;
 		}
 		return this.factory();
@@ -51,21 +70,34 @@ export class ObjectPool<T> {
 	 *
 	 * @param obj - Object to release
 	 */
-	release(obj: T): void {
-		if (this.pool.length >= this.maxSize) {
+	release(
+		obj: T,
+	): void {
+		if (
+			this
+				.pool
+				.length >=
+			this
+				.maxSize
+		) {
 			// Pool is full, discard object
 			return;
 		}
 
-		this.reset(obj);
-		this.pool.push(obj);
+		this.reset(
+			obj,
+		);
+		this.pool.push(
+			obj,
+		);
 	}
 
 	/**
 	 * Clear all objects from the pool
 	 */
 	clear(): void {
-		this.pool = [];
+		this.pool =
+			[];
 	}
 
 	/**
@@ -74,7 +106,9 @@ export class ObjectPool<T> {
 	 * @returns Number of objects in pool
 	 */
 	size(): number {
-		return this.pool.length;
+		return this
+			.pool
+			.length;
 	}
 
 	/**
@@ -83,7 +117,8 @@ export class ObjectPool<T> {
 	 * @returns Maximum pool size
 	 */
 	getMaxSize(): number {
-		return this.maxSize;
+		return this
+			.maxSize;
 	}
 
 	/**
@@ -91,11 +126,23 @@ export class ObjectPool<T> {
 	 *
 	 * @param maxSize - New maximum pool size
 	 */
-	setMaxSize(maxSize: number): void {
-		this.maxSize = maxSize;
+	setMaxSize(
+		maxSize: number,
+	): void {
+		this.maxSize =
+			maxSize;
 		// Trim pool if it exceeds new max size
-		if (this.pool.length > maxSize) {
-			this.pool = this.pool.slice(0, maxSize);
+		if (
+			this
+				.pool
+				.length >
+			maxSize
+		) {
+			this.pool =
+				this.pool.slice(
+					0,
+					maxSize,
+				);
 		}
 	}
 }

@@ -2,15 +2,15 @@
 
 ## Project Overview
 
-L8B (Looti Engine) is a TypeScript-based 2D game engine with a custom scripting language (LootiScript). The project is organized as a monorepo using Bun and Turbo.
+L8B (Looti Engine) is a TypeScript-based 2D game engine with a custom scripting language (LootiScript). The project is organized as a monorepo using pnpm and Turbo.
 
 ## Package Manager
 
-**CRITICAL: Always use Bun, never npm/yarn/pnpm**
+**CRITICAL: Always use pnpm, never npm/yarn/bun**
 
-- Installation: `bun install`
-- Running scripts: `bun run <script>`
-- Adding dependencies: `bun add <package>`
+- Installation: `pnpm install`
+- Running scripts: `pnpm run <script>`
+- Adding dependencies: `pnpm add <package>`
 - For workspace packages: Use `workspace:*` protocol
 
 ## Code Style & Formatting
@@ -19,8 +19,8 @@ This project uses **Biome** for linting and formatting:
 
 - **Indentation**: TABS (not spaces) - this is critical
 - **Quotes**: Double quotes for JavaScript/TypeScript
-- **Format code**: `bun run format`
-- **Lint code**: `bun run lint`
+- **Format code**: `pnpm run format`
+- **Lint code**: `pnpm run lint`
 - Always format code before committing
 
 ## Project Structure
@@ -51,10 +51,10 @@ l8b/
 
 The project uses **Turbo** for build orchestration:
 
-- Build all packages: `bun run build`
-- Dev mode (all packages): `bun run dev`
-- Type checking: `bun run check-types`
-- Create new package: `bun run new`
+- Build all packages: `pnpm run build`
+- Dev mode (all packages): `pnpm run dev`
+- Type checking: `pnpm run check-types`
+- Create new package: `pnpm run new`
 
 ## Build System
 
@@ -79,7 +79,7 @@ The project uses **Turbo** for build orchestration:
 
 1. **Create package structure:**
    ```bash
-   bun run new
+   pnpm run new
    # Choose: core/<api-name>
    ```
 
@@ -149,17 +149,17 @@ this.vm = new L8BVM(meta, global, ...);
 ## Testing
 
 - Test files: `*.test.ts` or `*.spec.ts`
-- Run tests: `bun run test`
-- Watch mode: `bun run test:watch`
-- Coverage: `bun run test:coverage`
+- Run tests: `pnpm run test`
+- Watch mode: `pnpm run test:watch`
+- Coverage: `pnpm run test:coverage`
 - Use Vitest for all testing
 
 ## Documentation
 
 - Uses VitePress for documentation (in `docs/`)
 - All documentation is in English
-- Dev server: `bun run docs:dev`
-- Build docs: `bun run docs:build`
+- Dev server: `pnpm run docs:dev`
+- Build docs: `pnpm run docs:build`
 - API documentation should be in package README.md files
 - See `docs/fundamentals/api-reference.md` for complete API reference
 
@@ -243,7 +243,7 @@ import { helper } from "./helper";
 2. **Update documentation** - Keep README.md and docs/ up to date
 3. **Add tests** - Write tests for new functionality
 4. **Update API definitions** - If adding new API, update language server definitions
-5. **Format code** - Always run `bun run format` before committing
+5. **Format code** - Always run `pnpm run format` before committing
 
 ## Getting Help
 

@@ -57,12 +57,24 @@ export interface OpenMiniAppOptions {
 	url: string;
 }
 
-export type HapticStyle = "light" | "medium" | "heavy" | "rigid" | "soft";
-export type HapticNotificationType = "success" | "warning" | "error";
+export type HapticStyle =
+	| "light"
+	| "medium"
+	| "heavy"
+	| "rigid"
+	| "soft";
+export type HapticNotificationType =
+	| "success"
+	| "warning"
+	| "error";
 
 export interface HapticsAPI {
-	impact(style: HapticStyle): Promise<void>;
-	notification(type: HapticNotificationType): Promise<void>;
+	impact(
+		style: HapticStyle,
+	): Promise<void>;
+	notification(
+		type: HapticNotificationType,
+	): Promise<void>;
 	selection(): Promise<void>;
 }
 
@@ -71,7 +83,9 @@ export interface BackAPI {
 	disableWebNavigation(): Promise<void>;
 	show(): Promise<void>;
 	hide(): Promise<void>;
-	onBack(callback: () => void): void;
+	onBack(
+		callback: () => void,
+	): void;
 }
 
 /**
@@ -79,31 +93,56 @@ export interface BackAPI {
  */
 export interface ActionsAPI {
 	// Core actions
-	ready(disableNativeGestures?: boolean): Promise<void>;
+	ready(
+		disableNativeGestures?: boolean,
+	): Promise<void>;
 	close(): Promise<void>;
 
 	// Sharing
-	share(options: ShareOptions): Promise<void>;
+	share(
+		options: ShareOptions,
+	): Promise<void>;
 
 	// Authentication
-	signIn(options: SignInOptions): Promise<{ signature: string; message: string }>;
+	signIn(
+		options: SignInOptions,
+	): Promise<{
+		signature: string;
+		message: string;
+	}>;
 
 	// Mini App management
 	addMiniApp(): Promise<void>;
-	openMiniApp(options: OpenMiniAppOptions): Promise<void>;
+	openMiniApp(
+		options: OpenMiniAppOptions,
+	): Promise<void>;
 
 	// Navigation
-	openUrl(options: OpenUrlOptions): Promise<void>;
-	viewProfile(options: ViewProfileOptions): Promise<void>;
-	viewCast(options: ViewCastOptions): Promise<void>;
+	openUrl(
+		options: OpenUrlOptions,
+	): Promise<void>;
+	viewProfile(
+		options: ViewProfileOptions,
+	): Promise<void>;
+	viewCast(
+		options: ViewCastOptions,
+	): Promise<void>;
 
 	// Token operations
-	swapToken(options: SwapTokenOptions): Promise<any>;
-	sendToken(options: SendTokenOptions): Promise<any>;
-	viewToken(options: ViewTokenOptions): Promise<void>;
+	swapToken(
+		options: SwapTokenOptions,
+	): Promise<any>;
+	sendToken(
+		options: SendTokenOptions,
+	): Promise<any>;
+	viewToken(
+		options: ViewTokenOptions,
+	): Promise<void>;
 
 	// Social
-	composeCast(options: ComposeCastOptions): Promise<any>;
+	composeCast(
+		options: ComposeCastOptions,
+	): Promise<any>;
 
 	// Hardware & System
 	haptics: HapticsAPI;

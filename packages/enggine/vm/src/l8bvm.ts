@@ -15,37 +15,78 @@
  */
 
 import { StorageService } from "@l8b/io";
-import { Compiler, Processor, Program, Routine, Runner } from "@l8b/lootiscript";
+import {
+	Compiler,
+	Processor,
+	Program,
+	Routine,
+	Runner,
+} from "@l8b/lootiscript";
 import { createVMContext } from "./context";
 import { setupArrayExtensions } from "./extensions";
-import type { ErrorInfo, GlobalAPI, MetaFunctions, VMContext } from "./types";
+import type {
+	ErrorInfo,
+	GlobalAPI,
+	MetaFunctions,
+	VMContext,
+} from "./types";
 
 // Expose core LootiScript classes to globalThis for Runner access
 // Required for dynamic compilation and execution
-if (typeof globalThis !== "undefined") {
-	(globalThis as any).Processor = Processor;
-	(globalThis as any).Program = Program;
-	(globalThis as any).Compiler = Compiler;
+if (
+	typeof globalThis !==
+	"undefined"
+) {
+	(
+		globalThis as any
+	).Processor =
+		Processor;
+	(
+		globalThis as any
+	).Program =
+		Program;
+	(
+		globalThis as any
+	).Compiler =
+		Compiler;
 }
 
 export class L8BVM {
 	public context: VMContext;
 	public runner: Runner;
 	public storage_service: StorageService;
-	public error_info: ErrorInfo | null = null;
+	public error_info: ErrorInfo | null =
+		null;
 
-	constructor(meta: Partial<MetaFunctions> = {}, global: Partial<GlobalAPI> = {}, namespace = "/l8b", preserve_ls = false) {
+	constructor(
+		meta: Partial<MetaFunctions> = {},
+		global: Partial<GlobalAPI> = {},
+		namespace = "/l8b",
+		preserve_ls = false,
+	) {
 		// Initialize VM execution context with meta functions and global API
-		this.context = createVMContext(meta, global);
+		this.context =
+			createVMContext(
+				meta,
+				global,
+			);
 
 		// Initialize storage service for persistent data (localStorage/sessionStorage)
-		this.storage_service = new StorageService(namespace, preserve_ls);
+		this.storage_service =
+			new StorageService(
+				namespace,
+				preserve_ls,
+			);
 
 		// Inject storage API into global scope for LootiScript access
-		this.context.global.storage = this.storage_service.getInterface();
+		this.context.global.storage =
+			this.storage_service.getInterface();
 
 		// Create Runner instance with reference to this VM for bidirectional communication
-		this.runner = new Runner(this as any);
+		this.runner =
+			new Runner(
+				this as any,
+			);
 
 		// Initialize Runner and create main execution thread
 		this.runner.init();
@@ -65,37 +106,87 @@ export class L8BVM {
 	 * @returns {any} The result of the last statement execution
 	 * @throws {ErrorInfo} If compilation or execution fails
 	 */
-	run(source: string, timeout = 3000, filename = ""): any {
-		this.error_info = null;
-		this.context.timeout = Date.now() + timeout;
+	run(
+		source: string,
+		timeout = 3000,
+		filename = "",
+	): any {
+		this.error_info =
+			null;
+		this.context.timeout =
+			Date.now() +
+			timeout;
 		this.context.stack_size = 0;
 
 		try {
-			const result = this.runner.run(source, filename);
+			const result =
+				this.runner.run(
+					source,
+					filename,
+				);
 			this.storage_service.check();
 
-			if (result !== null && result !== undefined) {
-				return this.runner.toString(result);
+			if (
+				result !==
+					null &&
+				result !==
+					undefined
+			) {
+				return this.runner.toString(
+					result,
+				);
 			}
 			return null;
 		} catch (err: any) {
-			const errorMessage = (typeof err === "object" && err !== null && "error" in err && typeof err.error === "string" ? err.error : err.message) || String(err);
+			const errorMessage =
+				(typeof err ===
+					"object" &&
+				err !==
+					null &&
+				"error" in
+					err &&
+				typeof err.error ===
+					"string"
+					? err.error
+					: err.message) ||
+				String(
+					err,
+				);
 
 			// Extract stack trace from processor for better error debugging
-			let stackTrace = err.stackTrace;
-			if (!stackTrace && this.runner?.main_thread?.processor?.generateStackTrace) {
-				stackTrace = this.runner.main_thread.processor.generateStackTrace();
+			let stackTrace =
+				err.stackTrace;
+			if (
+				!stackTrace &&
+				this
+					.runner
+					?.main_thread
+					?.processor
+					?.generateStackTrace
+			) {
+				stackTrace =
+					this.runner.main_thread.processor.generateStackTrace();
 			}
 
-			this.error_info = {
-				error: errorMessage,
-				type: err.type || "runtime",
-				line: err.line,
-				column: err.column,
-				file: err.file || filename,
-				stack: err.stack,
-				stackTrace: stackTrace,
-			};
+			this.error_info =
+				{
+					error:
+						errorMessage,
+					type:
+						err.type ||
+						"runtime",
+					line:
+						err.line,
+					column:
+						err.column,
+					file:
+						err.file ||
+						filename,
+					stack:
+						err.stack,
+					stackTrace:
+						stackTrace,
+				};
 			throw err;
 		}
 	}
@@ -112,33 +203,76 @@ export class L8BVM {
 	 * @returns {any} The return value of the function
 	 * @throws {ErrorInfo} If the function doesn't exist or execution fails
 	 */
-	call(name: string, args: any[] = [], timeout = 3000): any {
-		this.error_info = null;
-		this.context.timeout = Date.now() + timeout;
+	call(
+		name: string,
+		args: any[] = [],
+		timeout = 3000,
+	): any {
+		this.error_info =
+			null;
+		this.context.timeout =
+			Date.now() +
+			timeout;
 		this.context.stack_size = 0;
 
 		try {
-			const result = this.runner.call(name, ...args);
+			const result =
+				this.runner.call(
+					name,
+					...args,
+				);
 			this.storage_service.check();
 			return result;
 		} catch (err: any) {
-			const errorMessage = (typeof err === "object" && err !== null && "error" in err && typeof err.error === "string" ? err.error : err.message) || String(err);
+			const errorMessage =
+				(typeof err ===
+					"object" &&
+				err !==
+					null &&
+				"error" in
+					err &&
+				typeof err.error ===
+					"string"
+					? err.error
+					: err.message) ||
+				String(
+					err,
+				);
 
 			// Extract stack trace from processor for better error debugging
-			let stackTrace = err.stackTrace;
-			if (!stackTrace && this.runner?.main_thread?.processor?.generateStackTrace) {
-				stackTrace = this.runner.main_thread.processor.generateStackTrace();
+			let stackTrace =
+				err.stackTrace;
+			if (
+				!stackTrace &&
+				this
+					.runner
+					?.main_thread
+					?.processor
+					?.generateStackTrace
+			) {
+				stackTrace =
+					this.runner.main_thread.processor.generateStackTrace();
 			}
 
-			this.error_info = {
-				error: errorMessage,
-				type: err.type || "call",
-				line: err.line,
-				column: err.column,
-				file: err.file || name,
-				stack: err.stack,
-				stackTrace: stackTrace,
-			};
+			this.error_info =
+				{
+					error:
+						errorMessage,
+					type:
+						err.type ||
+						"call",
+					line:
+						err.line,
+					column:
+						err.column,
+					file:
+						err.file ||
+						name,
+					stack:
+						err.stack,
+					stackTrace:
+						stackTrace,
+				};
 			throw err;
 		}
 	}
@@ -153,35 +287,71 @@ export class L8BVM {
 	 * @param {string} [filename=""] - Name of the file for error reporting
 	 * @throws {ErrorInfo} If loading fails
 	 */
-	loadRoutine(routineData: any, filename: string = ""): void {
-		this.error_info = null;
+	loadRoutine(
+		routineData: any,
+		filename: string = "",
+	): void {
+		this.error_info =
+			null;
 
 		try {
 			let routine: Routine;
 
 			// Handle both Routine instances and serialized routine data
 			// Serialized data needs to be imported first
-			if (routineData instanceof Routine) {
-				routine = routineData;
+			if (
+				routineData instanceof
+				Routine
+			) {
+				routine =
+					routineData;
 			} else {
 				// Deserialize routine from JSON format
-				routine = new Routine(0).import(routineData);
+				routine =
+					new Routine(
+						0,
+					).import(
+						routineData,
+					);
 			}
 
 			// Add to main thread for execution
-			this.runner.main_thread.addCall(routine);
+			this.runner.main_thread.addCall(
+				routine,
+			);
 			this.runner.tick();
 		} catch (err: any) {
-			const errorMessage = (typeof err === "object" && err !== null && "error" in err && typeof err.error === "string" ? err.error : err.message) || String(err);
+			const errorMessage =
+				(typeof err ===
+					"object" &&
+				err !==
+					null &&
+				"error" in
+					err &&
+				typeof err.error ===
+					"string"
+					? err.error
+					: err.message) ||
+				String(
+					err,
+				);
 
-			this.error_info = {
-				error: errorMessage,
-				type: "compile",
-				line: err.line,
-				column: err.column,
-				file: err.file || filename,
-				stack: err.stack,
-			};
+			this.error_info =
+				{
+					error:
+						errorMessage,
+					type:
+						"compile",
+					line:
+						err.line,
+					column:
+						err.column,
+					file:
+						err.file ||
+						filename,
+					stack:
+						err.stack,
+				};
 			throw err;
 		}
 	}
@@ -190,26 +360,44 @@ export class L8BVM {
 	 * Clear warnings
 	 */
 	clearWarnings(): void {
-		this.context.warnings = {
-			using_undefined_variable: {},
-			assigning_field_to_undefined: {},
-			invoking_non_function: {},
-			assigning_api_variable: {},
-			assignment_as_condition: {},
-		};
+		this.context.warnings =
+			{
+				using_undefined_variable:
+					{},
+				assigning_field_to_undefined:
+					{},
+				invoking_non_function:
+					{},
+				assigning_api_variable:
+					{},
+				assignment_as_condition:
+					{},
+			};
 	}
 
 	/**
 	 * Get warnings
 	 */
-	getWarnings(): Record<string, any> {
-		return this.context.warnings || {};
+	getWarnings(): Record<
+		string,
+		any
+	> {
+		return (
+			this
+				.context
+				.warnings ||
+			{}
+		);
 	}
 
 	/**
 	 * Convert value to string (for printing)
 	 */
-	toString(value: any): string {
-		return this.runner.toString(value);
+	toString(
+		value: any,
+	): string {
+		return this.runner.toString(
+			value,
+		);
 	}
 }

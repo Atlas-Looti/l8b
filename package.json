@@ -19,12 +19,12 @@
 		"test:coverage": "turbo run test:coverage",
 		"new": "node scripts/new-package.mjs",
 		"clean": "node scripts/clean.mjs --all",
-		"ci": "bun run lint:check && bun run format:check && bun run check-types && bun run build && bun run test",
+		"ci": "pnpm run lint:check && pnpm run format:check && pnpm run check-types && pnpm run build && pnpm run test",
 		"changeset": "changeset",
-		"changeset:version": "changeset version",
-		"changeset:publish": "changeset publish",
-		"changeset:prepublish": "bun run build",
-		"publish-packages": "turbo run build lint && changeset version && changeset publish"
+		"changeset:version": "pnpm install --lockfile-only && changeset version && pnpm check",
+		"changeset:publish": "pnpm changeset:prepublish && changeset publish",
+		"changeset:prepublish": "pnpm --filter './packages/*' build",
+		"publish-packages": "turbo run build && changeset version && changeset publish"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.8",
@@ -37,17 +37,7 @@
 	"engines": {
 		"node": ">=18"
 	},
-	"packageManager": "bun@1.2.18",
-	"workspaces": [
-		"examples/**/*",
-		"packages/**/*",
-		"scripts/**/*",
-		"apps/**/*",
-		"!next/**/*",
-		"!dist/**/*",
-		"!l8b/**/*",
-		"!**/.vscode-test/**/*"
-	],
+	"packageManager": "pnpm@10.11.1",
 	"dependencies": {
 		"@swc/core": "^1.15.0",
 		"changeset": "^0.2.6",

@@ -8,7 +8,13 @@ export interface PlayerContext {
 	displayName?: string;
 	pfpUrl?: string;
 	location?: {
-		type: "cast_embed" | "cast_share" | "notification" | "launcher" | "channel" | "open_miniapp";
+		type:
+			| "cast_embed"
+			| "cast_share"
+			| "notification"
+			| "launcher"
+			| "channel"
+			| "open_miniapp";
 		cast?: {
 			author: {
 				fid: number;
@@ -35,7 +41,9 @@ export interface PlayerContext {
 		referrerDomain?: string;
 	};
 	client: {
-		platformType?: "web" | "mobile";
+		platformType?:
+			| "web"
+			| "mobile";
 		clientFid: number;
 		added: boolean;
 	};
@@ -57,9 +65,15 @@ export interface PlayerAPI {
 
 	// Methods
 	getFid(): number;
-	getUsername(): string | undefined;
-	getDisplayName(): string | undefined;
-	getPfpUrl(): string | undefined;
+	getUsername():
+		| string
+		| undefined;
+	getDisplayName():
+		| string
+		| undefined;
+	getPfpUrl():
+		| string
+		| undefined;
 	getContext(): PlayerContext;
 	isInMiniApp(): boolean;
 }

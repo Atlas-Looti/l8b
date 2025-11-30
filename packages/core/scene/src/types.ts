@@ -31,7 +31,12 @@ export interface SceneDefinition {
 	/** Initialize scene (called once when scene is first registered) */
 	init?: () => void;
 	/** Called when scene becomes active */
-	onEnter?: (params?: Record<string, string>) => void;
+	onEnter?: (
+		params?: Record<
+			string,
+			string
+		>,
+	) => void;
 	/** Called when scene is deactivated */
 	onLeave?: () => void;
 	/** Update loop (called every frame) */
@@ -45,7 +50,10 @@ export interface SceneDefinition {
 /**
  * Scene status enumeration
  */
-export type SceneStatus = "idle" | "active" | "transitioning";
+export type SceneStatus =
+	| "idle"
+	| "active"
+	| "transitioning";
 
 /**
  * Scene data container
@@ -56,7 +64,10 @@ export interface SceneData {
 	/** Scene definition */
 	definition: SceneDefinition;
 	/** Route parameters */
-	params?: Record<string, string>;
+	params?: Record<
+		string,
+		string
+	>;
 }
 
 // ============================================================================
@@ -70,9 +81,14 @@ export interface RouterState {
 	/** Current path */
 	path: string;
 	/** Route parameters */
-	params: Record<string, string>;
+	params: Record<
+		string,
+		string
+	>;
 	/** Current scene name */
-	sceneName: string | null;
+	sceneName:
+		| string
+		| null;
 }
 
 // ============================================================================
@@ -96,7 +112,10 @@ export interface SceneTransitionOptions {
 	/** Transition duration in milliseconds */
 	duration?: number;
 	/** Transition type */
-	type?: "fade" | "slide" | "none";
+	type?:
+		| "fade"
+		| "slide"
+		| "none";
 }
 
 /**
@@ -120,9 +139,17 @@ export interface SceneConfig {
  */
 export interface SceneEvents {
 	/** Event emitted when scene is activated */
-	onActivate?: (name: string, params?: Record<string, string>) => void;
+	onActivate?: (
+		name: string,
+		params?: Record<
+			string,
+			string
+		>,
+	) => void;
 	/** Event emitted when scene is deactivated */
-	onDeactivate?: (name: string) => void;
+	onDeactivate?: (
+		name: string,
+	) => void;
 }
 
 // ============================================================================
@@ -134,8 +161,22 @@ export interface SceneEvents {
  * This is what gets exposed to lootiscript as `scene`
  */
 export interface SceneInterface {
-	register: (name: string, def: SceneDefinition) => void;
-	route: (path: string, sceneName: string) => void;
-	goto: (name: string, params?: Record<string, string>) => void;
-	current: () => string | null;
+	register: (
+		name: string,
+		def: SceneDefinition,
+	) => void;
+	route: (
+		path: string,
+		sceneName: string,
+	) => void;
+	goto: (
+		name: string,
+		params?: Record<
+			string,
+			string
+		>,
+	) => void;
+	current: () =>
+		| string
+		| null;
 }

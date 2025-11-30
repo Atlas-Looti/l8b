@@ -73,11 +73,11 @@ l8b/
 
 ## Package Manager
 
-**CRITICAL: Always use Bun, never npm/yarn/pnpm**
+**CRITICAL: Always use pnpm, never npm/yarn/bun**
 
-- Installation: `bun install`
-- Running scripts: `bun run <script>`
-- Adding dependencies: `bun add <package>`
+- Installation: `pnpm install`
+- Running scripts: `pnpm run <script>`
+- Adding dependencies: `pnpm add <package>`
 - For workspace packages: Use `workspace:*` protocol
 
 ## Code Style & Formatting
@@ -86,8 +86,8 @@ This project uses **Biome** for linting and formatting:
 
 - **Indentation**: TABS (not spaces) - this is critical
 - **Quotes**: Double quotes for JavaScript/TypeScript
-- **Format code**: `bun run format`
-- **Lint code**: `bun run lint`
+- **Format code**: `pnpm run format`
+- **Lint code**: `pnpm run lint`
 - Always format code before committing
 
 ## TypeScript Conventions
@@ -103,10 +103,10 @@ This project uses **Biome** for linting and formatting:
 
 The project uses **Turbo** for build orchestration:
 
-- Build all packages: `bun run build`
-- Dev mode (all packages): `bun run dev`
-- Type checking: `bun run check-types`
-- Create new package: `bun run new`
+- Build all packages: `pnpm run build`
+- Dev mode (all packages): `pnpm run dev`
+- Type checking: `pnpm run check-types`
+- Create new package: `pnpm run new`
 
 ## Build System
 
@@ -195,17 +195,17 @@ See `packages/lootiscript/AGENTS.md` for detailed language documentation.
 ## Testing
 
 - Test files: `*.test.ts` or `*.spec.ts`
-- Run tests: `bun run test`
-- Watch mode: `bun run test:watch`
-- Coverage: `bun run test:coverage`
+- Run tests: `pnpm run test`
+- Watch mode: `pnpm run test:watch`
+- Coverage: `pnpm run test:coverage`
 - Use Vitest for all testing
 
 ## Documentation
 
 - Uses VitePress for documentation (in `docs/`)
 - All documentation is in English
-- Dev server: `bun run docs:dev`
-- Build docs: `bun run docs:build`
+- Dev server: `pnpm run docs:dev`
+- Build docs: `pnpm run docs:build`
 - API documentation in package README.md files
 - See `docs/fundamentals/api-reference.md` for complete API reference
 
@@ -213,7 +213,7 @@ See `packages/lootiscript/AGENTS.md` for detailed language documentation.
 
 ### Adding a New Core API
 
-1. Create package: `bun run new` (choose `core/<api-name>`)
+1. Create package: `pnpm run new` (choose `core/<api-name>`)
 2. Implement service with `getInterface()` method
 3. Register in `packages/enggine/runtime/src/core/orchestrator.ts`
 4. Add API definition in `packages/tooling/language-server/src/api-definitions/`

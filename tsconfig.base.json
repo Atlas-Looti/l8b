@@ -14,7 +14,13 @@
 		"outDir": "dist",
 		"noEmitOnError": true,
 		"forceConsistentCasingInFileNames": true,
-		"lib": ["DOM", "ES2016", "ES6", "ES2022", "ES2020"],
+		"lib": [
+			"DOM",
+			"ES2016",
+			"ES6",
+			"ES2022",
+			"ES2020"
+		],
 		"noErrorTruncation": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
@@ -22,5 +28,9 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true
 	},
-	"exclude": ["node_modules", "examples", "**/dist"]
+	"exclude": [
+		"node_modules",
+		"examples",
+		"**/dist"
+	]
 }

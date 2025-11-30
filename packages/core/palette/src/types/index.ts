@@ -8,7 +8,8 @@ export interface ColorRGB {
 	b: number;
 }
 
-export type ColorHex = string;
+export type ColorHex =
+	string;
 
 export interface PaletteData {
 	name: string;

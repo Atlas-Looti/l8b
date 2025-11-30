@@ -18,7 +18,10 @@ import { validationMessages } from "./validation-messages";
 /**
  * All API error message templates combined
  */
-export const apiMessages: Record<string, MessageTemplate> = {
+export const apiMessages: Record<
+	string,
+	MessageTemplate
+> = {
 	...screenMessages,
 	...audioMessages,
 	...spriteMessages,

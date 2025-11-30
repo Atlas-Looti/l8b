@@ -17,7 +17,10 @@ export interface OGImageOptions {
 	/** Route path (e.g., "/level/5") */
 	routePath: string;
 	/** Route parameters extracted from path */
-	params: Record<string, string>;
+	params: Record<
+		string,
+		string
+	>;
 	/** Image width (default: 1200 for 3:2 aspect ratio) */
 	width?: number;
 	/** Image height (default: 800 for 3:2 aspect ratio) */
@@ -43,41 +46,78 @@ const DEFAULT_OG_HEIGHT = 800;
  * @param renderCallback - Function that receives screen interface and renders the image
  * @returns PNG image data URL or null if generation fails
  */
-export async function generateOGImage(options: OGImageOptions, renderCallback: (screen: any) => void | Promise<void>): Promise<string | null> {
+export async function generateOGImage(
+	options: OGImageOptions,
+	renderCallback: (
+		screen: any,
+	) => void | Promise<void>,
+): Promise<
+	| string
+	| null
+> {
 	// Only work in browser environment
-	if (typeof document === "undefined") {
+	if (
+		typeof document ===
+		"undefined"
+	) {
 		return null;
 	}
 
 	try {
-		const width = options.width || DEFAULT_OG_WIDTH;
-		const height = options.height || DEFAULT_OG_HEIGHT;
+		const width =
+			options.width ||
+			DEFAULT_OG_WIDTH;
+		const height =
+			options.height ||
+			DEFAULT_OG_HEIGHT;
 
 		// Create temporary canvas for OG image
-		const canvas = document.createElement("canvas");
-		canvas.width = width;
-		canvas.height = height;
+		const canvas =
+			document.createElement(
+				"canvas",
+			);
+		canvas.width =
+			width;
+		canvas.height =
+			height;
 
 		// Import Screen dynamically (only in browser)
-		const { Screen } = await import("@l8b/screen");
+		const {
+			Screen,
+		} =
+			await import(
+				"@l8b/screen"
+			);
 
 		// Create Screen instance with temporary canvas
-		const screen = new Screen({
-			canvas,
-			width,
-			height,
-		});
+		const screen =
+			new Screen(
+				{
+					canvas,
+					width,
+					height,
+				},
+			);
 
 		// Get screen interface
-		const screenInterface = screen.getInterface();
+		const screenInterface =
+			screen.getInterface();
 
 		// Execute render callback
-		await renderCallback(screenInterface);
+		await renderCallback(
+			screenInterface,
+		);
 
 		// Export canvas as PNG data URL
-		return canvas.toDataURL("image/png", 1.0);
+		return canvas.toDataURL(
+			"image/png",
+			1.0,
+		);
 	} catch (error) {
-		console.error("Error generating OG image:", error);
+		console.error(
+			"Error generating OG image:",
+			error,
+		);
 		return null;
 	}
 }
@@ -90,10 +130,25 @@ export async function generateOGImage(options: OGImageOptions, renderCallback: (
  * @param params - Route parameters
  * @returns URL to OG image endpoint
  */
-export function getOGImageURL(config: LootiConfig, routePath: string, params: Record<string, string> = {}): string {
-	const baseUrl = config.url || "/";
-	const paramsString = new URLSearchParams(params).toString();
-	const queryString = paramsString ? `?${paramsString}` : "";
+export function getOGImageURL(
+	config: LootiConfig,
+	routePath: string,
+	params: Record<
+		string,
+		string
+	> = {},
+): string {
+	const baseUrl =
+		config.url ||
+		"/";
+	const paramsString =
+		new URLSearchParams(
+			params,
+		).toString();
+	const queryString =
+		paramsString
+			? `?${paramsString}`
+			: "";
 
 	// Use /og-image endpoint with route path
 	return `${baseUrl}og-image${routePath}${queryString}`;

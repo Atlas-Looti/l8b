@@ -2,21 +2,46 @@
  * Storage service - localStorage wrapper with automatic serialization
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import {
+	APIErrorCode,
+	createDiagnostic,
+	formatForBrowser,
+} from "@l8b/diagnostics";
 
 export class StorageService {
 	private namespace: string;
-	private cache: Map<string, any> = new Map();
-	private pendingWrites: Map<string, any> = new Map();
-	private writeTimer: ReturnType<typeof setTimeout> | null = null;
+	private cache: Map<
+		string,
+		any
+	> =
+		new Map();
+	private pendingWrites: Map<
+		string,
+		any
+	> =
+		new Map();
+	private writeTimer: ReturnType<
+		typeof setTimeout
+	> | null =
+		null;
 	private runtime?: any;
 
-	constructor(namespace = "/l8b", preserve = false, runtime?: any) {
-		this.namespace = namespace;
-		this.runtime = runtime;
+	constructor(
+		namespace = "/l8b",
+		preserve = false,
+		runtime?: any,
+	) {
+		this.namespace =
+			namespace;
+		this.runtime =
+			runtime;
 
 		// Clear storage if not preserving
-		if (!preserve && typeof localStorage !== "undefined") {
+		if (
+			!preserve &&
+			typeof localStorage !==
+				"undefined"
+		) {
 			this.clear();
 		}
 	}
@@ -24,43 +49,108 @@ export class StorageService {
 	/**
 	 * Get value from storage
 	 */
-	get(name: string): any {
+	get(
+		name: string,
+	): any {
 		// Validate storage key
-		if (!name || typeof name !== "string" || name.trim() === "") {
-			const diagnostic = createDiagnostic(APIErrorCode.E7063, {
-				data: { key: String(name) },
-			});
-			const formatted = formatForBrowser(diagnostic);
+		if (
+			!name ||
+			typeof name !==
+				"string" ||
+			name.trim() ===
+				""
+		) {
+			const diagnostic =
+				createDiagnostic(
+					APIErrorCode.E7063,
+					{
+						data:
+							{
+								key: String(
+									name,
+								),
+							},
+					},
+				);
+			const formatted =
+				formatForBrowser(
+					diagnostic,
+				);
 
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
+			if (
+				this
+					.runtime
+					?.listener
+					?.reportError
+			) {
+				this.runtime.listener.reportError(
+					formatted,
+				);
 			}
 			return null;
 		}
 
 		// Check cache first
-		if (this.cache.has(name)) {
-			return this.cache.get(name);
+		if (
+			this.cache.has(
+				name,
+			)
+		) {
+			return this.cache.get(
+				name,
+			);
 		}
 
 		// Try localStorage
-		if (typeof localStorage !== "undefined") {
+		if (
+			typeof localStorage !==
+			"undefined"
+		) {
 			try {
 				const key = `${this.namespace}.${name}`;
-				const value = localStorage.getItem(key);
-				if (value !== null) {
-					const parsed = JSON.parse(value);
-					this.cache.set(name, parsed);
+				const value =
+					localStorage.getItem(
+						key,
+					);
+				if (
+					value !==
+					null
+				) {
+					const parsed =
+						JSON.parse(
+							value,
+						);
+					this.cache.set(
+						name,
+						parsed,
+					);
 					return parsed;
 				}
 			} catch (err: any) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7062, {
-					data: { error: `Get operation failed: ${String(err)}` },
-				});
-				const formatted = formatForBrowser(diagnostic);
+				const diagnostic =
+					createDiagnostic(
+						APIErrorCode.E7062,
+						{
+							data:
+								{
+									error: `Get operation failed: ${String(err)}`,
+								},
+						},
+					);
+				const formatted =
+					formatForBrowser(
+						diagnostic,
+					);
 
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
+				if (
+					this
+						.runtime
+						?.listener
+						?.reportError
+				) {
+					this.runtime.listener.reportError(
+						formatted,
+					);
 				}
 			}
 		}
@@ -71,33 +161,83 @@ export class StorageService {
 	/**
 	 * Set value in storage (batched write)
 	 */
-	set(name: string, value: any): void {
+	set(
+		name: string,
+		value: any,
+	): void {
 		// Validate storage key
-		if (!name || typeof name !== "string" || name.trim() === "") {
-			const diagnostic = createDiagnostic(APIErrorCode.E7063, {
-				data: { key: String(name) },
-			});
-			const formatted = formatForBrowser(diagnostic);
+		if (
+			!name ||
+			typeof name !==
+				"string" ||
+			name.trim() ===
+				""
+		) {
+			const diagnostic =
+				createDiagnostic(
+					APIErrorCode.E7063,
+					{
+						data:
+							{
+								key: String(
+									name,
+								),
+							},
+					},
+				);
+			const formatted =
+				formatForBrowser(
+					diagnostic,
+				);
 
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
+			if (
+				this
+					.runtime
+					?.listener
+					?.reportError
+			) {
+				this.runtime.listener.reportError(
+					formatted,
+				);
 			}
 			return;
 		}
 
 		// Update cache
-		this.cache.set(name, value);
+		this.cache.set(
+			name,
+			value,
+		);
 
 		// Queue write
-		this.pendingWrites.set(name, value);
+		this.pendingWrites.set(
+			name,
+			value,
+		);
 
 		// Schedule batch write
-		if (this.writeTimer === null) {
-			const schedule = typeof window !== "undefined" && typeof window.setTimeout === "function" ? window.setTimeout.bind(window) : setTimeout;
+		if (
+			this
+				.writeTimer ===
+			null
+		) {
+			const schedule =
+				typeof window !==
+					"undefined" &&
+				typeof window.setTimeout ===
+					"function"
+					? window.setTimeout.bind(
+							window,
+						)
+					: setTimeout;
 
-			this.writeTimer = schedule(() => {
-				this.flush();
-			}, 100);
+			this.writeTimer =
+				schedule(
+					() => {
+						this.flush();
+					},
+					100,
+				);
 		}
 	}
 
@@ -105,38 +245,96 @@ export class StorageService {
 	 * Flush pending writes to localStorage
 	 */
 	flush(): void {
-		if (this.writeTimer !== null) {
-			clearTimeout(this.writeTimer);
-			this.writeTimer = null;
+		if (
+			this
+				.writeTimer !==
+			null
+		) {
+			clearTimeout(
+				this
+					.writeTimer,
+			);
+			this.writeTimer =
+				null;
 		}
 
-		if (typeof localStorage === "undefined") {
+		if (
+			typeof localStorage ===
+			"undefined"
+		) {
 			this.pendingWrites.clear();
 			return;
 		}
 
-		for (const [name, value] of this.pendingWrites) {
+		for (const [
+			name,
+			value,
+		] of this
+			.pendingWrites) {
 			try {
 				const key = `${this.namespace}.${name}`;
-				const serialized = JSON.stringify(this.sanitize(value));
-				localStorage.setItem(key, serialized);
+				const serialized =
+					JSON.stringify(
+						this.sanitize(
+							value,
+						),
+					);
+				localStorage.setItem(
+					key,
+					serialized,
+				);
 			} catch (err: any) {
 				// Check for quota exceeded error
-				if (err.name === "QuotaExceededError" || err.code === 22) {
-					const diagnostic = createDiagnostic(APIErrorCode.E7061);
-					const formatted = formatForBrowser(diagnostic);
+				if (
+					err.name ===
+						"QuotaExceededError" ||
+					err.code ===
+						22
+				) {
+					const diagnostic =
+						createDiagnostic(
+							APIErrorCode.E7061,
+						);
+					const formatted =
+						formatForBrowser(
+							diagnostic,
+						);
 
-					if (this.runtime?.listener?.reportError) {
-						this.runtime.listener.reportError(formatted);
+					if (
+						this
+							.runtime
+							?.listener
+							?.reportError
+					) {
+						this.runtime.listener.reportError(
+							formatted,
+						);
 					}
 				} else {
-					const diagnostic = createDiagnostic(APIErrorCode.E7062, {
-						data: { error: `Set operation failed: ${String(err)}` },
-					});
-					const formatted = formatForBrowser(diagnostic);
+					const diagnostic =
+						createDiagnostic(
+							APIErrorCode.E7062,
+							{
+								data:
+									{
+										error: `Set operation failed: ${String(err)}`,
+									},
+							},
+						);
+					const formatted =
+						formatForBrowser(
+							diagnostic,
+						);
 
-					if (this.runtime?.listener?.reportError) {
-						this.runtime.listener.reportError(formatted);
+					if (
+						this
+							.runtime
+							?.listener
+							?.reportError
+					) {
+						this.runtime.listener.reportError(
+							formatted,
+						);
 					}
 				}
 			}
@@ -149,7 +347,12 @@ export class StorageService {
 	 * Check if there are pending writes and flush if needed
 	 */
 	check(): void {
-		if (this.pendingWrites.size > 0) {
+		if (
+			this
+				.pendingWrites
+				.size >
+			0
+		) {
 			this.flush();
 		}
 	}
@@ -158,24 +361,45 @@ export class StorageService {
 	 * Clear all storage for this namespace
 	 */
 	clear(): void {
-		if (typeof localStorage === "undefined") {
+		if (
+			typeof localStorage ===
+			"undefined"
+		) {
 			return;
 		}
 
 		const prefix = `${this.namespace}.`;
-		const keysToRemove: string[] = [];
+		const keysToRemove: string[] =
+			[];
 
 		// Find all keys with this namespace
-		for (let i = 0; i < localStorage.length; i++) {
-			const key = localStorage.key(i);
-			if (key && key.startsWith(prefix)) {
-				keysToRemove.push(key);
+		for (
+			let i = 0;
+			i <
+			localStorage.length;
+			i++
+		) {
+			const key =
+				localStorage.key(
+					i,
+				);
+			if (
+				key &&
+				key.startsWith(
+					prefix,
+				)
+			) {
+				keysToRemove.push(
+					key,
+				);
 			}
 		}
 
 		// Remove them
 		for (const key of keysToRemove) {
-			localStorage.removeItem(key);
+			localStorage.removeItem(
+				key,
+			);
 		}
 
 		// Clear cache
@@ -187,38 +411,96 @@ export class StorageService {
 	 * Sanitize value for JSON serialization
 	 * Removes functions and handles circular references
 	 */
-	private sanitize(value: any, seen = new WeakSet()): any {
-		if (value === null || value === undefined) {
+	private sanitize(
+		value: any,
+		seen = new WeakSet(),
+	): any {
+		if (
+			value ===
+				null ||
+			value ===
+				undefined
+		) {
 			return value;
 		}
 
 		// Primitives
-		if (typeof value !== "object") {
+		if (
+			typeof value !==
+			"object"
+		) {
 			// Remove functions
-			if (typeof value === "function") {
+			if (
+				typeof value ===
+				"function"
+			) {
 				return undefined;
 			}
 			return value;
 		}
 
 		// Check for circular reference
-		if (seen.has(value)) {
+		if (
+			seen.has(
+				value,
+			)
+		) {
 			return undefined;
 		}
-		seen.add(value);
+		seen.add(
+			value,
+		);
 
 		// Arrays
-		if (Array.isArray(value)) {
-			return value.map((item) => this.sanitize(item, seen)).filter((item) => item !== undefined);
+		if (
+			Array.isArray(
+				value,
+			)
+		) {
+			return value
+				.map(
+					(
+						item,
+					) =>
+						this.sanitize(
+							item,
+							seen,
+						),
+				)
+				.filter(
+					(
+						item,
+					) =>
+						item !==
+						undefined,
+				);
 		}
 
 		// Objects
-		const result: any = {};
+		const result: any =
+			{};
 		for (const key in value) {
-			if (Object.hasOwn(value, key)) {
-				const sanitized = this.sanitize(value[key], seen);
-				if (sanitized !== undefined) {
-					result[key] = sanitized;
+			if (
+				Object.hasOwn(
+					value,
+					key,
+				)
+			) {
+				const sanitized =
+					this.sanitize(
+						value[
+							key
+						],
+						seen,
+					);
+				if (
+					sanitized !==
+					undefined
+				) {
+					result[
+						key
+					] =
+						sanitized;
 				}
 			}
 		}
@@ -230,8 +512,20 @@ export class StorageService {
 	 */
 	getInterface() {
 		return {
-			set: (name: string, value: any) => this.set(name, value),
-			get: (name: string) => this.get(name),
+			set: (
+				name: string,
+				value: any,
+			) =>
+				this.set(
+					name,
+					value,
+				),
+			get: (
+				name: string,
+			) =>
+				this.get(
+					name,
+				),
 		};
 	}
 }

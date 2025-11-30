@@ -19,7 +19,10 @@ export * from "./assets";
 // Component exports (for advanced usage)
 export * from "./core";
 // Main runtime
-export { RuntimeOrchestrator, RuntimeOrchestrator as Runtime } from "./core";
+export {
+	RuntimeOrchestrator,
+	RuntimeOrchestrator as Runtime,
+} from "./core";
 export * from "./hot-reload";
 export * from "./input";
 export * from "./loop";

@@ -5,4 +5,7 @@
  */
 
 export { PlayerService } from "./player-service";
-export type { PlayerAPI, PlayerContext } from "./types";
+export type {
+	PlayerAPI,
+	PlayerContext,
+} from "./types";

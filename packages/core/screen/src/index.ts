@@ -8,7 +8,10 @@
  * - types/: Shared interfaces
  */
 
-export { Screen, Screen as default } from "./core";
+export {
+	Screen,
+	Screen as default,
+} from "./core";
 export {
 	type TextureSource,
 	type TexVert,

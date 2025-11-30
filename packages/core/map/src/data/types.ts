@@ -5,7 +5,10 @@ export interface MapData {
 	height: number;
 	block_width: number;
 	block_height: number;
-	sprites: Array<string | number>;
+	sprites: Array<
+		| string
+		| number
+	>;
 	data: number[];
 }
 
@@ -20,5 +23,7 @@ export interface AnimatedTile {
 }
 
 export interface SpriteDictionary {
-	[key: string]: Sprite;
+	[
+		key: string
+	]: Sprite;
 }

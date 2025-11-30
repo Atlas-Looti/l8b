@@ -1,0 +1,10 @@
+packages:
+  - 'examples/**/*'
+  - 'packages/**/*'
+  - 'scripts/**/*'
+  - 'apps/**/*'
+  - '!next/**/*'
+  - '!dist/**/*'
+  - '!l8b/**/*'
+  - '!**/.vscode-test/**/*'
+

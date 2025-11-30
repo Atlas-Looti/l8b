@@ -8,8 +8,12 @@
  * @param routine - Exported routine data (from routine.export())
  * @returns JSON string representation
  */
-export function serializeRoutine(routine: any): string {
-	return JSON.stringify(routine);
+export function serializeRoutine(
+	routine: any,
+): string {
+	return JSON.stringify(
+		routine,
+	);
 }
 
 /**
@@ -18,8 +22,12 @@ export function serializeRoutine(routine: any): string {
  * @param json - JSON string representation
  * @returns Routine data that can be imported via Routine.import()
  */
-export function deserializeRoutine(json: string): any {
-	return JSON.parse(json);
+export function deserializeRoutine(
+	json: string,
+): any {
+	return JSON.parse(
+		json,
+	);
 }
 
 /**
@@ -43,14 +51,33 @@ export function serializeRoutineToModule(
 		minify?: boolean;
 	},
 ): string {
-	const data = {
-		...(moduleName && { name: moduleName }),
-		...(filename && { filename }),
-		routine,
-	};
+	const data =
+		{
+			...(moduleName && {
+				name:
+					moduleName,
+			}),
+			...(filename && {
+				filename,
+			}),
+			routine,
+		};
 
-	const minify = options?.minify !== undefined ? options.minify : true;
-	const json = minify ? JSON.stringify(data) : JSON.stringify(data, null, 2);
+	const minify =
+		options?.minify !==
+		undefined
+			? options.minify
+			: true;
+	const json =
+		minify
+			? JSON.stringify(
+					data,
+				)
+			: JSON.stringify(
+					data,
+					null,
+					2,
+				);
 
 	return `export default ${json};`;
 }
@@ -61,12 +88,29 @@ export function serializeRoutineToModule(
  * @param routine - Routine data to validate
  * @returns True if valid, false otherwise
  */
-export function isValidRoutine(routine: any): boolean {
-	if (!routine || typeof routine !== "object") {
+export function isValidRoutine(
+	routine: any,
+): boolean {
+	if (
+		!routine ||
+		typeof routine !==
+			"object"
+	) {
 		return false;
 	}
 
 	// Check for essential routine properties
 	// These are based on the Routine structure from @l8b/lootiscript
-	return "bytecode" in routine && "constants" in routine && Array.isArray(routine.bytecode) && Array.isArray(routine.constants);
+	return (
+		"bytecode" in
+			routine &&
+		"constants" in
+			routine &&
+		Array.isArray(
+			routine.bytecode,
+		) &&
+		Array.isArray(
+			routine.constants,
+		)
+	);
 }
