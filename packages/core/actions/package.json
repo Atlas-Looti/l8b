@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/actions",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",

@@ -1,5 +1,14 @@
 # l8b
 
+## 1.0.4
+
+### Patch Changes
+
+- 585bd57: fix cli
+  - @l8b/runtime@1.0.4
+  - @l8b/compiler@1.0.4
+  - @l8b/diagnostics@1.0.4
+
 ## 1.0.3
 
 ### Patch Changes
