@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/compiler",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "LootiScript compiler utilities and helpers",
 	"type": "module",
 	"sideEffects": false,

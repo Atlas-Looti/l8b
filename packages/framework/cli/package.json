@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/cli",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "LootiScript CLI and Dev Server",
 	"type": "module",
 	"files": [

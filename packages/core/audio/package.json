@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/audio",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"sideEffects": [
 		"./dist/**/*.mjs",
 		"./dist/**/*.js"

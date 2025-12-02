@@ -3,7 +3,7 @@
 	"private": true,
 	"displayName": "LootiScript",
 	"description": "Language support for LootiScript - L8B Game Framework",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"publisher": "atlas-games",
 	"license": "MIT",
 	"icon": "icon.png",

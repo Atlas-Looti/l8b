@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.4
+
+### Patch Changes
+
+- 585bd57: fix cli
+
 ## 1.0.3
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/language-server",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "LSP server for LootiScript",
 	"license": "MIT",
 	"repository": {
