@@ -145,18 +145,19 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run package",
-		"compile": "npm run check-types && node esbuild.js",
+		"vscode:prepublish": "pnpm run package",
+		"compile": "pnpm run check-types && node esbuild.js",
 		"check-types": "tsc --noEmit",
 		"watch": "npm-run-all -p watch:*",
 		"watch:esbuild": "node esbuild.js --watch",
 		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-		"package": "npm run check-types && node esbuild.js --production && npm run bundle-server",
+		"package": "pnpm run check-types && node esbuild.js --production && pnpm run bundle-server",
 		"bundle-server": "cd ../language-server && bun run build && cd ../vscode && rm -rf server && cp -r ../language-server/dist ./server",
 		"compile-tests": "tsc -p . --outDir out",
-		"pretest": "npm run compile-tests && npm run lint",
+		"pretest": "pnpm run compile-tests && pnpm run lint",
 		"lint": "eslint src",
-		"test": "vscode-test"
+		"test": "vscode-test",
+		"vsce:package": "vsce package --no-dependencies"
 	},
 	"devDependencies": {
 		"@types/glob": "^9.0.0",

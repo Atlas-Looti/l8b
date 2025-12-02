@@ -4,11 +4,9 @@
  * Scaffolds a new project with standard directory structure and example files.
  */
 
-import { readFileSync } from "fs";
 import fs from "fs-extra";
 import path from "path";
 import pc from "picocolors";
-import { fileURLToPath } from "url";
 import { DEFAULT_DIRS, DEFAULT_FILES } from "../utils/paths";
 
 export interface InitOptions {
@@ -18,27 +16,6 @@ export interface InitOptions {
 	force?: boolean;
 }
 
-/**
- * Get CLI package version from package.json
- *
- * Reads the version dynamically from the CLI package's package.json file.
- * Works both in development (src/) and production (dist/) builds.
- *
- * @returns CLI package version string
- */
-function getCliVersion(): string {
-	try {
-		const __dirname = path.dirname(fileURLToPath(import.meta.url));
-		// From dist/commands/init.js, go up 2 levels to package.json
-		// From src/commands/init.ts (in dev), go up 2 levels to package.json
-		const packageJsonPath = path.join(__dirname, "../../package.json");
-		const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-		return packageJson.version || "1.0.0";
-	} catch {
-		// Fallback if package.json not found
-		return "1.0.0";
-	}
-}
 
 /**
  * Initialize new project
@@ -127,9 +104,6 @@ dist
 
 	await fs.writeFile(path.join(projectPath, ".gitignore"), gitignore);
 
-	// Get CLI version dynamically
-	const cliVersion = getCliVersion();
-
 	// Create package.json
 	const packageJson = {
 		name: projectName,
@@ -143,7 +117,7 @@ dist
 		},
 		dependencies: {},
 		devDependencies: {
-			"@l8b/cli": `^${cliVersion}`,
+			"@l8b/cli": "latest",
 		},
 	};
 
