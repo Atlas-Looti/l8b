@@ -1,13 +1,14 @@
 {
-	"name": "fish",
+	"name": "looti-runer",
+	"version": "0.0.0",
 	"private": true,
-	"version": "1.0.6",
 	"type": "module",
 	"scripts": {
 		"dev": "l8b dev",
-		"start": "l8b start",
-		"build": "l8b build"
+		"build": "l8b build",
+		"start": "l8b start"
 	},
+	"dependencies": {},
 	"devDependencies": {
 		"@l8b/cli": "workspace:*"
 	}

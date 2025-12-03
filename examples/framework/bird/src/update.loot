@@ -1,0 +1,46 @@
+physics = function()
+  bird_vspeed -= 0.2
+  bird_y += bird_vspeed
+  bird_x += scroll_speed
+  target_speed = 1.5+0.5*floor(bird_x/960)
+  scroll_speed += (target_speed-scroll_speed)*0.01
+end
+
+update = function()
+  if status == "welcome" or status == 0 then
+    scroll_speed = 5
+    bird_x += scroll_speed*0.1
+    if touch.touching then
+      status = "play"
+      bird_vspeed = 0
+      bird_y = 0
+      bird_x = 0
+      rotation = 0
+      score = 0
+      scroll_speed = 0
+      startSound()
+      print("game started")
+    end
+  elsif status == "play" then
+    if touch.touching and not previous_touching then
+      bird_vspeed = 4
+      flapSound()
+      flapTicles()
+    end
+    previous_touching = touch.touching
+    physics()
+    collisions()
+    rotation += (bird_vspeed-rotation)*0.1
+  elsif status == "lost" then
+    if bird_y>-120 and bird_y+bird_vspeed<=-120 then
+      splashTicles()
+      splashSound()
+    end
+    bird_y += bird_vspeed
+    bird_vspeed -= 0.1
+    rotation = random.next()*360
+    if (wait += 1)>150 then status = "welcome" end
+  end
+  
+  updateParticles()
+end

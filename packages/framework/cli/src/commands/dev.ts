@@ -82,6 +82,21 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 					configureServer(server) {
 						// Place middleware BEFORE other middlewares to catch font requests early
 						server.middlewares.use(async (req, res, next) => {
+							// Skip Vite internal requests and static assets
+							if (
+								req.url &&
+								(req.url.startsWith("/@vite/") ||
+									req.url.startsWith("/@id/") ||
+									req.url.startsWith("/@fs/") ||
+									req.url.startsWith("/node_modules/") ||
+									path
+										.extname(req.url || "")
+										.match(/\.(js|css|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|mp3|wav|ogg|webm|mp4|map)$/i))
+							) {
+								next();
+								return;
+							}
+
 							if (handleRuntimeLogRequest(req, res)) {
 								return;
 							}
@@ -163,7 +178,10 @@ export async function dev(projectPath: string = process.cwd(), options: DevOptio
 							const isHtmlRequest =
 								url === "/" ||
 								url === `/${DEFAULT_FILES.INDEX_HTML}` ||
-								(!path.extname(routePath) && !url.startsWith("/compiled/") && !url.startsWith("/runtime.js"));
+								(!path.extname(routePath) &&
+									!url.startsWith("/compiled/") &&
+									!url.startsWith("/runtime.js") &&
+									!url.startsWith("/@"));
 
 							if (isHtmlRequest) {
 								try {

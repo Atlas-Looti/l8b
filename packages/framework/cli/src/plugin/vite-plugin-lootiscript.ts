@@ -62,7 +62,7 @@ export function lootiScriptPlugin(): Plugin {
 			// Security: Prevent path traversal attacks
 			const resolvedPath = path.resolve(filePath);
 			const resolvedRoot = path.resolve(root);
-			
+
 			if (!resolvedPath.startsWith(resolvedRoot)) {
 				// Path outside root directory - reject
 				console.error(`[L8B] Security: Blocked path traversal attempt: ${filePath}`);

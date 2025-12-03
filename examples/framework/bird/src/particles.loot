@@ -1,0 +1,62 @@
+particles = []
+
+addParticle = function(x,y,vx,vy,size)
+  local p = object
+    x = x
+    y = y
+    vx = vx
+    vy = vy
+    size = size
+    tick = 0
+  end
+  particles.push(p)
+end
+
+updateParticles = function()
+  for p in particles
+    p.tick += 1
+    p.x += p.vx
+    p.y += p.vy
+    p.vx *= 0.95
+    p.vy *= 0.95
+    p.size *= 0.95
+  end
+
+  for i = particles.length-1 to 0 by -1
+    if particles[i].tick>=60 then
+      particles.remove(i)
+    end
+  end
+end
+
+drawParticles = function()
+  for p in particles
+    local alpha = 1-p.tick/60
+    screen.setAlpha(alpha*0.5)
+    screen.fillRound(p.x,p.y,p.size,p.size,"#FFF")
+    screen.setAlpha(1)
+  end
+end
+
+flapTicles = function()
+  for i=0 to 3 by 1
+    local angle = random.next()*PI*2
+    addParticle(-50,bird_y,cos(angle)*0.5-2,sin(angle)*0.5,20)
+  end
+end
+
+hitTicles = function()
+  for i=0 to 14 by 1
+    local angle = random.next()*PI*2
+    local s = random.next()+1
+    addParticle(-50,bird_y,cos(angle)*s,sin(angle)*s,40)
+  end
+end
+
+splashTicles = function()
+  for i=0 to 29 by 1
+    local angle = random.next()*PI*2
+    local s = random.next()+1
+    addParticle(-50,bird_y,cos(angle)*s,sin(angle)*s+10*random.next(),40)
+  end
+end

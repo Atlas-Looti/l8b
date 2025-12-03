@@ -56,7 +56,7 @@ function getMimeType(filePath: string): string {
 function findAvailablePort(startPort: number, host: string): Promise<number> {
 	return new Promise((resolve, reject) => {
 		const server = http.createServer();
-		
+
 		server.listen(startPort, host, () => {
 			const address = server.address();
 			const port = typeof address === "object" && address ? address.port : startPort;
@@ -66,7 +66,9 @@ function findAvailablePort(startPort: number, host: string): Promise<number> {
 		server.on("error", (error: NodeJS.ErrnoException) => {
 			if (error.code === "EADDRINUSE") {
 				// Try next port
-				findAvailablePort(startPort + 1, host).then(resolve).catch(reject);
+				findAvailablePort(startPort + 1, host)
+					.then(resolve)
+					.catch(reject);
 			} else {
 				reject(error);
 			}
@@ -130,7 +132,7 @@ export async function start(projectPath: string = process.cwd(), options: StartO
 		// Parse URL
 		const url = req.url || "/";
 		let filePath = url.split("?")[0]; // Remove query string
-		
+
 		// Default to index.html for root
 		if (filePath === "/") {
 			filePath = "/index.html";
@@ -143,7 +145,7 @@ export async function start(projectPath: string = process.cwd(), options: StartO
 			// Check if file exists and is within distDir (security)
 			const resolvedPath = path.resolve(fullPath);
 			const resolvedDist = path.resolve(distDir);
-			
+
 			if (!resolvedPath.startsWith(resolvedDist)) {
 				res.statusCode = 403;
 				res.end("Forbidden");
@@ -151,7 +153,7 @@ export async function start(projectPath: string = process.cwd(), options: StartO
 			}
 
 			const stats = await fs.stat(resolvedPath);
-			
+
 			if (stats.isDirectory()) {
 				// Redirect to index.html in directory
 				const indexPath = path.join(resolvedPath, "index.html");
@@ -190,10 +192,10 @@ export async function start(projectPath: string = process.cwd(), options: StartO
 			const protocol = "http";
 			const hostname = normalizedHost === "0.0.0.0" ? "localhost" : normalizedHost;
 			const url = `${protocol}://${hostname}:${port}/`;
-			
+
 			console.log(pc.green("\n🚀 Production server running!\n"));
 			console.log(pc.cyan(`  ➜  Local:   ${url}\n`));
-			
+
 			// Cleanup on shutdown
 			const cleanup = () => {
 				console.log("\n\nShutting down server...");

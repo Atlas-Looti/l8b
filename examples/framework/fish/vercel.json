@@ -1,0 +1,10 @@
+{
+	"buildCommand": "pnpm run build",
+	"outputDirectory": ".l8b",
+	"rewrites": [
+		{
+			"source": "/(.*)",
+			"destination": "/index.html"
+		}
+	]
+}

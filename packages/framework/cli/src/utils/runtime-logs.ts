@@ -112,7 +112,34 @@ function formatMessage(message: unknown): string {
 	if (message === undefined || message === null) {
 		return "";
 	}
-	if (typeof message === "object") {
+	if (typeof message === "object" && message !== null) {
+		// Check if this is a string that was incorrectly converted to an object
+		// (has numeric keys from 0 to length-1, like {"0": "a", "1": "b", ...})
+		if (Array.isArray(message)) {
+			return message.join("");
+		}
+
+		// Check if it's an object with sequential numeric keys (string-like object)
+		const keys = Object.keys(message);
+		if (keys.length > 0) {
+			const numericKeys = keys.filter((k) => /^\d+$/.test(k));
+			if (numericKeys.length === keys.length) {
+				// All keys are numeric, try to reconstruct string
+				const sortedKeys = numericKeys.map(Number).sort((a, b) => a - b);
+				const isSequential = sortedKeys.every((val, idx) => val === idx);
+				if (isSequential) {
+					// Reconstruct string from character indices
+					const msgObj = message as Record<string, unknown>;
+					return sortedKeys.map((k) => String(msgObj[String(k)] || "")).join("");
+				}
+			}
+
+			// If object has a 'formatted' property, prefer that
+			if ("formatted" in message && typeof message.formatted === "string") {
+				return message.formatted;
+			}
+		}
+
 		return safeStringify(message);
 	}
 	return String(message);

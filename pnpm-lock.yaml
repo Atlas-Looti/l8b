@@ -46,11 +46,13 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  examples/framework/fish:
-    dependencies:
-      '@l8b/runtime':
+  examples/framework/bird:
+    devDependencies:
+      '@l8b/cli':
         specifier: workspace:*
-        version: link:../../../packages/enggine/runtime
+        version: link:../../../packages/framework/cli
+
+  examples/framework/fish:
     devDependencies:
       '@l8b/cli':
         specifier: workspace:*

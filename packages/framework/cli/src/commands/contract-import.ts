@@ -125,10 +125,12 @@ end
 		if (!safeFuncName || !/^[a-zA-Z_]/.test(safeFuncName)) {
 			continue; // Skip invalid function names
 		}
-		const params = func.inputs.map((input: any, i: number) => {
-			const paramName = input.name ? input.name.replace(/[^a-zA-Z0-9_]/g, "_") : `arg${i}`;
-			return /^[a-zA-Z_]/.test(paramName) ? paramName : `arg${i}`;
-		}).join(", ");
+		const params = func.inputs
+			.map((input: any, i: number) => {
+				const paramName = input.name ? input.name.replace(/[^a-zA-Z0-9_]/g, "_") : `arg${i}`;
+				return /^[a-zA-Z_]/.test(paramName) ? paramName : `arg${i}`;
+			})
+			.join(", ");
 
 		// Escape function name for safe use in string
 		const safeFuncNameStr = JSON.stringify(func.name);
@@ -156,10 +158,12 @@ end
 		if (!safeFuncName || !/^[a-zA-Z_]/.test(safeFuncName)) {
 			continue; // Skip invalid function names
 		}
-		const params = func.inputs.map((input: any, i: number) => {
-			const paramName = input.name ? input.name.replace(/[^a-zA-Z0-9_]/g, "_") : `arg${i}`;
-			return /^[a-zA-Z_]/.test(paramName) ? paramName : `arg${i}`;
-		}).join(", ");
+		const params = func.inputs
+			.map((input: any, i: number) => {
+				const paramName = input.name ? input.name.replace(/[^a-zA-Z0-9_]/g, "_") : `arg${i}`;
+				return /^[a-zA-Z_]/.test(paramName) ? paramName : `arg${i}`;
+			})
+			.join(", ");
 
 		// Escape function name for safe use in string
 		const safeFuncNameStr = JSON.stringify(func.name);
@@ -178,7 +182,10 @@ end
 
 	if (events.length > 0) {
 		// Escape event names for safe display
-		const safeEventNames = events.map((e) => e.name.replace(/[^a-zA-Z0-9_]/g, "_")).filter(Boolean).join(", ");
+		const safeEventNames = events
+			.map((e) => e.name.replace(/[^a-zA-Z0-9_]/g, "_"))
+			.filter(Boolean)
+			.join(", ");
 		code += `
 // Events
 // Note: Event listening is not yet supported in LootiScript

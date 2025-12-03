@@ -1,0 +1,19 @@
+flapSound = function()
+  audio.beep("square tempo 20000 volume 10 span 100 C4 to C6")
+end
+
+lostSound = function()
+  audio.beep("saw tempo 10000 volume 50 span 50 C2 to C4 to C2 to C4")
+end
+
+startSound = function()
+  audio.beep("square tempo 960 volume 50 span 50 C5 G5")
+end
+
+passedSound = function()
+  audio.beep("saw tempo 960 volume 50 span 20 C6")
+end
+
+splashSound = function()
+  audio.beep("noise tempo 480 volume 60 span 100 C4 volume 100 C4 volume 80 C4 volume 60 C4 volume 40 C4 volume 20 tempo 120 C4")
+end

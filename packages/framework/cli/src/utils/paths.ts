@@ -120,4 +120,3 @@ export function resolveProjectPath(projectPath: string, filePath: string): strin
 	const normalizedPath = filePath.startsWith("/") ? filePath.slice(1) : filePath;
 	return path.join(projectPath, normalizedPath);
 }
-

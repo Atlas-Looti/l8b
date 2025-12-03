@@ -16,7 +16,6 @@ export interface InitOptions {
 	force?: boolean;
 }
 
-
 /**
  * Initialize new project
  *

@@ -145,4 +145,5 @@ class HttpLogger {
 }
 
 // Singleton instance
-export const httpLogger = new HttpLogger();
+// NOTE: Currently not exported as it's not used anywhere in the framework
+// const httpLogger = new HttpLogger();

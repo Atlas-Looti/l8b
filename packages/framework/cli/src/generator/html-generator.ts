@@ -8,7 +8,6 @@
 import type { Resources } from "@l8b/runtime";
 import type { CompiledModule } from "../build";
 import type { LootiConfig } from "../config";
-import { getCanvasSize } from "../config";
 import { INTERNAL_ENDPOINTS } from "../utils/constants";
 import { BITCELL_FONT_BASE64 } from "../utils/bitcell-font";
 import { generateFarcasterEmbedTag } from "./farcaster-embed";
@@ -22,6 +21,7 @@ function sanitizeVarName(name: string): string {
 
 /**
  * Generate CSS styles for the HTML page
+ * Matches microstudio's approach with canvaswrapper for centering
  */
 function generateStyles(canvasId: string): string {
 	return `
@@ -42,19 +42,26 @@ function generateStyles(canvasId: string): string {
         padding: 0;
         width: 100%;
         height: 100%;
-        background: #0d1117;
-        font-family: system-ui, sans-serif;
+        background-color: #000;
+        overflow: hidden;
+        font-family: Verdana;
       }
-      body {
-        display: flex;
-        align-items: stretch;
-        justify-content: stretch;
+      .noselect {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      #canvaswrapper {
+        text-align: center;
       }
       canvas {
-        width: 100%;
-        height: 100%;
         display: block;
-        background: #000;
+        margin-left: auto;
+        margin-right: auto;
+        image-rendering: pixelated; /* Ensure crisp pixels */
       }
       #${canvasId} {
         image-rendering: pixelated; /* Ensure crisp pixels */
@@ -73,9 +80,7 @@ function generateRuntimeScript(
 	sourceMap: string,
 	compiledRoutinesMap: string,
 ): string {
-	const { width, height } = getCanvasSize(config);
 	const canvasId = config.canvas?.id || "game";
-	const isFreeAspect = config.aspect === "free";
 	const baseUrl = config.url || "/";
 
 	// Logging configuration
@@ -122,11 +127,9 @@ import { Runtime } from '@l8b/runtime';`
       const canvas = document.getElementById('${canvasId}');
       if (!canvas) throw new Error('Canvas element with id "${canvasId}" not found');
 
-      // Get window size for responsive canvas (if aspect is free)
-      const getWindowSize = () => ({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+      // Orientation and aspect ratio from config (matching microstudio approach)
+      const orientation = ${JSON.stringify(config.orientation)};
+      const aspect = ${JSON.stringify(config.aspect)};
 
       // Helper to get device pixel ratio
       const getRatio = () => {
@@ -140,18 +143,106 @@ import { Runtime } from '@l8b/runtime';`
         return devicePixelRatio / backingStoreRatio;
       };
 
+      // Calculate canvas dimensions based on orientation and aspect ratio (matching microstudio logic)
+      const calculateCanvasSize = () => {
+        const cw = window.innerWidth;
+        const ch = window.innerHeight;
+        
+        // Handle free aspect - use full window
+        if (aspect === 'free') {
+          return { width: cw, height: ch };
+        }
+
+        // Convert aspect ratio string to number
+        const aspectRatioMap = {
+          '4x3': 4 / 3,
+          '16x9': 16 / 9,
+          '2x1': 2 / 1,
+          '1x1': 1 / 1,
+          '>4x3': 4 / 3,
+          '>16x9': 16 / 9,
+          '>2x1': 2 / 1,
+          '>1x1': 1 / 1,
+        };
+        
+        let ratio = aspectRatioMap[aspect] || 16 / 9;
+        const isMinAspect = aspect.startsWith('>');
+        
+        // Handle minimum aspect ratio
+        if (isMinAspect) {
+          switch (orientation) {
+            case 'portrait':
+              ratio = Math.max(ratio, ch / cw);
+              break;
+            case 'landscape':
+              ratio = Math.max(ratio, cw / ch);
+              break;
+            default:
+              if (ch > cw) {
+                ratio = Math.max(ratio, ch / cw);
+              } else {
+                ratio = Math.max(ratio, cw / ch);
+              }
+          }
+        }
+
+        let w, h, r;
+
+        // Calculate dimensions based on orientation
+        switch (orientation) {
+          case 'portrait':
+            r = Math.min(cw, ch / ratio) / cw;
+            w = cw * r;
+            h = cw * r * ratio;
+            break;
+          case 'landscape':
+            r = Math.min(cw / ratio, ch) / ch;
+            w = ch * r * ratio;
+            h = ch * r;
+            break;
+          default: // 'any'
+            if (cw > ch) {
+              // Landscape screen
+              r = Math.min(cw / ratio, ch) / ch;
+              w = ch * r * ratio;
+              h = ch * r;
+            } else {
+              // Portrait screen
+              r = Math.min(cw, ch / ratio) / cw;
+              w = cw * r;
+              h = cw * r * ratio;
+            }
+        }
+
+        return { width: Math.round(w), height: Math.round(h) };
+      };
+
+      // Helper to apply canvas sizing and centering
+      const applyCanvasSize = (size) => {
+        const ratio = getRatio();
+        const cw = window.innerWidth;
+        const ch = window.innerHeight;
+        
+        // Set canvas internal size with devicePixelRatio
+        canvas.width = size.width * ratio;
+        canvas.height = size.height * ratio;
+        
+        // Set canvas display size
+        canvas.style.width = size.width + 'px';
+        canvas.style.height = size.height + 'px';
+        
+        // Center vertically with margin-top (matching microstudio)
+        const marginTop = Math.round((ch - size.height) / 2);
+        canvas.style.marginTop = marginTop + 'px';
+        
+        // Center horizontally - ensure margin-left and margin-right are auto
+        canvas.style.marginLeft = 'auto';
+        canvas.style.marginRight = 'auto';
+      };
+
       // Initialize canvas size
-      const isFreeAspect = ${isFreeAspect};
-      let initialSize = isFreeAspect ? getWindowSize() : { width: ${width}, height: ${height} };
-      const ratio = getRatio();
-
-      // Set canvas internal size with devicePixelRatio
-      canvas.width = initialSize.width * ratio;
-      canvas.height = initialSize.height * ratio;
-
-      // Set canvas display size
-      canvas.style.width = Math.round(initialSize.width) + 'px';
-      canvas.style.height = Math.round(initialSize.height) + 'px';
+      const initialSize = calculateCanvasSize();
+      applyCanvasSize(initialSize);
 
       const resources = ${JSON.stringify(resourcesObj)};
 
@@ -205,7 +296,9 @@ import { Runtime } from '@l8b/runtime';`
       };
 
       // HTTP Logger for development (only in dev mode, not production)
-      ${!isProduction ? `
+      ${
+							!isProduction
+								? `
       if (typeof window !== 'undefined') {
         window.__l8b_http_logger = {
           logRequest: function(method, url, status, time, size, error) {
@@ -230,7 +323,9 @@ import { Runtime } from '@l8b/runtime';`
           }
         };
       }
-      ` : '// HTTP Logger disabled in production'}
+      `
+								: "// HTTP Logger disabled in production"
+						}
 
       const runtimeOptions = {
         canvas: canvas,
@@ -246,9 +341,41 @@ import { Runtime } from '@l8b/runtime';`
             }
           },
           reportError: (error) => {
+            // Helper to safely extract string from error field
+            const getErrorString = (value) => {
+              if (typeof value === 'string') return value;
+              if (value === null || value === undefined) return '';
+              if (typeof value === 'object') {
+                // Check if it's a string-like object with numeric indices
+                if (Array.isArray(value)) return value.join('');
+                const keys = Object.keys(value);
+                if (keys.length > 0) {
+                  const numericKeys = keys.filter(k => /^\\d+$/.test(k));
+                  if (numericKeys.length === keys.length) {
+                    const sortedKeys = numericKeys.map(Number).sort((a, b) => a - b);
+                    const isSequential = sortedKeys.every((val, idx) => val === idx);
+                    if (isSequential) {
+                      return sortedKeys.map(k => String(value[String(k)] || '')).join('');
+                    }
+                  }
+                }
+                // Try to get formatted or message property
+                if (value.formatted && typeof value.formatted === 'string') return value.formatted;
+                if (value.message && typeof value.message === 'string') return value.message;
+                return String(value);
+              }
+              return String(value);
+            };
+            
             let errorMessage = '';
             if (error.code) errorMessage += '[' + error.code + '] ';
-            errorMessage += error?.error || error?.message || error?.formatted || 'Runtime error';
+            
+            // Safely extract error message
+            const errorText = getErrorString(error?.error) || 
+                             getErrorString(error?.message) || 
+                             getErrorString(error?.formatted) || 
+                             'Runtime error';
+            errorMessage += errorText;
             
             if (error.file) {
               errorMessage += '\\n  at ' + error.file;
@@ -258,22 +385,33 @@ import { Runtime } from '@l8b/runtime';`
               }
             }
             
-            console.error('[GAME ERROR]', errorMessage);
-            if (error.context) console.error(error.context);
-            
-            if (error.suggestions && error.suggestions.length > 0) {
-              console.error('\\nSuggestions:');
-              for (let i = 0; i < error.suggestions.length; i++) {
-                console.error('  • ' + error.suggestions[i]);
+            // Add context if available
+            if (error.context) {
+              const contextStr = getErrorString(error.context);
+              if (contextStr) {
+                errorMessage += '\\n\\n' + contextStr;
               }
             }
+            
+            // Add suggestions if available
+            if (error.suggestions && Array.isArray(error.suggestions) && error.suggestions.length > 0) {
+              errorMessage += '\\n\\nSuggestions:';
+              for (let i = 0; i < error.suggestions.length; i++) {
+                const suggestion = getErrorString(error.suggestions[i]);
+                if (suggestion) {
+                  errorMessage += '\\n  • ' + suggestion;
+                }
+              }
+            }
+            
+            console.error('[GAME ERROR]', errorMessage);
             
             if (mirrorListenerErrors) {
               sendTerminalLog({
                 level: 'error',
                 scope: 'game',
                 message: errorMessage,
-                details: Object.assign({}, error, { formatted: errorMessage }),
+                details: error,
               });
             }
           },
@@ -301,23 +439,16 @@ import { Runtime } from '@l8b/runtime';`
 
       const runtime = new Runtime(runtimeOptions);
 
-      // Handle window resize
+      // Handle window resize (matching microstudio approach)
       let resizeTimeout = null;
       const handleResize = () => {
         if (resizeTimeout) clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-          if (isFreeAspect) {
-            const newSize = getWindowSize();
-            const ratio = getRatio();
-            
-            canvas.width = newSize.width * ratio;
-            canvas.height = newSize.height * ratio;
-            canvas.style.width = Math.round(newSize.width) + 'px';
-            canvas.style.height = Math.round(newSize.height) + 'px';
-            
-            if (runtime.screen) {
-              runtime.screen.resize(canvas.width, canvas.height);
-            }
+          const newSize = calculateCanvasSize();
+          applyCanvasSize(newSize);
+          
+          if (runtime.screen) {
+            runtime.screen.resize(canvas.width, canvas.height);
           }
         }, 100);
       };
@@ -431,12 +562,16 @@ export function generateHTML(
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui=1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>${escapedName}</title>
 ${embedTag ? embedTag + "\n" : ""}    <style>${styles}</style>
   </head>
-  <body>
-    <canvas id="${canvasId}"></canvas>
+  <body class="noselect" oncontextmenu="return false;">
+    <div id="canvaswrapper">
+      <canvas id="${canvasId}"></canvas>
+    </div>
     <script type="module">${script}</script>
   </body>
 </html>`;

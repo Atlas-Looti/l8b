@@ -1,0 +1,22 @@
+collisions = function()
+  if bird_y>-120 and bird_y+bird_vspeed<=-120 then
+    splashTicles()
+    splashSound()
+  end
+  
+  local bx = bird_x-50
+  if bx>0 then
+    local x = floor((bx%960)/20)
+    local y = floor((bird_y+160)/20)
+    local m = maps.map1.get(x,y)
+    if m or bird_y<-100 or bird_y>150 then
+      status = "lost"
+      lostSound()
+      bird_vspeed = 0
+      wait = 0
+      hitTicles()
+      print("game ended")
+      print("score: " + score)
+    end
+  end
+end
