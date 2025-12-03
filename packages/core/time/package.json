@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/time",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",

@@ -1,5 +1,12 @@
 # @l8b/compiler
 
+## 1.0.6
+
+### Patch Changes
+
+- @l8b/lootiscript@1.0.6
+- @l8b/diagnostics@1.0.6
+
 ## 1.0.5
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @l8b/vm
 
+## 1.0.6
+
+### Patch Changes
+
+- @l8b/scene@1.0.6
+- @l8b/io@1.0.6
+- @l8b/lootiscript@1.0.6
+
 ## 1.0.5
 
 ### Patch Changes

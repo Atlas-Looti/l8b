@@ -1,5 +1,14 @@
 # l8b
 
+## 1.0.6
+
+### Patch Changes
+
+- 21d5bbb: config
+  - @l8b/runtime@1.0.6
+  - @l8b/compiler@1.0.6
+  - @l8b/diagnostics@1.0.6
+
 ## 1.0.5
 
 ### Patch Changes
