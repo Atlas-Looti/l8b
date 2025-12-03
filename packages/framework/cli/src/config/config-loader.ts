@@ -123,12 +123,15 @@ export async function loadConfig(projectPath: string = process.cwd()): Promise<L
 
 		// Apply orientation
 		if (config.orientation === "portrait" && w > h) {
+			// Swap dimensions to portrait (height > width)
 			config.width = h;
 			config.height = w;
 		} else if (config.orientation === "landscape" && h > w) {
-			config.width = w;
-			config.height = h;
+			// Swap dimensions to landscape (width > height)
+			config.width = h;
+			config.height = w;
 		} else {
+			// Keep dimensions as-is (already correct orientation or "any")
 			config.width = w;
 			config.height = h;
 		}
