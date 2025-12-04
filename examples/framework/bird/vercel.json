@@ -1,5 +1,6 @@
 {
 	"buildCommand": "pnpm run build",
+	"installCommand": "corepack enable && corepack prepare pnpm@10.24.0 --activate && pnpm install",
 	"outputDirectory": ".l8b",
 	"rewrites": [
 		{
