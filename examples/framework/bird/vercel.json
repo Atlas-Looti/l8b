@@ -1,0 +1,5 @@
+{
+    "buildCommand": "cd ../../../ && pnpm install && pnpm exec turbo build --filter=looti-runer",
+    "outputDirectory": ".l8b",
+    "installCommand": "echo 'Skipping install, handled in buildCommand'"
+}
