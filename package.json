@@ -24,7 +24,9 @@
 		"changeset:version": "pnpm install --lockfile-only && changeset version",
 		"changeset:publish": "pnpm changeset:prepublish && changeset publish",
 		"changeset:prepublish": "pnpm --filter './packages/**' run build",
-		"publish-packages": "turbo run build && changeset version && changeset publish"
+		"publish-packages": "turbo run build && changeset version && changeset publish",
+		"start:fish": "cd examples/framework/fish && pnpm start",
+		"start:bird": "cd examples/framework/bird && pnpm start"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.8",
