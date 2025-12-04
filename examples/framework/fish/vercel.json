@@ -1,5 +1,5 @@
 {
-	"installCommand": "cd ../../.. && pnpm install --frozen-lockfile",
+	"installCommand": "corepack enable && corepack prepare pnpm@10.24.0 --activate && cd ../../.. && pnpm install",
 	"buildCommand": "pnpm run build",
 	"outputDirectory": ".l8b",
 	"framework": null,
