@@ -4,9 +4,9 @@
 	"version": "1.0.6",
 	"type": "module",
 	"scripts": {
-		"dev": "l8b dev",
-		"start": "l8b start",
-		"build": "l8b build"
+		"dev": "pnpm exec l8b dev",
+		"start": "pnpm exec l8b start",
+		"build": "pnpm exec l8b build"
 	},
 	"devDependencies": {
 		"@l8b/cli": "workspace:*"

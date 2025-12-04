@@ -4,9 +4,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "l8b dev",
-		"build": "l8b build",
-		"start": "l8b start"
+		"dev": "pnpm exec l8b dev",
+		"build": "pnpm exec l8b build",
+		"start": "pnpm exec l8b start"
 	},
 	"dependencies": {},
 	"devDependencies": {
