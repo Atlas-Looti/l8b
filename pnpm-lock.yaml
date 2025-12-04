@@ -49,20 +49,20 @@ importers:
   examples/framework/bird:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.6(@types/node@22.19.1)(bufferutil@4.0.9)(jiti@2.6.1)(lightningcss@1.30.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(yaml@2.8.2)(zod@3.25.76)
 
   examples/framework/fish:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.6(@types/node@22.19.1)(bufferutil@4.0.9)(jiti@2.6.1)(lightningcss@1.30.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(yaml@2.8.2)(zod@3.25.76)
 
   examples/framework/scenes:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.6(@types/node@22.19.1)(bufferutil@4.0.9)(jiti@2.6.1)(lightningcss@1.30.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(yaml@2.8.2)(zod@3.25.76)
 
   examples/runtimes/dino-runer:
     dependencies:
@@ -1454,6 +1454,70 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@l8b/actions@1.0.6':
+    resolution: {integrity: sha512-robgHA/L8KGDUyAEVqDur8lbxb9glZIaI8Jb7Zn0JBR8rX8BU+inkjjjZCYZ+WHgc3ZVHM+SYYy1XOiR7w7CWQ==}
+
+  '@l8b/audio@1.0.6':
+    resolution: {integrity: sha512-+k/oRRNCmDbfFUXB9exonhDBCKCgHwXiUbbbSeZ28LsOAhCcOQJ+TQpUM5ULzxLwhx5wDxwHFLtHjqNIeLDgtg==}
+
+  '@l8b/cli@1.0.6':
+    resolution: {integrity: sha512-VJXuWggP3VKO67QSbdUhclDZfv+dKpH8ZM8bnGkPB9fhnFLEir+K2MmbiedIJppwzG5mxv0lmAIiZI6aaZO5oQ==}
+    hasBin: true
+
+  '@l8b/compiler@1.0.6':
+    resolution: {integrity: sha512-I2NsfSReXuav+GiCNBHZ2liVZMMfMJB0106spaljwEl5cYc5eqz2xMmExv+b/cosqumhdAUzANVev+Ra25Rnlw==}
+
+  '@l8b/diagnostics@1.0.6':
+    resolution: {integrity: sha512-IBTcavzMUWr9u+klPCLJurR+JvC1OLDuuCdbo8Y4MEY0jYHuK8Eq0w0rWvTCItjYgxUlkywHbcBKj3nTK6dcng==}
+
+  '@l8b/evm@1.0.6':
+    resolution: {integrity: sha512-O2up4R0NHm5iAh/S/QMtE2MykB37pAb9Q1DAO3Tk2r2nxHW5uZDcJ1mEhQd2YYp5uQQgW+B5pYxM1wxFF3hjww==}
+
+  '@l8b/http@1.0.6':
+    resolution: {integrity: sha512-26uV4nzELk9J3rQY6EPlqs7Zwn+lMwyfNp9BjfUR4uskv5gvhKp0n7Ptn9s/BMM/TnXHOOO2sobAFd6fHdmbsg==}
+
+  '@l8b/input@1.0.6':
+    resolution: {integrity: sha512-oc8DwOzOic1BkPG05dDNdMidJmb9p4hgaJBWi6le0sD14oZF3mCRAqUydZXOMx/NkDqDFJZjODR71StTetsgIg==}
+
+  '@l8b/io@1.0.6':
+    resolution: {integrity: sha512-QR2FL41tdcMCYFf9dzlc4hwus0qCkVka4tjPndPiLQ3xH593PjUP5XYrXlYTJpaYzcttxCZFwQXzbHXmwd/BQQ==}
+
+  '@l8b/lootiscript@1.0.6':
+    resolution: {integrity: sha512-0HTg5tfYAaYN/l7FuyCb/qP6oqyWFfL1WQ0G3q/b+s2LWcbf15u8HMBIelIWFFMOICIxAzdS36DY91z0WqXuRA==}
+
+  '@l8b/map@1.0.6':
+    resolution: {integrity: sha512-9MGmuF28u5GuwkY3UsvBIyykR8kwj+Nh6N29LeBTb7QRaRURace1NB5Cr+0E6GuKyD/p2W4DtY2babfjykDAvA==}
+
+  '@l8b/palette@1.0.6':
+    resolution: {integrity: sha512-S2lRzgPyMYkTFKzTc83kCLsMN4b5+HXCfxixuJ1YyU/nU5/R6BkaZ4UW/v7U8m38QF/dWmNJ3mihpfCfQDHWng==}
+
+  '@l8b/player@1.0.6':
+    resolution: {integrity: sha512-c839FYVkKnCTwpuk8dnvtlVS2Rhdeb6x+cdAWRN3A3CiqxgmjnFwmaqLGOZ7iIp8g5DpVXXrACy2qyxAxCQNjA==}
+
+  '@l8b/runtime@1.0.6':
+    resolution: {integrity: sha512-Jy6HdVMRGzv7a5yB3hAF17PsV+w+3lc/HAFRzsLAyHsiY8UsAnQVP4psv9IWphCF9t5tefXP7L8xKfx9xQLpyA==}
+
+  '@l8b/scene@1.0.6':
+    resolution: {integrity: sha512-GQMc4852KKBAc+LFweGsABEh6cLZH0Qhe7floRyYzXIMFsUFABiFVN5RGCfKYQgXSFTrgQm3rps/c0eHDzfWAA==}
+
+  '@l8b/screen@1.0.6':
+    resolution: {integrity: sha512-ffUosLMUYXwcwRu3so6cuWoFNVjFudyTffKSHn9FnQoa5tuJ/qTA3EKVQHgBhceXyJNImK0tLbokNeaKE6U5hg==}
+
+  '@l8b/sprites@1.0.6':
+    resolution: {integrity: sha512-eup6aRUYa3OOZyG4h99IXjX5Fn53R8Erto1mSDLIgM8dJBO2m4MAVSCy7zox6UcyjDE7joXZlbkdOxWudGpXkQ==}
+
+  '@l8b/stdlib@1.0.6':
+    resolution: {integrity: sha512-Bm7dJsXvYdQNFGVzSmr16B6r5x8wgu89WlYeIKmWlpyN23wJb0aYfU+6Wnz7+cED6dGnVs02N+eQKm4GWEuLfg==}
+
+  '@l8b/time@1.0.6':
+    resolution: {integrity: sha512-hEb0QbLDwN15fIShLCcZFKHYjw1lbVER0/wOamEyW3NhxyqTul59KZpTKU3z8ynyqgNO33nIseg8PmlFfmpfPQ==}
+
+  '@l8b/vm@1.0.6':
+    resolution: {integrity: sha512-CdrbjWExRxoEtQkO4iFbYRQhb57Tnoshamnx5vGWoxZlgcQ/O0IDw8mS4T+y8cvDPK8BSt7UyvqzdOsQZZbleQ==}
+
+  '@l8b/wallet@1.0.6':
+    resolution: {integrity: sha512-nB9Madn3ISeDHnsbmfPf6AkFtg6fwLq9GYNLbocYKop8gGres5J+DB4cK936G+Y52n8ufEChkHP0YWSaKmQyjQ==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -7705,6 +7769,163 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@l8b/actions@1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      '@farcaster/miniapp-sdk': 0.2.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@l8b/audio@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/cli@1.0.6(@types/node@22.19.1)(bufferutil@4.0.9)(jiti@2.6.1)(lightningcss@1.30.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(yaml@2.8.2)(zod@3.25.76)':
+    dependencies:
+      '@l8b/compiler': 1.0.6
+      '@l8b/diagnostics': 1.0.6
+      '@l8b/runtime': 1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+      chokidar: 3.6.0
+      esbuild: 0.25.12
+      fs-extra: 11.3.2
+      picocolors: 1.1.1
+      vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - '@types/node'
+      - bufferutil
+      - encoding
+      - jiti
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - typescript
+      - utf-8-validate
+      - yaml
+      - zod
+
+  '@l8b/compiler@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+      '@l8b/lootiscript': 1.0.6
+
+  '@l8b/diagnostics@1.0.6': {}
+
+  '@l8b/evm@1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      '@farcaster/miniapp-sdk': 0.2.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+      viem: 2.40.3(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@l8b/http@1.0.6': {}
+
+  '@l8b/input@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/io@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/lootiscript@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+      '@l8b/stdlib': 1.0.6
+
+  '@l8b/map@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+      '@l8b/sprites': 1.0.6
+
+  '@l8b/palette@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/player@1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      '@farcaster/miniapp-sdk': 0.2.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@l8b/runtime@1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      '@l8b/actions': 1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@l8b/audio': 1.0.6
+      '@l8b/diagnostics': 1.0.6
+      '@l8b/evm': 1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@l8b/http': 1.0.6
+      '@l8b/input': 1.0.6
+      '@l8b/io': 1.0.6
+      '@l8b/lootiscript': 1.0.6
+      '@l8b/map': 1.0.6
+      '@l8b/palette': 1.0.6
+      '@l8b/player': 1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@l8b/scene': 1.0.6
+      '@l8b/screen': 1.0.6
+      '@l8b/sprites': 1.0.6
+      '@l8b/time': 1.0.6
+      '@l8b/vm': 1.0.6
+      '@l8b/wallet': 1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+      - zod
+
+  '@l8b/scene@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/screen@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+      '@l8b/map': 1.0.6
+      '@l8b/sprites': 1.0.6
+
+  '@l8b/sprites@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/stdlib@1.0.6': {}
+
+  '@l8b/time@1.0.6':
+    dependencies:
+      '@l8b/diagnostics': 1.0.6
+
+  '@l8b/vm@1.0.6':
+    dependencies:
+      '@l8b/io': 1.0.6
+      '@l8b/lootiscript': 1.0.6
+      '@l8b/scene': 1.0.6
+
+  '@l8b/wallet@1.0.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+    dependencies:
+      '@farcaster/miniapp-sdk': 0.2.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - typescript
+      - utf-8-validate
+      - zod
 
   '@manypkg/find-root@1.1.0':
     dependencies:
