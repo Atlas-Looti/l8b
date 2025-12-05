@@ -5,18 +5,24 @@
  */
 
 import pc from "picocolors";
+import type { ExitCode } from "./exit-codes";
+import { EXIT_CODES } from "./exit-codes";
 
 /**
  * Base CLI error class
  */
 export class CLIError extends Error {
+	public readonly exitCode: ExitCode;
+
 	constructor(
 		message: string,
 		public readonly code?: string,
 		public readonly context?: Record<string, unknown>,
+		exitCode: ExitCode = EXIT_CODES.ERROR,
 	) {
 		super(message);
 		this.name = "CLIError";
+		this.exitCode = exitCode;
 		Object.setPrototypeOf(this, CLIError.prototype);
 	}
 
@@ -41,8 +47,8 @@ export class CLIError extends Error {
  * Configuration error
  */
 export class ConfigError extends CLIError {
-	constructor(message: string, context?: Record<string, unknown>) {
-		super(message, "CONFIG_ERROR", context);
+	constructor(message: string, context?: Record<string, unknown>, exitCode: ExitCode = EXIT_CODES.INVALID_USAGE) {
+		super(message, "CONFIG_ERROR", context, exitCode);
 		this.name = "ConfigError";
 		Object.setPrototypeOf(this, ConfigError.prototype);
 	}

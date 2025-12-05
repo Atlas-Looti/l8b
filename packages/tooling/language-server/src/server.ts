@@ -103,7 +103,7 @@ connection.onInitialized(() => {
 	}
 	if (hasWorkspaceFolderCapability) {
 		connection.workspace.onDidChangeWorkspaceFolders((_event) => {
-			connection.console.log("Workspace folder change event received.");
+			// Workspace folder change handled
 		});
 	}
 });
@@ -141,7 +141,7 @@ documents.onDidClose((change) => {
 
 connection.onDidChangeWatchedFiles((_change) => {
 	// React to file system changes for watched files (e.g., .loot files)
-	connection.console.log("We received an file change event");
+	// File changes are handled automatically by document change handlers
 });
 
 // Register all LSP feature handlers

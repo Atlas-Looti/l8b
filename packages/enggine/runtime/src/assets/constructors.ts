@@ -6,7 +6,8 @@
 
 import { Sound } from "@l8b/audio";
 import { Map as TileMap } from "@l8b/map";
-import { Image, Sprite } from "@l8b/sprites";
+import { Image } from "@l8b/image";
+import { Sprite } from "@l8b/sprites";
 
 /**
  * Create Sound constructor wrapper

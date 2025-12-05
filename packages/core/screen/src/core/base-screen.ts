@@ -43,6 +43,11 @@ export class BaseScreen {
 	// Interface cache
 	protected interfaceCache: ScreenInterface | null = null;
 
+	// Cursor management
+	protected cursor: string = "default";
+	protected cursor_visibility: string = "auto";
+	protected last_mouse_move: number = Date.now();
+
 	// 3D helper
 	protected zBuffer: ZBuffer;
 
@@ -103,6 +108,24 @@ export class BaseScreen {
 
 		this.loadFont(this.font);
 		this.zBuffer = new ZBuffer(this.canvas.width, this.canvas.height);
+
+		this.cursor = "default";
+
+		this.canvas.addEventListener("mousemove", () => {
+			this.last_mouse_move = Date.now();
+			if (this.cursor !== "default" && this.cursor_visibility === "auto") {
+				this.cursor = "default";
+				this.canvas.style.cursor = "default";
+			}
+		});
+
+		// When the context is lost and then restored, base transform needs to be reinstated
+		this.canvas.addEventListener("contextrestored", () => {
+			this.initContext();
+		});
+
+		setInterval(() => this.checkMouseCursor(), 1000);
+		this.cursor_visibility = "auto";
 	}
 
 	protected initContext(): void {
@@ -113,16 +136,19 @@ export class BaseScreen {
 			const diagnostic = createDiagnostic(APIErrorCode.E7001);
 			const formatted = formatForBrowser(diagnostic);
 
-			// Report error via runtime listener if available
 			if (this.runtime?.listener?.reportError) {
 				this.runtime.listener.reportError(formatted);
 			}
 
-			// Still throw for critical initialization failure
 			throw new Error(formatted);
 		}
 
-		this.context = ctx;
+		if (ctx !== this.context) {
+			this.context = ctx;
+		} else {
+			this.context.restore();
+		}
+
 		this.context.save();
 		this.context.translate(this.canvas.width / 2, this.canvas.height / 2);
 
@@ -134,6 +160,27 @@ export class BaseScreen {
 		this.width = this.canvas.width / ratio;
 		this.height = this.canvas.height / ratio;
 		this.context.lineCap = "round";
+	}
+
+	/**
+	 * Initialize draw state (called before each draw frame)
+	 */
+	initDraw(): void {
+		this.alpha = 1;
+		this.line_width = 1;
+		// Note: Supersampling not implemented in l8b
+		// If needed, add: if (this.supersampling != this.previous_supersampling) { this.resize(); this.previous_supersampling = this.supersampling; }
+	}
+
+	/**
+	 * Update interface dimensions (called before each draw frame)
+	 */
+	updateInterface(): void {
+		// Update interface cache if it exists
+		if (this.interfaceCache) {
+			this.interfaceCache.width = this.width;
+			this.interfaceCache.height = this.height;
+		}
 	}
 
 	clear(color?: string): void {
@@ -381,9 +428,30 @@ export class BaseScreen {
 		this.context.restore();
 	}
 
+	/**
+	 * Check mouse cursor visibility
+	 * Auto-hides cursor after 4 seconds of inactivity
+	 */
+	protected checkMouseCursor(): void {
+		if (Date.now() > this.last_mouse_move + 4000 && this.cursor_visibility === "auto") {
+			if (this.cursor !== "none") {
+				this.cursor = "none";
+				this.canvas.style.cursor = "none";
+			}
+		}
+	}
+
+	/**
+	 * Set cursor visibility
+	 */
 	setCursorVisible(visible: boolean): void {
-		if (this.canvas) {
-			this.canvas.style.cursor = visible ? "default" : "none";
+		this.cursor_visibility = visible ? "default" : "none";
+		if (visible) {
+			this.cursor = "default";
+			this.canvas.style.cursor = "default";
+		} else {
+			this.cursor = "none";
+			this.canvas.style.cursor = "none";
 		}
 	}
 

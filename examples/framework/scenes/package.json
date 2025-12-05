@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "l8b dev",
-		"start": "l8b start"
+		"preview": "l8b preview"
 	},
 	"devDependencies": {
 		"@l8b/cli": "latest"

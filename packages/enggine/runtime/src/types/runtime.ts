@@ -37,6 +37,8 @@ export interface RuntimeOptions {
 	compiledRoutines?: Record<string, any>;
 	/** Resources metadata */
 	resources?: Resources;
+	/** Environment variables (key-value pairs) */
+	env?: Record<string, string>;
 	/** Listener for events (logging, errors) */
 	listener?: RuntimeListener;
 	/** Canvas element to use */

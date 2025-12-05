@@ -1,4 +1,4 @@
-import type { Hover, TextDocuments } from "vscode-languageserver/node";
+import type { Connection, Hover, TextDocuments } from "vscode-languageserver/node";
 import type { HoverParams } from "vscode-languageserver-protocol";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { GLOBAL_API } from "../api-definitions/index";
@@ -8,56 +8,61 @@ import type { SymbolInfo } from "../types";
 import { getWordAtPosition } from "../utils";
 
 export function setupHoverHandler(
-	connection: any,
+	connection: Connection,
 	documents: TextDocuments<TextDocument>,
 	languageModes: LanguageModes,
 ) {
 	connection.onHover(async (params: HoverParams): Promise<Hover | null> => {
-		const document = documents.get(params.textDocument.uri);
-		if (!document) return null;
-
-		// Check if we're in an embedded language region
 		try {
-			const mode = languageModes.getModeAtPosition(document, params.position);
-			if (mode && mode.doHover) {
-				const result = await mode.doHover(document, params.position);
-				if (result) {
-					return result;
+			const document = documents.get(params.textDocument.uri);
+			if (!document) return null;
+
+			// Check if we're in an embedded language region
+			try {
+				const mode = languageModes.getModeAtPosition(document, params.position);
+				if (mode && mode.doHover) {
+					const result = await mode.doHover(document, params.position);
+					if (result) {
+						return result;
+					}
 				}
+			} catch (error) {
+				// Log error but continue with default hover
+				connection.console.error(`Hover error in embedded mode: ${error instanceof Error ? error.message : String(error)}`);
 			}
-		} catch (error: any) {
-			// Log error but continue with default hover
-			connection.console?.error(`Hover error in embedded mode: ${error?.message || error}`);
+
+			// Default LootiScript hover
+			const documentStates = getDocumentStates();
+			const state = documentStates.get(params.textDocument.uri);
+			if (!state) return null;
+			const word = getWordAtPosition(state.textDocument, params.position);
+			if (!word) return null;
+
+			const symbol = findSymbolByName(state, word);
+			if (symbol) {
+				return {
+					contents: {
+						kind: "markdown",
+						value: `**${symbol.name}** (${symbol.type})`,
+					},
+				};
+			}
+
+			const globalInfo = GLOBAL_API[word];
+			if (globalInfo) {
+				return {
+					contents: {
+						kind: "markdown",
+						value: `**${word}** - ${globalInfo.description}\n\n${globalInfo.signature || ""}`,
+					},
+				};
+			}
+
+			return null;
+		} catch (error) {
+			connection.console.error(`Hover error: ${error instanceof Error ? error.message : String(error)}`);
+			return null;
 		}
-
-		// Default LootiScript hover
-		const documentStates = getDocumentStates();
-		const state = documentStates.get(params.textDocument.uri);
-		if (!state) return null;
-		const word = getWordAtPosition(state.textDocument, params.position);
-		if (!word) return null;
-
-		const symbol = findSymbolByName(state, word);
-		if (symbol) {
-			return {
-				contents: {
-					kind: "markdown",
-					value: `**${symbol.name}** (${symbol.type})`,
-				},
-			};
-		}
-
-		const globalInfo = GLOBAL_API[word];
-		if (globalInfo) {
-			return {
-				contents: {
-					kind: "markdown",
-					value: `**${word}** - ${globalInfo.description}\n\n${globalInfo.signature || ""}`,
-				},
-			};
-		}
-
-		return null;
 	});
 }
 

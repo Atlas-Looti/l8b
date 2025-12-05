@@ -110,7 +110,7 @@ end
 ### Installation
 
 ```bash
-npm install @l8b/io
+pnpm install @l8b/io
 ```
 
 ### Usage

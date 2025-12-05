@@ -1,3 +1,7 @@
+/**
+ * Sprite rendering for Screen class
+ */
+
 import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
 import type { Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
@@ -5,19 +9,22 @@ import type { Sprite } from "@l8b/sprites";
 import { PrimitiveScreen } from "./primitives-screen";
 
 export class SpriteScreen extends PrimitiveScreen {
+	/**
+	 * Get the canvas for the current sprite frame
+	 */
 	protected getSpriteFrame(sprite: Sprite | string | any): HTMLCanvasElement | null {
 		let frame: number | null = null;
-		let spriteObj: Sprite | null = null;
 
-		if (sprite && typeof sprite === "object" && (sprite as any).canvas && !(sprite as any).frames) {
-			return (sprite as any).canvas;
-		}
-
+		// Handle string sprite name
 		if (typeof sprite === "string") {
 			const spriteName = sprite;
+			let spriteObj: Sprite | null = null;
+
 			if (this.runtime && this.runtime.sprites) {
 				spriteObj = this.runtime.sprites[sprite];
 			}
+
+			// Handle "sprite.frame" format (e.g., "player.0")
 			if (!spriteObj) {
 				const parts = sprite.split(".");
 				if (parts.length > 1 && this.runtime && this.runtime.sprites) {
@@ -40,16 +47,16 @@ export class SpriteScreen extends PrimitiveScreen {
 				}
 				return null;
 			}
-		} else if (sprite && (sprite as Sprite).frames) {
-			spriteObj = sprite as Sprite;
+
+			sprite = spriteObj;
+		}
+		// Handle Image instances - check for objects with canvas but no frames
+		else if (sprite && typeof sprite === "object" && (sprite as any).canvas && !(sprite as any).frames) {
+			return (sprite as any).canvas || (sprite as any).image || null;
 		}
 
-		if (!spriteObj) {
-			return null;
-		}
-
-		// Report sprite not ready error
-		if (!spriteObj.ready) {
+		// Validate sprite object
+		if (!sprite || !(sprite as Sprite).ready) {
 			const spriteName = typeof sprite === "string" ? sprite : "unknown";
 			const diagnostic = createDiagnostic(APIErrorCode.E7005, {
 				data: {
@@ -64,8 +71,14 @@ export class SpriteScreen extends PrimitiveScreen {
 			return null;
 		}
 
-		if (spriteObj.frames.length > 1) {
+		const spriteObj = sprite as Sprite;
+
+		// Handle multi-frame sprites
+		if (spriteObj.frames && spriteObj.frames.length > 1) {
 			if (frame === null) {
+				if (spriteObj.animation_start === 0) {
+					spriteObj.animation_start = Date.now();
+				}
 				const dt = 1000 / spriteObj.fps;
 				frame = Math.floor((Date.now() - spriteObj.animation_start) / dt) % spriteObj.frames.length;
 			}
@@ -73,20 +86,26 @@ export class SpriteScreen extends PrimitiveScreen {
 				return spriteObj.frames[frame].canvas;
 			}
 			return spriteObj.frames[0].canvas;
-		} else if (spriteObj.frames[0]) {
+		}
+		// Handle single-frame sprites
+		else if (spriteObj.frames && spriteObj.frames[0]) {
 			return spriteObj.frames[0].canvas;
 		}
 
 		return null;
 	}
 
+	/**
+	 * Draw a sprite
+	 */
 	drawSprite(sprite: Sprite | string | any, x: number, y: number, w?: number, h?: number): void {
 		const canvas = this.getSpriteFrame(sprite);
 		if (!canvas) return;
 
-		if (!w) {
+		if (w == null) {
 			w = canvas.width;
 		}
+
 		if (!h) {
 			h = (w / canvas.width) * canvas.height;
 		}
@@ -101,10 +120,16 @@ export class SpriteScreen extends PrimitiveScreen {
 		}
 	}
 
+	/**
+	 * Alias for drawSprite (for Image compatibility)
+	 */
 	drawImage(sprite: Sprite | string | any, x: number, y: number, w?: number, h?: number): void {
 		this.drawSprite(sprite, x, y, w, h);
 	}
 
+	/**
+	 * Draw a portion of a sprite
+	 */
 	drawSpritePart(
 		sprite: Sprite | string | any,
 		sx: number,
@@ -119,9 +144,10 @@ export class SpriteScreen extends PrimitiveScreen {
 		const canvas = this.getSpriteFrame(sprite);
 		if (!canvas) return;
 
-		if (!w) {
+		if (w == null) {
 			w = sw;
 		}
+
 		if (!h) {
 			h = (w / sw) * sh;
 		}
@@ -156,6 +182,9 @@ export class SpriteScreen extends PrimitiveScreen {
 		}
 	}
 
+	/**
+	 * Alias for drawSpritePart (for Image compatibility)
+	 */
 	drawImagePart(
 		sprite: Sprite | string | any,
 		sx: number,
@@ -170,8 +199,12 @@ export class SpriteScreen extends PrimitiveScreen {
 		this.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h);
 	}
 
+	/**
+	 * Draw a map
+	 */
 	drawMap(map: Map | string, x: number, y: number, w: number, h: number): void {
 		let mapObj: Map | null = null;
+
 		if (typeof map === "string") {
 			if (this.runtime && this.runtime.maps) {
 				mapObj = this.runtime.maps[map];

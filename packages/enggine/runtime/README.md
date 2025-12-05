@@ -20,23 +20,23 @@ The runtime package provides `RuntimeOrchestrator`, which coordinates all engine
 ## Installation
 
 ```bash
-npm install @l8b/runtime
+pnpm install @l8b/runtime
 ```
 
 ## Basic Usage
 
 ```typescript
-import { RuntimeOrchestrator } from '@l8b/runtime';
+import { RuntimeOrchestrator } from "@l8b/runtime";
 
 // Create runtime instance
 const runtime = new RuntimeOrchestrator({
-  canvas: document.getElementById('game-canvas'),
+  canvas: document.getElementById("game-canvas"),
   listener: {
     // Optional callbacks
-    codeStarted: () => console.log('Game started'),
-    codePaused: () => console.log('Game paused'),
-    codeEnded: () => console.log('Game ended'),
-    reportError: (error) => console.error('Runtime error:', error),
+    codeStarted: () => console.log("Game started"),
+    codePaused: () => console.log("Game paused"),
+    codeEnded: () => console.log("Game ended"),
+    reportError: (error) => console.error("Runtime error:", error),
   },
 });
 
@@ -156,11 +156,11 @@ All subsystems are exposed to LootiScript via global objects.
 ## Integration Example
 
 ```typescript
-import { RuntimeOrchestrator } from '@l8b/runtime';
+import { RuntimeOrchestrator } from "@l8b/runtime";
 
 class GameEngine {
   private runtime: RuntimeOrchestrator;
-  
+
   constructor(canvas: HTMLCanvasElement) {
     this.runtime = new RuntimeOrchestrator({
       canvas,
@@ -172,38 +172,38 @@ class GameEngine {
       },
     });
   }
-  
+
   async loadGame(code: string) {
     await this.runtime.loadCode(code);
   }
-  
+
   start() {
     this.runtime.start();
   }
-  
+
   pause() {
     this.runtime.pause();
   }
-  
+
   private onGameStart() {
-    console.log('Game started');
+    console.log("Game started");
   }
-  
+
   private onGamePause() {
-    console.log('Game paused');
+    console.log("Game paused");
   }
-  
+
   private onGameEnd() {
-    console.log('Game ended');
+    console.log("Game ended");
   }
-  
+
   private onError(error: string) {
-    console.error('Game error:', error);
+    console.error("Game error:", error);
   }
 }
 
 // Usage
-const canvas = document.getElementById('game-canvas');
+const canvas = document.getElementById("game-canvas");
 const engine = new GameEngine(canvas);
 
 await engine.loadGame(gameCode);

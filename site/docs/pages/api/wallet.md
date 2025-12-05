@@ -170,4 +170,4 @@ wallet.onChainChanged(function(chainId)
 end)
 ```
 
-For complete Wallet API documentation, see [@l8b/wallet README](https://github.com/Atlas-Looti/l8b/blob/mainhttps://github.com/Atlas-Looti/l8b/blob/main/packages/core/wallet/README.md).
+For complete Wallet API documentation, see [@l8b/wallet README](https://github.com/Atlas-Looti/l8b/blob/main/packages/core/wallet/README.md).

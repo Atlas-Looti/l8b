@@ -7,10 +7,12 @@ import { actionsApi } from "./actions";
 import { assetsApi } from "./assets";
 import { audioApi } from "./audio";
 import { coreApi } from "./core";
+import { envApi } from "./env";
 import { evmApi } from "./evm";
 import { httpApi } from "./http";
 import { inputApi } from "./input";
 import { mapApi } from "./map";
+import { notificationsApi } from "./notifications";
 import { paletteApi } from "./palette";
 import { playerApi } from "./player";
 import { sceneApi } from "./scene";
@@ -39,7 +41,9 @@ export const GLOBAL_API: GlobalApi = {
 	...walletApi,
 	...evmApi,
 	...actionsApi,
+	...notificationsApi,
 	...httpApi,
+	...envApi,
 } as GlobalApi;
 
 /**

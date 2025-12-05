@@ -181,6 +181,24 @@ export class PlayerService {
 			isInMiniApp: () => {
 				return !!service.context;
 			},
+			isFromShare: () => {
+				return service.context?.location?.type === "cast_share";
+			},
+			getSharedCast: () => {
+				if (service.context?.location?.type === "cast_share") {
+					return service.context.location.cast;
+				}
+				return undefined;
+			},
+			isFromNotification: () => {
+				return service.context?.location?.type === "notification";
+			},
+			getNotification: () => {
+				if (service.context?.location?.type === "notification") {
+					return service.context.location.notification;
+				}
+				return undefined;
+			},
 		};
 	}
 

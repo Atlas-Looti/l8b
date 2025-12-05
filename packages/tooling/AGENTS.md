@@ -3,6 +3,7 @@
 ## Overview
 
 Tooling packages provide IDE support for LootiScript development:
+
 - **language-server** - Language Server Protocol implementation
 - **diagnostics** - Error and warning diagnostics
 - **vscode** - VSCode extension
@@ -15,9 +16,7 @@ The language server (`packages/tooling/language-server`) implements LSP:
 
 ```typescript
 // Connection setup
-const connection = createConnection(
-  ProposedFeatures.all
-);
+const connection = createConnection(ProposedFeatures.all);
 
 // Initialize server
 connection.onInitialize((params) => {
@@ -58,7 +57,7 @@ export const screenAPI = {
       description: "Clear the screen",
       examples: [
         {
-          code: "screen.clear(\"#000\")",
+          code: 'screen.clear("#000")',
           description: "Clear screen with black",
         },
       ],
@@ -73,10 +72,10 @@ export const screenAPI = {
 connection.onCompletion((params) => {
   const document = documents.get(params.textDocument.uri);
   const position = params.position;
-  
+
   // Get context at position
   const context = getContext(document, position);
-  
+
   // Return completions based on API definitions
   return getCompletions(context);
 });
@@ -88,10 +87,10 @@ connection.onCompletion((params) => {
 connection.onHover((params) => {
   const document = documents.get(params.textDocument.uri);
   const position = params.position;
-  
+
   // Get symbol at position
   const symbol = getSymbol(document, position);
-  
+
   // Return documentation
   return {
     contents: formatDocumentation(symbol),
@@ -107,7 +106,7 @@ Diagnostics (`packages/tooling/diagnostics`) provide error/warning information:
 
 ```typescript
 interface Diagnostic {
-  code: string;              // Error code (e.g., "E1001")
+  code: string; // Error code (e.g., "E1001")
   severity: "error" | "warning" | "info";
   message: string;
   line: number;
@@ -162,14 +161,14 @@ export function activate(context: vscode.ExtensionContext) {
     "lootiscript",
     "LootiScript Language Server",
     serverOptions,
-    clientOptions
+    clientOptions,
   );
-  
+
   client.start();
-  
+
   // Register commands
   context.subscriptions.push(
-    vscode.commands.registerCommand("l8b.command", handler)
+    vscode.commands.registerCommand("l8b.command", handler),
   );
 }
 ```
@@ -196,7 +195,7 @@ export const apiName = {
       type: "number" | "string" | "boolean" | "object" | "function",
       description: "Property description",
     },
-    
+
     // Methods
     method: {
       type: "function",
@@ -261,7 +260,7 @@ import { newAPI } from "./new-api";
 export const allAPIs = {
   ...screenAPI,
   ...audioAPI,
-  ...newAPI,  // Add here
+  ...newAPI, // Add here
 };
 ```
 
@@ -276,8 +275,8 @@ Error codes are defined in diagnostics:
 ```typescript
 // packages/tooling/diagnostics/src/codes.ts
 export enum CompilationErrorCode {
-  E1001 = "E1001",  // Unterminated function/block
-  E1002 = "E1002",  // Too many 'end'
+  E1001 = "E1001", // Unterminated function/block
+  E1002 = "E1002", // Too many 'end'
   // ...
 }
 ```
@@ -293,7 +292,7 @@ describe("Completion Provider", () => {
       text: "screen.",
       position: { line: 0, column: 7 },
     });
-    
+
     expect(completions).toContainEqual({
       label: "clear",
       kind: CompletionItemKind.Method,
@@ -305,12 +304,14 @@ describe("Completion Provider", () => {
 ## Integration with Framework
 
 The tooling:
+
 - **Provides** autocompletion for APIs exposed by runtime
 - **Validates** LootiScript code during development
 - **Shows** errors from compiler
 - **Works** with framework CLI dev server
 
 Framework:
+
 - **Uses** compiler that generates diagnostics
 - **Shows** diagnostics in browser error overlay
 - **Integrates** with language server in VSCode

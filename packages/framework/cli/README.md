@@ -13,16 +13,16 @@ The L8B CLI provides a complete development workflow for LootiScript games:
 ## Installation
 
 ```bash
-npm install -g l8b
+pnpm add -g l8b
 ```
 
-Or use with npx:
+Or use with pnpm dlx:
 
 ```bash
-npx l8b init my-game
+pnpm dlx l8b init my-game
 cd my-game
-npm install
-npx l8b dev
+pnpm install
+pnpm dlx l8b dev
 ```
 
 ## Commands
@@ -214,9 +214,9 @@ Create `l8b.config.json` in your project root:
 ### 1. Create Project
 
 ```bash
-npx l8b init my-game
+pnpm dlx l8b init my-game
 cd my-game
-npm install
+pnpm install
 ```
 
 ### 2. Create Source File
@@ -252,7 +252,7 @@ end
 ### 3. Start Development
 
 ```bash
-npx l8b dev
+pnpm dlx l8b dev
 ```
 
 Open http://localhost:3000 in your browser.
@@ -260,13 +260,13 @@ Open http://localhost:3000 in your browser.
 ### 4. Build for Production
 
 ```bash
-npx l8b build
+pnpm dlx l8b build
 ```
 
 ### 5. Serve Production Build
 
 ```bash
-npx l8b start
+pnpm dlx l8b start
 ```
 
 ## Hot Module Replacement

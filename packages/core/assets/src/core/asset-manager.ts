@@ -7,7 +7,7 @@
  */
 
 import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
-import { Image } from "@l8b/sprites";
+import { Image } from "@l8b/image";
 import type { ImageLoaderResult, JSONLoaderResult, Runtime, TextLoaderResult } from "../types";
 
 export type { Runtime };

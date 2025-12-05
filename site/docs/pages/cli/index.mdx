@@ -7,13 +7,13 @@ L8B provides a Command-Line Interface (CLI) for development, building, and deplo
 Install L8B CLI globally:
 
 ```bash
-npm install -g l8b
+pnpm add -g l8b
 ```
 
-Or use with npx (without installing):
+Or use with pnpm dlx (without installing):
 
 ```bash
-npx l8b init my-game
+pnpm dlx l8b init my-game
 ```
 
 ## Commands Overview
@@ -21,7 +21,8 @@ npx l8b init my-game
 - [`init`](#init) - Initialize a new project
 - [`dev`](#dev) - Start development server with HMR
 - [`build`](#build) - Build project for production
-- [`start`](#start) - Serve production build
+- [`preview`](#preview) - Preview production build
+- [`contract import`](#contract-import) - Import smart contract ABI
 
 ## init
 
@@ -214,35 +215,76 @@ Build process will generate:
 - Optimized runtime bundle
 - Copied assets
 - Production-ready HTML
+- Environment variables embedded (from `.env` files)
 
-## start
+## preview
 
-Serve production build.
+Preview production build.
 
 ```bash
-l8b start [root]
+l8b preview [root]
 ```
 
 ### Options
 
 - `root` - Path to project root (default: current directory)
 - `--port <number>` - Port for server (default: 3000)
-- `--host <hostname>` - Expose to network
+- `--host <hostname>` - Expose to network (use `0.0.0.0` to expose)
 
 ### Examples
 
 ```bash
-# Serve production build
-l8b start
+# Preview production build
+l8b preview
 
 # Custom port
-l8b start --port 8080
+l8b preview --port 8080
 
 # Expose to network
-l8b start --host 0.0.0.0
+l8b preview --host 0.0.0.0
 ```
 
-**Note:** Make sure to run `l8b build` before `l8b start`.
+**Note:** Make sure to run `l8b build` before `l8b preview`.
+
+## contract import
+
+Import smart contract ABI and generate LootiScript wrapper.
+
+```bash
+l8b contract import <address> --chain <chain> --name <name> [options]
+```
+
+### Options
+
+- `address` - Contract address (required)
+- `--chain <chain>` - Blockchain network: `base`, `ethereum`, `optimism`, or `arbitrum` (required)
+- `--name <name>` - Contract name for the generated wrapper (required)
+- `--api-key <key>` - Block explorer API key (optional, can also set `BASE_API_KEY`, `ETHEREUM_API_KEY`, etc.)
+- `--root <path>` - Path to project root (default: current directory)
+
+### Examples
+
+```bash
+# Import contract from Base network
+l8b contract import 0x123... --chain base --name MyContract
+
+# Import with custom API key
+l8b contract import 0x123... --chain ethereum --name MyContract --api-key YOUR_KEY
+
+# Import from specific project
+l8b contract import 0x123... --chain base --name MyContract --root ./my-game
+```
+
+### Environment Variables for API Keys
+
+You can set API keys as environment variables instead of using `--api-key`:
+
+```bash
+export BASE_API_KEY=your_key_here
+export ETHEREUM_API_KEY=your_key_here
+export OPTIMISM_API_KEY=your_key_here
+export ARBITRUM_API_KEY=your_key_here
+```
 
 ## Project Structure
 
@@ -270,9 +312,9 @@ my-game/
 ### 1. Create Project
 
 ```bash
-npx l8b init my-game
+pnpm dlx l8b init my-game
 cd my-game
-npm install
+pnpm install
 ```
 
 ### 2. Start Development
@@ -289,10 +331,10 @@ Open http://localhost:3000 in browser.
 l8b build
 ```
 
-### 4. Serve Production Build
+### 4. Preview Production Build
 
 ```bash
-l8b start
+l8b preview
 ```
 
 ## Asset Loading

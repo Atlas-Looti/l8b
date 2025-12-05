@@ -9,18 +9,18 @@ This guide will help you get started with your first L8B game project. For an ov
 Install L8B CLI as a dev dependency:
 
 ```bash
-npm install l8b --save-dev
+pnpm add l8b --save-dev
 ```
 
 **Note:** The runtime is automatically bundled with your project. You don't need to install it separately.
 
-Alternatively, use npx:
+Alternatively, use pnpm dlx:
 
 ```bash
-npx l8b init my-game
+pnpm dlx l8b init my-game
 cd my-game
-npm install
-npx l8b dev
+pnpm install
+pnpm dlx l8b dev
 ```
 
 ### Project Structure
@@ -91,7 +91,7 @@ Add scripts for development and build in `package.json`:
   "scripts": {
     "dev": "l8b dev",
     "build": "l8b build",
-    "start": "l8b start"
+    "preview": "l8b preview"
   },
   "devDependencies": {
     "l8b": "^0.0.1"
@@ -103,9 +103,9 @@ Add scripts for development and build in `package.json`:
 
 **Commands:**
 
-- `npm run dev` or `l8b dev`: Run development server with HMR (Hot Module Replacement)
-- `npm run build` or `l8b build`: Build project for production (output to `.l8b/`)
-- `npm run start` or `l8b start`: Preview production build
+- `pnpm run dev` or `l8b dev`: Run development server with HMR (Hot Module Replacement)
+- `pnpm run build` or `l8b build`: Build project for production (output to `.l8b/`)
+- `pnpm run preview` or `l8b preview`: Preview production build
 
 **Development Server Options:**
 
@@ -613,6 +613,6 @@ Now you understand the basics of L8B! Next:
 
 1. **Explore LootiScript** - Learn more about the LootiScript language in [LootiScript Programming](/looti-script)
 2. **API Reference** - See all available APIs in [API Reference](/api)
-3. **Cheatsheet** - Use [LootiScript Cheatsheet](/quick-reference/lootiscript-cheatsheet) as a quick reference
+3. **Cheatsheet** - Use [LootiScript Cheatsheet](#TODO) as a quick reference
 
 Happy game making! 🎮

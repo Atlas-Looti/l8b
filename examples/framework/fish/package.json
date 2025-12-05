@@ -5,10 +5,10 @@
 	"type": "module",
 	"scripts": {
 		"dev": "pnpm exec l8b dev",
-		"start": "pnpm exec l8b start",
+		"preview": "pnpm exec l8b preview",
 		"build": "pnpm exec l8b build"
 	},
 	"devDependencies": {
-		"@l8b/cli": "latest"
+		"@l8b/cli": "workspace:*"
 	}
 }

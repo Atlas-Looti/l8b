@@ -96,6 +96,70 @@ else
 end
 ```
 
+### Share Extensions
+
+Share extensions allow your Mini App to receive shared casts from the Farcaster share sheet.
+
+#### player.isFromShare()
+
+Check if the Mini App was opened from a share extension.
+
+```lua
+if player.isFromShare() == 1 then
+  // App was opened via share extension
+  local cast = player.getSharedCast()
+  if cast then
+    print("Shared cast from: " .. cast.author.username)
+    print("Cast text: " .. cast.text)
+  end
+end
+```
+
+#### player.getSharedCast()
+
+Get the shared cast if the app was opened from a share extension.
+
+```lua
+local cast = player.getSharedCast()
+if cast then
+  local author = cast.author
+  print("Author: " .. (author.displayName or author.username))
+  print("Cast hash: " .. cast.hash)
+  print("Cast text: " .. cast.text)
+end
+```
+
+**Returns:** Cast object with `author`, `hash`, `text`, `timestamp`, etc., or `undefined` if not opened from share.
+
+#### player.isFromNotification()
+
+Check if the Mini App was opened from a notification.
+
+```lua
+if player.isFromNotification() == 1 then
+  local notification = player.getNotification()
+  if notification then
+    print("Notification: " .. notification.title)
+    print("Body: " .. notification.body)
+  end
+end
+```
+
+#### player.getNotification()
+
+Get the notification if the app was opened from a notification.
+
+```lua
+local notification = player.getNotification()
+if notification then
+  print("Notification ID: " .. notification.notificationId)
+  print("Title: " .. notification.title)
+  print("Body: " .. notification.body)
+end
+```
+
+**Returns:** Notification object with `notificationId`, `title`, `body`, or `undefined` if not opened from notification.
+
 ## Example Usage
 
 ```lua
@@ -113,6 +177,25 @@ function update()
   // Access player properties
   local fid = player.fid
   local username = player.username
+  
+  // Handle share extensions
+  if player.isFromShare() == 1 then
+    local cast = player.getSharedCast()
+    if cast then
+      print("Shared cast from: " .. cast.author.username)
+      print("Cast: " .. cast.text)
+      // Handle shared cast logic
+    end
+  end
+  
+  // Handle notifications
+  if player.isFromNotification() == 1 then
+    local notification = player.getNotification()
+    if notification then
+      print("Opened from notification: " .. notification.title)
+      // Handle notification-specific logic
+    end
+  end
   
   // Get full context for advanced usage
   local context = player.getContext()

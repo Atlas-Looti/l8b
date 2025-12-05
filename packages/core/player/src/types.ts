@@ -62,4 +62,10 @@ export interface PlayerAPI {
 	getPfpUrl(): string | undefined;
 	getContext(): PlayerContext;
 	isInMiniApp(): boolean;
+
+	// Share Extensions helpers
+	isFromShare(): boolean;
+	getSharedCast(): (PlayerContext["location"] & { type: "cast_share" })["cast"] | undefined;
+	isFromNotification(): boolean;
+	getNotification(): (PlayerContext["location"] & { type: "notification" })["notification"] | undefined;
 }

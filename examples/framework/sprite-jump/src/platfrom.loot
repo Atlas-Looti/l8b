@@ -1,0 +1,46 @@
+platforminit = function()
+  weight = 0
+  
+  platforms = []
+  platformtypes = ["normalplatform", "movingplatform", "woodplatform"]
+  platformweights = [0.8, 0.5, 0.1]
+  
+  Platform = class
+    constructor = function(x, y) //Position of platforms
+      this.x = x
+      this.y = y
+    end
+    visible = true
+    width = 24
+    height = 6
+    sprite = "normalplatform"
+    x_vel = 1
+  end
+  
+
+  makePlatforms()
+  
+end
+
+
+
+
+
+platformupdate = function()
+  
+  
+  
+  if gamemode == "playing" then
+    
+    movePlatforms()
+    platformBorderCollision()
+    bluePlatform()
+  end
+  
+
+end
+
+platformdraw = function()
+    drawPlatforms()
+  
+end

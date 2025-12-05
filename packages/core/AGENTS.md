@@ -187,7 +187,7 @@ describe("MyService", () => {
 ### Step 1: Create Package
 
 ```bash
-bun run new
+pnpm run new
 # Choose: core/<api-name>
 ```
 

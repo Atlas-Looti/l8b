@@ -3,6 +3,7 @@ import { defineConfig } from "vocs";
 export default defineConfig({
 	title: "L8B Game Engine",
 	description: "A 2D game engine for building interactive and dynamic game experiences",
+	checkDeadlinks: "warn",
 	sidebar: [
 		{
 			text: "Getting Started",
@@ -125,6 +126,10 @@ export default defineConfig({
 						{
 							text: "Storage",
 							link: "/api/storage",
+						},
+						{
+							text: "Env",
+							link: "/api/env",
 						},
 					],
 				},

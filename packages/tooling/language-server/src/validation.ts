@@ -5,6 +5,7 @@ import type { TextDocument } from "vscode-languageserver-textdocument";
 import { API_ACCESS_REGEX, GLOBAL_API } from "./api-definitions/index";
 import type { DocumentRegionsCache, LanguageModes } from "./embedded/mode-manager";
 import { getDocumentSettings } from "./settings";
+import { hasParserError, type ParserErrorInfo } from "./types";
 import { getClosestPropertySuggestion } from "./utils";
 
 export async function validateTextDocument(
@@ -36,8 +37,15 @@ export async function validateTextDocument(
 			const hasEmbeddedContent = embeddedDoc.getText().trim().length > 0;
 
 			if (hasEmbeddedContent) {
-				const embeddedDiagnostics = await mode.doValidation(textDocument);
-				diagnostics.push(...embeddedDiagnostics);
+				try {
+					const embeddedDiagnostics = await mode.doValidation(textDocument);
+					diagnostics.push(...embeddedDiagnostics);
+				} catch (error) {
+					connection.console.error(
+						`Validation error in ${mode.getId()}: ${error instanceof Error ? error.message : String(error)}`,
+					);
+					// Continue with other validations even if one mode fails
+				}
 			}
 		}
 	}
@@ -48,8 +56,9 @@ export async function validateTextDocument(
 		const parser = new Parser(text, textDocument.uri);
 		parser.parse();
 
-		if ((parser as any).error_info) {
-			const err = (parser as any).error_info;
+		// Use type guard to safely check for parser errors
+		if (hasParserError(parser)) {
+			const err: ParserErrorInfo = parser.error_info;
 
 			// Convert parser error to diagnostic using centralized diagnostics package
 			const diagnosticData = createDiagnostic(err.code || "E1004", {
@@ -76,7 +85,8 @@ export async function validateTextDocument(
 			const lspDiagnostic = formatForLSP(diagnosticData);
 			diagnostics.push(lspDiagnostic as Diagnostic);
 		}
-	} catch (e: any) {
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
 		const diagnostic: Diagnostic = {
 			severity: DiagnosticSeverity.Error,
 			range: {
@@ -89,10 +99,11 @@ export async function validateTextDocument(
 					character: 10,
 				},
 			},
-			message: e.message || "Unknown parser error",
+			message: errorMessage || "Unknown parser error",
 			source: "lootiscript",
 		};
 		diagnostics.push(diagnostic);
+		connection.console.error(`Parser error: ${errorMessage}`);
 	}
 
 	validateApiUsage(textDocument, diagnostics);
@@ -126,41 +137,36 @@ function validateApiUsage(textDocument: TextDocument, diagnostics: Diagnostic[])
 
 		// Runtime collections that are populated dynamically (sprites, maps, etc.)
 		// Cannot validate instance properties statically since they're loaded at runtime
+		// These objects have dynamic properties that are set at runtime, so we skip validation
+		// to avoid false positives
 		const knownRuntimeObjects = new Set(["sprites", "map", "sounds", "music", "assets"]);
 
-		// For nested property access (e.g., sprites.player.x), validate
-		// that the root object exists in the API
+		// For nested property access (e.g., sprites.player.x, map.level1.width)
+		// Skip validation for runtime objects since they have dynamic properties
 		if (isNested) {
 			const api = GLOBAL_API[rootObjectName];
-			// If root object is not a known global API or runtime object,
-			// it's likely a user-defined object - skip validation
-			if (!api && !knownRuntimeObjects.has(rootObjectName)) {
-				// Skip validation for user-defined objects
+			
+			// Skip validation for runtime objects - they have dynamic properties
+			// that cannot be validated statically (e.g., sprites.player.x, map.level1.width)
+			if (knownRuntimeObjects.has(rootObjectName)) {
 				continue;
 			}
-
-			// Report errors for runtime collection property access
-			// This helps catch typos but may produce false positives for valid runtime properties
-			if (knownRuntimeObjects.has(rootObjectName)) {
-				const propertyStart = matchIndex + fullPath.length + 1;
-				const startPos = textDocument.positionAt(propertyStart);
-
-				const diagnosticData = createDiagnostic("E7100", {
-					file: textDocument.uri,
-					line: startPos.line + 1,
-					column: startPos.character + 1,
-					length: propertyName.length,
-					data: {
-						propertyName,
-						objectName: fullPath,
-						suggestion: undefined,
-					},
-				});
-
-				const lspDiagnostic = formatForLSP(diagnosticData);
-				diagnostics.push(lspDiagnostic as Diagnostic);
+			
+			// If root object is not a known global API or runtime object,
+			// it's likely a user-defined object - skip validation
+			if (!api) {
+				continue;
 			}
-			continue;
+			
+			// For known API objects with nested access, check if the nested object exists
+			// This handles cases like "screen.someProperty" where screen is a known API
+			// but we're accessing a nested property that might not exist
+			const nestedPath = fullPath.split(".").slice(1);
+			if (nestedPath.length > 0) {
+				// Skip validation for nested properties on known APIs
+				// as they might be dynamic or user-defined
+				continue;
+			}
 		}
 
 		// For single-level API access (e.g., screen.drawSprite),

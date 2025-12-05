@@ -75,6 +75,28 @@ export const actionsApi: Partial<GlobalApi> = {
 					"actions.composeCast({text?: string, embeds?: string[], parent?: {type: string, hash: string}, close?: boolean, channelKey?: string})",
 				description: "Open cast composer with suggested content",
 			},
+			quickAuth: {
+				type: "object",
+				description: "Quick Auth API - Recommended authentication method for Farcaster Mini Apps",
+				properties: {
+					getToken: {
+						type: "method",
+						signature: "actions.quickAuth.getToken(options?: {force?: boolean, quickAuthServerOrigin?: string})",
+						description: "Get Quick Auth token (cached if available and not expired). Returns {token: string}",
+					},
+					fetch: {
+						type: "method",
+						signature: "actions.quickAuth.fetch(url: string, options?: RequestInit)",
+						description: "Make an authenticated fetch request (automatically adds Bearer token)",
+					},
+					token: {
+						type: "property",
+						returnType: "string | undefined",
+						signature: "actions.quickAuth.token",
+						description: "Synchronous access to current token (if available)",
+					},
+				},
+			},
 		},
 	},
 };

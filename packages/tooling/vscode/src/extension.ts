@@ -14,10 +14,12 @@ import { ExamplesProvider } from "./views/examplesProvider";
 
 let client: LanguageClient;
 let statusBarItem: vscode.StatusBarItem;
+let statusBarUpdateTimeout: NodeJS.Timeout | undefined;
 const GLOBAL_API_REQUEST = "lootiscript/globalApi";
+const STATUS_BAR_DEBOUNCE_MS = 300;
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log("LootiScript Language Server extension is activating...");
+	// Extension activation
 
 	// Create status bar item
 	statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -88,23 +90,34 @@ export function activate(context: vscode.ExtensionContext) {
 		.then(async () => {
 			statusBarItem.text = "$(pass) L8B";
 			statusBarItem.tooltip = "LootiScript Language Server: Running";
-			console.log("LootiScript Language Server started successfully");
-			await hydrateApiReference(apiProvider);
+			// Language server started successfully
+			try {
+				await hydrateApiReference(apiProvider);
+			} catch (error) {
+				// Silently handle API reference hydration errors
+				apiProvider.setError("Unable to load API reference");
+			}
 		})
 		.catch((error) => {
 			statusBarItem.text = "$(error) L8B";
-			statusBarItem.tooltip = `LootiScript Language Server: Error - ${error}`;
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			statusBarItem.tooltip = `LootiScript Language Server: Error - ${errorMessage}`;
 			apiProvider.setError("Unable to load API reference");
-			console.error("Failed to start LootiScript Language Server:", error);
 		});
 
 	// Register commands
 	registerCommands(context, apiProvider);
 
-	// Listen to diagnostics for error count in status bar
+	// Listen to diagnostics for error count in status bar with debouncing
 	context.subscriptions.push(
-		vscode.languages.onDidChangeDiagnostics((e) => {
-			updateStatusBarWithDiagnostics();
+		vscode.languages.onDidChangeDiagnostics(() => {
+			if (statusBarUpdateTimeout) {
+				clearTimeout(statusBarUpdateTimeout);
+			}
+			statusBarUpdateTimeout = setTimeout(() => {
+				updateStatusBarWithDiagnostics();
+				statusBarUpdateTimeout = undefined;
+			}, STATUS_BAR_DEBOUNCE_MS);
 		}),
 	);
 
@@ -129,7 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
 		),
 	);
 
-	console.log("LootiScript Language Server extension is now active!");
+	// Extension activation complete
 }
 
 function registerCommands(context: vscode.ExtensionContext, apiProvider: ApiProvider) {
@@ -183,7 +196,12 @@ function registerCommands(context: vscode.ExtensionContext, apiProvider: ApiProv
 			try {
 				await client.stop();
 				await client.start();
-				await hydrateApiReference(apiProvider);
+				try {
+					await hydrateApiReference(apiProvider);
+				} catch (error) {
+					// Silently handle API reference hydration errors
+					apiProvider.setError("Unable to load API reference");
+				}
 
 				statusBarItem.text = "$(check) L8B";
 				statusBarItem.tooltip = "LootiScript Language Server: Running";
@@ -331,13 +349,26 @@ async function hydrateApiReference(apiProvider: ApiProvider): Promise<void> {
 		apiProvider.setApiData(apiData);
 	} catch (error) {
 		apiProvider.setError("Unable to load API reference");
-		console.error("Failed to load LootiScript API reference", error);
+		// Silently handle API reference loading errors
 	}
 }
 
 export function deactivate(): Thenable<void> | undefined {
-	if (!client) {
-		return undefined;
+	// Clear any pending status bar updates
+	if (statusBarUpdateTimeout) {
+		clearTimeout(statusBarUpdateTimeout);
+		statusBarUpdateTimeout = undefined;
 	}
-	return client.stop();
+
+	// Dispose status bar item
+	if (statusBarItem) {
+		statusBarItem.dispose();
+	}
+
+	// Stop language client
+	if (client) {
+		return client.stop();
+	}
+
+	return undefined;
 }

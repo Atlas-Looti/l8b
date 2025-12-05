@@ -35,22 +35,7 @@ export const screenApi: Partial<GlobalApi> = {
 			drawText: {
 				type: "method",
 				description: "Draw text at the specified position",
-				signature: "screen.drawText(text: string, x: number, y: number, color?: string, size?: number)",
-			},
-			clearScreen: {
-				type: "method",
-				description: "Clear the screen with a color",
-				signature: "screen.clearScreen(color?: string)",
-			},
-			drawCircle: {
-				type: "method",
-				description: "Draw a circle",
-				signature: "screen.drawCircle(x: number, y: number, radius: number, color: string)",
-			},
-			fillCircle: {
-				type: "method",
-				description: "Fill a circle",
-				signature: "screen.fillCircle(x: number, y: number, radius: number, color: string)",
+				signature: "screen.drawText(text: string, x: number, y: number, size: number, color?: string | number)",
 			},
 			drawLine: {
 				type: "method",
@@ -59,8 +44,8 @@ export const screenApi: Partial<GlobalApi> = {
 			},
 			clear: {
 				type: "method",
-				signature: "screen.clear(color?)",
-				description: "Clear screen (alias for clearScreen)",
+				signature: "screen.clear(color?: string)",
+				description: "Clear the screen with optional color",
 			},
 			setColor: {
 				type: "method",

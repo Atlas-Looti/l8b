@@ -6,10 +6,10 @@
 	"scripts": {
 		"dev": "pnpm exec l8b dev",
 		"build": "pnpm exec l8b build",
-		"start": "pnpm exec l8b start"
+		"preview": "pnpm exec l8b preview"
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@l8b/cli": "latest"
+		"@l8b/cli": "workspace:*"
 	}
 }

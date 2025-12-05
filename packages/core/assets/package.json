@@ -27,7 +27,7 @@
 	},
 	"dependencies": {
 		"@l8b/diagnostics": "workspace:*",
-		"@l8b/sprites": "workspace:*"
+		"@l8b/image": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "^22.19.1",

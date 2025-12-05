@@ -91,4 +91,4 @@ else
 end
 ```
 
-For complete Player API documentation, see [@l8b/player README](https://github.com/Atlas-Looti/l8b/blob/mainhttps://github.com/Atlas-Looti/l8b/blob/main/packages/core/player/README.md).
+For complete Player API documentation, see [@l8b/player README](https://github.com/Atlas-Looti/l8b/blob/main/packages/core/player/README.md).

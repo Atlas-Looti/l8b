@@ -16,7 +16,8 @@
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"dependencies": {
-		"@l8b/diagnostics": "workspace:*"
+		"@l8b/diagnostics": "workspace:*",
+		"@l8b/image": "workspace:*"
 	},
 	"keywords": [
 		"sprites"

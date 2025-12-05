@@ -26,3 +26,23 @@ export const BUILD = {
 	/** Maximum depth to traverse when finding workspace root */
 	MAX_WORKSPACE_DEPTH: 10,
 } as const;
+
+/**
+ * Asset file extensions
+ */
+export const ASSET_EXTENSIONS = {
+	IMAGE: [".png", ".jpg", ".jpeg", ".webp", ".gif"] as const,
+	MAP: [".json", ".tmj"] as const,
+	AUDIO: [".mp3", ".wav", ".ogg"] as const,
+} as const;
+
+/**
+ * Asset subdirectories in public folder
+ */
+export const ASSET_SUBDIRS = {
+	SPRITES: "sprites",
+	MAPS: "maps",
+	FONTS: "fonts",
+	SOUNDS: "sounds",
+	MUSIC: "music",
+} as const;

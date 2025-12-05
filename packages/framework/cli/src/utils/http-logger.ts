@@ -16,7 +16,7 @@ export interface HttpLogEntry {
 	timestamp: number;
 }
 
-class HttpLogger {
+export class HttpLogger {
 	private logs: HttpLogEntry[] = [];
 	private maxLogs: number = 100;
 	private enabled: boolean = true;
@@ -145,5 +145,4 @@ class HttpLogger {
 }
 
 // Singleton instance
-// NOTE: Currently not exported as it's not used anywhere in the framework
 // const httpLogger = new HttpLogger();

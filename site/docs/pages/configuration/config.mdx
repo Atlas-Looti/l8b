@@ -99,6 +99,16 @@ Canvas element configuration.
 - `width` - Canvas width (optional, overrides root `width`)
 - `height` - Canvas height (optional, overrides root `height`)
 
+### `url`
+
+Base URL for the game (optional). Used for generating absolute URLs in Farcaster manifests and embeds.
+
+```json
+{
+  "url": "https://mygame.example.com"
+}
+```
+
 ### `dev`
 
 Development server configuration.
@@ -115,7 +125,10 @@ Development server configuration.
 ```
 
 - `port` - Port for dev server (default: 3000)
-- `host` - Host for dev server (default: "localhost", use `"0.0.0.0"` to expose to network)
+- `host` - Host for dev server. Can be:
+  - `"localhost"` or `false` - Localhost only (default)
+  - `"0.0.0.0"` or `true` - Expose to network
+  - Specific hostname string - Bind to specific host
 - `watch` - Enable file watching (default: true)
 - `hotReload` - Enable hot module replacement (default: true)
 
@@ -158,18 +171,44 @@ Configuration for Farcaster Mini Apps.
 {
   "farcaster": {
     "manifest": {
-      "name": "My Mini App",
-      "iconUrl": "https://example.com/icon.png",
-      "splashImageUrl": "https://example.com/splash.png",
-      "splashBackgroundColor": "#000000",
-      "homeUrl": "https://example.com",
-      "ogImageUrl": "https://example.com/og.png"
+      "accountAssociation": {
+        "header": "base64-encoded-header",
+        "payload": "base64-encoded-payload",
+        "signature": "base64-encoded-signature"
+      },
+      "miniapp": {
+        "version": "1",
+        "name": "My Mini App",
+        "iconUrl": "https://example.com/icon.png",
+        "homeUrl": "https://example.com",
+        "imageUrl": "https://example.com/preview.png",
+        "buttonTitle": "Play Game",
+        "splashImageUrl": "https://example.com/splash.png",
+        "splashBackgroundColor": "#000000",
+        "webhookUrl": "https://example.com/webhook",
+        "description": "An awesome game",
+        "subtitle": "Play now!",
+        "screenshotUrls": ["https://example.com/screenshot1.png"],
+        "primaryCategory": "Games",
+        "tags": ["game", "fun"],
+        "heroImageUrl": "https://example.com/hero.png",
+        "tagline": "The best game ever",
+        "ogTitle": "My Awesome Game",
+        "ogDescription": "Play the best game",
+        "ogImageUrl": "https://example.com/og.png"
+      }
     },
     "embeds": {
       "/game": {
         "imageUrl": "https://example.com/game-preview.png",
-        "title": "Play Game",
-        "description": "An awesome game"
+        "dynamicImage": false,
+        "ogImageFunction": "generateOGImage",
+        "buttonTitle": "Play Game",
+        "actionType": "launch_frame",
+        "actionUrl": "https://example.com/game",
+        "appName": "My Game",
+        "splashImageUrl": "https://example.com/splash.png",
+        "splashBackgroundColor": "#000000"
       }
     }
   }
@@ -177,18 +216,51 @@ Configuration for Farcaster Mini Apps.
 ```
 
 **Manifest options:**
-- `name` - Mini App Name
-- `iconUrl` - Icon URL (120x120px)
-- `splashImageUrl` - Splash screen URL (1200x630px)
-- `splashBackgroundColor` - Background color for splash (hex)
-- `homeUrl` - Mini App Home URL
-- `ogImageUrl` - OpenGraph image URL
+
+- `accountAssociation` - Domain verification (required for production)
+  - `header` - Base64 encoded JFS header
+  - `payload` - Base64 encoded payload
+  - `signature` - Base64 encoded signature
+- `miniapp` - Mini App metadata
+  - `version` - Must be `"1"`
+  - `name` - Mini App name (required)
+  - `iconUrl` - Icon URL (120x120px, required)
+  - `homeUrl` - Home URL (required)
+  - `imageUrl` - Default preview image URL
+  - `buttonTitle` - Default button title
+  - `splashImageUrl` - Splash screen URL (1200x630px)
+  - `splashBackgroundColor` - Splash background color (hex)
+  - `webhookUrl` - Webhook URL for receiving notification events
+    - Farcaster clients POST webhook events to this URL
+    - Events: `miniapp_added`, `miniapp_removed`, `notifications_enabled`, `notifications_disabled`
+    - Must be HTTPS URL
+  - `description` - App description
+  - `subtitle` - App subtitle
+  - `screenshotUrls` - Array of screenshot URLs
+  - `primaryCategory` - Primary category
+  - `tags` - Array of tags
+  - `heroImageUrl` - Hero image URL
+  - `tagline` - App tagline
+  - `ogTitle` - OpenGraph title
+  - `ogDescription` - OpenGraph description
+  - `ogImageUrl` - OpenGraph image URL
 
 **Embeds options:**
-- Key is route path (e.g., "/game")
-- `imageUrl` - Preview image for embed
-- `title` - Title for embed
-- `description` - Description for embed
+
+- Key is route path (e.g., `"/game"`, `"/level/:id"`)
+- `imageUrl` - Preview image URL (3:2 aspect ratio, max 1024 chars)
+- `dynamicImage` - If `true`, uses `/og-image` endpoint with route path
+- `ogImageFunction` - LootiScript function name for generating OG image
+  - Function signature: `function generateOGImage(routePath, params, screen)`
+  - `routePath`: string - The route path (e.g., "/level/5")
+  - `params`: table - Route parameters (e.g., `{ id = "5" }`)
+  - `screen`: object - Screen API interface for drawing
+- `buttonTitle` - Button title (max 32 characters, required)
+- `actionType` - Action type: `"launch_frame"` or `"view_token"` (default: `"launch_frame"`)
+- `actionUrl` - URL to open when button is clicked (defaults to current page URL)
+- `appName` - App name (defaults to `config.name`)
+- `splashImageUrl` - Splash image URL (200x200px, max 32 chars)
+- `splashBackgroundColor` - Splash background color (hex)
 
 ## Complete Example
 
@@ -199,6 +271,7 @@ Configuration for Farcaster Mini Apps.
   "aspect": "16x9",
   "width": 1920,
   "height": 1080,
+  "url": "https://mygame.example.com",
   "canvas": {
     "id": "game"
   },
@@ -222,15 +295,76 @@ Configuration for Farcaster Mini Apps.
   },
   "farcaster": {
     "manifest": {
-      "name": "My Mini App",
-      "iconUrl": "https://example.com/icon.png",
-      "splashImageUrl": "https://example.com/splash.png",
-      "splashBackgroundColor": "#000000",
-      "homeUrl": "https://example.com"
+      "accountAssociation": {
+        "header": "base64-encoded-header",
+        "payload": "base64-encoded-payload",
+        "signature": "base64-encoded-signature"
+      },
+      "miniapp": {
+        "version": "1",
+        "name": "My Mini App",
+        "iconUrl": "https://example.com/icon.png",
+        "homeUrl": "https://example.com",
+        "buttonTitle": "Play Game",
+        "splashImageUrl": "https://example.com/splash.png",
+        "splashBackgroundColor": "#000000"
+      }
+    },
+    "embeds": {
+      "/game": {
+        "buttonTitle": "Play Game",
+        "imageUrl": "https://example.com/game-preview.png"
+      }
     }
   }
 }
 ```
+
+## Environment Variables
+
+L8B supports environment variables loaded from `.env` files. These variables are available in your LootiScript code via the `env` API.
+
+### Environment Files
+
+Create `.env` files in your project root:
+
+```bash
+# .env
+API_KEY=your-api-key-here
+API_URL=https://api.example.com
+DEBUG=true
+```
+
+Files are loaded in this order (later files override earlier ones):
+
+1. `.env` - Base environment variables
+2. `.env.local` - Local overrides (gitignored)
+3. `.env.development` / `.env.production` - Mode-specific variables
+4. `.env.development.local` / `.env.production.local` - Mode-specific local overrides
+
+### Usage in LootiScript
+
+Access environment variables in your game code:
+
+```lua
+function init()
+  local apiKey = env.get("API_KEY")
+  local apiUrl = env.get("API_URL") or "https://api.example.com"
+  
+  if env.has("DEBUG") == 1 then
+    print("Debug mode enabled")
+  end
+end
+```
+
+### Best Practices
+
+1. **Never commit `.env` files**: Add `.env.local` and `.env.*.local` to `.gitignore`
+2. **Use `.env.example`**: Create example file with placeholder values
+3. **Prefix sensitive keys**: Use prefixes like `API_`, `SECRET_` for clarity
+4. **Document required vars**: List required environment variables in README
+
+See [Environment Variables API](/api/env) for complete documentation.
 
 ## Default Values
 

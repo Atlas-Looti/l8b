@@ -94,4 +94,4 @@ local balanceWei = evm.parseEther(balanceEth)
 print(balanceWei) -- "1500000000000000000"
 ```
 
-For complete EVM API documentation, see [@l8b/evm README](https://github.com/Atlas-Looti/l8b/blob/mainhttps://github.com/Atlas-Looti/l8b/blob/main/packages/core/evm/README.md).
+For complete EVM API documentation, see [@l8b/evm README](https://github.com/Atlas-Looti/l8b/blob/main/packages/core/evm/README.md).

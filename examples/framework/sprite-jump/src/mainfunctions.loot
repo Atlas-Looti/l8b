@@ -1,0 +1,33 @@
+displayMenu = function()
+  screen.drawText("Sprite Jump", 0, 80, 30,"rgb(29,70,8)")
+
+  
+  screen.drawSprite("playerright", 0, 0, 27, 29)
+   screen.drawRoundRect(0, -20, 151, 31, 10,"rgb(147,147,65)")
+  screen.fillRoundRect(0,-20, 150, 30, 10,"rgb(255,255,198)")
+  screen.drawText("Start",0, -20, 30,"rgb(2,2,2)")
+  
+  if checkRectMouseHover(0,-20, 150, 30) and (mouse.press or keyboard["Enter"]) then
+    gamemode = "playing"
+  end
+end
+
+
+displayGameOver = function()
+  screen.drawText("Game Over!", bg.x, bg.y-20, 20, "rgb(255,1,1)")
+  
+  screen.drawText("Score: " + score, bg.x, bg.y-70, 20, "rgb(1,1,1)")
+  
+  screen.drawRoundRect(bg.x, bg.y-120, 81, 26, 10,"rgb(147,147,65)")
+  screen.fillRoundRect(bg.x, bg.y-120, 80, 25, 10,"rgb(255,255,198)")
+  screen.drawText("Play Again", bg.x, bg.y-120, 15,"rgb(2,2,2)")
+  
+  if checkRectMouseHover(bg.x, bg.y-120, 80, 25) and (mouse.press or keyboard["Enter"]) then
+    init()
+  end
+end
+
+displayUi = function()
+  screen.fillRect(0, screen.height/2-7.5, screen.width, 15,"rgb(193,193,193)")
+  screen.drawText("Score: " + score, -60, screen.height/2-7.5, 15, "rgb(1,1,1)")
+end

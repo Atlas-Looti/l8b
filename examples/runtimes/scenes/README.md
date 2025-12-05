@@ -31,25 +31,25 @@ scenes/
 ### Install dependencies
 
 ```bash
-bun install
+pnpm install
 ```
 
 ### Development
 
 ```bash
-bun run dev
+pnpm run dev
 ```
 
 ### Build
 
 ```bash
-bun run build
+pnpm run build
 ```
 
 ### Preview production build
 
 ```bash
-bun run preview
+pnpm run preview
 ```
 
 ## How It Works

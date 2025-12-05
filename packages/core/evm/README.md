@@ -24,6 +24,7 @@ local result = await evm.read(
 ```
 
 **Example:**
+
 ```lua
 // Read token balance
 local balance = await evm.read(
@@ -59,6 +60,7 @@ local txHash = await evm.write(
 ```
 
 **Example:**
+
 ```lua
 // Transfer tokens
 local txHash = await evm.write(
@@ -100,6 +102,7 @@ local result = await evm.call(
 ```
 
 **Example:**
+
 ```lua
 // Simulate a transfer to check if it would succeed
 local simulation = await evm.call(
@@ -124,6 +127,7 @@ local balance = await evm.getBalance("0x...")
 ```
 
 **Example:**
+
 ```lua
 // Get balance of connected wallet
 local balance = await evm.getBalance()
@@ -146,6 +150,7 @@ local eth = evm.formatEther("1000000000000000000")
 ```
 
 **Example:**
+
 ```lua
 local balanceWei = await evm.getBalance()
 local balanceEth = evm.formatEther(balanceWei)
@@ -162,6 +167,7 @@ local wei = evm.parseEther("1.5")
 ```
 
 **Example:**
+
 ```lua
 local amountEth = "0.1"
 local amountWei = evm.parseEther(amountEth)
@@ -201,25 +207,25 @@ local erc20Abi = {
 async function getTokenInfo()
   local tokenAddress = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // USDC on Base
   local userAddress = await wallet.getAddress()
-  
+
   if userAddress == null then
     print("No wallet connected")
     return
   end
-  
+
   try
     // Get token balance
     local balance = await evm.read(tokenAddress, erc20Abi, "balanceOf", {userAddress})
-    
+
     // Get token decimals
     local decimals = await evm.read(tokenAddress, erc20Abi, "decimals", {})
-    
+
     // Get token symbol
     local symbol = await evm.read(tokenAddress, erc20Abi, "symbol", {})
-    
+
     // Format balance (divide by 10^decimals)
     local formattedBalance = balance / (10 ^ decimals)
-    
+
     print(symbol .. " Balance: " .. formattedBalance)
   catch (error)
     print("Error reading token info: " .. error)
@@ -235,11 +241,11 @@ async function transferTokens()
   if wallet.isConnected() == 0 then
     await wallet.connect()
   end
-  
+
   local tokenAddress = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" // USDC
   local recipient = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
   local amount = "1000000" // 1 USDC (6 decimals)
-  
+
   local transferAbi = {
     {
       inputs: [
@@ -252,7 +258,7 @@ async function transferTokens()
       type: "function"
     }
   }
-  
+
   try
     // First, simulate to check if it would succeed
     local simulation = await evm.call(
@@ -261,9 +267,9 @@ async function transferTokens()
       "transfer",
       {recipient, amount}
     )
-    
+
     print("Gas estimate: " .. simulation.gas)
-    
+
     // If simulation succeeds, send the transaction
     local txHash = await evm.write(
       tokenAddress,
@@ -271,7 +277,7 @@ async function transferTokens()
       "transfer",
       {recipient, amount}
     )
-    
+
     print("Transaction sent: " .. txHash)
     // Wait for confirmation...
   catch (error)
@@ -285,16 +291,16 @@ end
 ```lua
 async function checkBalance()
   local address = await wallet.getAddress()
-  
+
   if address == null then
     print("No wallet connected")
     return
   end
-  
+
   try
     local balanceWei = await evm.getBalance(address)
     local balanceEth = evm.formatEther(balanceWei)
-    
+
     print("Balance: " .. balanceEth .. " ETH")
     print("Balance (wei): " .. balanceWei)
   catch (error)
@@ -310,21 +316,21 @@ async function sendETH()
   if wallet.isConnected() == 0 then
     await wallet.connect()
   end
-  
+
   local recipient = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
   local amountEth = "0.01"
   local amountWei = evm.parseEther(amountEth)
-  
+
   try
     // Convert wei string to hex for wallet.sendTransaction
     // Note: wallet.sendTransaction expects hex strings
     local amountHex = "0x" .. string.format("%x", tonumber(amountWei))
-    
+
     local txHash = await wallet.sendTransaction({
       to: recipient,
       value: amountHex
     })
-    
+
     print("ETH sent: " .. txHash)
   catch (error)
     print("Send failed: " .. error)
@@ -337,7 +343,7 @@ end
 ```lua
 async function interactWithNFT()
   local nftAddress = "0x..."
-  
+
   // ERC721 ABI (simplified)
   local erc721Abi = {
     {
@@ -358,13 +364,13 @@ async function interactWithNFT()
       type: "function"
     }
   }
-  
+
   try
     // Check NFT owner
     local tokenId = "1"
     local owner = await evm.read(nftAddress, erc721Abi, "ownerOf", {tokenId})
     print("Owner of token " .. tokenId .. ": " .. owner)
-    
+
     // Transfer NFT (if you own it)
     local myAddress = await wallet.getAddress()
     if owner == myAddress then
@@ -401,6 +407,7 @@ The ABI (Application Binary Interface) is an array of function/event definitions
 ```
 
 **Common Types:**
+
 - `address` - Ethereum address
 - `uint256` - Unsigned integer (256 bits)
 - `uint8` - Unsigned integer (8 bits)
@@ -430,6 +437,199 @@ async function safeContractCall()
 end
 ```
 
+### Batch Operations
+
+#### evm.multicall()
+
+Batch multiple contract reads in a single call for better performance.
+
+```lua
+local requests = {
+  {address: token1, abi: erc20Abi, functionName: "balanceOf", args: {user}},
+  {address: token2, abi: erc20Abi, functionName: "balanceOf", args: {user}},
+  {address: nft, abi: erc721Abi, functionName: "balanceOf", args: {user}},
+}
+
+local results = await evm.multicall(requests)
+// Returns: Array of results [balance1, balance2, balance3]
+```
+
+**Example:**
+
+```lua
+async function loadGameState()
+  local user = await wallet.getAddress()
+
+  // Load multiple balances in one call
+  local balances = await evm.multicall({
+    {address: "0x...", abi: erc20Abi, functionName: "balanceOf", args: {user}},
+    {address: "0x...", abi: erc20Abi, functionName: "balanceOf", args: {user}},
+  })
+
+  print("Token 1: " .. balances[1])
+  print("Token 2: " .. balances[2])
+end
+```
+
+### Event Operations
+
+#### evm.watchEvent()
+
+Watch contract events in real-time. Returns an unsubscribe function.
+
+```lua
+local unsubscribe = await evm.watchEvent(
+  "0x...",           // Contract address
+  abi,               // Contract ABI
+  "Transfer",        // Event name
+  {                  // Filter options (optional)
+    fromBlock: "latest",
+    args: {from: "0x..."}
+  },
+  function(event)    // Callback function
+    print("Event: " .. event.tokenId)
+  end
+)
+
+// Stop watching
+unsubscribe()
+```
+
+**Example:**
+
+```lua
+async function watchNFTTransfers()
+  local nftAddress = "0x..."
+  local erc721Abi = {...}
+
+  local unsubscribe = await evm.watchEvent(
+    nftAddress,
+    erc721Abi,
+    "Transfer",
+    {},
+    function(event)
+      print("NFT transferred!")
+      print("From: " .. event.args.from)
+      print("To: " .. event.args.to)
+      print("Token ID: " .. event.args.tokenId)
+    end
+  )
+
+  // Cleanup when done
+  // unsubscribe()
+end
+```
+
+#### evm.getEventLogs()
+
+Get historical event logs from a contract.
+
+```lua
+local logs = await evm.getEventLogs(
+  "0x...",           // Contract address
+  abi,               // Contract ABI
+  "Transfer",        // Event name
+  {                  // Filter options (optional)
+    fromBlock: 1000000,
+    toBlock: "latest",
+    args: {from: "0x..."}
+  }
+)
+// Returns: Array of event logs
+```
+
+**Example:**
+
+```lua
+async function getTransferHistory()
+  local logs = await evm.getEventLogs(
+    "0x...",
+    erc721Abi,
+    "Transfer",
+    {
+      fromBlock: 1000000,
+      toBlock: "latest",
+    }
+  )
+
+  for i, log in ipairs(logs) do
+    print("Transfer #" .. i)
+    print("Token ID: " .. log.args.tokenId)
+    print("Block: " .. log.blockNumber)
+  end
+end
+```
+
+### Transaction Utilities
+
+#### evm.getTransactionReceipt()
+
+Get transaction receipt with status, gas used, logs, etc.
+
+```lua
+local receipt = await evm.getTransactionReceipt("0x...")
+// Returns: {
+//   status: "success" | "reverted",
+//   transactionHash: string,
+//   blockNumber: string,
+//   gasUsed: string,
+//   effectiveGasPrice?: string,
+//   logs: Array,
+//   contractAddress?: string
+// }
+```
+
+**Example:**
+
+```lua
+async function checkTransaction()
+  local txHash = await evm.write(...)
+
+  // Wait for receipt
+  local receipt = await evm.getTransactionReceipt(txHash)
+
+  if receipt.status == "success" then
+    print("Transaction confirmed!")
+    print("Gas used: " .. receipt.gasUsed)
+    print("Block: " .. receipt.blockNumber)
+  else
+    print("Transaction reverted!")
+  end
+end
+```
+
+#### evm.estimateGas()
+
+Estimate gas cost for a contract write operation.
+
+```lua
+local gasEstimate = await evm.estimateGas(
+  "0x...",           // Contract address
+  abi,               // Contract ABI
+  "functionName",    // Function name
+  {arg1, arg2}       // Function arguments (optional)
+)
+// Returns: string (gas estimate in wei)
+```
+
+**Example:**
+
+```lua
+async function checkGasCost()
+  local gasEstimate = await evm.estimateGas(
+    "0x...",
+    abi,
+    "transfer",
+    {recipient, amount}
+  )
+
+  print("Estimated gas: " .. gasEstimate)
+
+  // Show gas cost to user before sending
+  // Then proceed with evm.write()
+end
+```
+
 ## Notes
 
 - All async methods return Promises and should be awaited
@@ -440,4 +640,7 @@ end
 - For ERC20/ERC721 tokens, use standard ABIs available online
 - Large numbers (uint256) are returned as BigInt or string - handle accordingly
 - Always simulate transactions with `evm.call()` before sending with `evm.write()`
-- Gas estimation is handled automatically by the wallet provider
+- Use `evm.multicall()` to batch multiple reads for better performance
+- Use `evm.watchEvent()` for real-time updates (remember to unsubscribe when done)
+- Use `evm.estimateGas()` to show gas cost to users before sending transactions
+- Gas estimation is handled automatically by the wallet provider, but explicit estimation is available

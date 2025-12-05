@@ -1,0 +1,50 @@
+
+
+
+//"collision" Function from "Collisions" library by microstudio
+collision = function(x1,y1,w1,h1,x2,y2,w2,h2)
+   return abs(x1-x2) < (w1+w2)/2
+   and abs(y1-y2) < (h1+h2)/2
+end
+
+gameOver = function()
+  for i=0 to platforms.length-1 
+    platforms[i].y += 4
+    if platforms[i].y + platforms[i].height <= screen.height/2 then
+      player.y += 0.5
+    end
+  end
+end
+
+horizontalMovement = function(right_sprite, left_sprite)
+  if keyboard.RIGHT then
+    player.x += 1
+    player.sprite = right_sprite
+  end
+  if keyboard.LEFT then
+    player.x -= 1
+    player.sprite = left_sprite
+  end
+  
+   if player.x > screen.width/2 or player.x < -screen.width/2 then
+    player.x = -(player.x)
+   end
+
+end
+
+platformPlayerCollision = function()
+  for i=0 to platforms.length-1 
+    colliding = collision(player.x, player.y-player.height/2, player.width, 5, platforms[i].x, platforms[i].y+platforms[i].height/2, platforms[i].width, 5)
+    if colliding and player.y_vel < 0 then
+      if platforms[i].sprite == "movingplatform" or platforms[i].sprite == "normalplatform" then
+        player.y_vel = 0
+        player.jump = true
+      elsif platforms[i].sprite == "woodplatform" and platforms[i].visible then
+        platforms[i].visible = false
+        woodbreak = audio.playSound( "woodbreak" ) //Optional and don't recommend using
+
+      end
+      
+    end
+  end
+end

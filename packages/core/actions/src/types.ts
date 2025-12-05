@@ -74,6 +74,35 @@ export interface BackAPI {
 	onBack(callback: () => void): void;
 }
 
+export interface GetTokenOptions {
+	force?: boolean;
+	quickAuthServerOrigin?: string;
+}
+
+export interface FetchOptions extends RequestInit {
+	quickAuthServerOrigin?: string;
+}
+
+export interface QuickAuthAPI {
+	/**
+	 * Get Quick Auth token (cached if available and not expired)
+	 * @param options - Options object with force and quickAuthServerOrigin
+	 * @returns Token object with token string
+	 */
+	getToken(options?: GetTokenOptions): Promise<{ token: string }>;
+	/**
+	 * Make an authenticated fetch request (automatically adds Bearer token)
+	 * @param url - Request URL
+	 * @param options - Fetch options
+	 * @returns Fetch Response
+	 */
+	fetch(url: string, options?: FetchOptions): Promise<Response>;
+	/**
+	 * Synchronous access to current token (if available)
+	 */
+	token?: string;
+}
+
 /**
  * Actions API interface exposed to LootiScript
  */
@@ -111,4 +140,7 @@ export interface ActionsAPI {
 	// Hardware & System
 	haptics: HapticsAPI;
 	back: BackAPI;
+
+	// Quick Auth (recommended authentication method)
+	quickAuth: QuickAuthAPI;
 }

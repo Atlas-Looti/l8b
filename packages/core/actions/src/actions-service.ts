@@ -6,6 +6,8 @@ import { sdk } from "@farcaster/miniapp-sdk";
 import type {
 	ActionsAPI,
 	ComposeCastOptions,
+	FetchOptions,
+	GetTokenOptions,
 	OpenMiniAppOptions,
 	OpenUrlOptions,
 	SendTokenOptions,
@@ -57,6 +59,7 @@ export class ActionsService {
 	 * Get interface for LootiScript exposure
 	 */
 	getInterface(): ActionsAPI {
+		const service = this;
 		// Ensure initialization
 		if (!this.initialized) {
 			// Initialize asynchronously but don't block
@@ -204,6 +207,29 @@ export class ActionsService {
 					// so we fire and forget the initialization
 					this.initialize().catch(() => {});
 					sdk.back.onback = callback;
+				},
+			},
+
+			quickAuth: {
+				getToken: async (options?: GetTokenOptions) => {
+					await service.initialize();
+					// SDK expects options object with force and quickAuthServerOrigin
+					// Use type assertion to avoid type mismatch (SDK types may differ)
+					return await sdk.quickAuth.getToken(options as any);
+				},
+				fetch: async (url: string, options?: FetchOptions) => {
+					await service.initialize();
+					// Extract quickAuthServerOrigin if provided, pass rest as fetch options
+					const { quickAuthServerOrigin, ...fetchOptions } = options || {};
+					return await sdk.quickAuth.fetch(url, {
+						...fetchOptions,
+						quickAuthServerOrigin,
+					} as any);
+				},
+				get token() {
+					// Synchronous access to token (if available)
+					// No initialization needed - token is a property, not a method
+					return sdk.quickAuth.token;
 				},
 			},
 		};

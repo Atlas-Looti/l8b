@@ -1,0 +1,85 @@
+platformWeight = function()
+  
+  weight = 0
+  for i=0 to platformweights.length-1
+    weight += (platformweights[i] * 10)
+    
+  end
+ 
+   rannumber = randRange(1, weight)
+
+    weight = 0
+    for platform=0 to platformweights.length-1
+      weight += (platformweights[platform] * 10)
+    
+      if weight >= rannumber then
+        
+        platforms[platform].sprite = platformtypes[platform]
+      end
+  end
+ 
+  
+end
+
+
+makePlatforms = function()
+  for i=0 to 13
+    platforms[i] = new Platform(randRange(-screen.width/2, screen.width/2), randRange(-screen.height/2, screen.height/2))
+  end
+  platformWeight()
+  
+end
+
+movePlatforms = function()
+  if player.y-player.height/2 > 0 and player.y_vel > 0 then
+    score += 1
+    player.y -= max(0, player.y_vel)
+    for i=0 to platforms.length-1
+      platforms[i].y -= max(0, player.y_vel)
+    end
+  end
+end
+
+
+
+platformBorderCollision = function()
+  //Moves platforms at bottom
+  for i=0 to platforms.length-1 
+    if platforms[i].y <= -screen.height/2 then 
+      platforms[i].visible = true
+      platforms[i].y += screen.height
+      platforms[i].x = randRange(-screen.width/2, screen.width/2)
+      platformWeight()
+    end
+  end
+end
+
+drawPlatforms = function()
+  for i=0 to platforms.length-1
+    if platforms[i].visible  then
+      screen.drawSprite("platforms/" + platforms[i].sprite, platforms[i].x, platforms[i].y, platforms[i].width, platforms[i].height)
+    end
+  end
+end
+
+bluePlatform = function()
+  
+  for i=0 to platforms.length-1
+    
+    if platforms[i].sprite == "movingplatform" then
+      
+      if platforms[i].x >= screen.width/2 or platforms[i].x <= -screen.width/2 then
+        platforms[i].x_vel = -(platforms[i].x_vel)
+      end
+      platforms[i].x += platforms[i].x_vel
+    end
+    
+  end
+end
+
+
+
+
+
+
+  

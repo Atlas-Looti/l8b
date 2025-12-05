@@ -1,38 +1,17 @@
-import { readFileSync } from "node:fs";
 import { defineConfig } from "tsup";
-
-type PackageJson = {
-	dependencies?: Record<string, string>;
-	peerDependencies?: Record<string, string>;
-};
-
-const pkg: PackageJson = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf-8"));
-
-const externalDeps = Array.from(
-	new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]),
-);
+import { treeShakableConfig } from "../../../tsup.config.base";
 
 export default defineConfig({
-	entry: ["src/index.ts", "src/cli.ts", "src/build/compile-worker.ts"],
+	...treeShakableConfig,
+	entry: {
+		index: "src/index.ts",
+		cli: "src/cli.ts",
+	},
 	format: ["esm"],
-	dts: true,
-	clean: true,
 	shims: true,
-	treeshake: true,
-	sourcemap: true,
-	target: "node18",
-	platform: "node",
-	minify: process.env.NODE_ENV === "production",
-	external: externalDeps,
 	outExtension({ format }) {
-		// For ESM format, use .js extension (Node.js supports ESM in .js files)
-		if (format === "esm") {
-			return {
-				js: ".js",
-			};
-		}
 		return {
-			js: `.${format}.js`,
+			js: `.mjs`,
 		};
 	},
 });

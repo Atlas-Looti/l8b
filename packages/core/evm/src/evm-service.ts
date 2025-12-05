@@ -13,7 +13,7 @@ import {
 	type WalletClient,
 } from "viem";
 import { base } from "viem/chains";
-import type { EVMAPI } from "./types";
+import type { EVMAPI, EventFilterOptions, MulticallRequest, TransactionReceipt } from "./types";
 
 export class EVMService {
 	private provider: any = null;
@@ -21,6 +21,7 @@ export class EVMService {
 	private walletClient: WalletClient | null = null;
 	private initialized: boolean = false;
 	private defaultChain = base;
+	private eventWatchers: Map<string, () => void> = new Map();
 
 	constructor() {
 		// Lazy initialization
@@ -202,6 +203,157 @@ export class EVMService {
 					return "0";
 				}
 			},
+
+			multicall: async (requests: MulticallRequest[]) => {
+				await this.initialize();
+				if (!this.publicClient) {
+					throw new Error("EVM multicall not available");
+				}
+
+				try {
+					const contracts = requests.map((req) => ({
+						address: req.address as `0x${string}`,
+						abi: req.abi,
+						functionName: req.functionName,
+						args: req.args || [],
+					}));
+
+					const results = await this.publicClient.multicall({
+						contracts,
+					});
+
+					return results;
+				} catch (err: any) {
+					throw new Error(err?.message || "Multicall failed");
+				}
+			},
+
+			watchEvent: async (
+				contractAddress: string,
+				abi: any,
+				eventName: string,
+				filterOptions?: EventFilterOptions,
+				onEvent?: (event: any) => void,
+			) => {
+				await this.initialize();
+				if (!this.publicClient) {
+					throw new Error("EVM watch event not available");
+				}
+
+				try {
+					const watcherKey = `${contractAddress}-${eventName}`;
+
+					// Unsubscribe existing watcher if any
+					const existingUnsubscribe = this.eventWatchers.get(watcherKey);
+					if (existingUnsubscribe) {
+						existingUnsubscribe();
+					}
+
+					const unwatch = this.publicClient.watchContractEvent({
+						address: contractAddress as `0x${string}`,
+						abi,
+						eventName,
+						args: filterOptions?.args,
+						fromBlock: filterOptions?.fromBlock as any,
+						onLogs: (logs) => {
+							logs.forEach((log) => {
+								if (onEvent) {
+									onEvent(log);
+								}
+							});
+						},
+					});
+
+					this.eventWatchers.set(watcherKey, unwatch);
+
+					return unwatch;
+				} catch (err: any) {
+					throw new Error(err?.message || "Watch event failed");
+				}
+			},
+
+			getEventLogs: async (
+				contractAddress: string,
+				abi: any,
+				eventName: string,
+				filterOptions?: EventFilterOptions,
+			) => {
+				await this.initialize();
+				if (!this.publicClient) {
+					throw new Error("EVM get event logs not available");
+				}
+
+				try {
+					const logs = await this.publicClient.getContractEvents({
+						address: contractAddress as `0x${string}`,
+						abi,
+						eventName,
+						args: filterOptions?.args,
+						fromBlock: filterOptions?.fromBlock as any,
+						toBlock: filterOptions?.toBlock as any,
+					});
+
+					return logs;
+				} catch (err: any) {
+					throw new Error(err?.message || "Get event logs failed");
+				}
+			},
+
+			getTransactionReceipt: async (txHash: string): Promise<TransactionReceipt> => {
+				await this.initialize();
+				if (!this.publicClient) {
+					throw new Error("EVM get transaction receipt not available");
+				}
+
+				try {
+					const receipt = await this.publicClient.waitForTransactionReceipt({
+						hash: txHash as `0x${string}`,
+					});
+
+					return {
+						status: receipt.status === "success" ? "success" : "reverted",
+						transactionHash: receipt.transactionHash,
+						blockNumber: receipt.blockNumber.toString(),
+						gasUsed: receipt.gasUsed.toString(),
+						effectiveGasPrice: receipt.effectiveGasPrice?.toString(),
+						logs: receipt.logs,
+						contractAddress: receipt.contractAddress || undefined,
+					};
+				} catch (err: any) {
+					throw new Error(err?.message || "Get transaction receipt failed");
+				}
+			},
+
+			estimateGas: async (
+				contractAddress: string,
+				abi: any,
+				functionName: string,
+				args?: any[],
+			): Promise<string> => {
+				await this.initialize();
+				if (!this.publicClient || !this.walletClient) {
+					throw new Error("EVM estimate gas not available");
+				}
+
+				try {
+					const [account] = await this.walletClient.getAddresses();
+					if (!account) {
+						throw new Error("No account connected");
+					}
+
+					const gasEstimate = await this.publicClient.estimateContractGas({
+						address: contractAddress as `0x${string}`,
+						abi,
+						functionName,
+						args: args || [],
+						account,
+					});
+
+					return gasEstimate.toString();
+				} catch (err: any) {
+					throw new Error(err?.message || "Estimate gas failed");
+				}
+			},
 		};
 	}
 
@@ -209,6 +361,12 @@ export class EVMService {
 	 * Cleanup resources
 	 */
 	dispose(): void {
+		// Unsubscribe all event watchers
+		for (const unsubscribe of this.eventWatchers.values()) {
+			unsubscribe();
+		}
+		this.eventWatchers.clear();
+
 		this.provider = null;
 		this.publicClient = null;
 		this.walletClient = null;

@@ -9,7 +9,7 @@
  * Commands:
  * - dev: Start development server with HMR
  * - build: Compile project for production
- * - start: Serve production build
+ * - preview: Preview production build
  * - init: Initialize new project
  *
  * @module framework/cli
@@ -22,9 +22,13 @@ import { fileURLToPath } from "url";
 import yargs, { type Argv } from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { build, contractImport, dev, init, start } from "./commands";
+import { build, contractImport, dev, init, preview } from "./commands";
 import { DEFAULT_SERVER } from "./utils/constants";
 import { BuildError, CompilationError, ConfigError, ServerError } from "./utils/errors";
+import type { ExitCode } from "./utils/exit-codes";
+import { EXIT_CODES } from "./utils/exit-codes";
+import { logger } from "./utils/logger";
+import { validateChain, validateContractAddress, validatePort, validateProjectName } from "./utils/validation";
 
 type MaybeArray<T> = T | T[];
 type HostOption = string | boolean | undefined;
@@ -91,6 +95,8 @@ function logProjectBanner(projectPath: string): void {
 }
 
 function handleCliError(error: unknown, fallbackMessage: string): never {
+	let exitCode: ExitCode = EXIT_CODES.ERROR;
+
 	if (
 		error instanceof ServerError ||
 		error instanceof ConfigError ||
@@ -98,18 +104,21 @@ function handleCliError(error: unknown, fallbackMessage: string): never {
 		error instanceof CompilationError
 	) {
 		console.error(error.format());
+		exitCode = error.exitCode;
 	} else {
 		console.error(pc.red(`\n✗ ${fallbackMessage}\n`));
 		console.error(error);
 	}
-	process.exit(1);
+
+	process.exit(exitCode);
 }
 
 void yargs(hideBin(process.argv))
 	.scriptName("l8b")
+	.usage("$0 <command> [options]")
 	.command(
 		"init <name>",
-		"Initialize a new project",
+		"Initialize a new LootiScript project",
 		(yargsBuilder: Argv) =>
 			yargsBuilder
 				.positional("name", {
@@ -121,12 +130,16 @@ void yargs(hideBin(process.argv))
 					type: "boolean",
 					alias: "f",
 					describe: "Overwrite existing directory",
-				}) as Argv<InitArgs>,
+					default: false,
+				})
+				.example("$0 init my-game", "Create a new project named 'my-game'")
+				.example("$0 init my-game --force", "Overwrite existing directory if it exists") as Argv<InitArgs>,
 		async (args: InitArgs) => {
 			try {
+				const validatedName = validateProjectName(args.name);
 				await init({
-					name: args.name,
-					force: args.force,
+					name: validatedName,
+					force: args.force ?? false,
 				});
 			} catch (error) {
 				handleCliError(error, "Error initializing project:");
@@ -140,24 +153,38 @@ void yargs(hideBin(process.argv))
 			yargsBuilder
 				.positional("root", {
 					type: "string",
-					describe: "Path to project root",
+					describe: "Path to project root (default: current directory)",
 				})
 				.option("port", {
 					type: "number",
 					describe: "Port to use",
+					default: DEFAULT_SERVER.PORT,
 				})
 				.option("host", {
 					type: "string",
 					describe: "Expose to network (use 0.0.0.0 to expose, or specify hostname)",
 					coerce: coerceHost,
-				}),
+					default: DEFAULT_SERVER.HOST,
+				})
+				.option("tunnel", {
+					type: "boolean",
+					describe: "Enable tunneling for Farcaster Mini Apps testing (uses cloudflared)",
+					default: false,
+				})
+				.example("$0 dev", "Start dev server in current directory")
+				.example("$0 dev ./my-game", "Start dev server in specific directory")
+				.example("$0 dev --port 8080", "Start on custom port")
+				.example("$0 dev --host 0.0.0.0", "Expose to network")
+				.example("$0 dev --tunnel", "Enable tunnel for Mini Apps"),
 		async (args: ServerArgs) => {
 			try {
 				const projectPath = resolveProjectPathArg(args.root);
 				logProjectBanner(projectPath);
 
+				const port = args.port ? validatePort(args.port) : (normalizePort(args.port) ?? DEFAULT_SERVER.PORT);
+
 				await dev(projectPath, {
-					port: normalizePort(args.port) ?? DEFAULT_SERVER.PORT,
+					port,
 					host: args.host ?? DEFAULT_SERVER.HOST,
 					tunnel: args.tunnel ?? false,
 				});
@@ -170,10 +197,13 @@ void yargs(hideBin(process.argv))
 		"build [root]",
 		"Build project for production",
 		(yargsBuilder: Argv<BaseArgs>) =>
-			yargsBuilder.positional("root", {
-				type: "string",
-				describe: "Path to project root",
-			}),
+			yargsBuilder
+				.positional("root", {
+					type: "string",
+					describe: "Path to project root (default: current directory)",
+				})
+				.example("$0 build", "Build current directory")
+				.example("$0 build ./my-game", "Build specific directory"),
 		async (args: BaseArgs) => {
 			try {
 				const projectPath = resolveProjectPathArg(args.root);
@@ -192,34 +222,41 @@ void yargs(hideBin(process.argv))
 		},
 	)
 	.command<ServerArgs>(
-		"start [root]",
-		"Start production server for built project",
+		"preview [root]",
+		"Preview production build",
 		(yargsBuilder: Argv<ServerArgs>) =>
 			yargsBuilder
 				.positional("root", {
 					type: "string",
-					describe: "Path to project root",
+					describe: "Path to project root (default: current directory)",
 				})
 				.option("port", {
 					type: "number",
 					describe: "Port to use",
+					default: DEFAULT_SERVER.PORT,
 				})
 				.option("host", {
 					type: "string",
 					describe: "Expose to network (use 0.0.0.0 to expose, or specify hostname)",
 					coerce: coerceHost,
-				}),
+					default: DEFAULT_SERVER.HOST,
+				})
+				.example("$0 preview", "Preview production build")
+				.example("$0 preview --port 8080", "Preview on custom port")
+				.example("$0 preview --host 0.0.0.0", "Expose to network"),
 		async (args: ServerArgs) => {
 			try {
 				const projectPath = resolveProjectPathArg(args.root);
 				logProjectBanner(projectPath);
 
-				await start(projectPath, {
-					port: normalizePort(args.port) ?? DEFAULT_SERVER.PORT,
+				const port = args.port ? validatePort(args.port) : (normalizePort(args.port) ?? DEFAULT_SERVER.PORT);
+
+				await preview(projectPath, {
+					port,
 					host: args.host ?? DEFAULT_SERVER.HOST,
 				});
 			} catch (error) {
-				handleCliError(error, "Error starting server:");
+				handleCliError(error, "Error starting preview server:");
 			}
 		},
 	)
@@ -250,14 +287,22 @@ void yargs(hideBin(process.argv))
 				})
 				.option("root", {
 					type: "string",
-					describe: "Path to project root",
-				}),
-		async (args: any) => {
+					describe: "Path to project root (default: current directory)",
+				})
+				.example("$0 contract import 0x123... --chain base --name MyContract", "Import contract from Base network")
+				.example(
+					"$0 contract import 0x123... --chain ethereum --name MyContract --api-key YOUR_KEY",
+					"Import with custom API key",
+				),
+		async (args) => {
 			try {
 				const projectPath = args.root ? path.resolve(args.root) : process.cwd();
+				const validatedAddress = validateContractAddress(args.address);
+				const validatedChain = validateChain(args.chain);
+
 				await contractImport({
-					address: args.address,
-					chain: args.chain,
+					address: validatedAddress,
+					chain: validatedChain,
 					name: args.name,
 					projectPath,
 					apiKey: args["api-key"],
@@ -267,8 +312,33 @@ void yargs(hideBin(process.argv))
 			}
 		},
 	)
-	.demandCommand()
+	.demandCommand(1, "You need at least one command before moving on")
 	.strict()
-	.help()
-	.version(version)
-	.parseAsync();
+	.help("help", "Show help")
+	.alias("help", "h")
+	.version("version", "Show version number", version)
+	.alias("version", "v")
+	.epilog("For more information, visit https://github.com/l8b/l8b")
+	.recommendCommands()
+	.parseAsync()
+	.catch((error) => {
+		handleCliError(error, "Unexpected error:");
+	});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (error) => {
+	logger.error("Unhandled promise rejection:", error);
+	handleCliError(error, "Unhandled error:");
+});
+
+// Handle graceful shutdown (Ctrl+C)
+process.on("SIGINT", () => {
+	logger.info("\n\nShutting down gracefully...");
+	process.exit(EXIT_CODES.USER_INTERRUPT);
+});
+
+// Handle SIGTERM (for process managers)
+process.on("SIGTERM", () => {
+	logger.info("\n\nShutting down gracefully...");
+	process.exit(EXIT_CODES.USER_INTERRUPT);
+});

@@ -16,25 +16,25 @@ scene("main_menu", {
   init = function(self)
     self.selected = 0
   end,
-  
+
   // Called every frame
   update = function(self)
     if keyboard.press.ENTER == 1 then
       router.push("/game")
     end
-    
+
     if keyboard.press.UP == 1 then
       self.selected = self.selected - 1
     end
   end,
-  
+
   // Called every frame for rendering
   draw = function(self)
     screen.clear("#000000")
     screen.setColor("#FFFFFF")
     screen.drawText("Main Menu", 10, 10, 16)
   end,
-  
+
   // Called when leaving scene
   cleanup = function(self)
     // Clean up resources
@@ -43,6 +43,7 @@ scene("main_menu", {
 ```
 
 **Parameters:**
+
 - `name` (string) - Scene name
 - `definition` (table) - Scene definition object
   - `init` (function, optional) - Called when scene starts
@@ -67,10 +68,12 @@ route("/player/:playerId/inventory", "inventory_scene")
 ```
 
 **Parameters:**
+
 - `path` (string) - URL path pattern
 - `sceneName` (string) - Scene name to activate
 
 **Path Parameters:**
+
 - Use `:paramName` for dynamic segments
 - Access via `router.params.paramName`
 
@@ -92,6 +95,7 @@ router.push("/player/123/inventory")
 ```
 
 **Parameters:**
+
 - `path` (string) - Path to navigate to
 
 #### router.replace()
@@ -104,6 +108,7 @@ router.replace("/game_over")
 ```
 
 **Parameters:**
+
 - `path` (string) - Path to navigate to
 
 #### router.back()
@@ -161,20 +166,20 @@ scene("game", {
     self.score = 0
     self.player = {x = 100, y = 100}
   end,
-  
+
   update = function(self)
     // Update game logic
     if keyboard.UP == 1 then
       self.player.y = self.player.y - 2
     end
   end,
-  
+
   draw = function(self)
     // Render scene
     screen.clear("#000")
     screen.fillRect(self.player.x, self.player.y, 16, 16, "#FFF")
   end,
-  
+
   cleanup = function(self)
     // Clean up when leaving scene
     self.score = 0
@@ -193,16 +198,16 @@ scene("example", {
     self.counter = 0
     self.items = {}
   end,
-  
+
   update = function(self)
     // Access and modify state
     self.counter = self.counter + 1
-    
+
     if keyboard.press.SPACE == 1 then
       table.insert(self.items, {x = 10, y = 10})
     end
   end,
-  
+
   draw = function(self)
     // Use state for rendering
     screen.drawText("Count: " .. self.counter, 10, 10, 12)
@@ -224,26 +229,26 @@ scene("menu", {
     self.options = {"Start Game", "Options", "Quit"}
     self.selected = 0
   end,
-  
+
   update = function(self)
     if keyboard.press.UP == 1 then
       self.selected = math.max(0, self.selected - 1)
     end
-    
+
     if keyboard.press.DOWN == 1 then
       self.selected = math.min(#self.options - 1, self.selected + 1)
     end
-    
+
     if keyboard.press.ENTER == 1 then
       if self.selected == 0 then
         router.push("/game")
       end
     end
   end,
-  
+
   draw = function(self)
     screen.clear("#000")
-    
+
     for i = 0, #self.options - 1 do
       local color = "#FFF"
       if i == self.selected then
@@ -260,13 +265,13 @@ scene("game", {
   init = function(self)
     self.score = 0
   end,
-  
+
   update = function(self)
     if keyboard.press.ESCAPE == 1 then
       router.push("/")
     end
   end,
-  
+
   draw = function(self)
     screen.clear("#000")
     screen.setColor("#FFF")
@@ -281,11 +286,11 @@ scene("level", {
     self.levelId = router.params.id
     Console.log("Loading level " .. self.levelId)
   end,
-  
+
   update = function(self)
     // Level logic
   end,
-  
+
   draw = function(self)
     screen.clear("#000")
     screen.drawText("Level " .. self.levelId, 10, 10, 16)

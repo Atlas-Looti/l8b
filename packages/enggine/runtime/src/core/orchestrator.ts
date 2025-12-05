@@ -20,9 +20,11 @@
 import { ActionsService } from "@l8b/actions";
 import { AudioCore } from "@l8b/audio";
 import { createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { EnvService } from "@l8b/env";
 import { EVMService } from "@l8b/evm";
 import { HttpService } from "@l8b/http";
 import { Random, Routine } from "@l8b/lootiscript";
+import { NotificationsService } from "@l8b/notifications";
 import { Palette } from "@l8b/palette";
 import { PlayerService } from "@l8b/player";
 import { SceneManager } from "@l8b/scene";
@@ -69,6 +71,8 @@ export class RuntimeOrchestrator {
 	public evm: EVMService;
 	public actions: ActionsService;
 	public http: HttpService;
+	public env: EnvService;
+	public notifications: NotificationsService;
 	public vm: L8BVM | null = null;
 
 	// Asset collections (populated by AssetLoader)
@@ -126,6 +130,10 @@ export class RuntimeOrchestrator {
 		this.evm = new EVMService();
 		this.actions = new ActionsService();
 		this.http = new HttpService();
+		this.notifications = new NotificationsService();
+
+		// Environment variables service
+		this.env = new EnvService(options.env || {});
 
 		// Asset loader for sprites, maps, sounds, and other resources
 		this.assetLoader = new AssetLoader(options.url || "", options.resources || {});
@@ -340,6 +348,7 @@ export class RuntimeOrchestrator {
 			wallet: this.wallet.getInterface(),
 			evm: this.evm.getInterface(),
 			actions: this.actions.getInterface(),
+			notifications: this.notifications.getInterface(),
 			// HTTP client for external APIs
 			http: this.http.getInterface(),
 		};
@@ -349,7 +358,14 @@ export class RuntimeOrchestrator {
 		this.vm = new L8BVM(meta, global, this.options.namespace || "/l8b", this.options.preserveStorage || false);
 
 		// Create source updater for hot reload
-		this.sourceUpdater = new SourceUpdater(this.vm, this.listener);
+		// Pass audio, screen, and reportWarnings callback to match microstudio behavior
+		this.sourceUpdater = new SourceUpdater(
+			this.vm,
+			this.listener,
+			this.audio,
+			this.screen,
+			() => this.reportWarnings(),
+		);
 
 		// Create time machine for debugging
 		this.timeMachine = new TimeMachine(this as any);
@@ -456,10 +472,51 @@ export class RuntimeOrchestrator {
 			onUpdate: () => this.handleUpdate(),
 			onDraw: () => this.handleDraw(),
 			onTick: () => this.handleTick(),
+			onWatchStep: () => this.handleWatchStep(),
+			// Read update_rate from VM context each frame (matches microstudio line 397)
+			getUpdateRate: () => {
+				if (!this.vm) return undefined;
+				try {
+					return this.vm.context?.global?.system?.update_rate;
+				} catch {
+					return undefined;
+				}
+			},
+			// Set fps in VM context each frame (matches microstudio line 395)
+			setFPS: (fps: number) => {
+				if (!this.vm) return;
+				try {
+					if (this.vm.context?.global?.system) {
+						this.vm.context.global.system.fps = fps;
+					}
+				} catch {
+					// Silently fail if system.fps is not accessible
+				}
+			},
 		});
 
 		this.gameLoop.start();
 		this.logStep("loop: started");
+	}
+
+	/**
+	 * Update game loop update rate from VM context
+	 * Reads system.update_rate each frame
+	 */
+	private updateGameLoopUpdateRate(): void {
+		if (!this.vm || !this.gameLoop) return;
+
+		try {
+			const updateRate = this.vm.context?.global?.system?.update_rate;
+			if (updateRate != null && updateRate > 0 && Number.isFinite(updateRate)) {
+				this.gameLoop.setUpdateRate(updateRate);
+			} else {
+				// Default to 60 if invalid
+				this.gameLoop.setUpdateRate(60);
+			}
+		} catch (err) {
+			// Silently fail if system.update_rate is not accessible
+		}
 	}
 
 	/**
@@ -488,6 +545,8 @@ export class RuntimeOrchestrator {
 		// Update system FPS metric for game code access
 		if (this.gameLoop) {
 			this.system.setFPS(this.gameLoop.getFPS());
+			// Read update_rate from VM context each frame
+			this.updateGameLoopUpdateRate();
 		}
 
 		try {
@@ -732,11 +791,20 @@ export class RuntimeOrchestrator {
 
 	/**
 	 * Handle draw callback from game loop
+	 * Sequence:
+	 * 1. screen.initDraw()
+	 * 2. screen.updateInterface()
+	 * 3. vm.call("draw")
+	 * 4. reportWarnings()
+	 * 5. report errors if any
 	 */
 	private handleDraw(): void {
 		if (!this.vm) return;
 
 		try {
+			this.screen.initDraw();
+			this.screen.updateInterface();
+
 			// Draw scene manager (priority) - scenes handle their own rendering
 			if (this.sceneManager.hasActiveScene()) {
 				this.sceneManager.draw();
@@ -744,6 +812,8 @@ export class RuntimeOrchestrator {
 				// Fallback: Call user's draw() function when no scene is active
 				this.vm.call("draw");
 			}
+
+			this.reportWarnings();
 
 			// Report any errors that occurred during draw
 			if (this.vm.error_info) {
@@ -771,6 +841,63 @@ export class RuntimeOrchestrator {
 	private handleTick(): void {
 		if (this.vm?.runner) {
 			(this.vm.runner as any).tick?.();
+		}
+	}
+
+	/**
+	 * Handle watch step callback (for debugging)
+	 * Matches microstudio watchStep() behavior
+	 * Called after draw if ds > 0
+	 */
+	private handleWatchStep(): void {
+		// watchStep is called after draw if ds > 0
+		// This is used for debugging/watch functionality
+		// Implementation can be added if needed
+	}
+
+	/**
+	 * Report warnings from VM context
+	 */
+	private reportWarnings(): void {
+		if (!this.vm) return;
+
+		const warnings = this.vm.context?.warnings;
+		if (!warnings) return;
+
+		// Report invoking_non_function warnings
+		if (warnings.invoking_non_function) {
+			for (const value of Object.values(warnings.invoking_non_function)) {
+				const warning = value as any;
+				if (!warning.reported) {
+					warning.reported = true;
+					this.reportError({
+						error: "",
+						type: "non_function",
+						expression: warning.expression,
+						line: warning.line,
+						column: warning.column,
+						file: warning.file,
+					});
+				}
+			}
+		}
+
+		// Report using_undefined_variable warnings
+		if (warnings.using_undefined_variable) {
+			for (const value of Object.values(warnings.using_undefined_variable)) {
+				const warning = value as any;
+				if (!warning.reported) {
+					warning.reported = true;
+					this.reportError({
+						error: "",
+						type: "undefined_variable",
+						expression: warning.expression,
+						line: warning.line,
+						column: warning.column,
+						file: warning.file,
+					});
+				}
+			}
 		}
 	}
 

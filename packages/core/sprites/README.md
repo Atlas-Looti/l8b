@@ -16,6 +16,7 @@ local mySprite = Sprite(32, 32)
 ```
 
 **Parameters:**
+
 - `width` (number) - Sprite width in pixels
 - `height` (number) - Sprite height in pixels
 
@@ -48,6 +49,7 @@ mySprite.setFPS(5)   // 5 frames per second
 ```
 
 **Parameters:**
+
 - `fps` (number) - Frames per second
 
 **Returns:** FPS value
@@ -62,6 +64,7 @@ mySprite.setFrame(2)  // Third frame
 ```
 
 **Parameters:**
+
 - `frame` (number) - Frame index (0-based)
 
 ### sprite.getFrame()
@@ -84,39 +87,18 @@ local canvas = mySprite.getCurrentFrameCanvas()
 
 **Returns:** HTMLCanvasElement or null
 
-## Image Constructor
+## Image Class
 
-Create an off-screen image for drawing.
+> **Note**: The Image class has been moved to `@l8b/image` package but is still exported from this package for backward compatibility. See [@l8b/image README](../../image/README.md) for full Image API documentation.
+
+The Image class is re-exported from `@l8b/image` for convenience:
 
 ```lua
-// Create a 100x100 image
+// Image is available from @l8b/sprites (backward compatibility)
 local img = Image(100, 100)
 
-// Create from existing image element
-local img = Image(imageElement)
-
-// Create from existing canvas
-local img = Image(canvasElement)
-```
-
-**Parameters:**
-- `width` (number) - Image width in pixels
-- `height` (number, optional) - Image height (defaults to width for square)
-- OR `imageElement` (HTMLImageElement) - Existing image
-- OR `canvasElement` (HTMLCanvasElement) - Existing canvas
-
-### Image Properties
-
-```lua
-// Image dimensions
-local w = img.width
-local h = img.height
-
-// Canvas element
-local canvas = img.canvas
-
-// Rendering context
-local ctx = img.context
+// Or import directly from @l8b/image
+// import { Image } from "@l8b/image"
 ```
 
 ### Pixel Operations
@@ -134,6 +116,7 @@ img.setRGB(0, 0, {r = 255, g = 0, b = 0})
 ```
 
 **Parameters:**
+
 - `x` (number) - X position
 - `y` (number) - Y position
 - `r` (number or RGB object) - Red value 0-255
@@ -153,6 +136,7 @@ img.setRGBA(0, 0, {r = 255, g = 0, b = 0, a = 128})
 ```
 
 **Parameters:**
+
 - `x` (number) - X position
 - `y` (number) - Y position
 - `r` (number or RGBA object) - Red value 0-255
@@ -174,6 +158,7 @@ local b = rgb.b
 ```
 
 **Parameters:**
+
 - `x` (number) - X position
 - `y` (number) - Y position
 
@@ -189,6 +174,7 @@ local rgba = img.getRGBA(0, 0)
 ```
 
 **Parameters:**
+
 - `x` (number) - X position
 - `y` (number) - Y position
 

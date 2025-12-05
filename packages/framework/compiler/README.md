@@ -12,7 +12,7 @@ LootiScript compiler utilities and helpers for the L8B Engine.
 ## Installation
 
 ```bash
-npm install @l8b/compiler
+pnpm install @l8b/compiler
 ```
 
 ## Usage

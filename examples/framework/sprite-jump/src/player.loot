@@ -1,0 +1,58 @@
+playerinit = function()
+  player = object
+    x = 0
+    y = 10
+    y_vel = 0 //Velocity
+    width = 20
+    height = 20
+    jump = false
+    sprite = "playerleft"
+  end
+end
+
+
+
+playerupdate = function()
+  horizontalMovement("playerright", "playerleft")
+  
+  
+  if gamemode == "playing" then
+  
+    platformPlayerCollision()
+  
+    if player.jump then
+      player.y_vel = 5
+      jumpsound = audio.playSound( "jumpsound" ) 
+      player.jump = false
+    else
+       player.y_vel -= 0.2
+    end
+    
+    if player.y >= screen.height/2 then
+      player.y_vel = -1
+    end
+  
+    
+    
+    if player.y <= -screen.height/2 then
+      gameoversound = audio.playSound( "gameoversound" ) 
+      gamemode = "gameover"
+    end
+  end
+  
+  if gamemode == "gameover" then
+    gameOver()
+  end
+  
+  
+  player.y += player.y_vel
+end
+
+playerdraw = function()
+  screen.drawSprite(player.sprite, player.x, player.y , player.width, player.height)
+end
+
+
+
+
+

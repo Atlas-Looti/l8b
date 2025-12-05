@@ -3,6 +3,10 @@ import { type Connection, Position, Range } from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { ASTNode, DocumentState, Scope, SymbolInfo } from "./types";
 
+// Maximum number of document states to keep in memory
+// Prevents unbounded memory growth in long-running sessions
+const MAX_DOCUMENT_STATES = 100;
+
 const documentStates: Map<string, DocumentState> = new Map();
 
 export function getDocumentStates(): Map<string, DocumentState> {
@@ -34,6 +38,16 @@ export function updateDocumentState(textDocument: TextDocument, connection: Conn
 	}
 
 	documentStates.set(textDocument.uri, state);
+
+	// Cleanup old states if we exceed the limit (LRU-style eviction)
+	// This prevents memory leaks in long-running sessions
+	if (documentStates.size > MAX_DOCUMENT_STATES) {
+		// Remove the oldest entry (first key in insertion order)
+		const firstKey = documentStates.keys().next().value;
+		if (firstKey !== undefined) {
+			documentStates.delete(firstKey);
+		}
+	}
 }
 
 export function deleteDocumentState(uri: string): void {

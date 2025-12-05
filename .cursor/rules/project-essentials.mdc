@@ -7,19 +7,19 @@ description: Critical l8b-specific patterns and conventions
 
 ## Package Manager - CRITICAL
 
-**Always use Bun, never npm/yarn/pnpm:**
+**Always use pnpm, never npm/yarn/bun:**
 
 ```bash
-bun install
-bun add package-name
-bun run script-name
+pnpm install
+pnpm add package-name
+pnpm run script-name
 ```
 
 ## Code Formatting - Biome
 
 - **Indentation**: TABS (not spaces)
 - **Quotes**: Double quotes
-- Auto-format: `bun run format`
+- Auto-format: `pnpm run format`
 
 ## Monorepo Workspace References
 

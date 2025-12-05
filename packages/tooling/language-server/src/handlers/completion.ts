@@ -2,6 +2,7 @@ import {
 	type CompletionItem,
 	CompletionItemKind,
 	type CompletionList,
+	type CompletionParams,
 	type Connection,
 	InsertTextFormat,
 	type TextDocuments,
@@ -20,93 +21,107 @@ export function setupCompletionHandlers(
 	hasConfigurationCapability: boolean,
 ) {
 	// This handler provides the initial list of the completion items.
-	connection.onCompletion(async (params: any): Promise<CompletionItem[] | CompletionList | null> => {
-		const uri = params.textDocument.uri;
-		const document = documents.get(uri);
-		if (!document) {
-			return null;
-		}
-
-		const settings = await getDocumentSettings(connection, hasConfigurationCapability, uri);
-		if (!settings.completion.enable) {
-			return null;
-		}
-
-		const position = params.position;
-
-		// Check if we're in an embedded language region
-		const mode = languageModes.getModeAtPosition(document, position);
-		if (mode && mode.doComplete) {
-			const result = await mode.doComplete(document, position);
-			if (result) {
-				return result;
+	connection.onCompletion(async (params: CompletionParams): Promise<CompletionItem[] | CompletionList | null> => {
+		try {
+			const uri = params.textDocument.uri;
+			const document = documents.get(uri);
+			if (!document) {
+				return null;
 			}
-		}
 
-		// Detect completion context
-		const context = detectCompletionContext(document, position);
+			const settings = await getDocumentSettings(connection, hasConfigurationCapability, uri);
+			if (!settings.completion.enable) {
+				return null;
+			}
 
-		// Property access completion (e.g., screen.drawSprite)
-		if (context.type === "property" && context.object) {
-			return getPropertyCompletions(context.object);
-		}
+			const position = params.position;
 
-		// Default LootiScript completion
-		const documentStates = getDocumentStates();
-		const state = documentStates.get(uri);
-		const items: CompletionItem[] = [];
+			// Check if we're in an embedded language region
+			const mode = languageModes.getModeAtPosition(document, position);
+			if (mode && mode.doComplete) {
+				try {
+					const result = await mode.doComplete(document, position);
+					if (result) {
+						return result;
+					}
+				} catch (error) {
+					connection.console.error(`Completion error in embedded mode: ${error instanceof Error ? error.message : String(error)}`);
+				}
+			}
 
-		// Add code snippets (high priority)
-		items.push(...getSnippetCompletions());
+			// Detect completion context
+			const context = detectCompletionContext(document, position);
 
-		// Local symbols get highest priority (sortText: "0")
-		// These are user-defined variables and functions in current scope
-		state?.symbols.forEach((symbol) => {
-			items.push({
-				label: symbol.name,
-				kind: symbol.type === "function" ? CompletionItemKind.Function : CompletionItemKind.Variable,
-				detail: symbol.type,
-				data: symbol.name,
-				sortText: `0_${symbol.name}`, // Priority: local symbols
+			// Property access completion (e.g., screen.drawSprite)
+			if (context.type === "property" && context.object) {
+				return getPropertyCompletions(context.object);
+			}
+
+			// Default LootiScript completion
+			const documentStates = getDocumentStates();
+			const state = documentStates.get(uri);
+			const items: CompletionItem[] = [];
+
+			// Add code snippets (high priority)
+			items.push(...getSnippetCompletions());
+
+			// Local symbols get highest priority (sortText: "0")
+			// These are user-defined variables and functions in current scope
+			state?.symbols.forEach((symbol) => {
+				items.push({
+					label: symbol.name,
+					kind: symbol.type === "function" ? CompletionItemKind.Function : CompletionItemKind.Variable,
+					detail: symbol.type,
+					data: symbol.name,
+					sortText: `0_${symbol.name}`, // Priority: local symbols
+				});
 			});
-		});
 
-		// Global APIs get medium priority (sortText: "1")
-		// Includes screen, audio, keyboard, etc.
-		for (const [name, info] of Object.entries(GLOBAL_API)) {
-			items.push({
-				label: name,
-				kind: info.type === "function" ? CompletionItemKind.Function : CompletionItemKind.Class,
-				detail: info.description,
-				documentation: info.signature,
-				data: name,
-				sortText: `1_${name}`, // Priority: globals
+			// Global APIs get medium priority (sortText: "1")
+			// Includes screen, audio, keyboard, etc.
+			for (const [name, info] of Object.entries(GLOBAL_API)) {
+				items.push({
+					label: name,
+					kind: info.type === "function" ? CompletionItemKind.Function : CompletionItemKind.Class,
+					detail: info.description,
+					documentation: info.signature,
+					data: name,
+					sortText: `1_${name}`, // Priority: globals
+				});
+			}
+
+			// Keywords get lower priority (sortText: "2")
+			// Prevents keywords from overshadowing user symbols
+			["function", "return", "local", "global", "if", "then", "else", "end", "while", "for"].forEach((keyword) => {
+				items.push({
+					label: keyword,
+					kind: CompletionItemKind.Keyword,
+					data: keyword,
+					sortText: `2_${keyword}`, // Priority: keywords
+				});
 			});
+
+			return items;
+		} catch (error) {
+			connection.console.error(`Completion error: ${error instanceof Error ? error.message : String(error)}`);
+			return null;
 		}
-
-		// Keywords get lower priority (sortText: "2")
-		// Prevents keywords from overshadowing user symbols
-		["function", "return", "local", "global", "if", "then", "else", "end", "while", "for"].forEach((keyword) => {
-			items.push({
-				label: keyword,
-				kind: CompletionItemKind.Keyword,
-				data: keyword,
-				sortText: `2_${keyword}`, // Priority: keywords
-			});
-		});
-
-		return items;
 	});
 
 	// This handler resolves additional information for the item selected in
 	// the completion list.
 	connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-		const info = GLOBAL_API[item.data as string];
-		if (info) {
-			item.detail = info.signature || info.type;
-			item.documentation = info.description;
+		try {
+			const info = GLOBAL_API[item.data as string];
+			if (info) {
+				item.detail = info.signature || info.type;
+				item.documentation = info.description;
+			}
+			return item;
+		} catch (error) {
+			connection.console.error(`Completion resolve error: ${error instanceof Error ? error.message : String(error)}`);
+			return item;
 		}
-		return item;
 	});
 }
 

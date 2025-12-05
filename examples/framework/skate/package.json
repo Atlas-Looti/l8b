@@ -1,0 +1,14 @@
+{
+	"name": "skate",
+	"private": true,
+	"version": "1.0.6",
+	"type": "module",
+	"scripts": {
+		"dev": "pnpm exec l8b dev",
+		"preview": "pnpm exec l8b preview",
+		"build": "pnpm exec l8b build"
+	},
+	"devDependencies": {
+		"@l8b/cli": "workspace:*"
+	}
+}

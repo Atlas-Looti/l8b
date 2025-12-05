@@ -69,7 +69,7 @@ export class AssetLoader {
 							name,
 							ready: false,
 							frames: [],
-							fps: (img.properties as any)?.frames || 5,
+							fps: (img.properties as any)?.fps || 5,
 							width: 0,
 							height: 0,
 						} as any;

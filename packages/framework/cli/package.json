@@ -5,17 +5,23 @@
 	"type": "module",
 	"files": [
 		"dist/**/*",
+		"scripts/**/*",
 		"package.json",
 		"README.md"
 	],
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
 	"bin": {
-		"l8b": "./dist/cli.js"
+		"l8b": "./dist/cli.mjs"
 	},
 	"exports": {
-		".": "./dist/index.js"
+		".": "./dist/index.mjs"
 	},
 	"scripts": {
-		"build": "tsup",
+		"build": "pnpm run build:tsup && pnpm run build:runtime",
+		"build:tsup": "tsup",
+		"build:runtime": "node scripts/build-runtime.js",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

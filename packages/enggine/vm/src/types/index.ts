@@ -63,6 +63,7 @@ export interface GlobalAPI {
 	wallet?: any;
 	evm?: any;
 	actions?: any;
+	notifications?: any;
 	// HTTP client
 	http?: any;
 }
