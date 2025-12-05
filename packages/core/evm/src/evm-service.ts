@@ -272,12 +272,7 @@ export class EVMService {
 				}
 			},
 
-			getEventLogs: async (
-				contractAddress: string,
-				abi: any,
-				eventName: string,
-				filterOptions?: EventFilterOptions,
-			) => {
+			getEventLogs: async (contractAddress: string, abi: any, eventName: string, filterOptions?: EventFilterOptions) => {
 				await this.initialize();
 				if (!this.publicClient) {
 					throw new Error("EVM get event logs not available");
@@ -324,12 +319,7 @@ export class EVMService {
 				}
 			},
 
-			estimateGas: async (
-				contractAddress: string,
-				abi: any,
-				functionName: string,
-				args?: any[],
-			): Promise<string> => {
+			estimateGas: async (contractAddress: string, abi: any, functionName: string, args?: any[]): Promise<string> => {
 				await this.initialize();
 				if (!this.publicClient || !this.walletClient) {
 					throw new Error("EVM estimate gas not available");

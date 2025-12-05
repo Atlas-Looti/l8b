@@ -73,5 +73,3 @@ export class EnvService {
 		this.envVars = {};
 	}
 }
-
-

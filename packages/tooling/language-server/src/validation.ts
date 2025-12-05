@@ -145,19 +145,19 @@ function validateApiUsage(textDocument: TextDocument, diagnostics: Diagnostic[])
 		// Skip validation for runtime objects since they have dynamic properties
 		if (isNested) {
 			const api = GLOBAL_API[rootObjectName];
-			
+
 			// Skip validation for runtime objects - they have dynamic properties
 			// that cannot be validated statically (e.g., sprites.player.x, map.level1.width)
 			if (knownRuntimeObjects.has(rootObjectName)) {
 				continue;
 			}
-			
+
 			// If root object is not a known global API or runtime object,
 			// it's likely a user-defined object - skip validation
 			if (!api) {
 				continue;
 			}
-			
+
 			// For known API objects with nested access, check if the nested object exists
 			// This handles cases like "screen.someProperty" where screen is a known API
 			// but we're accessing a nested property that might not exist
@@ -177,6 +177,17 @@ function validateApiUsage(textDocument: TextDocument, diagnostics: Diagnostic[])
 		}
 
 		if (api.properties[propertyName]) {
+			continue;
+		}
+
+		// Skip validation for objects that are defined as "object" type
+		// These are likely user-defined objects that share the same name as a global API
+		// User-defined objects can have dynamic properties that aren't in the API definition
+		// Examples: player.x, player.y in games (user-defined) vs player.fid (API-defined)
+		// We skip validation to avoid false positives when users define their own objects
+		// with the same name as a global API object
+		if (api.type === "object") {
+			// Skip validation for object types - they may be user-defined with dynamic properties
 			continue;
 		}
 

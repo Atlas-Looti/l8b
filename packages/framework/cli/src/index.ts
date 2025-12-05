@@ -1,9 +1,8 @@
 /**
- * l8b - LootiScript CLI and Dev Server
- *
- * Command-line tools for LootiScript game development including
- * development server, production build, and production server.
+ * @l8b/cli - L8B Game Engine CLI
  */
 
-export * from "./commands";
-export * from "./utils";
+export * from "./cli";
+export * from "./commands/dev";
+export * from "./commands/build";
+export * from "./commands/init";

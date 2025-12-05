@@ -1,43 +1,50 @@
 /**
- * Development server for LootiScript projects
- *
- * Entry point for the dev command
+ * Dev command - Start development server
  */
+import { createLogger } from "@l8b/framework-shared";
+import { createDevServer } from "@l8b/framework-server";
 
-import type { ViteDevServer } from "vite";
-import { createUseCases } from "../infrastructure/adapters/factories";
-import { isFailure } from "../core/types";
+const logger = createLogger("dev");
 
 /**
- * Development server options
+ * Dev command options
  */
 export interface DevOptions {
-	/** Port to run server on */
-	port?: number;
-	/** Host to bind to (false = localhost, true = 0.0.0.0, string = specific host) */
-	host?: string | boolean;
-	/** Enable tunneling for Farcaster Mini Apps testing */
-	tunnel?: boolean;
+	root: string;
+	port: number;
+	host: string;
+	open: boolean;
 }
 
 /**
- * Start development server for LootiScript project
- *
- * @param projectPath - Absolute path to project root
- * @param options - Server configuration options
- * @returns Vite dev server instance
- * @throws {ServerError} If server fails to start
+ * Run dev command
  */
-export async function dev(projectPath: string = process.cwd(), options: DevOptions = {}): Promise<ViteDevServer> {
-	const useCases = createUseCases();
-	const result = await useCases.startDevServerUseCase.execute({
-		projectPath,
-		options,
-	});
+export async function devCommand(options: DevOptions): Promise<void> {
+	logger.info("Starting development server...");
 
-	if (isFailure(result)) {
-		throw result.error;
+	try {
+		const server = await createDevServer({
+			root: options.root,
+			port: options.port,
+			host: options.host,
+			open: options.open,
+		});
+
+		// Handle shutdown signals
+		const shutdown = async () => {
+			console.log("\n");
+			logger.info("Shutting down...");
+			await server.stop();
+			process.exit(0);
+		};
+
+		process.on("SIGINT", shutdown);
+		process.on("SIGTERM", shutdown);
+
+		// Keep process alive
+		await new Promise(() => {});
+	} catch (err) {
+		logger.error("Failed to start dev server:", err);
+		process.exit(1);
 	}
-
-	return result.data.server;
 }

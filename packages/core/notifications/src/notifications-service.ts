@@ -141,4 +141,3 @@ export class NotificationsService {
 		this.initialized = false;
 	}
 }
-

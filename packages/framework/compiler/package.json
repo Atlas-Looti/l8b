@@ -1,32 +1,29 @@
 {
-	"name": "@l8b/compiler",
-	"version": "1.0.7",
-	"description": "LootiScript compiler utilities and helpers",
-	"type": "module",
+	"name": "@l8b/framework-compiler",
+	"version": "1.0.0",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
-		"package.json",
-		"README.md"
+		"README.md",
+		"package.json"
 	],
-	"exports": {
-		".": "./dist/index.js"
-	},
 	"scripts": {
 		"build": "tsup",
 		"clean": "rm -rf dist",
-		"typecheck": "tsc --noEmit",
 		"test": "vitest run --passWithNoTests"
 	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
 	"dependencies": {
-		"@l8b/lootiscript": "workspace:*",
-		"@l8b/diagnostics": "workspace:*"
+		"@l8b/framework-shared": "workspace:*",
+		"@l8b/lootiscript": "workspace:*"
 	},
-	"devDependencies": {
-		"@types/node": "^22.19.1",
-		"tsup": "^8.0.0",
-		"typescript": "^5.9.3"
-	},
+	"keywords": [
+		"l8b",
+		"framework",
+		"compiler"
+	],
 	"publishConfig": {
 		"access": "public"
 	}

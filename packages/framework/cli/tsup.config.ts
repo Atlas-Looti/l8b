@@ -1,17 +1,16 @@
 import { defineConfig } from "tsup";
-import { treeShakableConfig } from "../../../tsup.config.base";
 
 export default defineConfig({
-	...treeShakableConfig,
 	entry: {
 		index: "src/index.ts",
-		cli: "src/cli.ts",
+		bin: "src/bin.ts",
 	},
-	format: ["esm"],
+	format: ["esm", "cjs"],
+	dts: true,
+	clean: true,
 	shims: true,
-	outExtension({ format }) {
-		return {
-			js: `.mjs`,
-		};
+	skipNodeModulesBundle: true,
+	banner: {
+		js: "#!/usr/bin/env node",
 	},
 });

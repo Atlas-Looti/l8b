@@ -88,11 +88,7 @@ export class Sprite {
  * Load a sprite from a URL
  * Supports multi-frame spritesheets (vertical stacking)
  */
-export function LoadSprite(
-	url: string,
-	properties?: SpriteProperties,
-	loaded?: () => void,
-): Sprite {
+export function LoadSprite(url: string, properties?: SpriteProperties, loaded?: () => void): Sprite {
 	const sprite = new Sprite(0, 0);
 	sprite.ready = 0;
 
@@ -188,4 +184,3 @@ export function UpdateSprite(sprite: Sprite, img: HTMLImageElement, properties?:
 		sprite.ready = 1;
 	}
 }
-

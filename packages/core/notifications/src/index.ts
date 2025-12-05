@@ -6,6 +6,3 @@
 
 export { NotificationsService } from "./notifications-service";
 export type { NotificationsAPI, NotificationDetails } from "./types";
-
-
-

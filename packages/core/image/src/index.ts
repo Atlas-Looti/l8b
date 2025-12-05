@@ -23,6 +23,3 @@ export type {
 	RGBColor,
 } from "./image/pixel";
 export type { SpriteSource } from "./image/sprite-rendering";
-
-
-

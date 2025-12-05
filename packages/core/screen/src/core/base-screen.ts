@@ -485,6 +485,8 @@ export class BaseScreen {
 			this.canvas.height = height;
 			this.initContext();
 			this.zBuffer.resize(width, height);
+			// Update interface cache immediately after resize
+			this.updateInterface();
 		}
 	}
 }

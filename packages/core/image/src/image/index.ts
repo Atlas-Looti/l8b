@@ -71,9 +71,9 @@ export class Image {
 
 		// Always get fresh context (same as msImage line 80)
 		// This ensures no leftover transforms from previous operations
-			this._context = this._canvas.getContext("2d")!;
-			if (this._context) {
-				this._context.lineCap = "round";
+		this._context = this._canvas.getContext("2d")!;
+		if (this._context) {
+			this._context.lineCap = "round";
 		}
 
 		// Initialize state (same as msImage lines 77-106)

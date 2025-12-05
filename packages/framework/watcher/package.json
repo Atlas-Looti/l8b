@@ -1,0 +1,30 @@
+{
+	"name": "@l8b/framework-watcher",
+	"version": "1.0.0",
+	"sideEffects": false,
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"dependencies": {
+		"@l8b/framework-shared": "workspace:*",
+		"chokidar": "^4.0.3"
+	},
+	"keywords": [
+		"l8b",
+		"framework",
+		"watcher"
+	],
+	"publishConfig": {
+		"access": "public"
+	}
+}

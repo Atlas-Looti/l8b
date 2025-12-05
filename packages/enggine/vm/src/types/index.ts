@@ -66,6 +66,8 @@ export interface GlobalAPI {
 	notifications?: any;
 	// HTTP client
 	http?: any;
+	// Environment variables API (read-only, secure)
+	env?: any;
 }
 
 /**

@@ -4,7 +4,9 @@
 
 ## Overview
 
-The `@l8b/env` package provides a secure, read-only interface for accessing environment variables from LootiScript game code. Environment variables are loaded from `.env` files during development and build, and exposed to your game via the global `env` object.
+The `@l8b/env` package provides a secure, read-only interface for accessing environment variables from LootiScript game code.
+
+**Security Note**: Environment variables are **NOT** exposed in HTML/client-side code by default. This follows security best practices (like Next.js). You must load environment variables via secure server-side API endpoints or set them programmatically.
 
 ## Installation
 
@@ -126,16 +128,40 @@ end
 
 ## Integration
 
-The `EnvService` is automatically initialized by the runtime orchestrator when environment variables are provided in `RuntimeOptions`. No manual setup required.
+The `EnvService` is automatically initialized by the runtime orchestrator with an empty object. No manual setup required.
 
-```typescript
-import { RuntimeOrchestrator } from "@l8b/runtime";
+**Loading Environment Variables:**
 
-const runtime = new RuntimeOrchestrator({
-  canvas: document.getElementById("game"),
-  env: {
-    API_KEY: process.env.API_KEY,
-    API_URL: process.env.API_URL,
-  },
+### Option 1: Via HTTP API (Recommended for Production)
+
+Load environment variables from a secure server-side API endpoint:
+
+```loot
+function init()
+  http.get("/api/env", function(response)
+    if response.status == 200 then
+      -- Server returns env variables securely
+      local envData = response.data
+      -- Use env variables
+      local apiKey = envData.API_KEY
+    end
+  end)
+end
+```
+
+### Option 2: Via JavaScript (For Development/Testing)
+
+Update environment variables from JavaScript:
+
+```javascript
+// In browser console or custom script
+window.runtime.env.update({
+  API_KEY: "your-api-key",
+  API_URL: "https://api.example.com",
+  DEBUG: "true"
 });
 ```
+
+### Option 3: Server-Side Injection (Advanced)
+
+If you need to inject env variables during runtime initialization, you can modify the HTML generation to include a secure endpoint that returns env variables, then load them via HTTP API in your game's `init()` function.

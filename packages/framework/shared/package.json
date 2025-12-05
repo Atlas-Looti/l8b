@@ -1,0 +1,27 @@
+{
+	"name": "@l8b/framework-shared",
+	"version": "1.0.0",
+	"sideEffects": false,
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"dependencies": {},
+	"keywords": [
+		"l8b",
+		"framework",
+		"shared"
+	],
+	"publishConfig": {
+		"access": "public"
+	}
+}

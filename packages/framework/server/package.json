@@ -1,0 +1,39 @@
+{
+	"name": "@l8b/framework-server",
+	"version": "1.0.0",
+	"sideEffects": false,
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"package.json"
+	],
+	"scripts": {
+		"build": "tsup",
+		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"dependencies": {
+		"@l8b/framework-shared": "workspace:*",
+		"@l8b/framework-config": "workspace:*",
+		"@l8b/framework-compiler": "workspace:*",
+		"@l8b/framework-watcher": "workspace:*",
+		"@l8b/framework-html": "workspace:*",
+		"@l8b/runtime": "workspace:*",
+		"esbuild": "^0.24.0",
+		"ws": "^8.18.0"
+	},
+	"devDependencies": {
+		"@types/ws": "^8.5.14"
+	},
+	"keywords": [
+		"l8b",
+		"framework",
+		"server"
+	],
+	"publishConfig": {
+		"access": "public"
+	}
+}

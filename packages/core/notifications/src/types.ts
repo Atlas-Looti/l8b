@@ -49,4 +49,3 @@ export interface NotificationsAPI {
 	 */
 	sendTokenToServer(serverUrl: string, options?: RequestInit): Promise<Response>;
 }
-

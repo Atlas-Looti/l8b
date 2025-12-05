@@ -23,7 +23,8 @@ export const audioApi: Partial<GlobalApi> = {
 			playSound: {
 				type: "method",
 				description: "Play a sound file",
-				signature: "audio.playSound(sound: string | Sound, volume?: number, pitch?: number, pan?: number, loopit?: boolean): number",
+				signature:
+					"audio.playSound(sound: string | Sound, volume?: number, pitch?: number, pan?: number, loopit?: boolean): number",
 			},
 			playMusic: {
 				type: "method",

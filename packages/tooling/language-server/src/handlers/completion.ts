@@ -45,7 +45,9 @@ export function setupCompletionHandlers(
 						return result;
 					}
 				} catch (error) {
-					connection.console.error(`Completion error in embedded mode: ${error instanceof Error ? error.message : String(error)}`);
+					connection.console.error(
+						`Completion error in embedded mode: ${error instanceof Error ? error.message : String(error)}`,
+					);
 				}
 			}
 

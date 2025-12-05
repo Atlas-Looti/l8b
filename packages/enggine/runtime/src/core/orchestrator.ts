@@ -310,10 +310,7 @@ export class RuntimeOrchestrator {
 		// Setup global API - these objects/functions are available to all LootiScript code
 		// This is the bridge between the runtime and the game code
 		const inputStates = this.input.getStates();
-		const global: Partial<GlobalAPI> & {
-			ObjectPool: typeof ObjectPool;
-			Palette: typeof Palette;
-		} = {
+		const global = {
 			screen: this.screen.getInterface(),
 			audio: this.audio.getInterface(),
 			keyboard: inputStates.keyboard,
@@ -351,6 +348,11 @@ export class RuntimeOrchestrator {
 			notifications: this.notifications.getInterface(),
 			// HTTP client for external APIs
 			http: this.http.getInterface(),
+			// Environment variables API (read-only, secure)
+			env: this.env.getInterface(),
+		} as Partial<GlobalAPI> & {
+			ObjectPool: typeof ObjectPool;
+			Palette: typeof Palette;
 		};
 
 		// Initialize VM with meta functions and global API
@@ -359,13 +361,7 @@ export class RuntimeOrchestrator {
 
 		// Create source updater for hot reload
 		// Pass audio, screen, and reportWarnings callback to match microstudio behavior
-		this.sourceUpdater = new SourceUpdater(
-			this.vm,
-			this.listener,
-			this.audio,
-			this.screen,
-			() => this.reportWarnings(),
-		);
+		this.sourceUpdater = new SourceUpdater(this.vm, this.listener, this.audio, this.screen, () => this.reportWarnings());
 
 		// Create time machine for debugging
 		this.timeMachine = new TimeMachine(this as any);

@@ -59,12 +59,7 @@ export interface EVMAPI {
 		onEvent?: (event: any) => void,
 	): Promise<() => void>; // Returns unsubscribe function
 
-	getEventLogs(
-		contractAddress: string,
-		abi: any,
-		eventName: string,
-		filterOptions?: EventFilterOptions,
-	): Promise<any[]>;
+	getEventLogs(contractAddress: string, abi: any, eventName: string, filterOptions?: EventFilterOptions): Promise<any[]>;
 
 	// Transaction utilities
 	getTransactionReceipt(txHash: string): Promise<TransactionReceipt>;

@@ -1,4 +1,4 @@
-playerinit = function()
+// Global player object declaration
   player = object
     x = 0
     y = 10
@@ -8,6 +8,15 @@ playerinit = function()
     jump = false
     sprite = "playerleft"
   end
+
+playerinit = function()
+  player.x = 0
+  player.y = 10
+  player.y_vel = 0
+  player.width = 20
+  player.height = 20
+  player.jump = false
+  player.sprite = "playerleft"
 end
 
 

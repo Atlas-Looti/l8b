@@ -5,4 +5,3 @@ export default defineConfig({
 	...treeShakableConfig,
 	entry: ["src/index.ts"],
 });
-

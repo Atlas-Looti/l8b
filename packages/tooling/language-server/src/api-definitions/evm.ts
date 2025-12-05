@@ -31,7 +31,8 @@ export const evmApi: Partial<GlobalApi> = {
 			},
 			watchEvent: {
 				type: "method",
-				signature: "evm.watchEvent(contractAddress: string, abi: any, eventName: string, filterOptions?: object, onEvent?: function)",
+				signature:
+					"evm.watchEvent(contractAddress: string, abi: any, eventName: string, filterOptions?: object, onEvent?: function)",
 				description: "Watch contract events in real-time. Returns unsubscribe function",
 			},
 			getEventLogs: {

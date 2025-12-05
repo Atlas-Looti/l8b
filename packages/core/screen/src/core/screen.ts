@@ -12,12 +12,8 @@ export class Screen extends TriangleScreen {
 
 		const screen = this;
 		this.interfaceCache = {
-			get width() {
-				return screen.width;
-			},
-			get height() {
-				return screen.height;
-			},
+			width: screen.width,
+			height: screen.height,
 			clear: (color?: string) => screen.clear(color),
 			setColor: (color: string | number) => screen.setColor(color),
 			setAlpha: (alpha: number) => screen.setAlpha(alpha),

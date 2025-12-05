@@ -37,4 +37,3 @@ export const notificationsApi: Partial<GlobalApi> = {
 		},
 	},
 };
-

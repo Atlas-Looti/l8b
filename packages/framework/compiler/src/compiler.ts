@@ -1,227 +1,272 @@
 /**
- * @l8b/compiler - LootiScript compilation utilities
- *
- * Provides helpers to compile LootiScript source code into executable routines,
- * plus serialization utilities for routines.
+ * LootiScript compiler wrapper
  */
-
+import { readFileSync } from "node:fs";
 import {
-	CompilationErrorCode,
-	createDiagnostic,
-	type Diagnostic,
-	SyntaxErrorCode,
-	WarningCode,
-} from "@l8b/diagnostics";
+	type CompilationError,
+	type CompilationResult,
+	type CompilationWarning,
+	createLogger,
+	getModuleName,
+} from "@l8b/framework-shared";
 import { Compiler, Parser } from "@l8b/lootiscript";
 
+const logger = createLogger("compiler");
+
 /**
- * Compilation error information
+ * Compilation options
  */
-export interface CompileError {
-	file: string;
-	error: string;
-	line?: number;
-	column?: number;
-	code?: string;
-	context?: string;
-	suggestions?: string[];
-	diagnostic?: Diagnostic;
+export interface CompileOptions {
+	/** File path for error reporting */
+	filePath?: string;
+	/** Module name */
+	moduleName?: string;
+	/** Source directory for module name resolution */
+	srcDir?: string;
+	/** Enable debug mode */
+	debug?: boolean;
 }
 
 /**
- * Compilation warning information
+ * Compile LootiScript source code
  */
-export interface CompileWarning {
-	file: string;
-	warning: string;
-	line?: number;
-	column?: number;
-	code?: string;
-	context?: string;
-	suggestions?: string[];
-	diagnostic?: Diagnostic;
-}
+export function compileSource(source: string, options: CompileOptions = {}): CompilationResult {
+	const { filePath = "unknown", moduleName, debug = false } = options;
 
-/**
- * Compilation result
- */
-const warningCodeMap: Record<string, WarningCode> = {
-	assigning_api_variable: WarningCode.W1001,
-	assignment_as_condition: WarningCode.W1002,
-};
+	const name =
+		moduleName || (options.srcDir ? getModuleName(filePath, options.srcDir) : filePath.replace(/\.[^.]+$/, ""));
 
-export interface CompileResult {
-	/** Successfully compiled routine (if no errors) */
-	routine?: any;
-	/** Compilation errors */
-	errors: CompileError[];
-	/** Compilation warnings */
-	warnings: CompileWarning[];
-	/** Source filename */
-	filename?: string;
-}
-
-/**
- * Compile LootiScript source code to bytecode routine
- *
- * @param source - Source code string
- * @param filename - Filename for error reporting (default: 'source.loot')
- * @returns Compilation result with routine or errors
- */
-export function compileSource(source: string, filename: string = "source.loot"): CompileResult {
-	const errors: CompileError[] = [];
-	const warnings: CompileWarning[] = [];
-
-	const pushError = (code: string, info: Record<string, any> = {}): void => {
-		const diagnostic = createDiagnostic(code, {
-			file: filename,
-			line: info.line,
-			column: info.column,
-			length: info.length,
-			context: info.context,
-			suggestions: info.suggestions,
-			related: info.related,
-			stackTrace: info.stackTrace,
-			data: info,
-		});
-
-		errors.push({
-			file: filename,
-			error: diagnostic.message,
-			line: diagnostic.line,
-			column: diagnostic.column,
-			code: diagnostic.code,
-			context: diagnostic.context,
-			suggestions: diagnostic.suggestions,
-			diagnostic,
-		});
-	};
-
-	const pushWarning = (code: string, info: Record<string, any> = {}): void => {
-		const diagnostic = createDiagnostic(code, {
-			file: filename,
-			line: info.line,
-			column: info.column,
-			context: info.context,
-			suggestions: info.suggestions,
-			data: info,
-		});
-
-		warnings.push({
-			file: filename,
-			warning: diagnostic.message,
-			line: diagnostic.line,
-			column: diagnostic.column,
-			code: diagnostic.code,
-			context: diagnostic.context,
-			suggestions: diagnostic.suggestions,
-			diagnostic,
-		});
-	};
+	const errors: CompilationError[] = [];
+	const warnings: CompilationWarning[] = [];
 
 	try {
-		// Parse source code
-		const parser = new Parser(source, filename);
-		parser.parse();
+		// Parse (Parser creates its own Tokenizer internally)
+		const parser = new Parser(source, filePath);
+		const parseResult = parser.parse();
 
-		// Check for parse errors
-		if ((parser as any).error_info) {
-			const err = (parser as any).error_info;
-			pushError(err.code || SyntaxErrorCode.E1004, err);
+		// Check for parse errors - parseResult is either Parser or error object
+		if (parseResult !== parser && "error" in parseResult) {
+			const errorResult = parseResult as { error: string; line: number; column: number };
+			errors.push({
+				message: errorResult.error,
+				file: filePath,
+				line: errorResult.line,
+				column: errorResult.column,
+				source: source.split("\n")[errorResult.line - 1] || "",
+			});
 
 			return {
+				success: false,
+				file: filePath,
+				name,
 				errors,
 				warnings,
-				filename,
 			};
 		}
 
-		// Compile to bytecode
-		const compiler = new Compiler(parser.program);
+		// Parser returns itself on success, get program from it
+		const program = parser.program;
 
-		// Export routine to serializable format
-		const routine = compiler.routine.export();
+		if (debug) {
+			logger.debug(`Parsed AST for ${name}`);
+		}
 
-		// Collect warnings
-		for (const w of parser.warnings) {
-			const warningCode = warningCodeMap[w.type as keyof typeof warningCodeMap] ?? WarningCode.W1001;
-			pushWarning(warningCode, w);
+		// Collect parser warnings
+		if (parser.warnings) {
+			for (const w of parser.warnings) {
+				warnings.push({
+					type: w.type,
+					message: w.type,
+					file: filePath,
+					line: w.line,
+					column: w.column,
+				});
+			}
+		}
+
+		// Compile AST to bytecode
+		const compiler = new Compiler(program);
+		const routine = compiler.routine;
+
+		if (debug) {
+			logger.debug(`Compiled routine for ${name}:`, routine);
 		}
 
 		return {
-			routine,
-			errors,
+			success: true,
+			file: filePath,
+			name,
+			bytecode: serializeRoutine(routine),
 			warnings,
-			filename,
 		};
-	} catch (error: any) {
-		pushError(
-			error.code || CompilationErrorCode.E3001,
-			error.line !== undefined
-				? error
-				: {
-						error: error.message || String(error),
-						line: error.line,
-						column: error.column,
-						context: error.context,
-						suggestions: error.suggestions,
-					},
-		);
+	} catch (error) {
+		const err = error as Error & {
+			line?: number;
+			column?: number;
+		};
+
+		errors.push({
+			message: err.message,
+			file: filePath,
+			line: err.line || 1,
+			column: err.column || 1,
+			source: source.split("\n")[err.line ? err.line - 1 : 0],
+		});
+
+		logger.error(`Compilation failed for ${name}:`, err.message);
 
 		return {
+			success: false,
+			file: filePath,
+			name,
 			errors,
 			warnings,
-			filename,
 		};
 	}
 }
 
 /**
- * Compile a LootiScript file to bytecode routine
- *
- * Note: This is a Node.js-only function that reads from the filesystem.
- * For browser environments, use compileSource() with pre-loaded source.
- *
- * @param filePath - Absolute path to .loot file
- * @returns Compilation result with routine or errors
+ * Compile LootiScript file
  */
-export async function compileFile(filePath: string): Promise<CompileResult> {
+export function compileFile(filePath: string, options: Omit<CompileOptions, "filePath"> = {}): CompilationResult {
 	try {
-		// Dynamic import to avoid bundling fs in browser builds
-		const fs = await import("fs");
-		const path = await import("path");
-
-		const source = fs.readFileSync(filePath, "utf-8");
-		const filename = path.basename(filePath);
-
-		return compileSource(source, filename);
-	} catch (error: any) {
-		const diagnostic = createDiagnostic(error.code || CompilationErrorCode.E3001, {
-			file: filePath,
-			line: error.line,
-			column: error.column,
-			context: error.context,
-			suggestions: error.suggestions,
-			data: {
-				error: error.message || String(error),
-			},
-		});
-
+		const source = readFileSync(filePath, "utf-8");
+		return compileSource(source, { ...options, filePath });
+	} catch (error) {
+		const err = error as Error;
 		return {
+			success: false,
+			file: filePath,
+			name: filePath,
 			errors: [
 				{
+					message: `Failed to read file: ${err.message}`,
 					file: filePath,
-					error: diagnostic.message,
-					line: diagnostic.line,
-					column: diagnostic.column,
-					code: diagnostic.code,
-					context: diagnostic.context,
-					suggestions: diagnostic.suggestions,
-					diagnostic,
+					line: 0,
+					column: 0,
 				},
 			],
-			warnings: [],
-			filename: filePath,
 		};
 	}
+}
+
+/**
+ * Serialize routine to bytes
+ */
+function serializeRoutine(routine: unknown): Uint8Array {
+	// Convert routine to JSON and then to bytes
+	const json = JSON.stringify(routine);
+	return new TextEncoder().encode(json);
+}
+
+/**
+ * Batch compile multiple files
+ */
+export async function compileFiles(
+	files: Array<{ path: string; source?: string }>,
+	options: Omit<CompileOptions, "filePath" | "moduleName"> = {},
+): Promise<CompilationResult[]> {
+	const results: CompilationResult[] = [];
+
+	for (const file of files) {
+		let result: CompilationResult;
+
+		if (file.source !== undefined) {
+			result = compileSource(file.source, {
+				...options,
+				filePath: file.path,
+			});
+		} else {
+			result = compileFile(file.path, options);
+		}
+
+		results.push(result);
+	}
+
+	return results;
+}
+
+/**
+ * Create an incremental compiler
+ */
+export class IncrementalCompiler {
+	private cache = new Map<string, { hash: string; result: CompilationResult }>();
+	private options: CompileOptions;
+
+	constructor(options: CompileOptions = {}) {
+		this.options = options;
+	}
+
+	/**
+	 * Compile source with caching
+	 */
+	compile(filePath: string, source: string, hash?: string): CompilationResult {
+		const cacheKey = filePath;
+		const sourceHash = hash || this.hashSource(source);
+
+		// Check cache
+		const cached = this.cache.get(cacheKey);
+		if (cached && cached.hash === sourceHash) {
+			logger.debug(`Cache hit for ${filePath}`);
+			return cached.result;
+		}
+
+		// Compile
+		const result = compileSource(source, {
+			...this.options,
+			filePath,
+		});
+
+		// Cache successful compilations
+		if (result.success) {
+			this.cache.set(cacheKey, { hash: sourceHash, result });
+		}
+
+		return result;
+	}
+
+	/**
+	 * Invalidate cache for a file
+	 */
+	invalidate(filePath: string): void {
+		this.cache.delete(filePath);
+	}
+
+	/**
+	 * Clear all cache
+	 */
+	clear(): void {
+		this.cache.clear();
+	}
+
+	/**
+	 * Get cache stats
+	 */
+	getStats(): { size: number; files: string[] } {
+		return {
+			size: this.cache.size,
+			files: Array.from(this.cache.keys()),
+		};
+	}
+
+	/**
+	 * Hash source code
+	 */
+	private hashSource(source: string): string {
+		// Simple hash for caching
+		let hash = 0;
+		for (let i = 0; i < source.length; i++) {
+			const char = source.charCodeAt(i);
+			hash = (hash << 5) - hash + char;
+			hash = hash & hash;
+		}
+		return hash.toString(16);
+	}
+}
+
+/**
+ * Create a new incremental compiler
+ */
+export function createIncrementalCompiler(options?: CompileOptions): IncrementalCompiler {
+	return new IncrementalCompiler(options);
 }

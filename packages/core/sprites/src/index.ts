@@ -17,4 +17,3 @@ export { LoadSprite as loadSprite, UpdateSprite as updateSprite } from "./sprite
 export { Image } from "@l8b/image";
 export type { ImageContextState } from "@l8b/image";
 export type { RGBAColor, RGBColor } from "@l8b/image";
-
