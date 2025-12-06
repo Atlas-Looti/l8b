@@ -52,8 +52,8 @@ importers:
   examples/framework/bird:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/fish:
     devDependencies:
@@ -64,14 +64,14 @@ importers:
   examples/framework/scenes:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/skate:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/sprite-jump:
     devDependencies:
