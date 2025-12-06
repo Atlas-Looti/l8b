@@ -1,0 +1,9 @@
+# @l8b/framework-watcher
+
+## 1.0.8
+
+### Patch Changes
+
+- 2a1e623: introducing new framework
+- Updated dependencies [2a1e623]
+  - @l8b/framework-shared@1.0.8

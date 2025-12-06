@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/framework-html",
-	"version": "1.0.0",
+	"version": "1.0.8",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",

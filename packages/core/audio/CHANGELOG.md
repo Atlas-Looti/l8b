@@ -1,5 +1,11 @@
 # @l8b/audio
 
+## 1.0.8
+
+### Patch Changes
+
+- @l8b/diagnostics@1.0.8
+
 ## 1.0.7
 
 ### Patch Changes

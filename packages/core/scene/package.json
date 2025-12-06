@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/scene",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "Scene management and routing system for L8B",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",

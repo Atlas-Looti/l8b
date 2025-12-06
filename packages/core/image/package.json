@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/image",
-	"version": "1.0.1",
+	"version": "1.0.8",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
