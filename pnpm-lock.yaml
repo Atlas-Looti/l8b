@@ -131,12 +131,6 @@ importers:
         specifier: ^7.2.2
         version: 7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)
 
-  packages/core/actions:
-    dependencies:
-      '@farcaster/miniapp-sdk':
-        specifier: 0.2.1
-        version: 0.2.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
-
   packages/core/assets:
     dependencies:
       '@l8b/diagnostics':
@@ -164,19 +158,6 @@ importers:
       '@l8b/diagnostics':
         specifier: workspace:*
         version: link:../../tooling/diagnostics
-
-  packages/core/env: {}
-
-  packages/core/evm:
-    dependencies:
-      '@farcaster/miniapp-sdk':
-        specifier: 0.2.1
-        version: 0.2.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
-      viem:
-        specifier: ^2.40.0
-        version: 2.40.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
-
-  packages/core/http: {}
 
   packages/core/image:
     dependencies:
@@ -215,23 +196,11 @@ importers:
         specifier: workspace:*
         version: link:../sprites
 
-  packages/core/notifications:
-    dependencies:
-      '@farcaster/miniapp-sdk':
-        specifier: 0.2.1
-        version: 0.2.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
-
   packages/core/palette:
     dependencies:
       '@l8b/diagnostics':
         specifier: workspace:*
         version: link:../../tooling/diagnostics
-
-  packages/core/player:
-    dependencies:
-      '@farcaster/miniapp-sdk':
-        specifier: 0.2.1
-        version: 0.2.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
 
   packages/core/scene:
     dependencies:
@@ -289,12 +258,6 @@ importers:
         specifier: workspace:*
         version: link:../../tooling/diagnostics
 
-  packages/core/wallet:
-    dependencies:
-      '@farcaster/miniapp-sdk':
-        specifier: 0.2.1
-        version: 0.2.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
-
   packages/enggine/io:
     dependencies:
       '@l8b/diagnostics':
@@ -313,24 +276,12 @@ importers:
 
   packages/enggine/runtime:
     dependencies:
-      '@l8b/actions':
-        specifier: workspace:*
-        version: link:../../core/actions
       '@l8b/audio':
         specifier: workspace:*
         version: link:../../core/audio
       '@l8b/diagnostics':
         specifier: workspace:*
         version: link:../../tooling/diagnostics
-      '@l8b/env':
-        specifier: workspace:*
-        version: link:../../core/env
-      '@l8b/evm':
-        specifier: workspace:*
-        version: link:../../core/evm
-      '@l8b/http':
-        specifier: workspace:*
-        version: link:../../core/http
       '@l8b/image':
         specifier: workspace:*
         version: link:../../core/image
@@ -346,15 +297,9 @@ importers:
       '@l8b/map':
         specifier: workspace:*
         version: link:../../core/map
-      '@l8b/notifications':
-        specifier: workspace:*
-        version: link:../../core/notifications
       '@l8b/palette':
         specifier: workspace:*
         version: link:../../core/palette
-      '@l8b/player':
-        specifier: workspace:*
-        version: link:../../core/player
       '@l8b/scene':
         specifier: workspace:*
         version: link:../../core/scene
@@ -370,9 +315,6 @@ importers:
       '@l8b/vm':
         specifier: workspace:*
         version: link:../vm
-      '@l8b/wallet':
-        specifier: workspace:*
-        version: link:../../core/wallet
 
   packages/enggine/stdlib:
     devDependencies:
@@ -7981,17 +7923,6 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@farcaster/miniapp-core@0.4.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@solana/web3.js': 1.98.4(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)
-      ox: 0.4.4(typescript@5.9.2)(zod@3.25.76)
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-
   '@farcaster/miniapp-core@0.4.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@solana/web3.js': 1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -8002,20 +7933,6 @@ snapshots:
       - encoding
       - typescript
       - utf-8-validate
-
-  '@farcaster/miniapp-sdk@0.2.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)':
-    dependencies:
-      '@farcaster/miniapp-core': 0.4.1(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)
-      '@farcaster/quick-auth': 0.0.6(typescript@5.9.2)
-      comlink: 4.4.2
-      eventemitter3: 5.0.1
-      ox: 0.4.4(typescript@5.9.2)(zod@3.25.76)
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
-      - zod
 
   '@farcaster/miniapp-sdk@0.2.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
@@ -8030,12 +7947,6 @@ snapshots:
       - typescript
       - utf-8-validate
       - zod
-
-  '@farcaster/quick-auth@0.0.6(typescript@5.9.2)':
-    dependencies:
-      jose: 5.10.0
-      typescript: 5.9.2
-      zod: 3.25.76
 
   '@farcaster/quick-auth@0.0.6(typescript@5.9.3)':
     dependencies:
@@ -9335,21 +9246,10 @@ snapshots:
     dependencies:
       buffer: 6.0.3
 
-  '@solana/codecs-core@2.3.0(typescript@5.9.2)':
-    dependencies:
-      '@solana/errors': 2.3.0(typescript@5.9.2)
-      typescript: 5.9.2
-
   '@solana/codecs-core@2.3.0(typescript@5.9.3)':
     dependencies:
       '@solana/errors': 2.3.0(typescript@5.9.3)
       typescript: 5.9.3
-
-  '@solana/codecs-numbers@2.3.0(typescript@5.9.2)':
-    dependencies:
-      '@solana/codecs-core': 2.3.0(typescript@5.9.2)
-      '@solana/errors': 2.3.0(typescript@5.9.2)
-      typescript: 5.9.2
 
   '@solana/codecs-numbers@2.3.0(typescript@5.9.3)':
     dependencies:
@@ -9357,40 +9257,11 @@ snapshots:
       '@solana/errors': 2.3.0(typescript@5.9.3)
       typescript: 5.9.3
 
-  '@solana/errors@2.3.0(typescript@5.9.2)':
-    dependencies:
-      chalk: 5.6.2
-      commander: 14.0.2
-      typescript: 5.9.2
-
   '@solana/errors@2.3.0(typescript@5.9.3)':
     dependencies:
       chalk: 5.6.2
       commander: 14.0.2
       typescript: 5.9.3
-
-  '@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)':
-    dependencies:
-      '@babel/runtime': 7.28.4
-      '@noble/curves': 1.9.7
-      '@noble/hashes': 1.8.0
-      '@solana/buffer-layout': 4.0.1
-      '@solana/codecs-numbers': 2.3.0(typescript@5.9.2)
-      agentkeepalive: 4.6.0
-      bn.js: 5.2.2
-      borsh: 0.7.0
-      bs58: 4.0.1
-      buffer: 6.0.3
-      fast-stable-stringify: 1.0.0
-      jayson: 4.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      node-fetch: 2.7.0
-      rpc-websockets: 9.3.1
-      superstruct: 2.0.2
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - typescript
-      - utf-8-validate
 
   '@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
@@ -10013,6 +9884,14 @@ snapshots:
       chai: 6.2.1
       tinyrainbow: 3.0.3
 
+  '@vitest/mocker@4.0.14(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))':
+    dependencies:
+      '@vitest/spy': 4.0.14
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.2.4(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2)
+
   '@vitest/mocker@4.0.14(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.14
@@ -10047,7 +9926,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.14(@types/node@24.10.1)(@vitest/ui@4.0.14)(happy-dom@20.0.11)(jiti@2.6.1)(jsdom@27.2.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(yaml@2.8.2)
+      vitest: 4.0.14(@types/node@22.19.1)(@vitest/ui@4.0.14)(happy-dom@20.0.11)(jiti@2.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(yaml@2.8.2)
 
   '@vitest/utils@4.0.14':
     dependencies:
@@ -10179,19 +10058,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  abitype@1.1.0(typescript@5.9.2)(zod@3.25.76):
-    optionalDependencies:
-      typescript: 5.9.2
-      zod: 3.25.76
-
   abitype@1.1.0(typescript@5.9.3)(zod@3.25.76):
     optionalDependencies:
       typescript: 5.9.3
-      zod: 3.25.76
-
-  abitype@1.2.0(typescript@5.9.2)(zod@3.25.76):
-    optionalDependencies:
-      typescript: 5.9.2
       zod: 3.25.76
 
   abitype@1.2.0(typescript@5.9.3)(zod@3.25.76):
@@ -13034,20 +12903,6 @@ snapshots:
       object-keys: 1.1.1
       safe-push-apply: 1.0.0
 
-  ox@0.4.4(typescript@5.9.2)(zod@3.25.76):
-    dependencies:
-      '@adraffy/ens-normalize': 1.11.1
-      '@noble/curves': 1.9.7
-      '@noble/hashes': 1.8.0
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      abitype: 1.2.0(typescript@5.9.2)(zod@3.25.76)
-      eventemitter3: 5.0.1
-    optionalDependencies:
-      typescript: 5.9.2
-    transitivePeerDependencies:
-      - zod
-
   ox@0.4.4(typescript@5.9.3)(zod@3.25.76):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
@@ -13059,21 +12914,6 @@ snapshots:
       eventemitter3: 5.0.1
     optionalDependencies:
       typescript: 5.9.3
-    transitivePeerDependencies:
-      - zod
-
-  ox@0.9.6(typescript@5.9.2)(zod@3.25.76):
-    dependencies:
-      '@adraffy/ens-normalize': 1.11.1
-      '@noble/ciphers': 1.3.0
-      '@noble/curves': 1.9.1
-      '@noble/hashes': 1.8.0
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.9.2)(zod@3.25.76)
-      eventemitter3: 5.0.1
-    optionalDependencies:
-      typescript: 5.9.2
     transitivePeerDependencies:
       - zod
 
@@ -14459,23 +14299,6 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  viem@2.40.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76):
-    dependencies:
-      '@noble/curves': 1.9.1
-      '@noble/hashes': 1.8.0
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      abitype: 1.1.0(typescript@5.9.2)(zod@3.25.76)
-      isows: 1.0.7(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      ox: 0.9.6(typescript@5.9.2)(zod@3.25.76)
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-    optionalDependencies:
-      typescript: 5.9.2
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
-
   viem@2.40.3(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76):
     dependencies:
       '@noble/curves': 1.9.1
@@ -14606,7 +14429,7 @@ snapshots:
   vitest@4.0.14(@types/node@22.19.1)(@vitest/ui@4.0.14)(happy-dom@20.0.11)(jiti@2.6.1)(jsdom@24.1.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.14
-      '@vitest/mocker': 4.0.14(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.14(vite@7.2.4(@types/node@22.19.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.14
       '@vitest/runner': 4.0.14
       '@vitest/snapshot': 4.0.14
