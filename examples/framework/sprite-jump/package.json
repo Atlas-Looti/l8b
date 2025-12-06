@@ -4,6 +4,7 @@
 	"version": "1.0.6",
 	"type": "module",
 	"scripts": {
+		"prebuild": "node ../../../scripts/ensure-deps-built.js",
 		"dev": "l8b dev",
 		"preview": "l8b preview",
 		"build": "l8b build"

@@ -3,11 +3,12 @@
 	"version": "1.0.3",
 	"private": true,
 	"scripts": {
+		"prebuild": "node ../../../scripts/ensure-deps-built.js",
 		"dev": "l8b dev",
 		"preview": "l8b preview",
 		"build": "l8b build"
 	},
 	"devDependencies": {
-		"@l8b/cli": "latest"
+		"@l8b/cli": "workspace:*"
 	}
 }
