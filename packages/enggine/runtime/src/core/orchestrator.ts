@@ -34,8 +34,7 @@ import type { RuntimeDebugOptions, RuntimeListener, RuntimeOptions as BaseRuntim
 import { ObjectPool } from "../utils/object-pool";
 
 // Extend RuntimeOptions
-export interface RuntimeOptions extends BaseRuntimeOptions {
-}
+export interface RuntimeOptions extends BaseRuntimeOptions {}
 
 /**
  * RuntimeOrchestrator - Main coordinator for all runtime components
@@ -115,7 +114,8 @@ export class RuntimeOrchestrator {
 		this.sceneManager = new SceneManager();
 
 		// Asset loader for sprites, maps, sounds, and other resources
-		this.assetLoader = new AssetLoader(options.url || "", options.resources || {});
+		// Pass audioCore so loader can create Sound/Music instances
+		this.assetLoader = new AssetLoader(options.url || "", options.resources || {}, this.audio);
 
 		this.logStep("RuntimeOrchestrator constructed", {
 			width: this.screen.width,
@@ -187,7 +187,6 @@ export class RuntimeOrchestrator {
 		this.music = collections.music;
 		this.assets = collections.assets;
 	}
-
 
 	/**
 	 * Step 2: Wait for assets to be ready (with loading bar)

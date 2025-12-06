@@ -30,11 +30,7 @@ export interface RuntimePluginOptions {
  * Create runtime plugin
  */
 export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
-	const {
-		minify = false,
-		sourcemap = false,
-		externalSources = false,
-	} = options;
+	const { minify = false, sourcemap = false, externalSources = false } = options;
 
 	return {
 		name: "l8b:runtime",

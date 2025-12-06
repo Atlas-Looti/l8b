@@ -1,3 +1,19 @@
+// Check if mouse or touch is hovering over a rectangle
+checkRectMouseHover = function(x, y, width, height)
+  // Get input position (mouse or touch)
+  local inputX = mouse.x
+  local inputY = mouse.y
+  
+  // Use touch position if touching
+  if touch.touching == 1 then
+    inputX = touch.x
+    inputY = touch.y
+  end
+  
+  // Check if input is within rectangle bounds
+  return inputX >= x - width/2 and inputX <= x + width/2 and inputY >= y - height/2 and inputY <= y + height/2
+end
+
 displayMenu = function()
   screen.drawText("Sprite Jump", 0, 80, 30,"rgb(29,70,8)")
 
@@ -7,7 +23,7 @@ displayMenu = function()
   screen.fillRoundRect(0,-20, 150, 30, 10,"rgb(255,255,198)")
   screen.drawText("Start",0, -20, 30,"rgb(2,2,2)")
   
-  if checkRectMouseHover(0,-20, 150, 30) and (mouse.press or keyboard["Enter"]) then
+  if checkRectMouseHover(0,-20, 150, 30) and (mouse.press or touch.press == 1 or keyboard["Enter"]) then
     gamemode = "playing"
   end
 end
@@ -22,7 +38,7 @@ displayGameOver = function()
   screen.fillRoundRect(bg.x, bg.y-120, 80, 25, 10,"rgb(255,255,198)")
   screen.drawText("Play Again", bg.x, bg.y-120, 15,"rgb(2,2,2)")
   
-  if checkRectMouseHover(bg.x, bg.y-120, 80, 25) and (mouse.press or keyboard["Enter"]) then
+  if checkRectMouseHover(bg.x, bg.y-120, 80, 25) and (mouse.press or touch.press == 1 or keyboard["Enter"]) then
     init()
   end
 end

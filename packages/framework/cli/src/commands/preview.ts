@@ -20,7 +20,7 @@ export interface PreviewOptions {
 
 export async function previewCommand(options: PreviewOptions): Promise<void> {
 	const { root, port, host, open, outDir } = options;
-	
+
 	// Load config to get the correct output directory (same as build command)
 	const config = loadConfig(root);
 	const distDir = outDir ? resolve(root, outDir) : config.outPath;

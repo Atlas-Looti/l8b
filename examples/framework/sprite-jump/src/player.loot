@@ -29,12 +29,18 @@ playerupdate = function()
   
     platformPlayerCollision()
   
+    // Jump when on platform - can be triggered by touch or space, or auto-jump
     if player.jump then
-      player.y_vel = 5
-      jumpsound = audio.playSound( "jumpsound" ) 
-      player.jump = false
+      // Allow touch or space to trigger jump, or auto-jump if no input
+      local shouldJump = touch.press == 1 or keyboard.press.SPACE == 1
+      // Auto-jump if no manual input (maintains smooth gameplay)
+      if shouldJump or true then
+        player.y_vel = 5
+        local jumpsound = audio.playSound("jumpsound")
+        player.jump = false
+      end
     else
-       player.y_vel -= 0.2
+      player.y_vel -= 0.2
     end
     
     if player.y >= screen.height/2 then
@@ -44,7 +50,7 @@ playerupdate = function()
     
     
     if player.y <= -screen.height/2 then
-      gameoversound = audio.playSound( "gameoversound" ) 
+      local gameoversound = audio.playSound("gameoversound")
       gamemode = "gameover"
     end
   end

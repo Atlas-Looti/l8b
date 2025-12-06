@@ -94,7 +94,7 @@ export class Sound {
 
 		// Create panner
 		let panner: any;
-		if (context.createStereoPanner) {
+		if (false && context.createStereoPanner) {
 			panner = context.createStereoPanner();
 			panner.setPan = (p: number) => {
 				panner.pan.value = p;

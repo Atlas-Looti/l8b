@@ -1,5 +1,5 @@
 {
 	"name": "sprite-jump",
-	"orientation": "any",
-	"aspect": "free"
+	"orientation": "portrait",
+	"aspect": "16x9"
 }

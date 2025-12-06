@@ -60,7 +60,6 @@ export interface L8BBuildOptions extends BuildOptions {
 	minifier?: "esbuild" | "terser";
 	/** Externalize sources to sources.json (lazy loading) */
 	externalSources?: boolean;
-
 }
 
 /**
@@ -115,7 +114,6 @@ export class L8BBundler {
 				minify: this.options.minify ?? true,
 				sourcemap: this.options.sourcemap ?? false,
 				externalSources: this.options.externalSources ?? false,
-
 			}),
 		);
 

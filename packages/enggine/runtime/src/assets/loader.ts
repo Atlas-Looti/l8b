@@ -7,6 +7,7 @@
  * - Show loading bar
  */
 
+import { Sound, Music } from "@l8b/audio";
 import { loadMap } from "@l8b/map";
 import { loadSprite } from "@l8b/sprites";
 import type { AssetCollections, Resources } from "../types";
@@ -16,10 +17,12 @@ export class AssetLoader {
 	private resources: Resources;
 	private collections: AssetCollections;
 	private loadingBarTime: number | null = null;
+	private audioCore: any;
 
-	constructor(url: string, resources: Resources) {
+	constructor(url: string, resources: Resources, audioCore: any) {
 		this.url = url;
 		this.resources = resources;
+		this.audioCore = audioCore;
 		this.collections = {
 			sprites: {},
 			maps: {},
@@ -125,38 +128,33 @@ export class AssetLoader {
 	private async loadSounds(): Promise<void> {
 		if (!this.resources.sounds) return;
 
-		const promises = this.resources.sounds.map(async (sound) => {
-			const name = sound.file.split(".")[0];
-			const url = `${this.url}sounds/${sound.file}?v=${sound.version || 0}`;
+		const promises = this.resources.sounds.map((sound) => {
+			return new Promise<void>((resolve) => {
+				const name = sound.file.split(".")[0];
+				const url = `${this.url}sounds/${sound.file}?v=${sound.version || 0}`;
 
-			try {
-				// Load sound - create audio element
-				const audio = new Audio();
-				audio.src = url;
-				await new Promise<void>((resolve, reject) => {
-					audio.addEventListener("canplaythrough", () => resolve(), {
-						once: true,
-					});
-					audio.addEventListener("error", reject, {
-						once: true,
-					});
-					audio.load();
-				});
+				try {
+					// Create Sound instance from @l8b/audio
+					// Sound class will handle loading via XMLHttpRequest and AudioBuffer
+					const soundInstance = new Sound(this.audioCore, url);
+					this.collections.sounds[name] = soundInstance;
 
-				this.collections.sounds[name] = {
-					name,
-					url,
-					audio,
-					ready: true,
-				};
-			} catch (err) {
-				console.error(`Failed to load sound ${name}:`, err);
-				this.collections.sounds[name] = {
-					name,
-					url,
-					ready: false,
-				};
-			}
+					// Wait for sound to be ready
+					const checkReady = () => {
+						if (soundInstance.ready) {
+							resolve();
+						} else {
+							setTimeout(checkReady, 50);
+						}
+					};
+					checkReady();
+				} catch (err) {
+					console.error(`Failed to load sound ${name}:`, err);
+					// Create placeholder Sound instance
+					this.collections.sounds[name] = new Sound(this.audioCore, url);
+					resolve();
+				}
+			});
 		});
 
 		await Promise.all(promises);
@@ -168,39 +166,26 @@ export class AssetLoader {
 	private async loadMusic(): Promise<void> {
 		if (!this.resources.music) return;
 
-		const promises = this.resources.music.map(async (mus) => {
-			const name = mus.file.split(".")[0];
-			const url = `${this.url}music/${mus.file}?v=${mus.version || 0}`;
+		const promises = this.resources.music.map((mus) => {
+			return new Promise<void>((resolve) => {
+				const name = mus.file.split(".")[0];
+				const url = `${this.url}music/${mus.file}?v=${mus.version || 0}`;
 
-			try {
-				// Load music - create audio element
-				const audio = new Audio();
-				audio.src = url;
-				audio.loop = true; // Music typically loops
-				await new Promise<void>((resolve, reject) => {
-					audio.addEventListener("canplaythrough", () => resolve(), {
-						once: true,
-					});
-					audio.addEventListener("error", reject, {
-						once: true,
-					});
-					audio.load();
-				});
+				try {
+					// Create Music instance from @l8b/audio
+					// Music class handles HTML5 Audio internally
+					const musicInstance = new Music(this.audioCore, url);
+					this.collections.music[name] = musicInstance;
 
-				this.collections.music[name] = {
-					name,
-					url,
-					audio,
-					ready: true,
-				};
-			} catch (err) {
-				console.error(`Failed to load music ${name}:`, err);
-				this.collections.music[name] = {
-					name,
-					url,
-					ready: false,
-				};
-			}
+					// Music is ready immediately (streaming)
+					resolve();
+				} catch (err) {
+					console.error(`Failed to load music ${name}:`, err);
+					// Create placeholder Music instance
+					this.collections.music[name] = new Music(this.audioCore, url);
+					resolve();
+				}
+			});
 		});
 
 		await Promise.all(promises);

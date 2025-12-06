@@ -52,14 +52,14 @@ importers:
   examples/framework/bird:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/fish:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/scenes:
     devDependencies:
@@ -70,8 +70,8 @@ importers:
   examples/framework/skate:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/sprite-jump:
     devDependencies:
@@ -1684,15 +1684,28 @@ packages:
   '@l8b/audio@1.0.7':
     resolution: {integrity: sha512-udNCr1SM5+VSlbZjrKSCVWAOazn3m/6NmSGD0NHfNWT1kN45cruWjNsGoP5IBHZmeoRLp5tumyZ7aal6Jnmbkw==}
 
+  '@l8b/audio@1.0.9':
+    resolution: {integrity: sha512-906P1IhT+fvs5G8NO4FcYOPsJqTxDoswo4xP099HXh5+BD7UFSsUbAV1S//wnLFQPOiFEdmB7ZUx0L9Jrfjhhw==}
+
   '@l8b/cli@1.0.7':
     resolution: {integrity: sha512-REPhWk0WTlYviw2k1Ou2j85bgyMhKCKb8owrzmHKOTI+kcH3Xd4YYwyd5+nFi6oB9BDbmYoq9NOQATni92vLdg==}
+    hasBin: true
+
+  '@l8b/cli@1.0.9':
+    resolution: {integrity: sha512-l7DBnT9xFiHo4VQUQeSCIBPqMMByeYp/KxgVkoA1q1/Nhasu8o681Vu7lZJFpgxdyT4ksJNRr7hIQtZe9Y8FeQ==}
     hasBin: true
 
   '@l8b/compiler@1.0.7':
     resolution: {integrity: sha512-Cll5Bj7QmLkSn7dKQkrJcOiJyTbncaJvmhzczyY2FlRqemiQwzsbGGXU1j5Q7K0OJ1C0Kceubb6F974x/EEyZw==}
 
+  '@l8b/compiler@1.0.9':
+    resolution: {integrity: sha512-WVZljNp8604wGVUofR92RFzGpaGilZs5oV9q3pId0mfEUuPGTrnv/SuhuOXsqZdK0NV1L/aVU4BBzXap9ViU0g==}
+
   '@l8b/diagnostics@1.0.7':
     resolution: {integrity: sha512-ocVKgzXTVPo9f5Ub1ZqX17hE9cdOu9YUn+aHEmbO3sdpqZjdU1mnGlxScZGF2Gyfi+mQAAEa5muUSNpD2OciSQ==}
+
+  '@l8b/diagnostics@1.0.9':
+    resolution: {integrity: sha512-HbEPIlBrXuKIGDpWBag5MRNs/wgYw+zi88jQ1j8/YlgeiM8zdUd4JbZccMIBoWxi/guNW1GTPWA6L8ttHahVLg==}
 
   '@l8b/env@1.0.0':
     resolution: {integrity: sha512-JPzyR52s5KKuSCk0Qdbbz40YADDFsiO0f478Q2tPHWigYB7eoBxgLWzBOsf/NN7YpJk81k7Nl37Ba1ptOrG2Vg==}
@@ -1701,23 +1714,56 @@ packages:
   '@l8b/evm@1.0.7':
     resolution: {integrity: sha512-lrKhwLHH/cEBnNrQ3tsh+HeWqCaUyNv/jrgeX8VWJ+ygdAW4/Qo1aAgWsxmauTX3l2BRiDH0hL2UmYXbzjcoZA==}
 
+  '@l8b/framework-bundler@1.0.9':
+    resolution: {integrity: sha512-1puTfKQW6UeGD5HvPLPD8dDIKqrnQxhnOGPGwsLPG3IC7omJZji6l3ieeAdiUk2qvJSJJAP5bn5sdDHJqCOpcA==}
+
+  '@l8b/framework-config@1.0.9':
+    resolution: {integrity: sha512-+YdzAbU2ObDjq3DG3neT4jK2DU4ZqnfwPj+WkAEsdXvXHcLQgj6bG2IYjrbLi2cEEtOGo3ZQ8NtIKlj0eXssKg==}
+
+  '@l8b/framework-html@1.0.9':
+    resolution: {integrity: sha512-3yknbMD+dDkeTXCwJm2427iD+3kDSUjtqBFFDWlrGctsjTz/CeHhTQglPlKkMF/TlrXzGXV+cIuTFt5R/wB5Ow==}
+
+  '@l8b/framework-server@1.0.9':
+    resolution: {integrity: sha512-yfJgyLuNEITzrn1JhzR9iBUAShAW+4282FWCvo7nA75a998UqYGkqHo7DDWvF9mlvUxqtLYnWzaP5dH8ONLsCQ==}
+
+  '@l8b/framework-shared@1.0.9':
+    resolution: {integrity: sha512-pKY8hYRbt6DPnz99ijHCQ5i3ZwBQR4qL2iKLcDaP+lsqY5s1F4wctsFil/kgEoATzJsNlsr+rlNQRtaXnN5rKA==}
+
+  '@l8b/framework-watcher@1.0.9':
+    resolution: {integrity: sha512-pgeCsmF5Uhe4VklfCtEU2j0UYxpX2gG3dp3ab/W9llPwm8BN55+IZhmaFUT7XeC9L5DkyCLaV8BNjKOHbfzK9w==}
+
   '@l8b/http@1.0.7':
     resolution: {integrity: sha512-HiRSwSvMrUGkZP2PhSEbJf+1BFqLFe8NIwaZavANVf4XJJCzfpAsMnoo0BS2UHOzp856wqSQ/gbbLDu2cND16g==}
 
   '@l8b/image@1.0.1':
     resolution: {integrity: sha512-LAnY/jkycmRE0+MifYhBA/vTnmQND4N6ILzknAG+cOYYXWtm/W49sAeQNSJurd2h7+FT4xKSvLrlRYPX/S79Wg==}
 
+  '@l8b/image@1.0.9':
+    resolution: {integrity: sha512-nIKxcTPtSfkWx1e//5V0E9h9m4NGbA64WtrcvVyXsN7pNeGwClDaidPTuAUOAezLYRAJzNtP0K74DBOLUQ2yyw==}
+
   '@l8b/input@1.0.7':
     resolution: {integrity: sha512-jgar5wJJEkWyZo25+DHktVLuQltxQiCAB3FcQo1Fo0h8DE0zXwi+VElAT2duOOXUmgFMkyJMKDL5w0vbq85z2w==}
+
+  '@l8b/input@1.0.9':
+    resolution: {integrity: sha512-vOgfE6AA6Xs+FoingBR0IgaUbuV5796hKU3/BrnHTYr5GdyiAMmLS/G8XfouRs+YyL91ue1OSkmNjGJwUQd8XA==}
 
   '@l8b/io@1.0.7':
     resolution: {integrity: sha512-hSPVVttM6KBvO8bjIYWNSahnxOBixsrEJ2htM74HNSrg7eV1q0OO9VcO503VJsSDzULiEC9j240gV99gWhQi9g==}
 
+  '@l8b/io@1.0.9':
+    resolution: {integrity: sha512-v5PU0fpgQNnmryWUiMBlpwcIn3033nswrIOqXsmD83zhRQk+PSZqcO5qHLu0Zj7n/rq5ioWjlrxjwL+M3HhXkA==}
+
   '@l8b/lootiscript@1.0.7':
     resolution: {integrity: sha512-e8/KG/6AXiATh1NLzdMac28nbV4yoYbvZa6xYQ8Texz1rzZ2+0QnNB4RS3H0VAyM+zqkiRoNwz8323SfbU3Ncw==}
 
+  '@l8b/lootiscript@1.0.9':
+    resolution: {integrity: sha512-y4yhcVITg/Iz/BYNIjkRZhomABaqGd4cYcsLS4pRGUShRLbr5FSNFc1F4jT4bDSOlDFmMQfQQk6SQ00RySYXUw==}
+
   '@l8b/map@1.0.7':
     resolution: {integrity: sha512-InzzOrMgTrJfelQCsCKWoymECbVu99nIGiW77fm2/fiNqY+iETKnF1i8EeErHCTlfVoEBWK5w/CJLpLNAruXxA==}
+
+  '@l8b/map@1.0.9':
+    resolution: {integrity: sha512-k6g1yYp/qC0lipmdiFETXIYWAu4dbEbC3kABSZBe9h9GOxcQY0Zz1g544iyAF4E1YXzDaR1DGh/iT+E/bZFoIw==}
 
   '@l8b/notifications@1.0.0':
     resolution: {integrity: sha512-zjgSIUn1OMnLr8lk8YXmMWu/xpJuaCDw+mRk2zTN3MJR8Dmsfa38pozPYvYpiC6f2o/motQo+c4eZansJLPqVg==}
@@ -1725,29 +1771,53 @@ packages:
   '@l8b/palette@1.0.7':
     resolution: {integrity: sha512-rfFXJF3nTaZvFjPnqsMGus7Td0U9klg9JfqwJi4yQ5LnaxseXK11LQKxIVE4dQBPO92WgQC8af4/lYiKyPvbvQ==}
 
+  '@l8b/palette@1.0.9':
+    resolution: {integrity: sha512-63DBHy6RzUA6hJ5hwL1QmRgirp/KjYZqAUjIpEvjEtQ7RklZza7P9Tn5K6g7XJd7HnvuZHTkeG6PLU0h//zwqw==}
+
   '@l8b/player@1.0.7':
     resolution: {integrity: sha512-ex/Fkt+Iz3VJfF8tYj412n1CawAftd+uEzJEkm77uaAYMmG/+WLDktKB1zQ+7pFEf0eU127CBjwiDbSWgGXjgQ==}
 
   '@l8b/runtime@1.0.7':
     resolution: {integrity: sha512-VZI7t+/CIOA4jdQzoswfhnkCuvl27EycXLhlxzvRfCEn7K1AicmtQF1QpSMKwKY4wutHhNGzjfIQlm69ZskMUg==}
 
+  '@l8b/runtime@1.0.9':
+    resolution: {integrity: sha512-p8P1pAtPQU/A53mKyBGpu9ocWNpbcHOaBqbkb6jWSzBbDPBJk2f3rcC8M7RMJDuN6CRUcIQotDzugKrXOUhlfg==}
+
   '@l8b/scene@1.0.7':
     resolution: {integrity: sha512-WY8BassCBSjivdZ3RkWxI0i8Rd4rNfBsIRS/CCEm856A+CYjXN4q308ni+iy8/maB2GEGEVXawtleALJ4XaPpw==}
+
+  '@l8b/scene@1.0.9':
+    resolution: {integrity: sha512-qaorswGhXa6o5t5ffgSjuu5KFOx1ExCcLjMLNf8PrBzYIm3sALzfl0UWKO7QVZxCA9Vqe7qkik83Hi26f106Fw==}
 
   '@l8b/screen@1.0.7':
     resolution: {integrity: sha512-1Bz64Vw9YWM+DZK44+hQfnK3leb+e0GA9KrlqAwFgcFxo45O3vuwxfS71xmQ7CTmqjfW22bHh0lv+5cFLtbLyg==}
 
+  '@l8b/screen@1.0.9':
+    resolution: {integrity: sha512-4RXAbtlxvO5S5wE4oUaft/JlMWCFII8//TgJOEpLsyNl07rJF/X6kNpPntKD11Y9K3Syel+Vw3pHwbSpSS/qxA==}
+
   '@l8b/sprites@1.0.7':
     resolution: {integrity: sha512-2Tg3+J5j7B7loiDej5uII6YciJN5ZpWWx5sgOQC2YJYojog9tvPCUX+ZNdBoFZUjTs38WavaqVqxkCQ0epNClA==}
+
+  '@l8b/sprites@1.0.9':
+    resolution: {integrity: sha512-gAP9fYOwly6asUz9EOke3RN6aHOxb8lqFjCUgPYK4mw7kWJQE03TBIorsqY8DfuuBHWsO3Hu8Re+zahY8x1Lhg==}
 
   '@l8b/stdlib@1.0.7':
     resolution: {integrity: sha512-3OMzVmyDsSSTsxPPEca9JSf/vizSOciharasGfHcjqer77se7L0OHMCsg6I9R3OVxOCDm4YbD/RpBddnhm6Dxg==}
 
+  '@l8b/stdlib@1.0.9':
+    resolution: {integrity: sha512-uAw6K3Xs3/fws1rE4OHqOOzTu8aljRL1+e+BZYbzvLdzfWRtpKIOt+IslTf8oPSk6BTOmLu3DvNivD9m2z1I0Q==}
+
   '@l8b/time@1.0.7':
     resolution: {integrity: sha512-QceV26DnZUjxLuozuLi3a+lZDSMiQIxk8wNBAN70nx4e/3XrQyoBX+WycbR3YpnjfphZNoOZ3bLwDlJiTOpO+A==}
 
+  '@l8b/time@1.0.9':
+    resolution: {integrity: sha512-mbqPOLOX9odvdPrmJuKeVpmLgnUavdrzCaay4ZEGQnVi+U1cpbxHFkhlPBn8EVXRLPUfLkkXg5nLz6IFiyb08w==}
+
   '@l8b/vm@1.0.7':
     resolution: {integrity: sha512-P56c30uPgRE838WNTMsclUJJ/SsjywFAXVTORFESebSdOv+j9lBAxVLk+BEDSRTyM6JZbu1k5ckUZvxjqshAmw==}
+
+  '@l8b/vm@1.0.9':
+    resolution: {integrity: sha512-3B9OZrX4hLu72zX45ui2EmzriDn5tDuYkAKVn33epZKyuTr5iuH51D5lk5tuHeBX61RJJK8xMar4fW9lVcPgJg==}
 
   '@l8b/wallet@1.0.7':
     resolution: {integrity: sha512-QmH8xul0Y/sYxJGHFUBsjk63CZBm0O0GBahDP+QPcCMrFGbVyIIDv/vZHC0ME2HWuSsxUEFUFmvxrVnD4LoofQ==}
@@ -8095,6 +8165,10 @@ snapshots:
     dependencies:
       '@l8b/diagnostics': 1.0.7
 
+  '@l8b/audio@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+
   '@l8b/cli@1.0.7(@types/node@24.10.1)(bufferutil@4.0.9)(jiti@2.6.1)(lightningcss@1.30.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(yaml@2.8.2)(zod@3.25.76)':
     dependencies:
       '@l8b/compiler': 1.0.7
@@ -8124,12 +8198,31 @@ snapshots:
       - yaml
       - zod
 
+  '@l8b/cli@1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@l8b/compiler': 1.0.9
+      '@l8b/framework-bundler': 1.0.9
+      '@l8b/framework-config': 1.0.9
+      '@l8b/framework-server': 1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@l8b/framework-shared': 1.0.9
+      cac: 6.7.14
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@l8b/compiler@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
       '@l8b/lootiscript': 1.0.7
 
+  '@l8b/compiler@1.0.9':
+    dependencies:
+      '@l8b/framework-shared': 1.0.9
+      '@l8b/lootiscript': 1.0.9
+
   '@l8b/diagnostics@1.0.7': {}
+
+  '@l8b/diagnostics@1.0.9': {}
 
   '@l8b/env@1.0.0': {}
 
@@ -8144,29 +8237,88 @@ snapshots:
       - utf-8-validate
       - zod
 
+  '@l8b/framework-bundler@1.0.9':
+    dependencies:
+      '@l8b/compiler': 1.0.9
+      '@l8b/framework-config': 1.0.9
+      '@l8b/framework-shared': 1.0.9
+      '@l8b/runtime': 1.0.9
+      esbuild: 0.24.2
+
+  '@l8b/framework-config@1.0.9':
+    dependencies:
+      '@l8b/framework-shared': 1.0.9
+
+  '@l8b/framework-html@1.0.9':
+    dependencies:
+      '@l8b/framework-shared': 1.0.9
+
+  '@l8b/framework-server@1.0.9(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@l8b/compiler': 1.0.9
+      '@l8b/framework-config': 1.0.9
+      '@l8b/framework-html': 1.0.9
+      '@l8b/framework-shared': 1.0.9
+      '@l8b/framework-watcher': 1.0.9
+      '@l8b/runtime': 1.0.9
+      esbuild: 0.24.2
+      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@l8b/framework-shared@1.0.9': {}
+
+  '@l8b/framework-watcher@1.0.9':
+    dependencies:
+      '@l8b/framework-shared': 1.0.9
+      chokidar: 4.0.3
+
   '@l8b/http@1.0.7': {}
 
   '@l8b/image@1.0.1':
     dependencies:
       '@l8b/diagnostics': 1.0.7
 
+  '@l8b/image@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+
   '@l8b/input@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
 
+  '@l8b/input@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+
   '@l8b/io@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
+
+  '@l8b/io@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
 
   '@l8b/lootiscript@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
       '@l8b/stdlib': 1.0.7
 
+  '@l8b/lootiscript@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+      '@l8b/stdlib': 1.0.9
+
   '@l8b/map@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
       '@l8b/sprites': 1.0.7
+
+  '@l8b/map@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+      '@l8b/sprites': 1.0.9
 
   '@l8b/notifications@1.0.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
@@ -8181,6 +8333,10 @@ snapshots:
   '@l8b/palette@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
+
+  '@l8b/palette@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
 
   '@l8b/player@1.0.7(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
@@ -8221,9 +8377,29 @@ snapshots:
       - utf-8-validate
       - zod
 
+  '@l8b/runtime@1.0.9':
+    dependencies:
+      '@l8b/audio': 1.0.9
+      '@l8b/diagnostics': 1.0.9
+      '@l8b/image': 1.0.9
+      '@l8b/input': 1.0.9
+      '@l8b/io': 1.0.9
+      '@l8b/lootiscript': 1.0.9
+      '@l8b/map': 1.0.9
+      '@l8b/palette': 1.0.9
+      '@l8b/scene': 1.0.9
+      '@l8b/screen': 1.0.9
+      '@l8b/sprites': 1.0.9
+      '@l8b/time': 1.0.9
+      '@l8b/vm': 1.0.9
+
   '@l8b/scene@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
+
+  '@l8b/scene@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
 
   '@l8b/screen@1.0.7':
     dependencies:
@@ -8231,22 +8407,45 @@ snapshots:
       '@l8b/map': 1.0.7
       '@l8b/sprites': 1.0.7
 
+  '@l8b/screen@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+      '@l8b/map': 1.0.9
+      '@l8b/sprites': 1.0.9
+
   '@l8b/sprites@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
       '@l8b/image': 1.0.1
 
+  '@l8b/sprites@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
+      '@l8b/image': 1.0.9
+
   '@l8b/stdlib@1.0.7': {}
+
+  '@l8b/stdlib@1.0.9': {}
 
   '@l8b/time@1.0.7':
     dependencies:
       '@l8b/diagnostics': 1.0.7
+
+  '@l8b/time@1.0.9':
+    dependencies:
+      '@l8b/diagnostics': 1.0.9
 
   '@l8b/vm@1.0.7':
     dependencies:
       '@l8b/io': 1.0.7
       '@l8b/lootiscript': 1.0.7
       '@l8b/scene': 1.0.7
+
+  '@l8b/vm@1.0.9':
+    dependencies:
+      '@l8b/io': 1.0.9
+      '@l8b/lootiscript': 1.0.9
+      '@l8b/scene': 1.0.9
 
   '@l8b/wallet@1.0.7(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:

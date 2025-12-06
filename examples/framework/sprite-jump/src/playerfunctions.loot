@@ -17,34 +17,54 @@ gameOver = function()
 end
 
 horizontalMovement = function(right_sprite, left_sprite)
+  // Cache player object for performance
+  local p = player
+  
+  // Keyboard controls
   if keyboard.RIGHT then
-    player.x += 1
-    player.sprite = right_sprite
+    p.x += 1
+    p.sprite = right_sprite
   end
   if keyboard.LEFT then
-    player.x -= 1
-    player.sprite = left_sprite
+    p.x -= 1
+    p.sprite = left_sprite
   end
   
-   if player.x > screen.width/2 or player.x < -screen.width/2 then
-    player.x = -(player.x)
-   end
-
+  // Touch controls - left side of screen moves left, right side moves right
+  if touch.touching == 1 then
+    if touch.x < 0 then
+      // Touch on left side
+      p.x -= 1
+      p.sprite = left_sprite
+    else
+      // Touch on right side
+      p.x += 1
+      p.sprite = right_sprite
+    end
+  end
+  
+  // Wrap around screen edges
+  if p.x > screen.width/2 or p.x < -screen.width/2 then
+    p.x = -(p.x)
+  end
 end
 
 platformPlayerCollision = function()
+  // Cache player object for performance
+  local p = player
+  
   for i=0 to platforms.length-1 
-    colliding = collision(player.x, player.y-player.height/2, player.width, 5, platforms[i].x, platforms[i].y+platforms[i].height/2, platforms[i].width, 5)
-    if colliding and player.y_vel < 0 then
-      if platforms[i].sprite == "movingplatform" or platforms[i].sprite == "normalplatform" then
-        player.y_vel = 0
-        player.jump = true
-      elsif platforms[i].sprite == "woodplatform" and platforms[i].visible then
-        platforms[i].visible = false
-        woodbreak = audio.playSound( "woodbreak" ) //Optional and don't recommend using
-
+    local plat = platforms[i]
+    local colliding = collision(p.x, p.y - p.height/2, p.width, 5, plat.x, plat.y + plat.height/2, plat.width, 5)
+    
+    if colliding and p.y_vel < 0 then
+      if plat.sprite == "movingplatform" or plat.sprite == "normalplatform" then
+        p.y_vel = 0
+        p.jump = true
+      elsif plat.sprite == "woodplatform" and plat.visible then
+        plat.visible = false
+        local woodbreak = audio.playSound("woodbreak") // Optional and don't recommend using
       end
-      
     end
   end
 end

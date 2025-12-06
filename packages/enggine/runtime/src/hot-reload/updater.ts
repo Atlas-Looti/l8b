@@ -17,7 +17,7 @@ export class SourceUpdater {
 		private audio?: { cancelBeeps(): void },
 		private screen?: { clear(): void },
 		private reportWarnings?: () => void,
-	) { }
+	) {}
 
 	/**
 	 * Update source code (hot reload)

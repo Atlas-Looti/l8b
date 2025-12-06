@@ -58,7 +58,6 @@ export interface GlobalAPI {
 	Map?: any;
 	Palette?: any;
 	Random?: any;
-
 }
 
 /**
