@@ -12,15 +12,45 @@ import { createLogger } from "@l8b/framework-shared";
 import { PLAYER_TEMPLATE } from "../templates/player";
 import { INIT_TEMPLATE } from "../templates/init";
 import { dirname, join } from "node:path";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, lstatSync } from "node:fs";
 
 const logger = createLogger("runtime-plugin");
 
 /**
  * Find the resolve directory for esbuild to resolve @l8b/runtime
- * This finds the workspace root where node_modules contains all packages
+ * This finds the directory where node_modules contains @l8b/runtime
  */
 function findResolveDir(projectRoot?: string): string {
+	// Helper to find directory containing node_modules with @l8b/runtime
+	const findNodeModulesDir = (startDir: string): string | null => {
+		let currentDir = startDir;
+		while (currentDir !== dirname(currentDir)) {
+			const nodeModulesPath = join(currentDir, "node_modules");
+			const runtimePath = join(nodeModulesPath, "@l8b", "runtime");
+			
+			// Check if @l8b/runtime exists in node_modules (including symlinks)
+			if (existsSync(nodeModulesPath)) {
+				try {
+					// Check if it exists (works for both regular dirs and symlinks)
+					if (existsSync(runtimePath)) {
+						// Verify it's actually accessible (not a broken symlink)
+						try {
+							lstatSync(runtimePath);
+							return currentDir;
+						} catch {
+							// Broken symlink, continue searching
+						}
+					}
+				} catch {
+					// Ignore errors, continue searching
+				}
+			}
+			
+			currentDir = dirname(currentDir);
+		}
+		return null;
+	};
+
 	// Helper to find workspace root from a starting directory
 	const findWorkspaceRoot = (startDir: string): string | null => {
 		let currentDir = startDir;
@@ -54,16 +84,31 @@ function findResolveDir(projectRoot?: string): string {
 	try {
 		// First, try to resolve @l8b/runtime to get its location
 		const runtimePath = require.resolve("@l8b/runtime");
-		const workspaceRoot = findWorkspaceRoot(dirname(runtimePath));
+		const runtimeDir = dirname(runtimePath);
+		
+		// Try to find node_modules directory from the resolved path
+		const nodeModulesDir = findNodeModulesDir(runtimeDir);
+		if (nodeModulesDir) {
+			logger.debug(`Found node_modules at: ${nodeModulesDir}`);
+			return nodeModulesDir;
+		}
+		
+		// Fallback: try to find workspace root
+		const workspaceRoot = findWorkspaceRoot(runtimeDir);
 		if (workspaceRoot) {
+			logger.debug(`Found workspace root at: ${workspaceRoot}`);
 			return workspaceRoot;
 		}
 	} catch (err) {
-		logger.debug("Could not resolve @l8b/runtime via require.resolve");
+		logger.debug("Could not resolve @l8b/runtime via require.resolve:", err);
 	}
 
 	// Fallback: try from project root if provided
 	if (projectRoot) {
+		const nodeModulesDir = findNodeModulesDir(projectRoot);
+		if (nodeModulesDir) {
+			return nodeModulesDir;
+		}
 		const workspaceRoot = findWorkspaceRoot(projectRoot);
 		if (workspaceRoot) {
 			return workspaceRoot;
@@ -71,9 +116,27 @@ function findResolveDir(projectRoot?: string): string {
 	}
 
 	// Fallback: try from process.cwd()
+	const nodeModulesDir = findNodeModulesDir(process.cwd());
+	if (nodeModulesDir) {
+		return nodeModulesDir;
+	}
 	const workspaceRoot = findWorkspaceRoot(process.cwd());
 	if (workspaceRoot) {
 		return workspaceRoot;
+	}
+
+	// Last resort: use the directory where this bundler package is located
+	// This should have @l8b/runtime as a dependency
+	try {
+		const bundlerPath = require.resolve("@l8b/framework-bundler");
+		const bundlerDir = dirname(bundlerPath);
+		const nodeModulesDir = findNodeModulesDir(bundlerDir);
+		if (nodeModulesDir) {
+			logger.debug(`Using bundler's node_modules at: ${nodeModulesDir}`);
+			return nodeModulesDir;
+		}
+	} catch (err) {
+		logger.debug("Could not resolve @l8b/framework-bundler");
 	}
 
 	// Last resort: use process.cwd()
@@ -131,6 +194,45 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 				const esbuild = await import("esbuild");
 				const resolveDir = findResolveDir(ctx.config.root);
 				logger.debug(`Using resolveDir: ${resolveDir}`);
+				
+				// Create a plugin to help resolve @l8b/runtime
+				const runtimeResolverPlugin = {
+					name: "l8b-runtime-resolver",
+					setup(build: any) {
+						// Intercept imports of @l8b/runtime
+						build.onResolve({ filter: /^@l8b\/runtime$/ }, async (args: any) => {
+							try {
+								// First, try to resolve the package.json to get the package directory
+								const packageJsonPath = require.resolve("@l8b/runtime/package.json", {
+									paths: [resolveDir, ...(args.resolveDir ? [args.resolveDir] : [])],
+								});
+								const packageDir = dirname(packageJsonPath);
+								
+								// Read package.json to get the module entry point
+								const pkgJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+								
+								// Prefer module field for ESM, fallback to main
+								const entryPoint = pkgJson.module || pkgJson.main || "index.js";
+								const resolvedPath = join(packageDir, entryPoint);
+								
+								if (existsSync(resolvedPath)) {
+									return { path: resolvedPath };
+								}
+								
+								// Fallback: try to resolve normally
+								const normalPath = require.resolve("@l8b/runtime", {
+									paths: [resolveDir, ...(args.resolveDir ? [args.resolveDir] : [])],
+								});
+								return { path: normalPath };
+							} catch (err) {
+								// Let esbuild handle it normally
+								logger.debug("Runtime resolver plugin failed, using default resolution:", err);
+								return undefined;
+							}
+						});
+					},
+				};
+				
 				const result = await esbuild.build({
 					stdin: {
 						contents: virtualEntry,
@@ -150,7 +252,12 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 					define: {
 						"process.env.NODE_ENV": '"production"',
 					},
+					mainFields: ["module", "main"],
+					resolveExtensions: [".ts", ".tsx", ".mjs", ".js", ".jsx", ".json"],
 					logLevel: "warning",
+					plugins: [runtimeResolverPlugin],
+					// Ensure esbuild can resolve packages from node_modules
+					absWorkingDir: resolveDir,
 				});
 
 				let mainEntryContent: string | null = null;
