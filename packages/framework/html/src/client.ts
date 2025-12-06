@@ -1,6 +1,6 @@
 /**
  * HMR Client script generator
- * Based on microstudio's playerclient.coffee pattern
+ * HMR Client script generator
  */
 
 /**

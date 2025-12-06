@@ -1,6 +1,6 @@
 /**
  * HMR WebSocket Server
- * Based on microstudio's playerclient.coffee pattern
+ * HMR WebSocket Server
  */
 import { type Server as HTTPServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";

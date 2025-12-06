@@ -90,7 +90,7 @@ l8b init my-game
 - **Live Sprite Reload** - Sprite changes reflect immediately
 - **Map Updates** - Map changes sync in real-time
 - **Error Overlay** - Compilation errors shown in browser
-- **WebSocket Communication** - Based on microstudio's player/playerclient pattern
+- **WebSocket Communication** - Real-time communication channel
 
 ## Build Output
 
@@ -129,17 +129,4 @@ Create `l8b.config.json` in project root:
 }
 ```
 
-## Relationship to Microstudio
 
-This framework is inspired by microstudio's architecture:
-
-- `Player` class → `L8BDevServer` + runtime loader
-- `PlayerClient` class → `HMRServer` + client script
-- `Runtime` class → Engine runtime (separate package)
-
-Key differences:
-
-- Written in TypeScript instead of CoffeeScript
-- Modular package architecture
-- Custom build system (no Vite)
-- LootiScript instead of MicroScript

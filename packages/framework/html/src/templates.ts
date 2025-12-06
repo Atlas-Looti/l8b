@@ -1,6 +1,6 @@
 /**
  * HTML templates for L8B
- * Based on microstudio templates (play.pug, export/html.pug)
+ * HTML templates for L8B
  */
 import type { L8BConfig, ProjectResources } from "@l8b/framework-shared";
 import { generateDevBadge } from "./dev-badge";
@@ -27,7 +27,7 @@ export interface DevTemplateOptions extends TemplateOptions {
 }
 
 /**
- * Base CSS - same as microstudio
+ * Base CSS
  */
 const baseStyles = `
 html, body {
@@ -55,7 +55,6 @@ body {
 
 /**
  * Generate development HTML page
- * Based on microstudio's play.pug template
  */
 export function generateDevHTML(options: DevTemplateOptions): string {
 	const { config, resources, port = 8080, debug = false } = options;
@@ -77,7 +76,7 @@ export function generateDevHTML(options: DevTemplateOptions): string {
 	<div id="canvaswrapper"></div>
 	
 	<script>
-		// Resources and configuration - like microstudio
+		// Resources and configuration
 		window.resources = ${resourcesJson};
 		window.orientation = '${config.orientation || "any"}';
 		window.aspect = '${config.aspect || "free"}';
@@ -112,7 +111,6 @@ ${generatePlayerScript()}
 
 /**
  * Generate production HTML page
- * Based on microstudio's export/html.pug template
  */
 export function generateProdHTML(options: TemplateOptions): string {
 	const { config, resources, baseUrl = "" } = options;
