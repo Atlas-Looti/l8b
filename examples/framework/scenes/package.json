@@ -1,13 +1,13 @@
 {
 	"name": "example-scenes",
-	"version": "1.0.4",
+	"version": "1.0.3",
 	"private": true,
 	"scripts": {
-		"dev": "node ../../../packages/framework/cli/dist/bin.mjs dev",
-		"preview": "node ../../../packages/framework/cli/dist/bin.mjs preview",
-		"build": "node ../../../packages/framework/cli/dist/bin.mjs build"
+		"dev": "l8b dev",
+		"preview": "l8b preview",
+		"build": "l8b build"
 	},
 	"devDependencies": {
-		"@l8b/cli": "workspace:*"
+		"@l8b/cli": "latest"
 	}
 }

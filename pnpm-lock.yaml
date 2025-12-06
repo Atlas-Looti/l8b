@@ -52,32 +52,32 @@ importers:
   examples/framework/bird:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/fish:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/scenes:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/skate:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/framework/sprite-jump:
     devDependencies:
       '@l8b/cli':
-        specifier: workspace:*
-        version: link:../../../packages/framework/cli
+        specifier: latest
+        version: 1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   examples/runtimes/dino-runer:
     dependencies:
@@ -1663,6 +1663,76 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@l8b/audio@1.0.10':
+    resolution: {integrity: sha512-sLKSBGA0jifn+Whopf1+l1l+aO+qkL7IOO5aFNME610ivo8aZnY9YwYkLqfoPWz7vupGykqGI8KOLHOON+4ZWQ==}
+
+  '@l8b/cli@1.0.10':
+    resolution: {integrity: sha512-u0e1ycataJk9CN5em70HgP5MxuWIXXwfcINwl5W2RHqR9WYO3o0i0QqC7vts+Um0/0EWhxPaN93tTP/YPPUmhg==}
+    hasBin: true
+
+  '@l8b/compiler@1.0.10':
+    resolution: {integrity: sha512-oslq6O7VmzxqAW83ukDwl/BVTAjZZcCGzlma5A+ksmX7n0fv7gx9BVzwiL9Xl8aSuzv6RLGE1NTAhYGYiAtpdA==}
+
+  '@l8b/diagnostics@1.0.10':
+    resolution: {integrity: sha512-zqIStfCTqqdclOzO/FO+J5noj+61+3SxDEzwvkzI06HaP3oOzHu5D1Uz40Z1CoQkPlYbCfWX6AwD9GH+G4WzHg==}
+
+  '@l8b/framework-bundler@1.0.10':
+    resolution: {integrity: sha512-EKlmaQ16pbkOBw4ZGzKXyYjnDleReuyEDteOJVdFAYU7JgdD/9fPZ9aF4T8CDMe+OSFA4kzRpKHZ9BRiu+JIfg==}
+
+  '@l8b/framework-config@1.0.10':
+    resolution: {integrity: sha512-TEvKxpdkCLfnsgzL3ydjGYLOA7CHxIY5uD70sx878fnsdgGzAHHqH5OdD2JRh5zBLXKcbRahB5uaeMBmmwcUyQ==}
+
+  '@l8b/framework-html@1.0.10':
+    resolution: {integrity: sha512-F7Zr7VobjpQkiwkmGOrqJXaRwjfIFXNd1WW/rrU0p+xum67midsZWU4VJDTlnhR/HJq0qzhwJZyDCTXYDpjCng==}
+
+  '@l8b/framework-server@1.0.10':
+    resolution: {integrity: sha512-k/ZLiyW4m99uesWW417rYeZOAqsZ9ATpMEZ3kC4o4nMBh5bEyiEZYiKy8tALR4kJRcfMpaDq9vggDXo6Zf+ZMw==}
+
+  '@l8b/framework-shared@1.0.10':
+    resolution: {integrity: sha512-dSr2sZ+ZpQtY/g2Q+WwpaRWMaI3l1SGRuDHRU8EZG6phJGeSua/k4ItxORJlDX+9unngzENl2nr3ougicWThPQ==}
+
+  '@l8b/framework-watcher@1.0.10':
+    resolution: {integrity: sha512-YlaYWEkRC/qRjq9epo6kbIZFFqMVB3mewAzLAun2N+1Kb5/OrfBqUVpx/mfFmAs630iLZTWZSYyvRSod71DquQ==}
+
+  '@l8b/image@1.0.10':
+    resolution: {integrity: sha512-oZRQngUib1p25mzKdlOlFZZbdLP7yWqCc09zrNnYBkiohT2CNbNysoN3cWXshA09fTw/SAj/J87USt+c3zlyBQ==}
+
+  '@l8b/input@1.0.10':
+    resolution: {integrity: sha512-GtlgTvaXw/2Dz5LUOqq05O2jy0dPu6gTT+hciS/4TXzUJxXh7HiofP0+gUhvP9/nwecbzA11c37t1tPmSIaloA==}
+
+  '@l8b/io@1.0.10':
+    resolution: {integrity: sha512-pehxYr33G9Y1YOV23xo/W6L67wJEzJp12Zzzv4gATCWHbzKgt8N38ATt25RAX+XRoOq5+S4nVG67cbrTRPqFLA==}
+
+  '@l8b/lootiscript@1.0.10':
+    resolution: {integrity: sha512-sg88qV7osgDmOuXdGTBTKuil/HT7oZ/0SxIE2pP52XUp5GUZ3JQ30tjBU49cUR9xJvDHGQwlpukj/kXzVa6ZJQ==}
+
+  '@l8b/map@1.0.10':
+    resolution: {integrity: sha512-zR4miyi8Mxb802WpGFKg3hy2rJc3JxqwjlYteaX9UtTCmosMBFetc208FOehAg7dA9q76816g/qFIZkDZ4+zsA==}
+
+  '@l8b/palette@1.0.10':
+    resolution: {integrity: sha512-NlsSRWaQ4z9H+yhBY4PONtE9QgzM9vd1qm1zDjQS7WXiNnzrjPv8q13uUlxPAP8LbOdMuD4dsnlP99ssj0d98Q==}
+
+  '@l8b/runtime@1.0.10':
+    resolution: {integrity: sha512-q9z1gf6Nxc7oAGe7G9IQOXDPQ/GSrahwvzKe9AgO+cUHP3hSwrxoMGWhHPq867UvjX1sKhSltJfmB5qZYPFIYg==}
+
+  '@l8b/scene@1.0.10':
+    resolution: {integrity: sha512-JrucSyg3bXOlmq8TPAYo86x2PFj6yPNFhwzTUD/WmuFxz1yjXxfOTHdewbGZ/Uv2YxMQgro+0v+EtOMMnwFs6g==}
+
+  '@l8b/screen@1.0.10':
+    resolution: {integrity: sha512-OmUgTiFV9Cw1kbiu5f7pqs0eABzE+XT9jhzOH4X7+ULAg8OWVgNBnZTD4Z9cC6nQjzWtkLp2SLaew5qj2skG9A==}
+
+  '@l8b/sprites@1.0.10':
+    resolution: {integrity: sha512-3NaOKZgJt4H6w9m/tyb2JFSxBrdqPINYP8LWk0jc7V5CvsVmaUruWKITqvrlLLk3uoVZL6PHH0lYN3puxb7ldA==}
+
+  '@l8b/stdlib@1.0.10':
+    resolution: {integrity: sha512-SvVSZllTSqERYixDGirZzabYXAZ0S+gMEloorD5oo2ClNzBdjjIV+UDLvcyz9x/zPtCmT8p5WhNKDh7FCZRjyA==}
+
+  '@l8b/time@1.0.10':
+    resolution: {integrity: sha512-Eu62eVPFRCCXXDZG37djaMiULnRtrI1rchAObxLuaypWI2T0k/7kX/6Ng7X7gBmhcNf9tvtgly8pcj+MCAgx0g==}
+
+  '@l8b/vm@1.0.10':
+    resolution: {integrity: sha512-6dAHPDfqgikUrZK1EhdbecwuKsAx0cKfFmdLwPPJ/pmWbdxNyLag7Y7sdddIumNlOVbjJEcLor2nett0C91G1g==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -7734,6 +7804,135 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@l8b/audio@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/cli@1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@l8b/compiler': 1.0.10
+      '@l8b/framework-bundler': 1.0.10
+      '@l8b/framework-config': 1.0.10
+      '@l8b/framework-server': 1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@l8b/framework-shared': 1.0.10
+      cac: 6.7.14
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@l8b/compiler@1.0.10':
+    dependencies:
+      '@l8b/framework-shared': 1.0.10
+      '@l8b/lootiscript': 1.0.10
+
+  '@l8b/diagnostics@1.0.10': {}
+
+  '@l8b/framework-bundler@1.0.10':
+    dependencies:
+      '@l8b/compiler': 1.0.10
+      '@l8b/framework-config': 1.0.10
+      '@l8b/framework-shared': 1.0.10
+      '@l8b/runtime': 1.0.10
+      esbuild: 0.24.2
+
+  '@l8b/framework-config@1.0.10':
+    dependencies:
+      '@l8b/framework-shared': 1.0.10
+
+  '@l8b/framework-html@1.0.10':
+    dependencies:
+      '@l8b/framework-shared': 1.0.10
+
+  '@l8b/framework-server@1.0.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@l8b/compiler': 1.0.10
+      '@l8b/framework-config': 1.0.10
+      '@l8b/framework-html': 1.0.10
+      '@l8b/framework-shared': 1.0.10
+      '@l8b/framework-watcher': 1.0.10
+      '@l8b/runtime': 1.0.10
+      esbuild: 0.24.2
+      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@l8b/framework-shared@1.0.10': {}
+
+  '@l8b/framework-watcher@1.0.10':
+    dependencies:
+      '@l8b/framework-shared': 1.0.10
+      chokidar: 4.0.3
+
+  '@l8b/image@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/input@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/io@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/lootiscript@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+      '@l8b/stdlib': 1.0.10
+
+  '@l8b/map@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+      '@l8b/sprites': 1.0.10
+
+  '@l8b/palette@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/runtime@1.0.10':
+    dependencies:
+      '@l8b/audio': 1.0.10
+      '@l8b/diagnostics': 1.0.10
+      '@l8b/image': 1.0.10
+      '@l8b/input': 1.0.10
+      '@l8b/io': 1.0.10
+      '@l8b/lootiscript': 1.0.10
+      '@l8b/map': 1.0.10
+      '@l8b/palette': 1.0.10
+      '@l8b/scene': 1.0.10
+      '@l8b/screen': 1.0.10
+      '@l8b/sprites': 1.0.10
+      '@l8b/time': 1.0.10
+      '@l8b/vm': 1.0.10
+
+  '@l8b/scene@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/screen@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+      '@l8b/map': 1.0.10
+      '@l8b/sprites': 1.0.10
+
+  '@l8b/sprites@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+      '@l8b/image': 1.0.10
+
+  '@l8b/stdlib@1.0.10': {}
+
+  '@l8b/time@1.0.10':
+    dependencies:
+      '@l8b/diagnostics': 1.0.10
+
+  '@l8b/vm@1.0.10':
+    dependencies:
+      '@l8b/io': 1.0.10
+      '@l8b/lootiscript': 1.0.10
+      '@l8b/scene': 1.0.10
 
   '@manypkg/find-root@1.1.0':
     dependencies:

@@ -1,15 +1,15 @@
 {
 	"name": "l8b-bird",
-	"version": "0.0.2",
+	"version": "0.0.1",
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "node ../../../packages/framework/cli/dist/bin.mjs dev",
-		"build": "node ../../../packages/framework/cli/dist/bin.mjs build",
-		"preview": "node ../../../packages/framework/cli/dist/bin.mjs preview"
+		"dev": "l8b dev",
+		"build": "l8b build",
+		"preview": "l8b preview"
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@l8b/cli": "workspace:*"
+		"@l8b/cli": "latest"
 	}
 }
