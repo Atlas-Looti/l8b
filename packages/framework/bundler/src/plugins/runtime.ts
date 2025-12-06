@@ -43,7 +43,7 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 
 		// Clear cache at build start to prevent stale data in watch mode
 		buildStart() {
-			// Cache clearing is handled by esbuild's incremental build or not needed for now
+			// TODO: Verify if explicit cache clearing is needed with esbuild incremental build.
 		},
 
 		async generateBundle(files, ctx) {
@@ -87,7 +87,7 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 					format: "esm",
 					splitting: true,
 					platform: "browser",
-					outdir: "dist", // Virtual outdir
+					outdir: "dist", // Virtual output directory for in-memory build
 					write: false,
 					minify,
 					sourcemap: sourcemap ? "inline" : false,
@@ -118,7 +118,7 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 }
 
 /**
- * Generate code to embed sources (like microstudio)
+ * Generate code to embed sources (similar to MicroStudio's approach)
  * Sources are embedded and compiled at runtime
  */
 function generateSourcesCode(sources: Array<{ name: string; content?: string }>): string {

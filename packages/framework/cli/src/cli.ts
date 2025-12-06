@@ -94,12 +94,9 @@ export async function run(args: string[]): Promise<void> {
 	cli.version(VERSION);
 
 	try {
-		// Parse arguments excluding the first two (node binary and script path)
-		// We need to pass the args sliced if we are calling this from a script that receives process.argv
-		// But here run() receives already sliced args or full args?
-		// Usually run() in this context is called with process.argv.slice(2)
-		// cac expects process.argv by default if no args passed, or we can pass parsed args.
-		// Let's assume args is process.argv.slice(2)
+		// Parse arguments excluding the first two (node binary and script path).
+		// The `run` function expects `args` to be `process.argv.slice(2)`.
+		// We reconstruct the argv array for `cac` which expects the full process.argv.
 		cli.parse([process.argv[0], process.argv[1], ...args], { run: false });
 		await cli.runMatchedCommand();
 	} catch (error) {
