@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/input",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",

@@ -1,5 +1,15 @@
 # @l8b/framework-bundler
 
+## 1.0.11
+
+### Patch Changes
+
+- 523350c: .
+  - @l8b/runtime@1.0.11
+  - @l8b/compiler@1.0.11
+  - @l8b/framework-config@1.0.11
+  - @l8b/framework-shared@1.0.11
+
 ## 1.0.10
 
 ### Patch Changes

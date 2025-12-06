@@ -1,5 +1,12 @@
 # @l8b/compiler
 
+## 1.0.11
+
+### Patch Changes
+
+- @l8b/lootiscript@1.0.11
+- @l8b/framework-shared@1.0.11
+
 ## 1.0.10
 
 ### Patch Changes

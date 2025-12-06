@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/cli",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"description": "L8B Game Engine CLI",
 	"bin": {
 		"l8b": "./dist/bin.js"
