@@ -2,6 +2,7 @@
  * File watcher implementation using chokidar
  */
 import { watch, type FSWatcher } from "chokidar";
+import type { EventEmitter } from "node:events";
 import { createLogger, debounce, getResourceType, normalizePath } from "@l8b/framework-shared";
 import {
 	DEFAULT_WATCHER_OPTIONS,
@@ -67,12 +68,13 @@ export class L8BWatcher {
 			},
 		});
 
-		this.watcher
-			.on("add", (path) => this.handleEvent("add", path))
-			.on("change", (path) => this.handleEvent("change", path))
-			.on("unlink", (path) => this.handleEvent("unlink", path))
-			.on("addDir", (path) => this.handleEvent("addDir", path))
-			.on("unlinkDir", (path) => this.handleEvent("unlinkDir", path))
+		// FSWatcher extends EventEmitter, so we can safely use .on()
+		(this.watcher as unknown as EventEmitter)
+			.on("add", (path: string) => this.handleEvent("add", path))
+			.on("change", (path: string) => this.handleEvent("change", path))
+			.on("unlink", (path: string) => this.handleEvent("unlink", path))
+			.on("addDir", (path: string) => this.handleEvent("addDir", path))
+			.on("unlinkDir", (path: string) => this.handleEvent("unlinkDir", path))
 			.on("error", (error: unknown) => {
 				const err = error instanceof Error ? error : new Error(String(error));
 				logger.error("Watcher error:", err);
