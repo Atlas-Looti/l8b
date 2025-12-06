@@ -1,7 +1,6 @@
 ---
 "@l8b/compiler": patch
 "@l8b/cli": patch
-"@l8b/notifications": patch
 "@l8b/framework-bundler": patch
 "@l8b/framework-config": patch
 "@l8b/framework-html": patch
