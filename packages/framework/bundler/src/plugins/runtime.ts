@@ -12,37 +12,73 @@ import { createLogger } from "@l8b/framework-shared";
 import { PLAYER_TEMPLATE } from "../templates/player";
 import { INIT_TEMPLATE } from "../templates/init";
 import { dirname, join } from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const logger = createLogger("runtime-plugin");
 
 /**
  * Find the resolve directory for esbuild to resolve @l8b/runtime
- * This walks up from the resolved package location to find node_modules
+ * This finds the workspace root where node_modules contains all packages
  */
-function findResolveDir(): string {
-	try {
-		// Resolve @l8b/runtime from the bundler's node_modules
-		const runtimePath = require.resolve("@l8b/runtime");
-		let currentDir = dirname(runtimePath);
-		
-		// Walk up to find node_modules or workspace root
+function findResolveDir(projectRoot?: string): string {
+	// Helper to find workspace root from a starting directory
+	const findWorkspaceRoot = (startDir: string): string | null => {
+		let currentDir = startDir;
 		while (currentDir !== dirname(currentDir)) {
-			// Check if this directory has node_modules
+			const pnpmWorkspacePath = join(currentDir, "pnpm-workspace.yaml");
+			const packageJsonPath = join(currentDir, "package.json");
 			const nodeModulesPath = join(currentDir, "node_modules");
-			if (existsSync(nodeModulesPath)) {
+			
+			// Check for pnpm workspace indicator
+			if (existsSync(pnpmWorkspacePath) && existsSync(nodeModulesPath)) {
 				return currentDir;
 			}
+			
+			// Check for package.json with workspaces field
+			if (existsSync(packageJsonPath) && existsSync(nodeModulesPath)) {
+				try {
+					const pkgJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+					if (pkgJson.workspaces || pkgJson.workspace) {
+						return currentDir;
+					}
+				} catch {
+					// Ignore JSON parse errors
+				}
+			}
+			
 			currentDir = dirname(currentDir);
 		}
-		
-		// Fallback: use the directory containing the resolved package
-		return dirname(runtimePath);
+		return null;
+	};
+
+	try {
+		// First, try to resolve @l8b/runtime to get its location
+		const runtimePath = require.resolve("@l8b/runtime");
+		const workspaceRoot = findWorkspaceRoot(dirname(runtimePath));
+		if (workspaceRoot) {
+			return workspaceRoot;
+		}
 	} catch (err) {
-		// Fallback to process.cwd() if resolution fails
-		logger.warn("Failed to resolve @l8b/runtime, using process.cwd() as resolveDir");
-		return process.cwd();
+		logger.debug("Could not resolve @l8b/runtime via require.resolve");
 	}
+
+	// Fallback: try from project root if provided
+	if (projectRoot) {
+		const workspaceRoot = findWorkspaceRoot(projectRoot);
+		if (workspaceRoot) {
+			return workspaceRoot;
+		}
+	}
+
+	// Fallback: try from process.cwd()
+	const workspaceRoot = findWorkspaceRoot(process.cwd());
+	if (workspaceRoot) {
+		return workspaceRoot;
+	}
+
+	// Last resort: use process.cwd()
+	logger.warn("Could not find workspace root, using process.cwd() as resolveDir");
+	return process.cwd();
 }
 
 /**
@@ -93,7 +129,8 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 				].join("\n");
 
 				const esbuild = await import("esbuild");
-				const resolveDir = findResolveDir();
+				const resolveDir = findResolveDir(ctx.config.root);
+				logger.debug(`Using resolveDir: ${resolveDir}`);
 				const result = await esbuild.build({
 					stdin: {
 						contents: virtualEntry,
@@ -170,3 +207,4 @@ function generateSourcesData(sources: Array<{ name: string; content?: string }>)
 
 	return embedded;
 }
+
