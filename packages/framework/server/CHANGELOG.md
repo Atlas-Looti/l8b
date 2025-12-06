@@ -1,5 +1,16 @@
 # @l8b/framework-server
 
+## 1.0.11
+
+### Patch Changes
+
+- @l8b/runtime@1.0.11
+- @l8b/compiler@1.0.11
+- @l8b/framework-config@1.0.11
+- @l8b/framework-html@1.0.11
+- @l8b/framework-shared@1.0.11
+- @l8b/framework-watcher@1.0.11
+
 ## 1.0.10
 
 ### Patch Changes

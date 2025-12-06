@@ -1,6 +1,6 @@
 {
 	"name": "@l8b/assets",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"description": "Asset management system for loading and managing game assets",
 	"sideEffects": false,
 	"files": [
