@@ -1,6 +1,6 @@
 {
-	"name": "@l8b/framework-compiler",
-	"version": "1.0.0",
+	"name": "@l8b/compiler",
+	"version": "1.0.7",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
