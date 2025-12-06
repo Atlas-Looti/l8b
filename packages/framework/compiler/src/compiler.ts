@@ -2,6 +2,7 @@
  * LootiScript compiler wrapper
  */
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import {
 	type CompilationError,
 	type CompilationResult,
@@ -100,23 +101,37 @@ export function compileSource(source: string, options: CompileOptions = {}): Com
 			warnings,
 		};
 	} catch (error) {
-		// TODO: [P1] Preserve full error context including token and context
-		// Current type assertion may lose important debugging information
-		// See: framework_audit_report.md #6
+		// Preserve full error context for better debugging
 		const err = error as Error & {
 			line?: number;
 			column?: number;
+			token?: { value: string; line: number; column: number };
+			context?: string;
 		};
 
+		const errorLine = err.line || err.token?.line || 1;
+		const errorColumn = err.column || err.token?.column || 1;
+		const sourceLines = source.split("\n");
+		const errorSource = sourceLines[errorLine - 1] || "";
+
+		// Build detailed error message
+		let message = err.message;
+		if (err.token) {
+			message += ` (near token: "${err.token.value}")`;
+		}
+		if (err.context) {
+			message += ` [${err.context}]`;
+		}
+
 		errors.push({
-			message: err.message,
+			message,
 			file: filePath,
-			line: err.line || 1,
-			column: err.column || 1,
-			source: source.split("\n")[err.line ? err.line - 1 : 0],
+			line: errorLine,
+			column: errorColumn,
+			source: errorSource,
 		});
 
-		logger.error(`Compilation failed for ${name}:`, err.message);
+		logger.error(`Compilation failed for ${name}:`, message);
 
 		return {
 			success: false,
@@ -253,20 +268,10 @@ export class IncrementalCompiler {
 	}
 
 	/**
-	 * Hash source code
+	 * Hash source code using crypto for better performance on large files
 	 */
-	// TODO: [P2] Replace custom hash with crypto.createHash('md5')
-	// Current implementation is 10-100x slower for large files
-	// See: framework_audit_report.md #10
 	private hashSource(source: string): string {
-		// Simple hash for caching
-		let hash = 0;
-		for (let i = 0; i < source.length; i++) {
-			const char = source.charCodeAt(i);
-			hash = (hash << 5) - hash + char;
-			hash = hash & hash;
-		}
-		return hash.toString(16);
+		return createHash("md5").update(source).digest("hex");
 	}
 }
 

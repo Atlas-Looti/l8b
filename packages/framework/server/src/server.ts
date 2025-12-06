@@ -51,6 +51,9 @@ function loadPrebuiltRuntime(): string {
 	return cachedRuntime;
 }
 
+/** Maximum number of ports to try when finding an available port */
+const MAX_PORT_ATTEMPTS = 100;
+
 /**
  * L8B Development Server
  */
@@ -61,6 +64,7 @@ export class L8BDevServer {
 	private hmr: HMRServer | null = null;
 	private watcher: L8BWatcher | null = null;
 	private resources: ProjectResources;
+	private watcherUnsubscribe: (() => void) | null = null;
 
 	constructor(options: DevServerOptions) {
 		this.options = {
@@ -86,24 +90,17 @@ export class L8BDevServer {
 		// Create file watcher
 		this.watcher = createWatcher(this.config.srcPath, this.config.publicPath, { initialScan: false });
 
-		// TODO: [P0] Fix memory leak - event listener never removed on server stop
-		// Store handler reference and remove in stop() method
-		// See: framework_audit_report.md #1
-		this.watcher.on((event) => {
+		// Store unsubscribe function to properly clean up on server stop
+		this.watcherUnsubscribe = this.watcher.on((event) => {
 			this.handleFileChange(event);
 		});
 
 		// Start services
 		this.watcher.start();
 
-		// Find available port using recursive approach (similar to Vite)
+		// Find available port using temporary test server (similar to Vite)
 		const startPort = this.options.port;
-		// TODO: [P2] Extract magic number to constant MAX_PORT_ATTEMPTS
-		// See: framework_audit_report.md #9
-		const maxPort = startPort + 100;
-
-		// TODO: [P0] Fix race condition - use temporary test server instead of reusing this.server
-		// See: framework_audit_report.md #3
+		const maxPort = startPort + MAX_PORT_ATTEMPTS;
 		const port = await this.findAvailablePort(startPort, maxPort);
 		this.options.port = port; // Update port in options
 
@@ -131,7 +128,8 @@ export class L8BDevServer {
 	}
 
 	/**
-	 * Find an available port by recursively trying ports
+	 * Find an available port using a temporary test server
+	 * This prevents race conditions by not reusing the main server during port probing
 	 */
 	private async findAvailablePort(port: number, maxPort: number): Promise<number> {
 		if (port > maxPort) {
@@ -139,8 +137,12 @@ export class L8BDevServer {
 		}
 
 		return new Promise<number>((resolve, reject) => {
+			// Create temporary test server to check port availability
+			const testServer = createServer();
+
 			const onError = (err: NodeJS.ErrnoException) => {
-				this.server!.removeListener("error", onError);
+				testServer.removeListener("error", onError);
+				testServer.close();
 
 				if (err.code === "EADDRINUSE") {
 					logger.info(`Port ${port} is in use, trying another one...`);
@@ -151,11 +153,17 @@ export class L8BDevServer {
 				}
 			};
 
-			this.server!.once("error", onError);
+			testServer.once("error", onError);
 
-			this.server!.listen(port, this.options.host, () => {
-				this.server!.removeListener("error", onError);
-				resolve(port);
+			testServer.listen(port, this.options.host, () => {
+				testServer.removeListener("error", onError);
+				// Close the test server and use the port for the main server
+				testServer.close(() => {
+					// Now start the main server on the available port
+					this.server!.listen(port, this.options.host, () => {
+						resolve(port);
+					});
+				});
 			});
 		});
 	}
@@ -166,18 +174,27 @@ export class L8BDevServer {
 	async stop(): Promise<void> {
 		logger.info("Stopping server...");
 
+		// Remove watcher event listener to prevent memory leak
+		if (this.watcherUnsubscribe) {
+			this.watcherUnsubscribe();
+			this.watcherUnsubscribe = null;
+		}
+
 		if (this.watcher) {
 			await this.watcher.stop();
+			this.watcher = null;
 		}
 
 		if (this.hmr) {
 			this.hmr.close();
+			this.hmr = null;
 		}
 
 		if (this.server) {
 			await new Promise<void>((resolve) => {
 				this.server!.close(() => resolve());
 			});
+			this.server = null;
 		}
 
 		logger.info("Server stopped");
@@ -475,31 +492,39 @@ export class L8BDevServer {
 	}
 
 	/**
-	 * Open browser
+	 * Open browser safely using spawn to avoid command injection risks
 	 */
-	// TODO: [Security] Use spawn instead of exec to avoid command injection risks
-	// See: framework_audit_report.md #20
 	private openBrowser(url: string): void {
-		const { exec } = require("node:child_process");
+		const { spawn } = require("node:child_process");
 		const platform = process.platform;
 
 		let command: string;
+		let args: string[];
+
 		switch (platform) {
 			case "darwin":
-				command = `open "${url}"`;
+				command = "open";
+				args = [url];
 				break;
 			case "win32":
-				command = `start "" "${url}"`;
+				command = "cmd";
+				args = ["/c", "start", "", url];
 				break;
 			default:
-				command = `xdg-open "${url}"`;
+				command = "xdg-open";
+				args = [url];
 		}
 
-		exec(command, (err: Error | null) => {
-			if (err) {
-				logger.warn("Failed to open browser:", err.message);
-			}
+		const child = spawn(command, args, {
+			detached: true,
+			stdio: "ignore",
 		});
+
+		child.on("error", (err: Error) => {
+			logger.warn("Failed to open browser:", err.message);
+		});
+
+		child.unref();
 	}
 }
 

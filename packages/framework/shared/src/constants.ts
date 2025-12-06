@@ -94,3 +94,4 @@ export const MIME_TYPES: Record<string, string> = {
  * Version number
  */
 export const VERSION = "1.0.0";
+

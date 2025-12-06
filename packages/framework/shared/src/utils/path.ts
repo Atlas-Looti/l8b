@@ -130,3 +130,4 @@ export function getResourceType(filePath: string, publicDir: string): ResourceTy
  * Re-export node path utilities
  */
 export { basename, dirname, extname, join, relative, resolve };
+

@@ -11,6 +11,9 @@ import {
 	type WatcherOptions,
 } from "./events";
 
+/** Error event handler type */
+export type WatcherErrorHandler = (error: Error) => void;
+
 const logger = createLogger("watcher");
 
 /**
@@ -19,6 +22,7 @@ const logger = createLogger("watcher");
 export class L8BWatcher {
 	private watcher: FSWatcher | null = null;
 	private handlers: Set<FileEventHandler> = new Set();
+	private errorHandlers: Set<WatcherErrorHandler> = new Set();
 	private options: Required<WatcherOptions>;
 	private srcDir: string;
 	private publicDir: string;
@@ -69,7 +73,11 @@ export class L8BWatcher {
 			.on("unlink", (path) => this.handleEvent("unlink", path))
 			.on("addDir", (path) => this.handleEvent("addDir", path))
 			.on("unlinkDir", (path) => this.handleEvent("unlinkDir", path))
-			.on("error", (error) => logger.error("Watcher error:", error))
+			.on("error", (error: unknown) => {
+				const err = error instanceof Error ? error : new Error(String(error));
+				logger.error("Watcher error:", err);
+				this.emitError(err);
+			})
 			.on("ready", () => {
 				logger.success("File watcher ready");
 			});
@@ -94,6 +102,29 @@ export class L8BWatcher {
 		return () => {
 			this.handlers.delete(handler);
 		};
+	}
+
+	/**
+	 * Add error event handler for monitoring
+	 */
+	onError(handler: WatcherErrorHandler): () => void {
+		this.errorHandlers.add(handler);
+		return () => {
+			this.errorHandlers.delete(handler);
+		};
+	}
+
+	/**
+	 * Emit error to all error handlers
+	 */
+	private emitError(error: Error): void {
+		for (const handler of this.errorHandlers) {
+			try {
+				handler(error);
+			} catch (err) {
+				logger.error("Error handler threw:", err);
+			}
+		}
 	}
 
 	/**
@@ -135,16 +166,18 @@ export class L8BWatcher {
 			for (const handler of this.handlers) {
 				try {
 					const result = handler(event);
-					// TODO: [P0] Improve error handling - emit error event for monitoring
-					// Silent failures can cause HMR updates to fail
-					// See: framework_audit_report.md #2
+					// Handle async handlers and emit errors for monitoring
 					if (result instanceof Promise) {
 						result.catch((err) => {
-							logger.error("Handler error:", err);
+							const error = err instanceof Error ? err : new Error(String(err));
+							logger.error("Handler error:", error);
+							this.emitError(error);
 						});
 					}
 				} catch (err) {
-					logger.error("Handler error:", err);
+					const error = err instanceof Error ? err : new Error(String(err));
+					logger.error("Handler error:", error);
+					this.emitError(error);
 				}
 			}
 		}

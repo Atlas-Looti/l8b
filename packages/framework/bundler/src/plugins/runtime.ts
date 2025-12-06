@@ -27,12 +27,11 @@ export interface RuntimePluginOptions {
 	sourcemap?: boolean;
 }
 
+/** Build timeout in milliseconds (60 seconds) */
+const BUILD_TIMEOUT_MS = 60_000;
+
 /**
- * Build optimized runtime bundle for production
- * 
- * TODO: [P1] Add 60s timeout to prevent indefinite hangs
- * esbuild can stall without timeout protection
- * See: framework_audit_report.md #8
+ * Build optimized runtime bundle for production with timeout protection
  */
 async function buildProductionRuntime(minify: boolean, sourcemap: boolean): Promise<string> {
 	// Check cache
@@ -46,7 +45,9 @@ async function buildProductionRuntime(minify: boolean, sourcemap: boolean): Prom
 
 	try {
 		const esbuild = await import("esbuild");
-		const result = await esbuild.build({
+
+		// Create build promise with timeout protection
+		const buildPromise = esbuild.build({
 			entryPoints: [require.resolve("@l8b/runtime")],
 			bundle: true,
 			platform: "browser",
@@ -62,6 +63,15 @@ async function buildProductionRuntime(minify: boolean, sourcemap: boolean): Prom
 			legalComments: "none",
 			logLevel: "warning",
 		});
+
+		// Race against timeout
+		const timeoutPromise = new Promise<never>((_, reject) => {
+			setTimeout(() => {
+				reject(new Error(`Build timed out after ${BUILD_TIMEOUT_MS / 1000}s`));
+			}, BUILD_TIMEOUT_MS);
+		});
+
+		const result = await Promise.race([buildPromise, timeoutPromise]);
 
 		const code = result.outputFiles[0].text;
 		const elapsed = Date.now() - startTime;
@@ -492,16 +502,27 @@ function generateInitCode(): string {
 }
 
 /**
+ * Clear the runtime cache (useful for watch mode)
+ */
+export function clearRuntimeCache(): void {
+	cachedProdBundle = null;
+}
+
+/**
  * Create runtime plugin
  */
-// TODO: [P2] Add buildEnd hook to clear cache in development mode
-// Prevents stale data in watch mode
-// See: framework_audit_report.md #12
 export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 	const { minify = false, sourcemap = false } = options;
 
 	return {
 		name: "l8b:runtime",
+
+		// Clear cache at build start to prevent stale data in watch mode
+		buildStart() {
+			if (process.env.NODE_ENV !== "production") {
+				clearRuntimeCache();
+			}
+		},
 
 		async generateBundle(files, ctx) {
 			logger.info("Generating runtime bundle...");

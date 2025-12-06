@@ -1,8 +1,5 @@
 /**
  * Init command - Scaffolds a new L8B project
- * 
- * TODO: [P1] Replace console.log with logger for consistent logging
- * See: framework_audit_report.md #5
  */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -152,9 +149,9 @@ Visit [https://l8b.dev](https://l8b.dev) for documentation.
 	writeFileSync(join(projectDir, "README.md"), readme);
 
 	logger.success(`Project created: ${projectDir}`);
-	console.log("");
-	console.log("  Next steps:");
-	console.log(`    cd ${options.name}`);
-	console.log("    l8b dev");
-	console.log("");
+	logger.info("");
+	logger.info("  Next steps:");
+	logger.info(`    cd ${options.name}`);
+	logger.info("    l8b dev");
+	logger.info("");
 }

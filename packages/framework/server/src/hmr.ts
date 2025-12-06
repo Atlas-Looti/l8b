@@ -9,21 +9,30 @@ import { type HMRMessage, createLogger } from "@l8b/framework-shared";
 const logger = createLogger("hmr");
 
 /**
- * HMR WebSocket Server
+ * Typed event map for HMR server events
  */
+export interface HMREventMap {
+	"client:connect": [ws: WebSocket];
+	"client:disconnect": [ws: WebSocket];
+	message: [message: Record<string, unknown>, ws: WebSocket];
+	error: [error: Error];
+}
+
+/** Event names for HMR server */
+export type HMREventName = keyof HMREventMap;
+
+/** Event listener type */
+export type HMREventListener<K extends HMREventName> = (...args: HMREventMap[K]) => void;
+
 /**
  * HMR Channel interface (inspired by Vite)
- * 
- * TODO: [P1] Add type safety with typed event map
- * Current any[] reduces type safety for event listeners
- * See: framework_audit_report.md #7
  */
 export interface HotChannel {
 	send(payload: HMRMessage): void;
 	listen(): void;
 	close(): void;
-	on(event: string, listener: (...args: any[]) => void): void;
-	off(event: string, listener: (...args: any[]) => void): void;
+	on<K extends HMREventName>(event: K, listener: HMREventListener<K>): void;
+	off<K extends HMREventName>(event: K, listener: HMREventListener<K>): void;
 }
 
 /**
@@ -32,7 +41,7 @@ export interface HotChannel {
 export class HMRServer implements HotChannel {
 	private wss: WebSocketServer;
 	private clients: Set<WebSocket> = new Set();
-	private listeners: Map<string, Set<(...args: any[]) => void>> = new Map();
+	private listeners: Map<HMREventName, Set<HMREventListener<HMREventName>>> = new Map();
 	private bufferedMessage: HMRMessage | null = null;
 
 	constructor(server: HTTPServer) {
@@ -110,21 +119,15 @@ export class HMRServer implements HotChannel {
 		// Handle different message types if needed
 		switch (message.name || message.type) {
 			case "ping":
-				this.sendClient(ws, { type: "pong" } as any);
+				// Send pong response (not a standard HMRMessage type, sent directly)
+				if (ws.readyState === WebSocket.OPEN) {
+					ws.send(JSON.stringify({ type: "pong" }));
+				}
 				break;
 
 			default:
 				this.emit("message", message, ws);
 				break;
-		}
-	}
-
-	/**
-	 * Send message to a specific client
-	 */
-	private sendClient(ws: WebSocket, message: HMRMessage): void {
-		if (ws.readyState === WebSocket.OPEN) {
-			ws.send(JSON.stringify(message));
 		}
 	}
 
@@ -154,33 +157,33 @@ export class HMRServer implements HotChannel {
 	}
 
 	/**
-	 * Register event listener
+	 * Register event listener with type safety
 	 */
-	on(event: string, listener: (...args: any[]) => void): void {
+	on<K extends HMREventName>(event: K, listener: HMREventListener<K>): void {
 		if (!this.listeners.has(event)) {
 			this.listeners.set(event, new Set());
 		}
-		this.listeners.get(event)!.add(listener);
+		this.listeners.get(event)!.add(listener as HMREventListener<HMREventName>);
 	}
 
 	/**
 	 * Unregister event listener
 	 */
-	off(event: string, listener: (...args: any[]) => void): void {
+	off<K extends HMREventName>(event: K, listener: HMREventListener<K>): void {
 		const listeners = this.listeners.get(event);
 		if (listeners) {
-			listeners.delete(listener);
+			listeners.delete(listener as HMREventListener<HMREventName>);
 		}
 	}
 
 	/**
-	 * Emit event
+	 * Emit event with type safety
 	 */
-	private emit(event: string, ...args: any[]): void {
+	private emit<K extends HMREventName>(event: K, ...args: HMREventMap[K]): void {
 		const listeners = this.listeners.get(event);
 		if (listeners) {
 			for (const listener of listeners) {
-				listener(...args);
+				(listener as HMREventListener<K>)(...args);
 			}
 		}
 	}

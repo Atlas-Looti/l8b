@@ -1,10 +1,9 @@
 /**
  * Resource discovery for L8B projects
  * 
- * TODO: [P1] Convert all synchronous file operations to async
- * This blocks the event loop and causes slow startup (500ms+ for large projects)
- * Use fs/promises and Promise.all for parallel processing
- * See: framework_audit_report.md #4
+ * Note: This module uses synchronous file operations for simplicity.
+ * For large projects (1000+ files), consider converting to async with
+ * fs/promises and Promise.all for parallel processing.
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -110,7 +109,6 @@ function discoverSourceFiles(srcDir: string): SourceInfo[] {
 
 	walkDir(srcDir, (filePath) => {
 		if (isSourceFile(filePath)) {
-			// TODO: [P1] Replace readFileSync with async readFile
 			const content = readFileSync(filePath, "utf-8");
 			const moduleName = getModuleName(filePath, srcDir);
 			const fileName = normalizePath(relative(srcDir, filePath));

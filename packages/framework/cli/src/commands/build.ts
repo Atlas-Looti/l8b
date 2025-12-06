@@ -1,9 +1,6 @@
 /**
  * Build command - Creates production bundle
  * 
- * TODO: [P1] Replace all console.log/console.error with logger
- * Makes it difficult to control logging levels and capture logs
- * See: framework_audit_report.md #5
  * Uses the L8B bundler with plugin system for:
  * - LootiScript compilation
  * - Asset processing with hashing
@@ -68,7 +65,7 @@ export async function buildCommand(options: BuildOptions): Promise<void> {
 		if (!result.success) {
 			logger.error("Build failed:");
 			for (const error of result.errors) {
-				console.error(`  ${error}`);
+				logger.error(`  ${error}`);
 			}
 			process.exit(1);
 		}
@@ -77,31 +74,31 @@ export async function buildCommand(options: BuildOptions): Promise<void> {
 		if (result.warnings.length > 0) {
 			logger.warn(`Build completed with ${result.warnings.length} warning(s):`);
 			for (const warning of result.warnings) {
-				console.warn(`  ${warning}`);
+				logger.warn(`  ${warning}`);
 			}
 		}
 
 		logger.success("Build completed!");
-		console.log("");
-		console.log(`  Output:  ${result.outputDir}`);
-		console.log(`  Files:   ${result.files.length}`);
-		console.log(`  Size:    ${(result.stats.totalSize / 1024).toFixed(2)} KB`);
-		console.log(`  Time:    ${result.stats.buildTime}ms`);
-		console.log("");
-		console.log("  Assets:");
-		console.log(`    Sources: ${result.stats.sourceFiles}`);
-		console.log(`    Sprites: ${result.stats.sprites}`);
-		console.log(`    Maps:    ${result.stats.maps}`);
-		console.log(`    Sounds:  ${result.stats.sounds}`);
-		console.log(`    Music:   ${result.stats.music}`);
-		console.log("");
+		logger.info("");
+		logger.info(`  Output:  ${result.outputDir}`);
+		logger.info(`  Files:   ${result.files.length}`);
+		logger.info(`  Size:    ${(result.stats.totalSize / 1024).toFixed(2)} KB`);
+		logger.info(`  Time:    ${result.stats.buildTime}ms`);
+		logger.info("");
+		logger.info("  Assets:");
+		logger.info(`    Sources: ${result.stats.sourceFiles}`);
+		logger.info(`    Sprites: ${result.stats.sprites}`);
+		logger.info(`    Maps:    ${result.stats.maps}`);
+		logger.info(`    Sounds:  ${result.stats.sounds}`);
+		logger.info(`    Music:   ${result.stats.music}`);
+		logger.info("");
 
 		// Show PWA/SW status if enabled
 		if (options.pwa) {
-			console.log("  PWA:     manifest.json generated");
+			logger.info("  PWA:     manifest.json generated");
 		}
 		if (options.serviceWorker) {
-			console.log("  SW:      sw.js generated");
+			logger.info("  SW:      sw.js generated");
 		}
 	} catch (err) {
 		logger.error("Build failed:", err);
