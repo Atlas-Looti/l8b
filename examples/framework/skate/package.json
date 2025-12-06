@@ -4,9 +4,9 @@
 	"version": "1.0.6",
 	"type": "module",
 	"scripts": {
-		"dev": "l8b dev",
-		"preview": "l8b preview",
-		"build": "l8b build"
+		"dev": "node ../../../packages/framework/cli/dist/bin.mjs dev",
+		"preview": "node ../../../packages/framework/cli/dist/bin.mjs preview",
+		"build": "node ../../../packages/framework/cli/dist/bin.mjs build"
 	},
 	"devDependencies": {
 		"@l8b/cli": "workspace:*"
