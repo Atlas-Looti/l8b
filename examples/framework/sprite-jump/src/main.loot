@@ -1,43 +1,39 @@
 init = function()
-  playerinit()
-  platforminit()
-  
-  bg = object
-    x = 0
-    y = -100
-  end
-  
-  score = 0
-  gamemode = "start" //It will either be "start", "playing", or "gameover"
-  
+ playerinit()
+ platforminit()
+ 
+ bg = object
+ x = 0
+ y = -100
+end
+
+score = 0
+gamemode = "start" //It will either be "start", "playing", or "gameover"
+
 end
 
 update = function()
-  playerupdate()
-  platformupdate()
+ playerupdate()
+ platformupdate()
 end
 
 draw = function()
-  screen.clear()
-  screen.drawSprite("bg", bg.x, bg.y, 200, 400)
-  
-  if gamemode == "start" then
-    displayMenu()
-  else
-     playerdraw()
-    platformdraw()
-    displayUi()
-  end
-  
-  
-  if gamemode == "gameover" then
-    if bg.y < 90 then
-      bg.y += 4
-    end
-    displayGameOver()
-  end
-  
-  
+ screen.clear()
+ screen.drawSprite("bg", bg.x, bg.y, 200, 400)
  
- 
+ if gamemode == "start" then
+  displayMenu()
+ else
+ playerdraw()
+ platformdraw()
+ displayUi()
+end
+
+
+if gamemode == "gameover" then
+ if bg.y < 90 then
+  bg.y += 4
+ end
+ displayGameOver()
+end
 end

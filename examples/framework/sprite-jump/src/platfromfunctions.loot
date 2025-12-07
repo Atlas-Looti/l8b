@@ -5,7 +5,7 @@ platformWeight = function()
  weight += (platformweights[i] * 10)
 end
 
-rannumber = randRange(1, weight)
+rannumber = Math.randomInt(1, weight)
 
 weight = 0
 for platform=0 to platformweights.length-1
@@ -22,7 +22,7 @@ end
 
 makePlatforms = function()
  for i=0 to 13
- platforms[i] = new Platform(randRange(-screen.width/2, screen.width/2), randRange(-screen.height/2, screen.height/2))
+ platforms[i] = new Platform(Math.randomFloat(-screen.width/2, screen.width/2), Math.randomFloat(-screen.height/2, screen.height/2))
 end
 platformWeight()
 
@@ -46,7 +46,7 @@ platformBorderCollision = function()
  if platforms[i].y <= -screen.height/2 then
   platforms[i].visible = true
   platforms[i].y += screen.height
-  platforms[i].x = randRange(-screen.width/2, screen.width/2)
+  platforms[i].x = Math.randomFloat(-screen.width/2, screen.width/2)
   platformWeight()
  end
 end

@@ -1,70 +1,67 @@
-
-
-
 //"collision" Function from "Collisions" library by microstudio
 collision = function(x1,y1,w1,h1,x2,y2,w2,h2)
-   return abs(x1-x2) < (w1+w2)/2
-   and abs(y1-y2) < (h1+h2)/2
+ return abs(x1-x2) < (w1+w2)/2
+ and abs(y1-y2) < (h1+h2)/2
 end
 
 gameOver = function()
-  for i=0 to platforms.length-1 
-    platforms[i].y += 4
-    if platforms[i].y + platforms[i].height <= screen.height/2 then
-      player.y += 0.5
-    end
-  end
+ for i=0 to platforms.length-1
+ platforms[i].y += 4
+ if platforms[i].y + platforms[i].height <= screen.height/2 then
+  player.y += 0.5
+ end
+end
 end
 
 horizontalMovement = function(right_sprite, left_sprite)
-  // Cache player object for performance
-  local p = player
-  
-  // Keyboard controls
-  if keyboard.RIGHT then
-    p.x += 1
-    p.sprite = right_sprite
-  end
-  if keyboard.LEFT then
-    p.x -= 1
-    p.sprite = left_sprite
-  end
-  
-  // Touch controls - left side of screen moves left, right side moves right
-  if touch.touching == 1 then
-    if touch.x < 0 then
-      // Touch on left side
-      p.x -= 1
-      p.sprite = left_sprite
-    else
-      // Touch on right side
-      p.x += 1
-      p.sprite = right_sprite
-    end
-  end
-  
-  // Wrap around screen edges
-  if p.x > screen.width/2 or p.x < -screen.width/2 then
-    p.x = -(p.x)
-  end
+ // Cache player object for performance
+ local p = player
+ 
+ // Keyboard controls
+ if keyboard.RIGHT then
+  p.x += 1
+  p.sprite = right_sprite
+ end
+ if keyboard.LEFT then
+  p.x -= 1
+  p.sprite = left_sprite
+ end
+ 
+ // Touch controls - left side of screen moves left, right side moves right
+ if touch.touching == 1 then
+  if touch.x < 0 then
+   // Touch on left side
+   p.x -= 1
+   p.sprite = left_sprite
+  else
+  // Touch on right side
+  p.x += 1
+  p.sprite = right_sprite
+ end
+end
+
+// Wrap around screen edges
+if p.x > screen.width/2 or p.x < -screen.width/2 then
+ p.x = -(p.x)
+end
 end
 
 platformPlayerCollision = function()
-  // Cache player object for performance
-  local p = player
-  
-  for i=0 to platforms.length-1 
-    local plat = platforms[i]
-    local colliding = collision(p.x, p.y - p.height/2, p.width, 5, plat.x, plat.y + plat.height/2, plat.width, 5)
-    
-    if colliding and p.y_vel < 0 then
-      if plat.sprite == "movingplatform" or plat.sprite == "normalplatform" then
-        p.y_vel = 0
-        p.jump = true
-      elsif plat.sprite == "woodplatform" and plat.visible then
-        plat.visible = false
-        local woodbreak = audio.playSound("woodbreak") // Optional and don't recommend using
-      end
-    end
+ // Cache player object for performance
+ local p = player
+ 
+ for i=0 to platforms.length-1
+ local plat = platforms[i]
+ local colliding = collision(p.x, p.y - p.height/2, p.width, 5, plat.x, plat.y + plat.height/2, plat.width, 5)
+ 
+ if colliding and p.y_vel < 0 then
+  if plat.sprite == "movingplatform" or plat.sprite == "normalplatform" then
+   p.y_vel = 0
+   p.jump = true
+   elsif plat.sprite == "woodplatform" and plat.visible then
+    plat.visible = false
+    local woodbreak = audio.playSound("woodbreak") // Optional and don't recommend using
+   end
   end
+ end
 end

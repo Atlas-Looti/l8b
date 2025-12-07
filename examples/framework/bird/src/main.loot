@@ -1,9 +1,21 @@
+init = function()
+  status = "welcome"
+  bird_x = 0
+  bird_y = 0
+  bird_vspeed = 0
+  scroll_speed = 5
+  rotation = 0
+  score = 0
+  wait = 0
+  previous_touching = 0
+end
+
 draw = function()
   screen.setLinearGradient(0,screen.height/2,0,-screen.height/2,"rgb(227,170,255)","rgb(255,113,113)")
   screen.fillRect(0,0,screen.width,screen.height)
 
   if status == "welcome" or status == 0 then
-    local birdSprite = if system.time()%500 < 250 then "bird2" else "bird1" end
+    local birdSprite = if system.time%500 < 250 then "bird2" else "bird1" end
     screen.drawSprite(birdSprite,0,0,50)
     screen.drawMap("sea",(-bird_x*1.1)%20,-150,320,80)
     screen.drawMap("sea",(-bird_x*1.4)%20,-170,320,80)

@@ -1,73 +1,68 @@
 // Global player object declaration
-  player = object
-    x = 0
-    y = 10
-    y_vel = 0 //Velocity
-    width = 20
-    height = 20
-    jump = false
-    sprite = "playerleft"
-  end
+player = object
+x = 0
+y = 10
+y_vel = 0 //Velocity
+width = 20
+height = 20
+jump = false
+sprite = "playerleft"
+end
 
 playerinit = function()
-  player.x = 0
-  player.y = 10
-  player.y_vel = 0
-  player.width = 20
-  player.height = 20
-  player.jump = false
-  player.sprite = "playerleft"
+ player.x = 0
+ player.y = 10
+ player.y_vel = 0
+ player.width = 20
+ player.height = 20
+ player.jump = false
+ player.sprite = "playerleft"
 end
 
 
 
 playerupdate = function()
-  horizontalMovement("playerright", "playerleft")
+ horizontalMovement("playerright", "playerleft")
+ 
+ 
+ if gamemode == "playing" then
   
+  platformPlayerCollision()
   
-  if gamemode == "playing" then
-  
-    platformPlayerCollision()
-  
-    // Jump when on platform - can be triggered by touch or space, or auto-jump
-    if player.jump then
-      // Allow touch or space to trigger jump, or auto-jump if no input
-      local shouldJump = touch.press == 1 or keyboard.press.SPACE == 1
-      // Auto-jump if no manual input (maintains smooth gameplay)
-      if shouldJump or true then
-        player.y_vel = 5
-        local jumpsound = audio.playSound("jumpsound")
-        player.jump = false
-      end
-    else
-      player.y_vel -= 0.2
-    end
-    
-    if player.y >= screen.height/2 then
-      player.y_vel = -1
-    end
-  
-    
-    
-    if player.y <= -screen.height/2 then
-      local gameoversound = audio.playSound("gameoversound")
-      gamemode = "gameover"
-    end
-  end
-  
-  if gamemode == "gameover" then
-    gameOver()
-  end
-  
-  
-  player.y += player.y_vel
+  // Jump when on platform - can be triggered by touch or space, or auto-jump
+  if player.jump then
+   // Allow touch or space to trigger jump, or auto-jump if no input
+   local shouldJump = touch.press == 1 or keyboard.press.SPACE == 1
+   // Auto-jump if no manual input (maintains smooth gameplay)
+   if shouldJump or true then
+    player.y_vel = 5
+    local jumpsound = audio.playSound("jumpsound")
+    player.jump = false
+   end
+  else
+  player.y_vel -= 0.2
+ end
+ 
+ if player.y >= screen.height/2 then
+  player.y_vel = -1
+ end
+ 
+ 
+ 
+ if player.y <= -screen.height/2 then
+  local gameoversound = audio.playSound("gameoversound")
+  gamemode = "gameover"
+ end
+end
+
+if gamemode == "gameover" then
+ gameOver()
+end
+
+
+player.y += player.y_vel
 end
 
 playerdraw = function()
-  screen.drawSprite(player.sprite, player.x, player.y , player.width, player.height)
+ screen.drawSprite(player.sprite, player.x, player.y , player.width, player.height)
 end
-
-
-
-
-

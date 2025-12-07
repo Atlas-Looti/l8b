@@ -128,5 +128,3 @@ Create `l8b.config.json` in project root:
   }
 }
 ```
-
-
