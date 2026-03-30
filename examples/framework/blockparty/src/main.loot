@@ -244,7 +244,7 @@ drawHUD = function()
 
 	// Score (big white, centered)
 	local scoreSz = floor(sw * 0.11)
-	drawTextOutline("" + score, 0, headerCenterY, scoreSz, "#FFF", "rgb(20,60,140)")
+	drawTextOutline("" + score, 0, headerCenterY, scoreSz, "#333", "#DDD")
 
 	// High score (top-left)
 	local hsSz = floor(sw * 0.03)
@@ -260,8 +260,8 @@ drawBoard = function()
 	end
 
 	// Grid background — dark navy blue
-	screen.fillRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(20,30,65)")
-	screen.drawRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(40,55,100)")
+	screen.fillRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(245,245,248)")
+	screen.drawRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(210,210,215)")
 
 	// Draw cells
 	for row = 0 to BOARD_SIZE - 1
@@ -279,7 +279,7 @@ drawBoard = function()
 				if even then
 					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(22,32,68)")
 				else
-					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(25,36,74)")
+					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(235,235,240)")
 				end
 			end
 		end
@@ -342,7 +342,7 @@ drawHoverPreview = function()
 						screen.setAlpha(1)
 					else
 						screen.setAlpha(0.25)
-						screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(255,80,80)")
+						screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(255,180,180)")
 						screen.setAlpha(1)
 					end
 				end
