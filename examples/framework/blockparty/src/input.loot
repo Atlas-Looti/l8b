@@ -1,5 +1,5 @@
 // Input handling for BlockParti
-// Mobile-first: touch drag-and-drop + mouse + keyboard fallback
+// Center-based coords: (0,0) = center, +y = up
 
 selectedPiece = -1
 cursorX = 0
@@ -13,12 +13,18 @@ dragPiece = -1
 dragColorIdx = 0
 dragScreenX = 0
 dragScreenY = 0
-dragOffsetX = 0
-dragOffsetY = 0
 isDragging = false
 
+// Convert screen position to grid col/row
+screenToGridCol = function(sx)
+	return floor((sx - gridLeftX) / cellSize)
+end
+
+screenToGridRow = function(sy)
+	return floor((gridTopY - sy) / cellSize)
+end
+
 handleInput = function()
-	// Detect input mode
 	if keyboard.press.LEFT or keyboard.press.RIGHT or keyboard.press.UP or keyboard.press.DOWN then
 		useKeyboard = true
 	end
@@ -34,7 +40,6 @@ handleInput = function()
 end
 
 handleKeyboard = function()
-	// Move cursor
 	if keyboard.press.LEFT then
 		cursorX = max(0, cursorX - 1)
 	end
@@ -48,7 +53,7 @@ handleKeyboard = function()
 		cursorY = min(BOARD_SIZE - 1, cursorY + 1)
 	end
 
-	// Z: select piece or place piece
+	// Z: select or place
 	if keyboard.press.Z then
 		if selectedPiece == -1 then
 			for i = 0 to HAND_SIZE - 1
@@ -63,7 +68,7 @@ handleKeyboard = function()
 		end
 	end
 
-	// X: cycle to next piece or deselect
+	// X: cycle piece
 	if keyboard.press.X then
 		if selectedPiece != -1 then
 			local start = selectedPiece
@@ -83,7 +88,6 @@ handleKeyboard = function()
 		end
 	end
 
-	// Update hover validity
 	if selectedPiece != -1 then
 		hoverValid = canPlace(hand[selectedPiece], cursorX, cursorY)
 	else
@@ -92,7 +96,6 @@ handleKeyboard = function()
 end
 
 handleTouch = function()
-	// Use touch if available, fallback to mouse
 	local tx = 0
 	local ty = 0
 	local pressing = false
@@ -113,24 +116,28 @@ handleTouch = function()
 		releasing = mouse.release
 	end
 
-	local handY = gridStartY + BOARD_SIZE * cellSize + 24
+	local sw = screen.width
+	local handSpacing = sw / HAND_SIZE
+	local pieceDrawSize = cellSize * 0.55
 
-	// Start drag from hand pieces
+	// Start drag or tap
 	if pressing then
-		local handSpacing = screen.width / HAND_SIZE
-		local pieceDrawSize = cellSize * 0.55
+		local startedDrag = false
 
+		// Check hand pieces
 		for i = 0 to HAND_SIZE - 1
 			if not handUsed[i] then
 				local pieceIdx = hand[i]
-				local w = getPieceW(pieceIdx)
-				local h = getPieceH(pieceIdx)
-				local px = handSpacing * i + handSpacing / 2 - w * pieceDrawSize / 2
-				local py = handY + 14
+				local pw = getPieceW(pieceIdx)
+				local ph = getPieceH(pieceIdx)
 
-				// Generous touch area
-				local hitPad = 12
-				if tx >= px - hitPad and tx <= px + w * pieceDrawSize + hitPad and ty >= py - hitPad and ty <= py + h * pieceDrawSize + hitPad then
+				local slotX = -sw / 2 + handSpacing * i + handSpacing / 2
+				local slotY = handCenterY - 12
+
+				local hitW = pw * pieceDrawSize / 2 + 10
+				local hitH = ph * pieceDrawSize / 2 + 10
+
+				if abs(tx - slotX) < hitW and abs(ty - slotY) < hitH then
 					dragIdx = i
 					dragPiece = pieceIdx
 					dragColorIdx = handColors[i]
@@ -138,33 +145,34 @@ handleTouch = function()
 					dragScreenY = ty
 					isDragging = true
 					selectedPiece = -1
+					startedDrag = true
 					playSelect()
 					break
 				end
 			end
 		end
 
-		// If not starting drag, check tap on grid to place selected piece
-		if not isDragging and selectedPiece != -1 then
-			local gx = floor((tx - gridStartX) / cellSize)
-			local gy = floor((ty - gridStartY) / cellSize)
-			if gx >= 0 and gx < BOARD_SIZE and gy >= 0 and gy < BOARD_SIZE then
-				tryPlacePiece(gx, gy)
+		// Tap on grid to place selected piece
+		if not startedDrag and selectedPiece != -1 then
+			local gc = screenToGridCol(tx)
+			local gr = screenToGridRow(ty)
+			if gc >= 0 and gc < BOARD_SIZE and gr >= 0 and gr < BOARD_SIZE then
+				tryPlacePiece(gc, gr)
 			end
 		end
 
-		// Tap on piece to select (if not dragging)
-		if not isDragging and selectedPiece == -1 then
-			local handSpacing2 = screen.width / HAND_SIZE
-			local pieceDrawSize2 = cellSize * 0.55
+		// Tap on piece to select (no drag)
+		if not startedDrag and selectedPiece == -1 then
 			for i = 0 to HAND_SIZE - 1
 				if not handUsed[i] then
-					local pieceIdx2 = hand[i]
-					local w2 = getPieceW(pieceIdx2)
-					local h2 = getPieceH(pieceIdx2)
-					local px2 = handSpacing2 * i + handSpacing2 / 2 - w2 * pieceDrawSize2 / 2
-					local py2 = handY + 14
-					if tx >= px2 and tx <= px2 + w2 * pieceDrawSize2 and ty >= py2 and ty <= py2 + h2 * pieceDrawSize2 then
+					local pieceIdx = hand[i]
+					local pw = getPieceW(pieceIdx)
+					local ph = getPieceH(pieceIdx)
+					local slotX = -sw / 2 + handSpacing * i + handSpacing / 2
+					local slotY = handCenterY - 12
+					local hitW = pw * pieceDrawSize / 2 + 8
+					local hitH = ph * pieceDrawSize / 2 + 8
+					if abs(tx - slotX) < hitW and abs(ty - slotY) < hitH then
 						selectedPiece = i
 						playSelect()
 						break
@@ -174,38 +182,30 @@ handleTouch = function()
 		end
 	end
 
-	// Update drag position
+	// Update drag
 	if isDragging and holding then
 		dragScreenX = tx
 		dragScreenY = ty
 
-		// Calculate grid position from drag (offset above finger)
-		local w = getPieceW(dragPiece)
-		local h = getPieceH(dragPiece)
-		local pieceScreenX = dragScreenX - w * cellSize / 2
-		local pieceScreenY = dragScreenY - h * cellSize - 20
+		// Map drag position to grid (piece drawn above finger)
+		local pieceAboveY = dragScreenY + getPieceH(dragPiece) * cellSize / 2 + 15
+		local gc = screenToGridCol(dragScreenX - getPieceW(dragPiece) * cellSize / 2 + cellSize / 2)
+		local gr = screenToGridRow(pieceAboveY + getPieceH(dragPiece) * cellSize / 2 - cellSize / 2)
 
-		cursorX = floor((pieceScreenX - gridStartX + cellSize / 2) / cellSize)
-		cursorY = floor((pieceScreenY - gridStartY + cellSize / 2) / cellSize)
-		cursorX = max(0, min(BOARD_SIZE - 1, cursorX))
-		cursorY = max(0, min(BOARD_SIZE - 1, cursorY))
-
+		cursorX = max(0, min(BOARD_SIZE - getPieceW(dragPiece), gc))
+		cursorY = max(0, min(BOARD_SIZE - getPieceH(dragPiece), gr))
 		hoverValid = canPlace(dragPiece, cursorX, cursorY)
 	end
 
-	// Release drag - try to place
+	// Release drag
 	if isDragging and releasing then
 		if hoverValid then
-			// Place the dragged piece at cursor position
 			placePiece(dragPiece, cursorX, cursorY, dragColorIdx)
-
 			local blockCount = getPieceBlockCount(dragPiece)
 			score += blockCount
 			playPlace()
-
 			handUsed[dragIdx] = 1
 
-			// Check line clears
 			local cleared = checkLines()
 			if cleared > 0 then
 				combo += cleared
@@ -241,21 +241,20 @@ handleTouch = function()
 			end
 		end
 
-		// Reset drag state
 		dragIdx = -1
 		dragPiece = -1
 		isDragging = false
 		hoverValid = false
 	end
 
-	// Update hover for mouse (non-drag mode with selected piece)
+	// Mouse hover for selected piece (non-drag)
 	if not isDragging and selectedPiece != -1 and not pressing then
-		local gx = floor((tx - gridStartX) / cellSize)
-		local gy = floor((ty - gridStartY) / cellSize)
-		if gx >= 0 and gx < BOARD_SIZE and gy >= 0 and gy < BOARD_SIZE then
-			cursorX = gx
-			cursorY = gy
-			hoverValid = canPlace(hand[selectedPiece], gx, gy)
+		local gc = screenToGridCol(tx)
+		local gr = screenToGridRow(ty)
+		if gc >= 0 and gc < BOARD_SIZE and gr >= 0 and gr < BOARD_SIZE then
+			cursorX = gc
+			cursorY = gr
+			hoverValid = canPlace(hand[selectedPiece], gc, gr)
 		else
 			hoverValid = false
 		end
@@ -268,11 +267,9 @@ tryPlacePiece = function(gx, gy)
 	local pieceIdx = hand[selectedPiece]
 	if canPlace(pieceIdx, gx, gy) then
 		placePiece(pieceIdx, gx, gy, handColors[selectedPiece])
-
 		local blockCount = getPieceBlockCount(pieceIdx)
 		score += blockCount
 		playPlace()
-
 		handUsed[selectedPiece] = 1
 		selectedPiece = -1
 
