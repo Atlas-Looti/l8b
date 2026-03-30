@@ -121,7 +121,7 @@ draw = function()
 	local sh = screen.height
 
 	// Bright blue gradient background (Block Blast style)
-	screen.setLinearGradient(0, sh / 2, 0, -sh / 2, "rgb(70,170,255)", "rgb(35,110,210)")
+	screen.setLinearGradient(0, sh / 2, 0, -sh / 2, "rgb(248,248,250)", "rgb(240,240,242)")
 	screen.fillRect(0, 0, sw, sh)
 
 	if state == "menu" then
