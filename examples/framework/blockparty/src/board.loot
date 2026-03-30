@@ -130,66 +130,6 @@ flashCellColor = function(encoded)
 	return (encoded % 100) - 1
 end
 
-// Preview: which rows would break if piece placed at (gx, gy)
-getBreakRows = function(pieceIdx, gx, gy)
-	local rows = []
-	for row = 0 to BOARD_SIZE - 1
-		local full = 1
-		for col = 0 to BOARD_SIZE - 1
-			local val = board[row * BOARD_SIZE + col]
-			if val == 0 then
-				local covered = 0
-				local w = getPieceW(pieceIdx)
-				local h = getPieceH(pieceIdx)
-				local px = col - gx
-				local py = row - gy
-				if px >= 0 and px < w and py >= 0 and py < h then
-					if getPieceCell(pieceIdx, px, py) then
-						covered = 1
-					end
-				end
-				if covered == 0 then
-					full = 0
-				end
-			end
-		end
-		if full == 1 then
-			rows.push(row)
-		end
-	end
-	return rows
-end
-
-// Preview: which columns would break if piece placed at (gx, gy)
-getBreakCols = function(pieceIdx, gx, gy)
-	local cols = []
-	for col = 0 to BOARD_SIZE - 1
-		local full = 1
-		for row = 0 to BOARD_SIZE - 1
-			local val = board[row * BOARD_SIZE + col]
-			if val == 0 then
-				local covered = 0
-				local w = getPieceW(pieceIdx)
-				local h = getPieceH(pieceIdx)
-				local px = col - gx
-				local py = row - gy
-				if px >= 0 and px < w and py >= 0 and py < h then
-					if getPieceCell(pieceIdx, px, py) then
-						covered = 1
-					end
-				end
-				if covered == 0 then
-					full = 0
-				end
-			end
-		end
-		if full == 1 then
-			cols.push(col)
-		end
-	end
-	return cols
-end
-
 canAnyPieceFit = function()
 	for i = 0 to HAND_SIZE - 1
 		if not handUsed[i] then

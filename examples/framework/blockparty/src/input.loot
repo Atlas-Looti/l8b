@@ -222,6 +222,8 @@ handleTouch = function()
 				playLineClear(cleared)
 				if combo > 1 then
 					playCombo()
+					comboPopupTimer = 60
+					comboPopupValue = combo
 				end
 			else
 				noComboCount += 1

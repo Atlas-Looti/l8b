@@ -3,34 +3,34 @@
 
 HAND_SIZE = 3
 
-// Colors matching blockerino (rgb strings)
+// Vibrant Block Blast style colors
 pieceColors = [
-	"rgb(227,143,16)",
-	"rgb(186,19,38)",
-	"rgb(16,158,40)",
-	"rgb(20,56,184)",
-	"rgb(101,19,148)",
-	"rgb(31,165,222)"
+	"rgb(40,200,255)",
+	"rgb(140,70,220)",
+	"rgb(255,160,30)",
+	"rgb(230,50,60)",
+	"rgb(50,200,80)",
+	"rgb(255,210,40)"
 ]
 
-// Darker versions for borders/shadows
+// Darker versions for bottom/right shadow
 pieceColorsDark = [
-	"rgb(160,100,10)",
-	"rgb(130,12,26)",
-	"rgb(10,110,28)",
-	"rgb(14,38,130)",
-	"rgb(70,12,104)",
-	"rgb(20,115,156)"
+	"rgb(20,140,200)",
+	"rgb(90,40,160)",
+	"rgb(200,120,10)",
+	"rgb(170,30,40)",
+	"rgb(30,150,55)",
+	"rgb(200,160,20)"
 ]
 
-// Lighter versions for highlights
+// Lighter versions for top/left highlight
 pieceColorsLight = [
-	"rgb(255,180,50)",
-	"rgb(220,50,70)",
-	"rgb(40,200,70)",
-	"rgb(50,90,220)",
-	"rgb(140,50,190)",
-	"rgb(60,200,250)"
+	"rgb(120,230,255)",
+	"rgb(190,130,255)",
+	"rgb(255,200,100)",
+	"rgb(255,110,120)",
+	"rgb(120,240,140)",
+	"rgb(255,235,120)"
 ]
 
 // Piece templates stored as flat arrays: [width, height, ...cells]
