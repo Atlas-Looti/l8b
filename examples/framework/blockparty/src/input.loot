@@ -118,7 +118,12 @@ handleTouch = function()
 
 	local sw = screen.width
 	local handSpacing = sw / HAND_SIZE
-	local pieceDrawSize = cellSize * 0.55
+	local pieceDrawSize = cellSize * 0.65
+
+	local sh = screen.height
+	local handTop = handCenterY + 14
+	local handBot = -sh / 2
+	local piecesY = (handTop + handBot) / 2 + 4
 
 	// Start drag or tap
 	if pressing then
@@ -132,10 +137,10 @@ handleTouch = function()
 				local ph = getPieceH(pieceIdx)
 
 				local slotX = -sw / 2 + handSpacing * i + handSpacing / 2
-				local slotY = handCenterY - 12
+				local slotY = piecesY
 
-				local hitW = pw * pieceDrawSize / 2 + 10
-				local hitH = ph * pieceDrawSize / 2 + 10
+				local hitW = pw * pieceDrawSize / 2 + 12
+				local hitH = ph * pieceDrawSize / 2 + 12
 
 				if abs(tx - slotX) < hitW and abs(ty - slotY) < hitH then
 					dragIdx = i
@@ -169,9 +174,9 @@ handleTouch = function()
 					local pw = getPieceW(pieceIdx)
 					local ph = getPieceH(pieceIdx)
 					local slotX = -sw / 2 + handSpacing * i + handSpacing / 2
-					local slotY = handCenterY - 12
-					local hitW = pw * pieceDrawSize / 2 + 8
-					local hitH = ph * pieceDrawSize / 2 + 8
+					local slotY = piecesY
+					local hitW = pw * pieceDrawSize / 2 + 10
+					local hitH = ph * pieceDrawSize / 2 + 10
 					if abs(tx - slotX) < hitW and abs(ty - slotY) < hitH then
 						selectedPiece = i
 						playSelect()

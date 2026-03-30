@@ -6,8 +6,12 @@ BOARD_SIZE = 8
 // Board grid: flat array of color indices (0 = empty, 1-6 = color)
 board = []
 
+// Flash data: snapshot of cleared cells for animation
+flashCells = []
+
 initBoard = function()
 	board = []
+	flashCells = []
 	for i = 0 to BOARD_SIZE * BOARD_SIZE - 1
 		board[i] = 0
 	end
@@ -26,7 +30,6 @@ setCell = function(x, y, value)
 	end
 end
 
-// Check if a piece can be placed at grid position (gx, gy)
 canPlace = function(pieceIdx, gx, gy)
 	local w = getPieceW(pieceIdx)
 	local h = getPieceH(pieceIdx)
@@ -48,7 +51,6 @@ canPlace = function(pieceIdx, gx, gy)
 	return true
 end
 
-// Place a piece on the board
 placePiece = function(pieceIdx, gx, gy, colorIdx)
 	local w = getPieceW(pieceIdx)
 	local h = getPieceH(pieceIdx)
@@ -62,50 +64,52 @@ placePiece = function(pieceIdx, gx, gy, colorIdx)
 	end
 end
 
-// Check and clear completed lines, returns number of lines cleared
-// Also populates flashLines for visual feedback
+// Check and clear completed lines
+// Uses integer arrays to avoid mixed-type issues
 checkLines = function()
 	local cleared = 0
-	flashLines = []
+	flashCells = []
 
-	// Check rows
-	for y = 0 to BOARD_SIZE - 1
-		local full = true
-		for x = 0 to BOARD_SIZE - 1
-			if board[y * BOARD_SIZE + x] == 0 then
-				full = false
+	// Detect full rows (store as flags: 1=full, 0=not)
+	local rowFull = []
+	for row = 0 to BOARD_SIZE - 1
+		local full = 1
+		for col = 0 to BOARD_SIZE - 1
+			if board[row * BOARD_SIZE + col] == 0 then
+				full = 0
 			end
 		end
-		if full then
-			flashLines.push(["r", y])
+		rowFull[row] = full
+		if full == 1 then
 			cleared += 1
 		end
 	end
 
-	// Check columns
-	for x = 0 to BOARD_SIZE - 1
-		local full = true
-		for y = 0 to BOARD_SIZE - 1
-			if board[y * BOARD_SIZE + x] == 0 then
-				full = false
+	// Detect full columns
+	local colFull = []
+	for col = 0 to BOARD_SIZE - 1
+		local full = 1
+		for row = 0 to BOARD_SIZE - 1
+			if board[row * BOARD_SIZE + col] == 0 then
+				full = 0
 			end
 		end
-		if full then
-			flashLines.push(["c", x])
+		colFull[col] = full
+		if full == 1 then
 			cleared += 1
 		end
 	end
 
-	// Clear the lines after recording them
-	for i = 0 to flashLines.length - 1
-		local fl = flashLines[i]
-		if fl[0] == "r" then
-			for x = 0 to BOARD_SIZE - 1
-				board[fl[1] * BOARD_SIZE + x] = 0
-			end
-		else
-			for y = 0 to BOARD_SIZE - 1
-				board[y * BOARD_SIZE + fl[1]] = 0
+	// Snapshot cells that will be cleared (for flash animation), then clear them
+	for row = 0 to BOARD_SIZE - 1
+		for col = 0 to BOARD_SIZE - 1
+			if rowFull[row] == 1 or colFull[col] == 1 then
+				local val = board[row * BOARD_SIZE + col]
+				if val > 0 then
+					// Store col, row, colorIdx for flash rendering
+					flashCells.push(col * 1000 + row * 100 + val)
+				end
+				board[row * BOARD_SIZE + col] = 0
 			end
 		end
 	end
@@ -113,32 +117,44 @@ checkLines = function()
 	return cleared
 end
 
+// Decode flash cell data
+flashCellCol = function(encoded)
+	return floor(encoded / 1000)
+end
+
+flashCellRow = function(encoded)
+	return floor((encoded % 1000) / 100)
+end
+
+flashCellColor = function(encoded)
+	return (encoded % 100) - 1
+end
+
 // Preview: which rows would break if piece placed at (gx, gy)
 getBreakRows = function(pieceIdx, gx, gy)
 	local rows = []
-	for y = 0 to BOARD_SIZE - 1
-		local full = true
-		for x = 0 to BOARD_SIZE - 1
-			local val = board[y * BOARD_SIZE + x]
+	for row = 0 to BOARD_SIZE - 1
+		local full = 1
+		for col = 0 to BOARD_SIZE - 1
+			local val = board[row * BOARD_SIZE + col]
 			if val == 0 then
-				// Check if piece covers this cell
-				local covered = false
+				local covered = 0
 				local w = getPieceW(pieceIdx)
 				local h = getPieceH(pieceIdx)
-				local px = x - gx
-				local py = y - gy
+				local px = col - gx
+				local py = row - gy
 				if px >= 0 and px < w and py >= 0 and py < h then
 					if getPieceCell(pieceIdx, px, py) then
-						covered = true
+						covered = 1
 					end
 				end
-				if not covered then
-					full = false
+				if covered == 0 then
+					full = 0
 				end
 			end
 		end
-		if full then
-			rows.push(y)
+		if full == 1 then
+			rows.push(row)
 		end
 	end
 	return rows
@@ -147,34 +163,33 @@ end
 // Preview: which columns would break if piece placed at (gx, gy)
 getBreakCols = function(pieceIdx, gx, gy)
 	local cols = []
-	for x = 0 to BOARD_SIZE - 1
-		local full = true
-		for y = 0 to BOARD_SIZE - 1
-			local val = board[y * BOARD_SIZE + x]
+	for col = 0 to BOARD_SIZE - 1
+		local full = 1
+		for row = 0 to BOARD_SIZE - 1
+			local val = board[row * BOARD_SIZE + col]
 			if val == 0 then
-				local covered = false
+				local covered = 0
 				local w = getPieceW(pieceIdx)
 				local h = getPieceH(pieceIdx)
-				local px = x - gx
-				local py = y - gy
+				local px = col - gx
+				local py = row - gy
 				if px >= 0 and px < w and py >= 0 and py < h then
 					if getPieceCell(pieceIdx, px, py) then
-						covered = true
+						covered = 1
 					end
 				end
-				if not covered then
-					full = false
+				if covered == 0 then
+					full = 0
 				end
 			end
 		end
-		if full then
-			cols.push(x)
+		if full == 1 then
+			cols.push(col)
 		end
 	end
 	return cols
 end
 
-// Check if any piece from the hand can be placed anywhere
 canAnyPieceFit = function()
 	for i = 0 to HAND_SIZE - 1
 		if not handUsed[i] then
@@ -193,7 +208,6 @@ canAnyPieceFit = function()
 	return false
 end
 
-// Check if all pieces in hand have been used
 allHandUsed = function()
 	for i = 0 to HAND_SIZE - 1
 		if not handUsed[i] then
