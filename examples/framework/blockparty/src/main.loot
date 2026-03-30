@@ -200,7 +200,7 @@ drawMenu = function()
 	// Title
 	local tsz = floor(sw * 0.12)
 	drawTextOutline("BLOCK", 0, sh * 0.22 + pulse, tsz, "rgb(30,60,150)", "rgb(180,200,240)")
-	drawTextOutline("PARTI", 0, sh * 0.22 - tsz - 6 + pulse, tsz, "rgb(255,80,120)", "rgb(150,20,50)")
+	drawTextOutline("PARTY", 0, sh * 0.22 - tsz - 6 + pulse, tsz, "rgb(255,80,120)", "rgb(150,20,50)")
 
 	// Decorative blocks row
 	local decSz = floor(sw * 0.065)
