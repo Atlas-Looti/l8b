@@ -121,7 +121,7 @@ draw = function()
 	local sh = screen.height
 
 	// Bright blue gradient background (Block Blast style)
-	screen.setLinearGradient(0, sh / 2, 0, -sh / 2, "rgb(248,248,250)", "rgb(240,240,242)")
+	screen.setLinearGradient(0, sh / 2, 0, -sh / 2, "#FFFFFF", "#FFFFFF")
 	screen.fillRect(0, 0, sw, sh)
 
 	if state == "menu" then
@@ -260,8 +260,8 @@ drawBoard = function()
 	end
 
 	// Grid background — dark navy blue
-	screen.fillRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(245,245,248)")
-	screen.drawRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(210,210,215)")
+	screen.fillRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "#FFFFFF")
+	screen.drawRoundRect(shakeX, gridCenterY + shakeY, gridW + 6, gridW + 6, 4, "rgb(230,230,235)")
 
 	// Draw cells
 	for row = 0 to BOARD_SIZE - 1
@@ -279,7 +279,7 @@ drawBoard = function()
 				if even then
 					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(22,32,68)")
 				else
-					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(235,235,240)")
+					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(245,245,248)")
 				end
 			end
 		end
