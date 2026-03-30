@@ -274,12 +274,12 @@ drawBoard = function()
 				local ci = cellVal - 1
 				drawBlock(cx, cy, cellSize - 1, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
 			else
-				// Empty cell — dark blue with checkerboard
+				// Empty cell — subtle light checkerboard
 				local even = (col + row) % 2 == 0
 				if even then
-					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(22,32,68)")
+					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(230,230,235)")
 				else
-					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(245,245,248)")
+					screen.fillRect(cx, cy, cellSize - 1, cellSize - 1, "rgb(248,248,250)")
 				end
 			end
 		end
