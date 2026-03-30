@@ -1,0 +1,14 @@
+{
+	"name": "blockparti",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "l8b dev",
+		"preview": "l8b preview",
+		"build": "l8b build"
+	},
+	"devDependencies": {
+		"@l8b/cli": "latest"
+	}
+}

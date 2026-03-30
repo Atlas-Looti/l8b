@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs head:*)",
+      "Bash(grep -n \"drawPolygon\\\\|drawPolyline\\\\|fillPolygon\\\\|drawQuadCurve\\\\|drawBezierCurve\\\\|drawArc\\\\|fillArc\" /c/Users/hi/Desktop/workspace/l8b/packages/core/screen/src/drawing/*.ts)"
+    ]
+  }
+}

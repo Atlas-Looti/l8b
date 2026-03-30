@@ -1,0 +1,495 @@
+// BlockParti - Block Blast Puzzle Game
+// Coordinate system: (0,0) = center, +y = up, +x = right
+
+// Layout
+gridStartX = 0
+gridStartY = 0
+cellSize = 0
+handY = 0
+
+// Game state
+score = 0
+highScore = 0
+combo = 0
+noComboCount = 0
+state = "menu"
+flashTimer = 0
+flashLines = []
+gameoverTimer = 0
+menuPulse = 0
+boardShake = 0
+
+init = function()
+	initPieces()
+	initBoard()
+	generateHand()
+	score = 0
+	combo = 0
+	noComboCount = 0
+	selectedPiece = -1
+	flashTimer = 0
+	flashLines = []
+	gameoverTimer = 0
+	state = "menu"
+	menuPulse = 0
+	boardShake = 0
+
+	local saved = storage.get("blockparti_highscore")
+	if saved then
+		highScore = saved
+	end
+end
+
+startGame = function()
+	initBoard()
+	generateHand()
+	score = 0
+	combo = 0
+	noComboCount = 0
+	selectedPiece = -1
+	dragPiece = -1
+	flashTimer = 0
+	flashLines = []
+	boardShake = 0
+	state = "play"
+	playMenuClick()
+end
+
+update = function()
+	// Layout: grid fills ~90% width, positioned in upper-center area
+	local sw = screen.width
+	local sh = screen.height
+	local gridTotal = min(sw * 0.88, sh * 0.42)
+	cellSize = floor(gridTotal / BOARD_SIZE)
+	local gridW = cellSize * BOARD_SIZE
+	gridStartX = -gridW / 2
+	gridStartY = sh / 2 - sh * 0.14 - cellSize * BOARD_SIZE
+	handY = gridStartY - 20
+
+	menuPulse += 1
+
+	if boardShake > 0 then
+		boardShake -= 1
+	end
+
+	if state == "menu" then
+		if touch.press or mouse.press or keyboard.press.Z or keyboard.press.SPACE then
+			startGame()
+		end
+	elsif state == "play" then
+		handleInput()
+		if flashTimer > 0 then
+			flashTimer -= 1
+		end
+	elsif state == "gameover" then
+		gameoverTimer += 1
+		if gameoverTimer > 120 then
+			if touch.press or mouse.press or keyboard.press.Z or keyboard.press.SPACE then
+				if score > highScore then
+					highScore = score
+					storage.set("blockparti_highscore", highScore)
+				end
+				state = "menu"
+			end
+		end
+	end
+end
+
+draw = function()
+	// Background
+	screen.setLinearGradient(0, screen.height / 2, 0, -screen.height / 2, "rgb(28,22,38)", "rgb(14,12,22)")
+	screen.fillRect(0, 0, screen.width, screen.height)
+
+	if state == "menu" then
+		drawMenu()
+	elsif state == "play" then
+		drawGame()
+	elsif state == "gameover" then
+		drawGame()
+		drawGameOver()
+	end
+end
+
+// ========== MENU ==========
+
+drawMenu = function()
+	local sw = screen.width
+	local sh = screen.height
+	local pulse = sin(menuPulse * 0.05) * 3
+
+	// Floating background blocks
+	local blockSz = floor(sw * 0.08)
+	for i = 0 to 7
+		local ci = i % pieceColors.length
+		local fx = -sw * 0.4 + (i % 4) * (sw * 0.25)
+		local fy = sh * 0.1 - floor(i / 4) * (sh * 0.45)
+		fy += sin((menuPulse + i * 40) * 0.02) * 8
+		screen.setAlpha(0.1)
+		drawBlock(fx, fy, blockSz, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+		screen.setAlpha(1)
+	end
+
+	// Title: BLOCK
+	local titleSz = floor(sw * 0.1)
+	drawTextOutline("BLOCK", 0, sh * 0.25 + pulse, titleSz, "rgb(50,90,220)", "rgb(14,38,130)")
+
+	// Title: PARTI
+	drawTextOutline("PARTI", 0, sh * 0.25 - titleSz - 6 + pulse, titleSz, "rgb(220,50,70)", "rgb(130,10,25)")
+
+	// Decorative blocks
+	local decSz = floor(sw * 0.06)
+	local decSpacing = floor(decSz * 1.4)
+	for i = 0 to 5
+		local ci = i % pieceColors.length
+		local dx = -2.5 * decSpacing + i * decSpacing
+		local dy = sh * 0.25 - titleSz * 2 - 24 + sin((menuPulse + i * 20) * 0.06) * 4
+		local scale = 0.9 + sin((menuPulse + i * 15) * 0.04) * 0.1
+		local sz = floor(decSz * scale)
+		drawBlock(dx, dy, sz, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+	end
+
+	// Start prompt
+	local alpha = 0.3 + abs(sin(menuPulse * 0.04)) * 0.7
+	local startSz = floor(sw * 0.045)
+	screen.drawText("TAP TO START", 0, -sh * 0.1, startSz, "rgba(255,255,255," + alpha + ")")
+
+	// High score
+	if highScore > 0 then
+		local hsSz = floor(sw * 0.035)
+		screen.drawText("BEST: " + highScore, 0, -sh * 0.2, hsSz, "rgb(150,150,170)")
+	end
+
+	// Hints
+	local hintSz = floor(sw * 0.025)
+	screen.drawText("DRAG PIECES TO THE GRID", 0, -sh * 0.35, hintSz, "rgb(70,70,90)")
+	screen.drawText("FILL ROWS OR COLUMNS TO CLEAR", 0, -sh * 0.38, hintSz, "rgb(70,70,90)")
+end
+
+// ========== GAME DRAWING ==========
+
+drawGame = function()
+	drawHUD()
+	drawBoard()
+	drawHoverPreview()
+	drawHandPieces()
+	drawDragPiece()
+end
+
+drawHUD = function()
+	local sh = screen.height
+	local sw = screen.width
+
+	// Score (top center)
+	local scoreSz = floor(sw * 0.08)
+	local scoreStr = "" + score
+	drawTextOutline(scoreStr, 0, sh / 2 - 14, scoreSz, "#FFF", "#000")
+
+	// Combo indicator (top right)
+	if combo > 0 then
+		local comboStr = "x" + combo
+		local comboColor = "rgb(100,200,255)"
+		if combo >= 5 then
+			comboColor = "rgb(255,200,0)"
+		elsif combo >= 3 then
+			comboColor = "rgb(255,100,50)"
+		end
+		local comboSz = floor(sw * 0.045)
+		screen.drawText(comboStr, sw / 2 - 16, sh / 2 - 14, comboSz, comboColor)
+	end
+
+	// Combo bar (below score, above grid)
+	local barW = sw * 0.6
+	local barH = 2
+	local barY = gridStartY + cellSize * BOARD_SIZE + 4
+	screen.fillRect(0, barY, barW, barH, "rgb(35,35,45)")
+
+	if combo > 0 then
+		local fillRatio = 1 - (noComboCount / HAND_SIZE)
+		if fillRatio < 0 then fillRatio = 0 end
+		local r = floor(200 - 150 * fillRatio)
+		local g = floor(50 + 150 * fillRatio)
+		local fillColor = "rgb(" + r + "," + g + ",50)"
+		screen.fillRect(-barW / 2 + barW * fillRatio / 2, barY, barW * fillRatio, barH, fillColor)
+	end
+end
+
+drawBoard = function()
+	local shakeX = 0
+	local shakeY = 0
+	if boardShake > 0 then
+		shakeX = sin(boardShake * 1.5) * boardShake * 0.3
+		shakeY = cos(boardShake * 2) * boardShake * 0.2
+	end
+
+	local gridW = cellSize * BOARD_SIZE
+	local ox = shakeX
+	local oy = shakeY
+
+	// Grid background
+	screen.fillRect(ox, gridStartY + gridW / 2 + oy, gridW + 4, gridW + 4, "rgb(38,38,50)")
+	screen.fillRect(ox, gridStartY + gridW / 2 + oy, gridW + 2, gridW + 2, "rgb(26,26,36)")
+
+	// Draw cells (top-left of grid = gridStartX, gridStartY + gridW)
+	for row = 0 to BOARD_SIZE - 1
+		for col = 0 to BOARD_SIZE - 1
+			// Cell center position
+			local cx = gridStartX + col * cellSize + cellSize / 2 + ox
+			local cy = gridStartY + gridW - row * cellSize - cellSize / 2 + oy
+			local cellVal = board[row * BOARD_SIZE + col]
+
+			if cellVal > 0 then
+				local ci = cellVal - 1
+				local isFlashing = false
+				if flashTimer > 0 then
+					for fi = 0 to flashLines.length - 1
+						local fl = flashLines[fi]
+						if fl[0] == "r" and fl[1] == row then
+							isFlashing = true
+						end
+						if fl[0] == "c" and fl[1] == col then
+							isFlashing = true
+						end
+					end
+				end
+
+				if isFlashing then
+					local flashAlpha = flashTimer / 15
+					screen.setAlpha(flashAlpha)
+					drawBlock(cx, cy, cellSize - 2, "#FFF", "#DDD", "#FFF")
+					screen.setAlpha(1)
+				else
+					drawBlock(cx, cy, cellSize - 2, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+				end
+			else
+				local even = (col + row) % 2 == 0
+				if even then
+					screen.fillRect(cx, cy, cellSize - 2, cellSize - 2, "rgb(22,22,32)")
+				else
+					screen.fillRect(cx, cy, cellSize - 2, cellSize - 2, "rgb(24,24,34)")
+				end
+			end
+		end
+	end
+end
+
+drawHoverPreview = function()
+	if state != "play" then return end
+	if dragPiece == -1 and selectedPiece == -1 then return end
+
+	local pIdx = -1
+	local ci = 0
+	if dragPiece != -1 then
+		pIdx = dragPiece
+		ci = dragColorIdx
+	elsif selectedPiece != -1 then
+		pIdx = hand[selectedPiece]
+		ci = handColors[selectedPiece]
+	end
+	if pIdx == -1 then return end
+
+	local w = getPieceW(pIdx)
+	local h = getPieceH(pIdx)
+	local gridW = cellSize * BOARD_SIZE
+
+	// Break preview
+	local breakRows = []
+	local breakCols = []
+	if hoverValid then
+		breakRows = getBreakRows(pIdx, cursorX, cursorY)
+		breakCols = getBreakCols(pIdx, cursorX, cursorY)
+	end
+
+	for py = 0 to h - 1
+		for px = 0 to w - 1
+			if getPieceCell(pIdx, px, py) then
+				local gbx = cursorX + px
+				local gby = cursorY + py
+				if gbx >= 0 and gbx < BOARD_SIZE and gby >= 0 and gby < BOARD_SIZE then
+					local cx = gridStartX + gbx * cellSize + cellSize / 2
+					local cy = gridStartY + gridW - gby * cellSize - cellSize / 2
+					if hoverValid then
+						screen.setAlpha(0.5)
+						drawBlock(cx, cy, cellSize - 2, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+						screen.setAlpha(1)
+					else
+						screen.setAlpha(0.3)
+						screen.fillRect(cx, cy, cellSize - 2, cellSize - 2, "rgb(255,50,50)")
+						screen.setAlpha(1)
+					end
+				end
+			end
+		end
+	end
+
+	// Highlight breaking lines
+	if hoverValid then
+		screen.setAlpha(0.12)
+		for i = 0 to breakRows.length - 1
+			local ry = breakRows[i]
+			local cy = gridStartY + gridW - ry * cellSize - cellSize / 2
+			screen.fillRect(0, cy, gridW, cellSize, "rgb(255,255,200)")
+		end
+		for i = 0 to breakCols.length - 1
+			local colIdx = breakCols[i]
+			local cx = gridStartX + colIdx * cellSize + cellSize / 2
+			screen.fillRect(cx, gridStartY + gridW / 2, cellSize, gridW, "rgb(255,255,200)")
+		end
+		screen.setAlpha(1)
+	end
+
+	// Keyboard cursor
+	if useKeyboard and selectedPiece != -1 then
+		local kcx = gridStartX + cursorX * cellSize + cellSize / 2
+		local kcy = gridStartY + gridW - cursorY * cellSize - cellSize / 2
+		local blink = floor(menuPulse / 15) % 2
+		if blink == 0 then
+			screen.drawRect(kcx, kcy, cellSize, cellSize, "rgba(255,255,255,0.6)")
+		end
+	end
+end
+
+drawHandPieces = function()
+	local sw = screen.width
+	local handSpacing = sw / HAND_SIZE
+	local pieceDrawSize = cellSize * 0.55
+
+	// Hand area background
+	local handAreaH = -handY + screen.height / 2
+	screen.fillRect(0, handY - handAreaH / 2, sw, handAreaH, "rgb(14,14,20)")
+	screen.fillRect(0, handY + 1, sw, 1, "rgb(35,35,48)")
+
+	// Label
+	local labelSz = floor(sw * 0.025)
+	screen.drawText("PIECES", 0, handY - 2, labelSz, "rgb(60,60,80)")
+
+	for i = 0 to HAND_SIZE - 1
+		if not handUsed[i] and dragIdx != i then
+			local pieceIdx = hand[i]
+			local w = getPieceW(pieceIdx)
+			local h = getPieceH(pieceIdx)
+			local ci = handColors[i]
+
+			// Center of this hand slot
+			local slotCx = -sw / 2 + handSpacing * i + handSpacing / 2
+			local slotCy = handY - 18
+
+			// Selection highlight
+			if selectedPiece == i then
+				local hlw = w * pieceDrawSize + 6
+				local hlh = h * pieceDrawSize + 6
+				screen.setAlpha(0.2)
+				screen.fillRect(slotCx, slotCy, hlw, hlh, pieceColors[ci])
+				screen.setAlpha(1)
+				screen.drawRect(slotCx, slotCy, hlw, hlh, "rgba(255,255,255,0.4)")
+			end
+
+			// Draw piece blocks
+			local pieceLeft = slotCx - w * pieceDrawSize / 2
+			local pieceTop = slotCy + h * pieceDrawSize / 2
+			for py = 0 to h - 1
+				for px = 0 to w - 1
+					if getPieceCell(pieceIdx, px, py) then
+						local bcx = pieceLeft + px * pieceDrawSize + pieceDrawSize / 2
+						local bcy = pieceTop - py * pieceDrawSize - pieceDrawSize / 2
+						drawBlock(bcx, bcy, pieceDrawSize - 1, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+					end
+				end
+			end
+		end
+	end
+end
+
+drawDragPiece = function()
+	if dragIdx == -1 then return end
+
+	local pieceIdx = hand[dragIdx]
+	local w = getPieceW(pieceIdx)
+	local h = getPieceH(pieceIdx)
+	local ci = handColors[dragIdx]
+	local drawSize = cellSize
+
+	// Draw at drag position, offset above finger
+	local dx = dragScreenX
+	local dy = dragScreenY + h * drawSize / 2 + 15
+
+	screen.setAlpha(0.85)
+	local pieceLeft = dx - w * drawSize / 2
+	local pieceTop = dy + h * drawSize / 2
+	for py = 0 to h - 1
+		for px = 0 to w - 1
+			if getPieceCell(pieceIdx, px, py) then
+				local bcx = pieceLeft + px * drawSize + drawSize / 2
+				local bcy = pieceTop - py * drawSize - drawSize / 2
+				drawBlock(bcx, bcy, drawSize - 1, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+			end
+		end
+	end
+	screen.setAlpha(1)
+end
+
+// ========== GAME OVER ==========
+
+drawGameOver = function()
+	local sw = screen.width
+	local sh = screen.height
+
+	local alpha = min(gameoverTimer / 60, 0.75)
+	screen.fillRect(0, 0, sw, sh, "rgba(0,0,0," + alpha + ")")
+
+	if gameoverTimer > 30 then
+		local titleSz = floor(sw * 0.1)
+		local scoreSz = floor(sw * 0.08)
+		local labelSz = floor(sw * 0.04)
+		local smallSz = floor(sw * 0.035)
+
+		drawTextOutline("GAME", 0, sh * 0.15, titleSz, "rgb(186,19,38)", "rgb(100,8,18)")
+		drawTextOutline("OVER", 0, sh * 0.15 - titleSz - 4, titleSz, "rgb(186,19,38)", "rgb(100,8,18)")
+
+		screen.drawText("SCORE", 0, 0, labelSz, "rgb(150,150,170)")
+
+		local scoreStr = "" + score
+		drawTextOutline(scoreStr, 0, -labelSz - 8, scoreSz, "#FFF", "#000")
+
+		local best = max(highScore, score)
+		screen.drawText("BEST: " + best, 0, -sh * 0.15, smallSz, "rgb(120,120,140)")
+
+		if score > highScore then
+			local pulse = 0.5 + abs(sin(menuPulse * 0.06)) * 0.5
+			local medSz = floor(sw * 0.045)
+			screen.drawText("NEW BEST!", 0, -sh * 0.22, medSz, "rgba(255,200,0," + pulse + ")")
+		end
+	end
+
+	if gameoverTimer > 120 then
+		local blink = 0.3 + abs(sin(menuPulse * 0.04)) * 0.7
+		local smallSz = floor(sw * 0.04)
+		screen.drawText("TAP TO CONTINUE", 0, -sh * 0.32, smallSz, "rgba(255,255,255," + blink + ")")
+	end
+end
+
+// ========== HELPERS ==========
+
+// Draw text with outline (like bird game)
+drawTextOutline = function(text, x, y, size, color, outlineColor)
+	screen.drawText(text, x + 1, y + 1, size, outlineColor)
+	screen.drawText(text, x - 1, y + 1, size, outlineColor)
+	screen.drawText(text, x + 1, y - 1, size, outlineColor)
+	screen.drawText(text, x - 1, y - 1, size, outlineColor)
+	screen.drawText(text, x, y, size, color)
+end
+
+// Draw a block with 3D border effect (center-anchored)
+drawBlock = function(x, y, size, color, darkColor, lightColor)
+	local border = max(1, floor(size * 0.1))
+	local half = size / 2
+	// Main fill
+	screen.fillRect(x, y, size, size, color)
+	// Top highlight
+	screen.fillRect(x, y + half - border / 2, size, border, lightColor)
+	// Left highlight
+	screen.fillRect(x - half + border / 2, y, border, size, lightColor)
+	// Bottom shadow
+	screen.fillRect(x, y - half + border / 2, size, border, darkColor)
+	// Right shadow
+	screen.fillRect(x + half - border / 2, y, border, size, darkColor)
+end

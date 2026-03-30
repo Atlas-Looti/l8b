@@ -1,0 +1,31 @@
+// Sound effects for BlockParti
+
+playPlace = function()
+	audio.beep("square tempo 20000 volume 15 span 80 C5 to E5")
+end
+
+playLineClear = function(count)
+	if count >= 3 then
+		audio.beep("square tempo 8000 volume 20 span 120 C5 E5 G5 C6")
+	elsif count == 2 then
+		audio.beep("square tempo 10000 volume 18 span 100 C5 E5 G5")
+	else
+		audio.beep("square tempo 12000 volume 16 span 80 C5 E5")
+	end
+end
+
+playCombo = function()
+	audio.beep("saw tempo 6000 volume 12 span 150 G5 B5 D6 G6")
+end
+
+playGameOver = function()
+	audio.beep("saw tempo 4000 volume 25 span 200 C4 to C2")
+end
+
+playSelect = function()
+	audio.beep("square tempo 30000 volume 10 span 40 E5")
+end
+
+playMenuClick = function()
+	audio.beep("square tempo 25000 volume 12 span 50 C5")
+end
