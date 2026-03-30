@@ -218,7 +218,7 @@ handleTouch = function()
 				score += bonus
 				noComboCount = 0
 				flashTimer = 15
-				boardShake = 8
+				boardShake = 14
 				playLineClear(cleared)
 				if combo > 1 then
 					playCombo()
