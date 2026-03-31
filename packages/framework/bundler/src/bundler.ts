@@ -7,7 +7,7 @@
  * - Proper runtime bundling
  */
 import { copyFileSync, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { type BuildOptions, createLogger } from "@l8b/framework-shared";
 import { compileSource } from "@l8b/compiler";
 import { type ResolvedConfig, discoverResources } from "@l8b/framework-config";
@@ -237,7 +237,7 @@ export class L8BBundler {
 				const outputPath = join(this.options.outDir, filePath);
 
 				// Ensure directory exists
-				const dir = join(this.options.outDir, filePath.substring(0, filePath.lastIndexOf("/")));
+				const dir = dirname(outputPath);
 				if (dir !== this.options.outDir && !existsSync(dir)) {
 					mkdirSync(dir, { recursive: true });
 				}

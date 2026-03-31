@@ -20,7 +20,8 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
 			"require": "./dist/index.js"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"dependencies": {
 		"@l8b/vm": "workspace:*",
