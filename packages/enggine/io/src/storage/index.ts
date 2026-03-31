@@ -195,7 +195,7 @@ export class StorageService {
 		return result;
 	}
 
-	private interfaceCache: ReturnType<StorageService["getInterface"]> | null = null;
+	private interfaceCache: { set: (name: string, value: unknown) => void; get: (name: string) => unknown } | null = null;
 
 	/**
 	 * Get storage interface for game code

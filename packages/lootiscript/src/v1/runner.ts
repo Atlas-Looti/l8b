@@ -169,6 +169,7 @@ export class Runner {
 	cpu_load: number;
 	triggers_controls_update: boolean;
 	updateControls?: () => void;
+	onNativeError: ((error: unknown) => void) | null;
 	profiler: VMProfiler;
 
 	constructor(l8bvm: L8BVM) {
@@ -181,9 +182,18 @@ export class Runner {
 		this.fps_max = 60;
 		this.cpu_load = 0;
 		this.triggers_controls_update = false;
+		this.onNativeError = null;
 		// Main thread and profiler are initialized lazily in init()
 		// to ensure proper dependency setup with L8BVM context
 		this.profiler = new VMProfiler(null as any);
+	}
+
+	reportNativeError(error: unknown): void {
+		if (this.onNativeError) {
+			this.onNativeError(error);
+		} else {
+			console.error(error);
+		}
 	}
 
 	init(): boolean {

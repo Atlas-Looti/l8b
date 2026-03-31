@@ -45,7 +45,12 @@ export class AudioCore {
 		this.wakeupList.push(item);
 	}
 
-	private interfaceCache: ReturnType<AudioCore["getInterface"]> | null = null;
+	private interfaceCache: {
+		beep: (sequence: string) => void;
+		cancelBeeps: () => void;
+		playSound: (sound: unknown, volume?: number, pitch?: number, pan?: number, loopit?: boolean) => number;
+		playMusic: (music: unknown, volume?: number, loopit?: boolean) => number;
+	} | null = null;
 
 	/**
 	 * Get interface for game code

@@ -6,80 +6,80 @@
 
 export const ListLib = {
 	// Functional programming methods (map, filter, reduce, etc.)
-	map: (arr: any[], fn: (item: any, index: number) => any): any[] => arr.map(fn),
+	map: <T, R>(arr: T[], fn: (item: T, index: number) => R): R[] => arr.map(fn),
 
-	filter: (arr: any[], fn: (item: any, index: number) => boolean): any[] => arr.filter(fn),
+	filter: <T>(arr: T[], fn: (item: T, index: number) => boolean): T[] => arr.filter(fn),
 
-	reduce: (arr: any[], fn: (acc: any, item: any, index: number) => any, initial: any): any => arr.reduce(fn, initial),
+	reduce: <T, R>(arr: T[], fn: (acc: R, item: T, index: number) => R, initial: R): R => arr.reduce(fn, initial),
 
-	find: (arr: any[], fn: (item: any, index: number) => boolean): any => arr.find(fn) ?? null,
+	find: <T>(arr: T[], fn: (item: T, index: number) => boolean): T | null => arr.find(fn) ?? null,
 
-	findIndex: (arr: any[], fn: (item: any, index: number) => boolean): number => arr.findIndex(fn),
+	findIndex: <T>(arr: T[], fn: (item: T, index: number) => boolean): number => arr.findIndex(fn),
 
-	some: (arr: any[], fn: (item: any, index: number) => boolean): boolean => arr.some(fn),
+	some: <T>(arr: T[], fn: (item: T, index: number) => boolean): boolean => arr.some(fn),
 
-	every: (arr: any[], fn: (item: any, index: number) => boolean): boolean => arr.every(fn),
+	every: <T>(arr: T[], fn: (item: T, index: number) => boolean): boolean => arr.every(fn),
 
 	// Array manipulation methods (non-mutating, returns new arrays)
-	reverse: (arr: any[]): any[] => [...arr].reverse(),
+	reverse: <T>(arr: T[]): T[] => [...arr].reverse(),
 
-	sort: (arr: any[], fn?: (a: any, b: any) => number): any[] => [...arr].sort(fn),
+	sort: <T>(arr: T[], fn?: (a: T, b: T) => number): T[] => [...arr].sort(fn),
 
-	slice: (arr: any[], start: number, end?: number): any[] => arr.slice(start, end),
+	slice: <T>(arr: T[], start: number, end?: number): T[] => arr.slice(start, end),
 
-	concat: (...arrays: any[][]): any[] => ([] as any[]).concat(...arrays),
+	concat: <T>(...arrays: T[][]): T[] => ([] as T[]).concat(...arrays),
 
-	flat: (arr: any[], depth: number = 1): any[] => arr.flat(depth),
+	flat: <T>(arr: T[], depth: number = 1): unknown[] => arr.flat(depth),
 
-	flatMap: (arr: any[], fn: (item: any, index: number) => any): any[] => arr.flatMap(fn),
+	flatMap: <T>(arr: T[], fn: (item: T, index: number) => unknown): unknown[] => arr.flatMap(fn),
 
 	// Search and lookup methods
-	indexOf: (arr: any[], item: any, fromIndex?: number): number => arr.indexOf(item, fromIndex),
+	indexOf: <T>(arr: T[], item: T, fromIndex?: number): number => arr.indexOf(item, fromIndex),
 
-	lastIndexOf: (arr: any[], item: any, fromIndex?: number): number => arr.lastIndexOf(item, fromIndex),
+	lastIndexOf: <T>(arr: T[], item: T, fromIndex?: number): number => arr.lastIndexOf(item, fromIndex),
 
-	includes: (arr: any[], item: any, fromIndex?: number): boolean => arr.includes(item, fromIndex),
+	includes: <T>(arr: T[], item: T, fromIndex?: number): boolean => arr.includes(item, fromIndex),
 
 	// Array length accessor
-	length: (arr: any[]): number => arr.length,
+	length: <T>(arr: T[]): number => arr.length,
 
 	// Element access methods (first, last, at)
-	first: (arr: any[]): any => arr[0] ?? null,
+	first: <T>(arr: T[]): T | null => arr[0] ?? null,
 
-	last: (arr: any[]): any => arr[arr.length - 1] ?? null,
+	last: <T>(arr: T[]): T | null => arr[arr.length - 1] ?? null,
 
-	at: (arr: any[], index: number): any => {
+	at: <T>(arr: T[], index: number): T | null => {
 		// Support negative indices (Python-style)
 		const normalized = index < 0 ? arr.length + index : index;
 		return arr[normalized] ?? null;
 	},
 
 	// Array mutation methods (modifies original array and returns it)
-	push: (arr: any[], ...items: any[]): any[] => {
+	push: <T>(arr: T[], ...items: T[]): T[] => {
 		arr.push(...items);
 		return arr;
 	},
 
-	pop: (arr: any[]): any => arr.pop() ?? null,
+	pop: <T>(arr: T[]): T | null => arr.pop() ?? null,
 
-	shift: (arr: any[]): any => arr.shift() ?? null,
+	shift: <T>(arr: T[]): T | null => arr.shift() ?? null,
 
-	unshift: (arr: any[], ...items: any[]): any[] => {
+	unshift: <T>(arr: T[], ...items: T[]): T[] => {
 		arr.unshift(...items);
 		return arr;
 	},
 
-	splice: (arr: any[], start: number, deleteCount?: number, ...items: any[]): any[] =>
+	splice: <T>(arr: T[], start: number, deleteCount?: number, ...items: T[]): T[] =>
 		arr.splice(start, deleteCount ?? arr.length - start, ...items),
 
 	// Utility methods for common array operations
-	fill: (arr: any[], value: any, start?: number, end?: number): any[] => [...arr].fill(value, start, end),
+	fill: <T>(arr: T[], value: T, start?: number, end?: number): T[] => [...arr].fill(value, start, end),
 
-	join: (arr: any[], separator: string = ","): string => arr.join(separator),
+	join: <T>(arr: T[], separator: string = ","): string => arr.join(separator),
 
-	unique: (arr: any[]): any[] => [...new Set(arr)],
+	unique: <T>(arr: T[]): T[] => [...new Set(arr)],
 
-	shuffle: (arr: any[]): any[] => {
+	shuffle: <T>(arr: T[]): T[] => {
 		const result = [...arr];
 		for (let i = result.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -88,8 +88,8 @@ export const ListLib = {
 		return result;
 	},
 
-	chunk: (arr: any[], size: number): any[][] => {
-		const result: any[][] = [];
+	chunk: <T>(arr: T[], size: number): T[][] => {
+		const result: T[][] = [];
 		for (let i = 0; i < arr.length; i += size) {
 			result.push(arr.slice(i, i + size));
 		}

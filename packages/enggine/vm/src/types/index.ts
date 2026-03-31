@@ -32,26 +32,57 @@ export interface SystemAPI {
 }
 
 /**
+ * Storage interface exposed to game code
+ */
+export interface StorageInterface {
+	set: (name: string, value: unknown) => void;
+	get: (name: string) => unknown;
+}
+
+/**
+ * Scene interface exposed to game code
+ */
+export interface SceneInterface {
+	register: (name: string, def: Record<string, unknown>) => void;
+	route: (path: string, sceneName: string) => void;
+	goto: (name: string, params?: Record<string, string>) => void;
+	current: () => string | null;
+}
+
+/**
+ * Router interface exposed to game code
+ */
+export interface RouterInterface {
+	navigate: (path: string) => void;
+	back: () => void;
+	readonly path: string;
+}
+
+/**
  * Global API exposed to game code
+ *
+ * Core service fields (screen, audio, keyboard, etc.) use Record<string, any>
+ * because they are dynamically populated from different core packages with varying shapes.
+ * Helper interfaces above document the expected shape of stable APIs.
  */
 export interface GlobalAPI {
-	screen: any;
-	audio: any;
-	keyboard: any;
-	mouse: any;
-	touch: any;
-	gamepad: any;
+	screen: Record<string, any>;
+	audio: Record<string, any>;
+	keyboard: Record<string, any>;
+	mouse: Record<string, any>;
+	touch: Record<string, any>;
+	gamepad: Record<string, any>;
 	sprites: Record<string, any>;
 	maps: Record<string, any>;
 	sounds: Record<string, any>;
 	music: Record<string, any>;
 	assets: Record<string, any>;
-	storage: any;
-	scene: any;
-	route: any;
-	router: any;
+	storage: Record<string, any>;
+	scene: Record<string, any>;
+	route: Record<string, any>;
+	router: Record<string, any>;
 	system: SystemAPI;
-	fonts?: any;
+	fonts?: Record<string, any>;
 	Sound?: any;
 	Image?: any;
 	Sprite?: any;

@@ -14,6 +14,7 @@
 	"scripts": {
 		"build": "tsup",
 		"clean": "rm -rf dist",
+		"test": "vitest run --passWithNoTests",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

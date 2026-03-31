@@ -12,7 +12,8 @@
 		}
 	},
 	"scripts": {
-		"build": "tsup"
+		"build": "tsup",
+		"test": "vitest run --passWithNoTests"
 	},
 	"keywords": [
 		"lootiscript",

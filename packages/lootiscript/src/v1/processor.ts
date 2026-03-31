@@ -128,6 +128,14 @@ export class Processor {
 		this.profilingEnabled = false;
 	}
 
+	private reportNativeError(error: unknown): void {
+		if (typeof this.runner?.reportNativeError === "function") {
+			this.runner.reportNativeError(error);
+		} else {
+			console.error(error);
+		}
+	}
+
 	getArray(): any[] {
 		return getPooledArray();
 	}
@@ -1447,7 +1455,7 @@ export class Processor {
 									v = f();
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -1457,7 +1465,7 @@ export class Processor {
 									v = f(this.argToNative(stack[stack_index - 1], context));
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index - 1] = v != null ? v : 0;
@@ -1473,7 +1481,7 @@ export class Processor {
 									v = f.apply(null, argv);
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -1556,7 +1564,7 @@ export class Processor {
 									v = f.call(obj);
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -1566,7 +1574,7 @@ export class Processor {
 									v = f.call(obj, this.argToNative(stack[stack_index - 1], context));
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[--stack_index] = v != null ? v : 0;
@@ -1581,7 +1589,7 @@ export class Processor {
 									v = f.apply(obj, argv);
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -1668,7 +1676,7 @@ export class Processor {
 									v = f.call(obj);
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[--stack_index] = v != null ? v : 0;
@@ -1678,7 +1686,7 @@ export class Processor {
 									v = f.call(obj, this.argToNative(stack[stack_index - 2], context));
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index - 2] = v != null ? v : 0;
@@ -1694,7 +1702,7 @@ export class Processor {
 									v = f.apply(obj, argv);
 								} catch (error) {
 									err = error;
-									console.error(err);
+									this.reportNativeError(err);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -1910,7 +1918,7 @@ export class Processor {
 								try {
 									v = f();
 								} catch (e) {
-									console.error(e);
+									this.reportNativeError(e);
 									v = 0;
 								}
 								stack[++stack_index] = v != null ? v : 0;
@@ -1919,7 +1927,7 @@ export class Processor {
 								try {
 									v = f(this.argToNative(stack[stack_index], context));
 								} catch (e) {
-									console.error(e);
+									this.reportNativeError(e);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -1933,7 +1941,7 @@ export class Processor {
 								try {
 									v = f.apply(null, argv);
 								} catch (e) {
-									console.error(e);
+									this.reportNativeError(e);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -2033,7 +2041,7 @@ export class Processor {
 								try {
 									v = f();
 								} catch (e) {
-									console.error(e);
+									this.reportNativeError(e);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
@@ -2042,7 +2050,7 @@ export class Processor {
 								try {
 									v = f(this.argToNative(stack[stack_index - 1], context));
 								} catch (e) {
-									console.error(e);
+									this.reportNativeError(e);
 									v = 0;
 								}
 								stack[stack_index - 1] = v != null ? v : 0;
@@ -2057,7 +2065,7 @@ export class Processor {
 								try {
 									v = f.apply(null, argv);
 								} catch (e) {
-									console.error(e);
+									this.reportNativeError(e);
 									v = 0;
 								}
 								stack[stack_index] = v != null ? v : 0;
