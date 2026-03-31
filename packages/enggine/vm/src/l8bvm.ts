@@ -15,17 +15,35 @@
  */
 
 import { StorageService } from "@l8b/io";
-import { Compiler, Processor, Program, Routine, Runner } from "@l8b/lootiscript";
+import { Routine, Runner } from "@l8b/lootiscript";
 import { createVMContext } from "./context";
 import { setupArrayExtensions } from "./extensions";
 import type { ErrorInfo, GlobalAPI, MetaFunctions, VMContext } from "./types";
 
-// Expose core LootiScript classes to globalThis for Runner access
-// Required for dynamic compilation and execution
-if (typeof globalThis !== "undefined") {
-	(globalThis as any).Processor = Processor;
-	(globalThis as any).Program = Program;
-	(globalThis as any).Compiler = Compiler;
+/**
+ * Extract normalized ErrorInfo from a caught exception.
+ * Centralizes the error-parsing logic shared across run(), call(), and loadRoutine().
+ */
+function extractErrorInfo(err: any, fallbackFile: string, fallbackType: string, runner?: Runner): ErrorInfo {
+	const errorMessage =
+		typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
+			? err.error
+			: err?.message ?? String(err);
+
+	let stackTrace = err?.stackTrace;
+	if (!stackTrace && (runner as any)?.main_thread?.processor?.generateStackTrace) {
+		stackTrace = (runner as any).main_thread.processor.generateStackTrace();
+	}
+
+	return {
+		error: errorMessage,
+		type: err?.type ?? fallbackType,
+		line: err?.line,
+		column: err?.column,
+		file: err?.file ?? fallbackFile,
+		stack: err?.stack,
+		stackTrace,
+	};
 }
 
 export class L8BVM {
@@ -89,26 +107,7 @@ export class L8BVM {
 			}
 			return null;
 		} catch (err: any) {
-			const errorMessage =
-				(typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
-					? err.error
-					: err.message) || String(err);
-
-			// Extract stack trace from processor for better error debugging
-			let stackTrace = err.stackTrace;
-			if (!stackTrace && this.runner?.main_thread?.processor?.generateStackTrace) {
-				stackTrace = this.runner.main_thread.processor.generateStackTrace();
-			}
-
-			this.error_info = {
-				error: errorMessage,
-				type: err.type || "runtime",
-				line: err.line,
-				column: err.column,
-				file: err.file || filename,
-				stack: err.stack,
-				stackTrace: stackTrace,
-			};
+			this.error_info = extractErrorInfo(err, filename, "runtime", this.runner);
 			throw err;
 		}
 	}
@@ -135,26 +134,7 @@ export class L8BVM {
 			this.storage_service.check();
 			return result;
 		} catch (err: any) {
-			const errorMessage =
-				(typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
-					? err.error
-					: err.message) || String(err);
-
-			// Extract stack trace from processor for better error debugging
-			let stackTrace = err.stackTrace;
-			if (!stackTrace && this.runner?.main_thread?.processor?.generateStackTrace) {
-				stackTrace = this.runner.main_thread.processor.generateStackTrace();
-			}
-
-			this.error_info = {
-				error: errorMessage,
-				type: err.type || "call",
-				line: err.line,
-				column: err.column,
-				file: err.file || name,
-				stack: err.stack,
-				stackTrace: stackTrace,
-			};
+			this.error_info = extractErrorInfo(err, name, "call", this.runner);
 			throw err;
 		}
 	}
@@ -188,19 +168,7 @@ export class L8BVM {
 			this.runner.main_thread.addCall(routine);
 			this.runner.tick();
 		} catch (err: any) {
-			const errorMessage =
-				(typeof err === "object" && err !== null && "error" in err && typeof err.error === "string"
-					? err.error
-					: err.message) || String(err);
-
-			this.error_info = {
-				error: errorMessage,
-				type: "compile",
-				line: err.line,
-				column: err.column,
-				file: err.file || filename,
-				stack: err.stack,
-			};
+			this.error_info = extractErrorInfo(err, filename, "compile");
 			throw err;
 		}
 	}

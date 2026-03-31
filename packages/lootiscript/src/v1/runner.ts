@@ -8,17 +8,12 @@ import { JSONLib, ListLib, MathLib, StringLib } from "@l8b/stdlib";
 
 import { Random } from "../random";
 
+import { Compiler } from "./compiler";
 import { Parser } from "./parser";
 import { Processor } from "./processor";
 import { VMProfiler } from "./profiler";
 import { Program } from "./program";
 import { Routine } from "./routine";
-
-// Forward declarations for circular dependencies
-declare class Compiler {
-	program: Program;
-	routine: Routine;
-}
 
 /**
  * L8BVM context interface
@@ -112,7 +107,7 @@ export class Thread {
 				parser = new Parser(f, "");
 				parser.parse();
 				program = parser.program;
-				compiler = new (globalThis as any).Compiler(program);
+				compiler = new Compiler(program);
 				this.processor.load(compiler.routine);
 				if ((f === "update()" || f === "serverUpdate()") && (this.runner as any).updateControls != null) {
 					(this.runner as any).updateControls();
@@ -336,7 +331,7 @@ export class Runner {
 			}
 		}
 		program = parser.program;
-		compiler = new (globalThis as any).Compiler(program);
+		compiler = new Compiler(program);
 		result = null;
 		(compiler.routine as any).callback = (res: any) => {
 			if (callback != null) {

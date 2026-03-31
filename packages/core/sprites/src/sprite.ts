@@ -85,6 +85,24 @@ export class Sprite {
 }
 
 /**
+ * Resolve the actual number of animation frames for a spritesheet image.
+ *
+ * Strategy: if the image height is an exact multiple of its width (square frames),
+ * cap the requested frame count to the available rows. Otherwise trust the caller.
+ *
+ * @param imgWidth  - Natural width of the loaded image
+ * @param imgHeight - Natural height of the loaded image
+ * @param requested - Frame count requested via SpriteProperties (defaults to 1)
+ */
+function resolveFrameCount(imgWidth: number, imgHeight: number, requested: number): number {
+	if (imgWidth > 0 && imgHeight % imgWidth === 0) {
+		const available = imgHeight / imgWidth;
+		return Math.min(requested, available);
+	}
+	return requested;
+}
+
+/**
  * Load a sprite from a URL
  * Supports multi-frame spritesheets (vertical stacking)
  */
@@ -102,25 +120,12 @@ export function LoadSprite(url: string, properties?: SpriteProperties, loaded?: 
 		sprite.ready = 1;
 
 		if (img.width > 0 && img.height > 0) {
-			let numframes = 1;
-			if (properties?.frames) {
-				numframes = properties.frames;
-			}
-
 			if (properties?.fps) {
 				sprite.fps = properties.fps;
 			}
 
 			sprite.width = img.width;
-
-			// Adjust numframes for square sprites if image height is divisible by width
-			if (img.height % sprite.width === 0) {
-				const actualFrames = img.height / sprite.width;
-				if (actualFrames < numframes) {
-					numframes = actualFrames;
-				}
-			}
-
+			const numframes = resolveFrameCount(img.width, img.height, properties?.frames ?? 1);
 			sprite.height = Math.round(img.height / numframes);
 			sprite.frames = [];
 
@@ -153,23 +158,11 @@ export function LoadSprite(url: string, properties?: SpriteProperties, loaded?: 
  */
 export function UpdateSprite(sprite: Sprite, img: HTMLImageElement, properties?: SpriteProperties): void {
 	if (img.width > 0 && img.height > 0) {
-		let numframes = 1;
-		if (properties?.frames) {
-			numframes = properties.frames;
-		}
 		if (properties?.fps) {
 			sprite.fps = properties.fps;
 		}
 		sprite.width = img.width;
-
-		// Adjust numframes for square sprites if image height is divisible by width
-		if (img.height % sprite.width === 0) {
-			const actualFrames = img.height / sprite.width;
-			if (actualFrames < numframes) {
-				numframes = actualFrames;
-			}
-		}
-
+		const numframes = resolveFrameCount(img.width, img.height, properties?.frames ?? 1);
 		sprite.height = Math.round(img.height / numframes);
 		sprite.frames = [];
 

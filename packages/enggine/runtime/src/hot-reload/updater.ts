@@ -62,7 +62,7 @@ export class SourceUpdater {
 				const err: any = Object.assign({}, this.vm.error_info);
 				err.type = "init";
 				err.file = file;
-				this.reportError(err);
+				this.listener.reportError?.(err);
 				return false;
 			}
 
@@ -76,7 +76,7 @@ export class SourceUpdater {
 					if (this.vm.error_info) {
 						const err: any = Object.assign({}, this.vm.error_info);
 						err.type = "init";
-						this.reportError(err);
+						this.listener.reportError?.(err);
 					}
 				}
 			}
@@ -88,19 +88,10 @@ export class SourceUpdater {
 			if (this.reportErrors) {
 				console.error(err);
 				err.file = file;
-				this.reportError(err);
+				this.listener.reportError?.(err);
 				return false;
 			}
 			return false;
-		}
-	}
-
-	/**
-	 * Report error to listener
-	 */
-	private reportError(error: any): void {
-		if (this.listener.reportError) {
-			this.listener.reportError(error);
 		}
 	}
 }

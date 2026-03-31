@@ -2,20 +2,37 @@
  * @l8b/lootiscript - Scripting language for game development
  *
  * A dynamic, easy-to-learn scripting language designed for games.
+ *
+ * Pipeline: source → Tokenizer → Parser → Compiler → Routine (bytecode) → Processor/Runner
+ *
+ * Public surface:
+ * - Tokenizer / Parser / Compiler  — language front-end
+ * - Routine / OPCODES              — bytecode representation
+ * - Processor / Runner / Thread    — execution engine
+ * - Program + AST node classes     — AST node types (mostly used by tooling)
+ * - Random                         — seeded PRNG exposed to scripts
  */
 
-// Core language components
+// ─── Utilities ───────────────────────────────────────────────────────────────
 export { Random } from "./random";
-// Compiler
-export {
-	Compiler,
-	LocalLayer,
-	Locals,
-} from "./v1/compiler";
+
+// ─── Front-end: Lexer → Parser → Compiler ────────────────────────────────────
+export { Tokenizer } from "./v1/tokenizer";
+export { Token } from "./v1/token";
 export { Parser } from "./v1/parser";
-// Runtime
+export { Compiler, LocalLayer, Locals } from "./v1/compiler";
+
+// ─── Bytecode representation ──────────────────────────────────────────────────
+export { Routine, OPCODES } from "./v1/routine";
+
+// ─── Execution engine ─────────────────────────────────────────────────────────
 export { Processor } from "./v1/processor";
-// AST and Program structures
+export { Runner, Thread } from "./v1/runner";
+
+// ─── Debugging / dev tools ────────────────────────────────────────────────────
+export { Transpiler } from "./v1/transpiler";
+
+// ─── AST node types (used by tooling — language-server, compiler) ─────────────
 export {
 	After,
 	Assignment,
@@ -47,20 +64,3 @@ export {
 	Variable,
 	While,
 } from "./v1/program";
-
-// VM and bytecode
-export {
-	OPCODES,
-	Routine,
-} from "./v1/routine";
-export {
-	Runner,
-	Thread,
-} from "./v1/runner";
-// Lexer and Parser
-export {
-	Token,
-	type Tokenizer as ITokenizer,
-} from "./v1/token";
-export { Tokenizer } from "./v1/tokenizer";
-export { Transpiler } from "./v1/transpiler";

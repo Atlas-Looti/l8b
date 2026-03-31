@@ -11,12 +11,11 @@
  */
 
 import { AudioCore } from "@l8b/audio";
-import { Random, Routine } from "@l8b/lootiscript";
 import { Palette } from "@l8b/palette";
 import { SceneManager } from "@l8b/scene";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
-import { type GlobalAPI, L8BVM, type MetaFunctions } from "@l8b/vm";
+import { type GlobalAPI, L8BVM, type MetaFunctions, Random, Routine } from "@l8b/vm";
 import { AssetLoader, createSoundClass, Image, Map, Sprite } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";

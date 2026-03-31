@@ -5,6 +5,9 @@
 import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import type { ColorHex, ColorRGB, PaletteData } from "../types";
 
+/** Matches a valid 6-digit hex color string, e.g. "#1A2B3C" */
+const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/;
+
 export interface PaletteOptions {
 	colors?: ColorHex[];
 	name?: string;
@@ -43,7 +46,7 @@ export class Palette {
 	 */
 	private validatePaletteFormat(colors: any[]): boolean {
 		if (!Array.isArray(colors)) return false;
-		return colors.every((color) => typeof color === "string" && /^#[0-9A-Fa-f]{6}$/.test(color));
+		return colors.every((color) => typeof color === "string" && HEX_COLOR_REGEX.test(color));
 	}
 
 	/**
@@ -109,7 +112,7 @@ export class Palette {
 		}
 
 		// Validate color format matches hex pattern (#RRGGBB)
-		if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
+		if (!HEX_COLOR_REGEX.test(color)) {
 			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: color });
 			return;
 		}

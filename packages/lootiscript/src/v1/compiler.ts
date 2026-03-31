@@ -44,15 +44,7 @@ import {
 	While,
 } from "./program";
 import { OPCODES, Routine } from "./routine";
-
-// Forward declaration for Processor (circular dependency)
-declare class Processor {
-	load(routine: Routine): void;
-	run(context: any): any;
-}
-
-// Forward declaration for Locals and LocalLayer (defined below)
-// They are now exported classes, so we can reference them directly
+import { Processor } from "./processor";
 
 /**
  * Compiler - Compiles LootiScript AST to bytecode
@@ -1201,7 +1193,7 @@ export class Compiler {
 
 	exec(context: any): any {
 		if (!this.processor) {
-			this.processor = new (globalThis as any).Processor();
+			this.processor = new Processor(null as any);
 		}
 		if (!this.routine) {
 			throw new Error("No routine to execute");

@@ -36,14 +36,10 @@ export function setupArrayExtensions(): void {
 		};
 	}
 
-	// Remove element at index - alias for remove() (returns removed element or 0)
+	// removeAt — intentional alias for remove(), kept for LootiScript API compatibility
+	// LootiScript exposes both list.remove(i) and list.removeAt(i) as equivalent calls.
 	if (!Array.prototype.removeAt) {
-		Array.prototype.removeAt = function (index: number) {
-			if (index >= 0 && index < this.length) {
-				return this.splice(index, 1)[0];
-			}
-			return 0;
-		};
+		Array.prototype.removeAt = Array.prototype.remove;
 	}
 
 	// Remove first occurrence of element (returns removed element or 0 if not found)
