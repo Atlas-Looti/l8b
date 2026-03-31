@@ -6,6 +6,7 @@
  * - Manage circular buffer
  * - Exclude non-serializable objects
  */
+import { DEFAULT_RECORD_BUFFER_FRAMES } from "../constants";
 
 import type { StateSnapshot } from "../types";
 
@@ -16,8 +17,7 @@ export class StateRecorder {
 	private maxLength: number;
 	private excluded: any[] = [];
 
-	constructor(maxLength = 60 * 30) {
-		// Default buffer size: 30 seconds at 60fps (1800 frames)
+	constructor(maxLength = DEFAULT_RECORD_BUFFER_FRAMES) {
 		this.maxLength = maxLength;
 	}
 

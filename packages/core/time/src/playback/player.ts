@@ -6,6 +6,7 @@
  * - Manage loop playback
  * - Control playback position
  */
+import { DEFAULT_LOOP_BUFFER_FRAMES } from "../constants";
 
 import type { StateSnapshot } from "../types";
 
@@ -16,8 +17,7 @@ export class StatePlayer {
 	private loopLength: number;
 	private loopCallback: (() => void) | null = null;
 
-	constructor(loopLength = 60 * 4) {
-		// Default loop buffer size: 4 seconds at 60fps (240 frames)
+	constructor(loopLength = DEFAULT_LOOP_BUFFER_FRAMES) {
 		this.loopLength = loopLength;
 	}
 

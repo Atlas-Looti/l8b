@@ -8,6 +8,7 @@
  */
 
 import { Sound, Music } from "@l8b/audio";
+import { DEFAULT_BLOCK_SIZE, LOADING_BAR_THROTTLE_MS } from "../constants";
 import { loadMap } from "@l8b/map";
 import { loadSprite } from "@l8b/sprites";
 import type { AssetCollections, Resources } from "../types";
@@ -110,8 +111,8 @@ export class AssetLoader {
 							ready: false,
 							width: 0,
 							height: 0,
-							block_width: 16,
-							block_height: 16,
+							block_width: DEFAULT_BLOCK_SIZE,
+							block_height: DEFAULT_BLOCK_SIZE,
 							data: [],
 						} as any;
 						resolve();
@@ -261,8 +262,8 @@ export class AssetLoader {
 	 * Show loading bar on screen
 	 */
 	showLoadingBar(screenInterface: any): void {
-		// Throttle to 60fps
-		if (this.loadingBarTime && Date.now() < this.loadingBarTime + 16) {
+		// Throttle redraws
+		if (this.loadingBarTime && Date.now() < this.loadingBarTime + LOADING_BAR_THROTTLE_MS) {
 			return;
 		}
 		this.loadingBarTime = Date.now();

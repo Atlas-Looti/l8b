@@ -8,6 +8,7 @@
  */
 
 import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { DEFAULT_LOOP_BUFFER_FRAMES, DEFAULT_RECORD_BUFFER_FRAMES } from "../constants";
 import { StatePlayer } from "../playback";
 import { StateRecorder } from "../recording";
 import type { TimeMachineMessage, TimeMachineStatus } from "../types";
@@ -32,8 +33,8 @@ export class TimeMachine {
 
 	constructor(runtime: TimeMachineRuntime) {
 		this.runtime = runtime;
-		this.recorder = new StateRecorder(60 * 30); // Buffer: 30 seconds at 60fps
-		this.player = new StatePlayer(60 * 4); // Loop buffer: 4 seconds at 60fps
+		this.recorder = new StateRecorder(DEFAULT_RECORD_BUFFER_FRAMES);
+		this.player = new StatePlayer(DEFAULT_LOOP_BUFFER_FRAMES);
 
 		// Configure which objects should be excluded from state recording
 		this.setupExclusions();

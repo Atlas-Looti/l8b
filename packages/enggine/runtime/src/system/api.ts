@@ -3,6 +3,7 @@
  */
 
 import type { SystemAPI } from "@l8b/vm";
+import { DEFAULT_FPS, DEFAULT_UPDATE_RATE } from "../constants";
 import type { RuntimeListener } from "../types";
 
 export class System {
@@ -20,13 +21,13 @@ export class System {
 			},
 
 			// FPS
-			fps: 60,
+			fps: DEFAULT_FPS,
 
 			// CPU load
 			cpu_load: 0,
 
 			// Update rate
-			update_rate: 60,
+			update_rate: DEFAULT_UPDATE_RATE,
 
 			// Language
 			get language() {

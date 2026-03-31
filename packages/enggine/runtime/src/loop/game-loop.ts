@@ -1,3 +1,5 @@
+import { DEFAULT_FPS, DEFAULT_UPDATE_RATE, FRAME_TIME_MS, LOADING_BAR_THROTTLE_MS, PAUSE_THRESHOLD_MS } from "../constants";
+
 /**
  * GameLoop - Manages the game update/draw cycle
  *
@@ -38,10 +40,10 @@ export class GameLoop {
 		this.state = {
 			currentFrame: 0,
 			floatingFrame: 0,
-			dt: 1000 / 60,
+			dt: FRAME_TIME_MS,
 			lastTime: performance.now(),
-			fps: 60,
-			updateRate: 60,
+			fps: DEFAULT_FPS,
+			updateRate: DEFAULT_UPDATE_RATE,
 		};
 		// Bind loop once
 		this.loop = this.loop.bind(this);
@@ -91,8 +93,8 @@ export class GameLoop {
 		const time = Date.now();
 
 		// Recover from long pause (tab switch, etc)
-		if (Math.abs(time - this.state.lastTime) > 160) {
-			this.state.lastTime = time - 16;
+		if (Math.abs(time - this.state.lastTime) > PAUSE_THRESHOLD_MS) {
+			this.state.lastTime = time - LOADING_BAR_THROTTLE_MS;
 		}
 
 		// Calculate delta time
@@ -121,7 +123,7 @@ export class GameLoop {
 		let ds = Math.min(10, Math.round(this.state.floatingFrame - this.state.currentFrame));
 
 		// Correction for 60fps (reduce jitter)
-		if ((ds === 0 || ds === 2) && updateRate === 60 && Math.abs(fps - 60) < 2) {
+		if ((ds === 0 || ds === 2) && updateRate === DEFAULT_UPDATE_RATE && Math.abs(fps - DEFAULT_FPS) < 2) {
 			ds = 1;
 			this.state.floatingFrame = this.state.currentFrame + 1;
 		}

@@ -231,15 +231,21 @@ export class SceneManager {
 		return this.activeScene;
 	}
 
+	private interfaceCache: any = null;
+
 	/**
 	 * Get public API interface for VM
 	 */
 	getInterface(): any {
-		return {
+		if (this.interfaceCache) {
+			return this.interfaceCache;
+		}
+		this.interfaceCache = {
 			register: (name: string, def: any) => this.registerScene(name, def),
 			route: (path: string, sceneName: string) => this.registerRoute(path, sceneName),
 			goto: (name: string, params: any) => this.setActiveScene(name, params),
 			current: () => this.activeSceneName,
 		};
+		return this.interfaceCache;
 	}
 }

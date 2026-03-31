@@ -3,6 +3,7 @@
  * Converts music notation strings into beep sequences
  * Example: "square tempo 120 C4 D4 E4 F4"
  */
+import { A4_FREQUENCY, A4_MIDI_NOTE, SEMITONE_RATIO } from "../constants";
 export class Beeper {
 	private audio: any;
 	private notes: Record<string | number, number> = {};
@@ -74,7 +75,7 @@ export class Beeper {
 						note = this.notes[t];
 						this.currentOctave = Math.floor(note / 12);
 						sequence.push({
-							frequency: 440 * (2 ** (1 / 12)) ** (note - 69),
+							frequency: A4_FREQUENCY * SEMITONE_RATIO ** (note - A4_MIDI_NOTE),
 							volume: this.currentVolume,
 							span: this.currentSpan,
 							duration: this.currentDuration,
@@ -84,7 +85,7 @@ export class Beeper {
 						// Note without octave (e.g., "C")
 						note = this.plainNotes[t] + this.currentOctave * 12;
 						sequence.push({
-							frequency: 440 * (2 ** (1 / 12)) ** (note - 69),
+							frequency: A4_FREQUENCY * SEMITONE_RATIO ** (note - A4_MIDI_NOTE),
 							volume: this.currentVolume,
 							span: this.currentSpan,
 							duration: this.currentDuration,
@@ -99,7 +100,7 @@ export class Beeper {
 					} else if (t === "-") {
 						// Rest/silence
 						sequence.push({
-							frequency: 440,
+							frequency: A4_FREQUENCY,
 							volume: 0,
 							span: this.currentSpan,
 							duration: this.currentDuration,
@@ -109,7 +110,7 @@ export class Beeper {
 						// End loop
 						if (loops.length > 0 && sequence.length > 0) {
 							sequence.push({
-								frequency: 440,
+								frequency: A4_FREQUENCY,
 								volume: 0,
 								span: this.currentSpan,
 								duration: 0,
@@ -187,7 +188,7 @@ export class Beeper {
 							const step = n > note ? 1 : -1;
 							for (let i = note + step; step > 0 ? i <= n : i >= n; i += step) {
 								sequence.push({
-									frequency: 440 * (2 ** (1 / 12)) ** (i - 69),
+									frequency: A4_FREQUENCY * SEMITONE_RATIO ** (i - A4_MIDI_NOTE),
 									volume: this.currentVolume,
 									span: this.currentSpan,
 									duration: this.currentDuration,
@@ -205,7 +206,7 @@ export class Beeper {
 		if (loops.length > 0 && sequence.length > 0) {
 			const lop = loops.splice(loops.length - 1, 1)[0];
 			sequence.push({
-				frequency: 440,
+				frequency: A4_FREQUENCY,
 				volume: 0,
 				span: this.currentSpan,
 				duration: 0,

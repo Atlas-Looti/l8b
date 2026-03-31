@@ -45,17 +45,23 @@ export class AudioCore {
 		this.wakeupList.push(item);
 	}
 
+	private interfaceCache: ReturnType<AudioCore["getInterface"]> | null = null;
+
 	/**
 	 * Get interface for game code
 	 */
 	public getInterface() {
-		return {
+		if (this.interfaceCache) {
+			return this.interfaceCache;
+		}
+		this.interfaceCache = {
 			beep: (sequence: string) => this.beep(sequence),
 			cancelBeeps: () => this.cancelBeeps(),
 			playSound: (sound: any, volume?: number, pitch?: number, pan?: number, loopit?: boolean) =>
 				this.playSound(sound, volume, pitch, pan, loopit),
 			playMusic: (music: any, volume?: number, loopit?: boolean) => this.playMusic(music, volume, loopit),
 		};
+		return this.interfaceCache;
 	}
 
 	/**

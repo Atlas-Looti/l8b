@@ -195,13 +195,19 @@ export class StorageService {
 		return result;
 	}
 
+	private interfaceCache: ReturnType<StorageService["getInterface"]> | null = null;
+
 	/**
 	 * Get storage interface for game code
 	 */
 	getInterface() {
-		return {
+		if (this.interfaceCache) {
+			return this.interfaceCache;
+		}
+		this.interfaceCache = {
 			set: (name: string, value: any) => this.set(name, value),
 			get: (name: string) => this.get(name),
 		};
+		return this.interfaceCache;
 	}
 }
