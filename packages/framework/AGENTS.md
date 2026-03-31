@@ -169,8 +169,8 @@ packages/framework/
 Run framework tests:
 
 ```bash
-pnpm test --filter "@l8b/cli"
-pnpm test --filter "@l8b/framework-*"
+bun test --filter "@l8b/cli"
+bun test --filter "@l8b/framework-*"
 ```
 
 ## Development
@@ -178,13 +178,13 @@ pnpm test --filter "@l8b/framework-*"
 Build all framework packages:
 
 ```bash
-pnpm build --filter "./packages/framework/**"
+bun build --filter "./packages/framework/**"
 ```
 
 Watch mode:
 
 ```bash
-pnpm dev --filter "./packages/framework/**"
+bun dev --filter "./packages/framework/**"
 ```
 
 ## Integration with Core

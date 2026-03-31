@@ -2,7 +2,7 @@ import { DEFAULT_PATH } from "./constants";
 import type { RouteManager } from "./route-manager";
 import type { SceneManager } from "./scene-manager";
 import type { RouterState } from "./types";
-import { isBrowser, normalizePath } from "./utils";
+import { isBrowser, normalizeScenePath } from "./utils";
 
 export class Router {
 	private routeManager: RouteManager;
@@ -39,7 +39,7 @@ export class Router {
 			return;
 		}
 
-		const normalizedPath = normalizePath(path);
+		const normalizedPath = normalizeScenePath(path);
 		if (normalizedPath === this.state.path) {
 			return;
 		}
@@ -57,7 +57,7 @@ export class Router {
 			return;
 		}
 
-		const normalizedPath = normalizePath(path);
+		const normalizedPath = normalizeScenePath(path);
 		this.updateBrowserHistory(normalizedPath, "replace");
 		this.handlePathChange(normalizedPath);
 	}
@@ -110,7 +110,7 @@ export class Router {
 	 * @param path Path to match against routes
 	 */
 	private handlePathChange(path: string): void {
-		const normalizedPath = normalizePath(path);
+		const normalizedPath = normalizeScenePath(path);
 		const match = this.routeManager.match(normalizedPath);
 
 		if (match) {

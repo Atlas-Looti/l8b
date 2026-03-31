@@ -8,63 +8,63 @@ Quick reference for common development tasks in the l8b monorepo.
 # Clone and install
 git clone <repo-url>
 cd l8b
-pnpm install
-pnpm run build
+bun install
+bun run build
 ```
 
 ## Daily Development
 
 ```bash
 # Start all packages in watch mode
-pnpm run dev
+bun run dev
 
 # Run tests in watch mode
-pnpm run test:watch
+bun run test:watch
 
 # Format and lint
-pnpm run format
-pnpm run lint
+bun run format
+bun run lint
 ```
 
 ## Building
 
 ```bash
 # Build all packages
-pnpm run build
+bun run build
 
 # Build with type checking
-pnpm run check-types
-pnpm run build
+bun run check-types
+bun run build
 ```
 
 ## Testing
 
 ```bash
 # Run all tests
-pnpm run test
+bun run test
 
 # Watch mode
-pnpm run test:watch
+bun run test:watch
 
 # Coverage report
-pnpm run test:coverage
+bun run test:coverage
 
 # Test specific package
 cd packages/core/sprites
-pnpm run test
+bun run test
 ```
 
 ## Documentation
 
 ```bash
 # Start docs dev server
-pnpm run docs:dev
+bun run docs:dev
 
 # Build docs
-pnpm run docs:build
+bun run docs:build
 
 # Preview built docs
-pnpm run docs:preview
+bun run docs:preview
 ```
 
 ## Working with Packages
@@ -75,16 +75,16 @@ pnpm run docs:preview
 cd packages/core/sprites
 
 # External package
-pnpm add some-package
+bun add some-package
 
 # Workspace package
-pnpm add @l8b/core/screen@workspace:*
+bun add @l8b/core/screen@workspace:*
 ```
 
 ### Create New Package
 
 ```bash
-pnpm run new
+bun run new
 ```
 
 Follow the prompts to create a new package with proper structure.
@@ -93,7 +93,7 @@ Follow the prompts to create a new package with proper structure.
 
 ### Adding a New Core API
 
-1. Create package: `pnpm run new`
+1. Create package: `bun run new`
 2. Implement API in `src/`
 3. Add tests in `tests/`
 4. Add API definition in `tooling/language-server/src/api-definitions/`
@@ -103,14 +103,14 @@ Follow the prompts to create a new package with proper structure.
 
 1. Update API definitions in `tooling/language-server/src/api-definitions/`
 2. Update diagnostics in `tooling/diagnostics/` if needed
-3. Rebuild VSCode extension: `cd packages/tooling/vscode && pnpm run build`
+3. Rebuild VSCode extension: `cd packages/tooling/vscode && bun run build`
 
 ## CI
 
 The CI runs this command:
 
 ```bash
-pnpm run ci
+bun run ci
 ```
 
 Which executes:
@@ -126,21 +126,21 @@ Which executes:
 
 ```bash
 # Clean all build artifacts
-pnpm run clean
+bun run clean
 
 # Reinstall dependencies
 rm -rf node_modules
-pnpm install
+bun install
 
 # Rebuild everything
-pnpm run build
+bun run build
 ```
 
 ### Clear Turbo Cache
 
 ```bash
 rm -rf .turbo
-pnpm run build
+bun run build
 ```
 
 ### Port Already in Use
@@ -168,10 +168,10 @@ packages/<category>/<name>/
 
 ```bash
 # Check which packages would be affected by changes
-pnpm run build --dry-run
+bun run build --dry-run
 
 # Run specific package script
-pnpm --filter @l8b/core/sprites build
+turbo build --filter=@l8b/core/sprites
 
 # Clean node_modules in all packages
 find . -name "node_modules" -type d -prune -exec rm -rf '{}' +

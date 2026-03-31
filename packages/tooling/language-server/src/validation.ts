@@ -1,5 +1,5 @@
 import { createDiagnostic, formatForLSP } from "@l8b/diagnostics";
-import { Parser } from "@l8b/lootiscript/dist/v1/parser";
+import { Parser } from "@l8b/lootiscript";
 import { type Connection, type Diagnostic, DiagnosticSeverity } from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { API_ACCESS_REGEX, GLOBAL_API } from "./api-definitions/index";

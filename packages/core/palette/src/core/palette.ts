@@ -2,7 +2,7 @@
  * Palette - Color palette management
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import type { ColorHex, ColorRGB, PaletteData } from "../types";
 
 export interface PaletteOptions {
@@ -22,16 +22,7 @@ export class Palette {
 		if ("colors" in options && Array.isArray(options.colors)) {
 			// Validate palette format to ensure all colors are valid hex strings
 			if (!this.validatePaletteFormat(options.colors)) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7072, {
-					data: {
-						format: "invalid color array",
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: "invalid color array" });
 				this.colors = [];
 				this.name = "Invalid";
 			} else {
@@ -61,17 +52,7 @@ export class Palette {
 	get(index: number): ColorHex {
 		// Validate color index is a finite, non-negative number
 		if (!isFinite(index) || index < 0) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7073, {
-				data: {
-					index,
-					maxIndex: this.colors.length - 1,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7073, { index, maxIndex: this.colors.length - 1 });
 			return "#000000";
 		}
 
@@ -123,32 +104,13 @@ export class Palette {
 	set(index: number, color: ColorHex): void {
 		// Validate color index is a finite, non-negative number
 		if (!isFinite(index) || index < 0) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7073, {
-				data: {
-					index,
-					maxIndex: this.colors.length - 1,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7073, { index, maxIndex: this.colors.length - 1 });
 			return;
 		}
 
 		// Validate color format matches hex pattern (#RRGGBB)
 		if (!/^#[0-9A-Fa-f]{6}$/.test(color)) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7072, {
-				data: {
-					format: color,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: color });
 			return;
 		}
 
@@ -184,16 +146,7 @@ export class Palette {
 	setPalette(colors: ColorHex[]): void {
 		// Validate palette format to ensure all colors are valid hex strings
 		if (!this.validatePaletteFormat(colors)) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7072, {
-				data: {
-					format: "invalid color array",
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: "invalid color array" });
 			return;
 		}
 

@@ -24,6 +24,7 @@ export {
 	formatForCLI,
 	formatForLSP,
 	formatSimple,
+	reportRuntimeError,
 } from "./core/formatter";
 
 // Export message template system and utilities

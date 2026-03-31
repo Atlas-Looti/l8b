@@ -40,22 +40,22 @@ jobs:
       - name: Version snapshot packages
         run: |
           echo "📝 Versioning packages with snapshot tag: ${{ steps.snapshot-tag.outputs.tag }}"
-          pnpm changeset version --no-git-tag --snapshot ${{ steps.snapshot-tag.outputs.tag }}
+          bunx changeset version --no-git-tag --snapshot ${{ steps.snapshot-tag.outputs.tag }}
 
       - name: Reinstall dependencies after versioning
         run: |
           echo "📦 Reinstalling dependencies with updated versions..."
-          pnpm install
+          bun install
 
       - name: Prepare for publishing
-        run: pnpm changeset:prepublish
+        run: bun run changeset:prepublish
 
       - name: Publish snapshot
         continue-on-error: true
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          pnpm changeset publish --no-git-tag --snapshot ${{ steps.snapshot-tag.outputs.tag }} --tag ${{ steps.snapshot-tag.outputs.tag }} || {
+          bunx changeset publish --no-git-tag --snapshot ${{ steps.snapshot-tag.outputs.tag }} --tag ${{ steps.snapshot-tag.outputs.tag }} || {
             echo "⚠️ Some packages failed to publish (expected if versions exist)"
             exit 0
           }

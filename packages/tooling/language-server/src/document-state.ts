@@ -1,4 +1,4 @@
-import { Parser } from "@l8b/lootiscript/dist/v1/parser";
+import { Parser } from "@l8b/lootiscript";
 import { type Connection, Position, Range } from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { ASTNode, DocumentState, Scope, SymbolInfo } from "./types";

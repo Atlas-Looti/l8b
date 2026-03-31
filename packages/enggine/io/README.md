@@ -110,7 +110,7 @@ end
 ### Installation
 
 ```bash
-pnpm install @l8b/io
+bun add @l8b/io
 ```
 
 ### Usage

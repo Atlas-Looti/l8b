@@ -5,53 +5,28 @@
  * Uses pre-built browser runtime for instant startup
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { existsSync, readFileSync, createReadStream } from "node:fs";
-import { extname, join, dirname } from "node:path";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type readline from "node:readline";
-import { type DevServerOptions, type ProjectResources, MIME_TYPES, createLogger } from "@l8b/framework-shared";
+import { type DevServerOptions, type ProjectResources, createLogger } from "@l8b/framework-shared";
 import { type ResolvedConfig, discoverResources, loadConfig } from "@l8b/framework-config";
-import { compileSource } from "@l8b/compiler";
 import { createWatcher, type L8BWatcher } from "@l8b/framework-watcher";
-import { generateDevHTML, generateHMRClient } from "@l8b/framework-html";
 import { HMRServer } from "./hmr";
 import { bindCLIShortcuts as _bindCLIShortcuts, type BindCLIShortcutsOptions } from "./shortcuts";
+import {
+	type FileHandlerContext,
+	serve404,
+	serve500,
+	serveFile,
+	serveHMRClient,
+	serveIndex,
+	serveRuntime,
+	serveSource,
+	serveStatic,
+} from "./file-handler";
+import { handleFileChange } from "./hmr-handler";
 
 const logger = createLogger("server");
-
-/**
- * Cached pre-built runtime (loaded once from disk)
- */
-let cachedRuntime: string | null = null;
-
-/**
- * Load pre-built browser runtime
- * This uses the pre-built IIFE bundle from @l8b/runtime/dist/browser/
- */
-function loadPrebuiltRuntime(): string {
-	if (cachedRuntime) {
-		return cachedRuntime;
-	}
-
-	// Find the pre-built browser bundle
-	const runtimePath = require.resolve("@l8b/runtime");
-	const runtimeDir = dirname(runtimePath);
-	const browserBundlePath = join(runtimeDir, "browser", "index.js");
-
-	if (!existsSync(browserBundlePath)) {
-		logger.warn("Pre-built browser runtime not found, falling back to main bundle");
-		// Fallback: read the main bundle (not ideal but works)
-		cachedRuntime = readFileSync(runtimePath, "utf-8");
-		return cachedRuntime;
-	}
-
-	logger.info(`Loading pre-built runtime from ${browserBundlePath}`);
-	cachedRuntime = readFileSync(browserBundlePath, "utf-8");
-
-	const sizeKB = (cachedRuntime.length / 1024).toFixed(1);
-	logger.success(`Runtime loaded (${sizeKB} KB)`);
-
-	return cachedRuntime;
-}
 
 /** Maximum number of ports to try when finding an available port */
 const MAX_PORT_ATTEMPTS = 100;
@@ -86,7 +61,6 @@ export class L8BDevServer {
 			...options,
 		};
 		this.config = loadConfig(options.root);
-		// Initialize with empty resources, will be populated in start()
 		this.resources = {
 			sources: [],
 			images: [],
@@ -105,8 +79,19 @@ export class L8BDevServer {
 		this.sourceMap.clear();
 		for (const source of this.resources.sources) {
 			this.sourceMap.set(source.file, source);
-			// Also map .loot to .ms if needed, or handle extension normalization
 		}
+	}
+
+	/**
+	 * Get context for file handler functions
+	 */
+	private getFileHandlerContext(): FileHandlerContext {
+		return {
+			config: this.config,
+			options: this.options,
+			resources: this.resources,
+			sourceMap: this.sourceMap,
+		};
 	}
 
 	/**
@@ -128,21 +113,24 @@ export class L8BDevServer {
 		this.watcher = createWatcher(this.config.srcPath, this.config.publicPath, { initialScan: false });
 
 		// Store unsubscribe function to properly clean up on server stop
-		this.watcherUnsubscribe = this.watcher.on((event) => {
-			this.handleFileChange(event);
+		this.watcherUnsubscribe = this.watcher.on(async (event) => {
+			// Refresh resources before handling event
+			this.resources = await discoverResources(this.config);
+			this.updateResourceMaps();
+
+			handleFileChange({ config: this.config, resources: this.resources, hmr: this.hmr }, event);
 		});
 
 		// Start services
 		this.watcher.start();
 
-		// Find available port using temporary test server (similar to Vite)
+		// Find available port
 		const startPort = this.options.port;
 		const maxPort = startPort + MAX_PORT_ATTEMPTS;
 		const port = await this.findAvailablePort(startPort, maxPort);
-		this.options.port = port; // Update port in options
+		this.options.port = port;
 
 		// Create HMR WebSocket server AFTER port is found
-		// This prevents EADDRINUSE errors during port finding
 		this.hmr = new HMRServer(this.server);
 
 		const url = `http://${this.options.host}:${this.options.port}`;
@@ -158,7 +146,6 @@ export class L8BDevServer {
 			].join("\n"),
 		);
 
-		// Open browser if requested
 		if (this.options.open) {
 			this.openBrowser(url);
 		}
@@ -166,7 +153,6 @@ export class L8BDevServer {
 
 	/**
 	 * Find an available port using a temporary test server
-	 * This prevents race conditions by not reusing the main server during port probing
 	 */
 	private async findAvailablePort(port: number, maxPort: number): Promise<number> {
 		if (port > maxPort) {
@@ -174,7 +160,6 @@ export class L8BDevServer {
 		}
 
 		return new Promise<number>((resolve, reject) => {
-			// Create temporary test server to check port availability
 			const testServer = createServer();
 
 			const onError = (err: NodeJS.ErrnoException) => {
@@ -183,7 +168,6 @@ export class L8BDevServer {
 
 				if (err.code === "EADDRINUSE") {
 					logger.info(`Port ${port} is in use, trying another one...`);
-					// Try next port
 					resolve(this.findAvailablePort(port + 1, maxPort));
 				} else {
 					reject(err);
@@ -194,9 +178,7 @@ export class L8BDevServer {
 
 			testServer.listen(port, this.options.host, () => {
 				testServer.removeListener("error", onError);
-				// Close the test server and use the port for the main server
 				testServer.close(() => {
-					// Now start the main server on the available port
 					this.server!.listen(port, this.options.host, () => {
 						resolve(port);
 					});
@@ -211,7 +193,6 @@ export class L8BDevServer {
 	async stop(): Promise<void> {
 		logger.info("Stopping server...");
 
-		// Remove watcher event listener to prevent memory leak
 		if (this.watcherUnsubscribe) {
 			this.watcherUnsubscribe();
 			this.watcherUnsubscribe = null;
@@ -234,7 +215,6 @@ export class L8BDevServer {
 			this.server = null;
 		}
 
-		// Close readline interface (shortcuts will rebind after restart if needed)
 		if (this._rl) {
 			this._rl.close();
 			this._rl = undefined;
@@ -253,303 +233,37 @@ export class L8BDevServer {
 		logger.debug(`${req.method} ${path}`);
 
 		try {
-			// Route request
+			const ctx = this.getFileHandlerContext();
+
 			if (path === "/" || path === "/index.html") {
-				this.serveIndex(res);
+				serveIndex(ctx, res);
 			} else if (path === "/__l8b_client__.js") {
-				this.serveHMRClient(res);
+				serveHMRClient(ctx, res);
 			} else if (path === "/__l8b_runtime__.js") {
-				this.serveRuntime(res);
+				serveRuntime(res);
 			} else if (path.startsWith("/loot/")) {
-				this.serveSource(path, res);
-			} else if (path.startsWith("/sprites/")) {
-				this.serveStatic(path, res, this.config.publicPath);
-			} else if (path.startsWith("/maps/")) {
-				this.serveStatic(path, res, this.config.publicPath);
-			} else if (path.startsWith("/sounds/")) {
-				this.serveStatic(path, res, this.config.publicPath);
-			} else if (path.startsWith("/music/")) {
-				this.serveStatic(path, res, this.config.publicPath);
-			} else if (path.startsWith("/fonts/")) {
-				this.serveStatic(path, res, this.config.publicPath);
-			} else if (path.startsWith("/assets/")) {
-				this.serveStatic(path, res, this.config.publicPath);
+				serveSource(ctx, path, res);
+			} else if (
+				path.startsWith("/sprites/") ||
+				path.startsWith("/maps/") ||
+				path.startsWith("/sounds/") ||
+				path.startsWith("/music/") ||
+				path.startsWith("/fonts/") ||
+				path.startsWith("/assets/")
+			) {
+				serveStatic(path, res, this.config.publicPath);
 			} else {
-				// Try public directory
 				const publicPath = join(this.config.publicPath, path);
 				if (existsSync(publicPath)) {
-					this.serveFile(publicPath, res);
+					serveFile(publicPath, res);
 				} else {
-					this.serve404(res);
+					serve404(res);
 				}
 			}
 		} catch (err) {
 			logger.error("Request error:", err);
-			this.serve500(res, err as Error);
+			serve500(res, err as Error);
 		}
-	}
-
-	/**
-	 * Serve index HTML
-	 */
-	private serveIndex(res: ServerResponse): void {
-		const html = generateDevHTML({
-			config: this.config,
-			resources: this.resources,
-			mode: "development",
-			port: this.options.port,
-		});
-
-		res.writeHead(200, {
-			"Content-Type": "text/html",
-			"Cache-Control": "no-cache",
-		});
-		res.end(html);
-	}
-
-	/**
-	 * Serve HMR client script
-	 */
-	private serveHMRClient(res: ServerResponse): void {
-		const script = generateHMRClient(this.options.port);
-
-		res.writeHead(200, {
-			"Content-Type": "application/javascript",
-			"Cache-Control": "no-cache",
-		});
-		res.end(script);
-	}
-
-	/**
-	 * Serve runtime script (uses pre-built bundle)
-	 */
-	private serveRuntime(res: ServerResponse): void {
-		try {
-			// Load pre-built runtime (cached after first load)
-			const code = loadPrebuiltRuntime();
-
-			res.writeHead(200, {
-				"Content-Type": "application/javascript",
-				"Cache-Control": "max-age=31536000", // Cache for 1 year (content-addressed)
-			});
-			res.end(code);
-		} catch (err) {
-			logger.error("Failed to serve runtime:", err);
-			this.serve500(res, err as Error);
-		}
-	}
-
-	/**
-	 * Serve source file
-	 */
-	private serveSource(path: string, res: ServerResponse): void {
-		// Extract file name from /loot/filename.loot
-		const fileName = path.replace("/loot/", "");
-
-		// O(1) lookup
-		let source = this.sourceMap.get(fileName);
-
-		// Fallback for .ms extension if not found
-		if (!source && fileName.endsWith(".loot")) {
-			source = this.sourceMap.get(fileName.replace(".loot", ".ms"));
-		}
-
-		if (source && source.content) {
-			res.writeHead(200, {
-				"Content-Type": "text/plain",
-				"Cache-Control": "no-cache",
-			});
-			res.end(source.content);
-		} else {
-			this.serve404(res);
-		}
-	}
-
-	/**
-	 * Serve static file from directory
-	 */
-	private serveStatic(path: string, res: ServerResponse, baseDir: string): void {
-		const filePath = join(baseDir, path);
-
-		if (existsSync(filePath)) {
-			this.serveFile(filePath, res);
-		} else {
-			this.serve404(res);
-		}
-	}
-
-	/**
-	 * Serve a file
-	 */
-	private serveFile(filePath: string, res: ServerResponse): void {
-		const ext = extname(filePath).toLowerCase();
-		const contentType = MIME_TYPES[ext] || "application/octet-stream";
-
-		try {
-			// Use streams for better performance and memory usage
-			const stream = createReadStream(filePath);
-
-			// Handle stream errors
-			stream.on("error", (err) => {
-				logger.error(`Error serving file ${filePath}:`, err);
-				if (!res.headersSent) {
-					this.serve404(res);
-				}
-			});
-
-			res.writeHead(200, {
-				"Content-Type": contentType,
-				"Cache-Control": "max-age=3600",
-			});
-
-			stream.pipe(res);
-		} catch (err) {
-			this.serve404(res);
-		}
-	}
-
-	/**
-	 * Serve 404 response
-	 */
-	private serve404(res: ServerResponse): void {
-		res.writeHead(404, { "Content-Type": "text/plain" });
-		res.end("Not Found");
-	}
-
-	/**
-	 * Serve 500 response
-	 */
-	private serve500(res: ServerResponse, error: Error): void {
-		res.writeHead(500, { "Content-Type": "text/plain" });
-		res.end(`Internal Server Error: ${error.message}`);
-	}
-
-	/**
-	 * Handle file change event
-	 */
-	private async handleFileChange(event: { type: string; path: string; resourceType: string | null }): Promise<void> {
-		logger.info(`File ${event.type}: ${event.path}`);
-
-		// Refresh resources
-		this.resources = await discoverResources(this.config);
-		this.updateResourceMaps();
-
-		// Handle based on resource type
-		switch (event.resourceType) {
-			case "source":
-				this.handleSourceChange(event.path);
-				break;
-
-			case "sprite":
-				this.handleSpriteChange(event.path);
-				break;
-
-			case "map":
-				this.handleMapChange(event.path);
-				break;
-
-			default:
-				// Unknown resource type, trigger full reload
-				this.hmr?.send({
-					type: "full_reload",
-				});
-		}
-	}
-
-	/**
-	 * Handle source file change
-	 */
-	private handleSourceChange(filePath: string): void {
-		const source = this.resources.sources.find((s) => filePath.endsWith(s.file));
-
-		if (!source || !source.content) {
-			logger.warn(`Source not found: ${filePath}`);
-			return;
-		}
-
-		// Compile the source
-		const result = compileSource(source.content, {
-			filePath: source.file,
-			moduleName: source.name,
-			srcDir: this.config.srcPath,
-		});
-
-		if (!result.success) {
-			const errorMsg =
-				result.errors?.map((e) => `${e.file}:${e.line}: ${e.message}`).join("\n") || "Unknown compilation error";
-
-			logger.error(`Compilation failed: ${errorMsg}`);
-
-			this.hmr?.send({
-				type: "error",
-				error: errorMsg,
-			});
-			return;
-		}
-
-		// Send update to clients
-		this.hmr?.send({
-			type: "source_updated",
-			name: source.name,
-			file: source.file,
-			version: source.version,
-			data: source.content,
-		});
-
-		logger.success(`Source updated: ${source.name}`);
-	}
-
-	/**
-	 * Handle sprite file change
-	 */
-	private handleSpriteChange(filePath: string): void {
-		const sprite = this.resources.images.find((s) => filePath.endsWith(s.file));
-
-		if (!sprite) {
-			logger.warn(`Sprite not found: ${filePath}`);
-			return;
-		}
-
-		// Read sprite data as base64
-		const fullPath = join(this.config.publicPath, "sprites", sprite.file);
-		if (!existsSync(fullPath)) {
-			return;
-		}
-
-		const data = readFileSync(fullPath).toString("base64");
-
-		this.hmr?.send({
-			type: "sprite_updated",
-			name: sprite.name,
-			file: sprite.file,
-			version: sprite.version,
-			data,
-			properties: sprite.properties,
-		});
-
-		logger.success(`Sprite updated: ${sprite.name}`);
-	}
-
-	/**
-	 * Handle map file change
-	 */
-	private handleMapChange(filePath: string): void {
-		const map = this.resources.maps.find((m) => filePath.endsWith(m.file));
-
-		if (!map) {
-			logger.warn(`Map not found: ${filePath}`);
-			return;
-		}
-
-		this.hmr?.send({
-			type: "map_updated",
-			name: map.name,
-			file: map.file,
-			version: map.version,
-			data: map.data,
-		});
-
-		logger.success(`Map updated: ${map.name}`);
 	}
 
 	/**

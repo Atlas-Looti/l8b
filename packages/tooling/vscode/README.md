@@ -137,16 +137,16 @@ To modify this extension:
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Compile TypeScript
-pnpm run compile
+bun run compile
 
 # Watch mode
-pnpm run watch
+bun run watch
 
 # Package new VSIX
-pnpm dlx @vscode/vsce package --no-dependencies
+bun dlx @vscode/vsce package --no-dependencies
 ```
 
 ## 📝 Release Notes

@@ -2,7 +2,7 @@
  * Sprite rendering for Screen class
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import type { Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 
@@ -35,16 +35,7 @@ export class SpriteScreen extends PrimitiveScreen {
 
 			// Report sprite not found error
 			if (!spriteObj) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7004, {
-					data: {
-						spriteName,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7004, { spriteName });
 				return null;
 			}
 
@@ -58,16 +49,7 @@ export class SpriteScreen extends PrimitiveScreen {
 		// Validate sprite object
 		if (!sprite || !(sprite as Sprite).ready) {
 			const spriteName = typeof sprite === "string" ? sprite : "unknown";
-			const diagnostic = createDiagnostic(APIErrorCode.E7005, {
-				data: {
-					spriteName,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7005, { spriteName });
 			return null;
 		}
 

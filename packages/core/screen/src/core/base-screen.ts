@@ -1,4 +1,4 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, createDiagnostic, formatForBrowser, reportRuntimeError } from "@l8b/diagnostics";
 import { ZBuffer } from "../tri";
 import type { ScreenInterface, ScreenOptions } from "../types";
 
@@ -135,10 +135,7 @@ export class BaseScreen {
 		if (!ctx) {
 			const diagnostic = createDiagnostic(APIErrorCode.E7001);
 			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7001, {});
 
 			throw new Error(formatted);
 		}
@@ -224,16 +221,7 @@ export class BaseScreen {
 				/^(red|green|blue|yellow|cyan|magenta|black|white|gray|grey|orange|pink|purple|brown|transparent)$/i.test(color);
 
 			if (!isValidColor) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7003, {
-					data: {
-						color,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7003, { color });
 				return;
 			}
 
@@ -254,16 +242,7 @@ export class BaseScreen {
 		const blend = this.blending[blending || "normal"];
 
 		if (!blend) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7007, {
-				data: {
-					blendMode: blending,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7007, { blendMode: blending });
 			// Fallback to normal blend mode
 			this.context.globalCompositeOperation = "source-over";
 			return;
@@ -312,28 +291,10 @@ export class BaseScreen {
 		this.font_load_requested[font] = true;
 		try {
 			document.fonts?.load?.(`16pt ${font}`).catch(() => {
-				const diagnostic = createDiagnostic(APIErrorCode.E7006, {
-					data: {
-						font,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7006, { font });
 			});
 		} catch {
-			const diagnostic = createDiagnostic(APIErrorCode.E7006, {
-				data: {
-					font,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7006, { font });
 		}
 	}
 
@@ -467,17 +428,7 @@ export class BaseScreen {
 		if (width && height) {
 			// Validate dimensions
 			if (width <= 0 || height <= 0 || !isFinite(width) || !isFinite(height)) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7002, {
-					data: {
-						width,
-						height,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7002, { width, height });
 				return;
 			}
 

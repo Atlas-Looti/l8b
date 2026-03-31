@@ -3,17 +3,27 @@
  * Manages audio context, beeper, and sound/music playback
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import { Beeper } from "../devices/beeper";
 import { AUDIO_WORKLET_CODE } from "./audio-worklet";
+
+/** An actively playing sound/music that can be stopped */
+interface PlayingHandle {
+	stop: () => void;
+}
+
+/** Item that can be woken up on audio context activation */
+interface WakeUpItem {
+	wakeUp: () => void;
+}
 
 export class AudioCore {
 	public context!: AudioContext;
 	private buffer: string[] = [];
-	private playing: any[] = [];
-	private wakeupList: any[] = [];
+	private playing: PlayingHandle[] = [];
+	private wakeupList: WakeUpItem[] = [];
 	private workletNode?: AudioWorkletNode;
-	private beeper?: any;
+	private beeper?: Beeper;
 	private runtime: any;
 
 	constructor(runtime: any) {
@@ -31,7 +41,7 @@ export class AudioCore {
 	/**
 	 * Add item to wakeup list (for mobile audio activation)
 	 */
-	public addToWakeUpList(item: any): void {
+	public addToWakeUpList(item: WakeUpItem): void {
 		this.wakeupList.push(item);
 	}
 
@@ -56,16 +66,7 @@ export class AudioCore {
 			const soundName = sound.replace(/\//g, "-");
 			const s = this.runtime.sounds[soundName];
 			if (!s) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7013, {
-					data: {
-						soundName,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7013, { soundName });
 				return 0;
 			}
 			return s.play(volume, pitch, pan, loopit);
@@ -81,16 +82,7 @@ export class AudioCore {
 			const musicName = music.replace(/\//g, "-");
 			const m = this.runtime.music[musicName];
 			if (!m) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7014, {
-					data: {
-						musicName,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7014, { musicName });
 				return 0;
 			}
 			return m.play(volume, loopit);
@@ -167,16 +159,7 @@ export class AudioCore {
 
 			this.flushBuffer();
 		} catch (e) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7012, {
-				data: {
-					error: String(e),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7012, { error: String(e) });
 		}
 	}
 
@@ -194,7 +177,7 @@ export class AudioCore {
 	/**
 	 * Get or create beeper
 	 */
-	public getBeeper(): any {
+	public getBeeper(): Beeper {
 		if (!this.beeper) {
 			// Create Beeper instance
 			this.beeper = new Beeper(this);
@@ -263,14 +246,14 @@ export class AudioCore {
 	/**
 	 * Add playing sound/music to list
 	 */
-	public addPlaying(item: any): void {
+	public addPlaying(item: PlayingHandle): void {
 		this.playing.push(item);
 	}
 
 	/**
 	 * Remove playing sound/music from list
 	 */
-	public removePlaying(item: any): void {
+	public removePlaying(item: PlayingHandle): void {
 		const index = this.playing.indexOf(item);
 		if (index >= 0) {
 			this.playing.splice(index, 1);
@@ -285,16 +268,7 @@ export class AudioCore {
 			try {
 				p.stop();
 			} catch (err) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7016, {
-					data: {
-						error: String(err),
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7016, { error: String(err) });
 			}
 		}
 		this.playing = [];

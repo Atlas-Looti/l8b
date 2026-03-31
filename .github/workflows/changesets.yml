@@ -49,8 +49,8 @@ jobs:
           title: "chore: version packages"
           commit: "chore: version packages"
           createGithubReleases: ${{ github.ref == 'refs/heads/main' }}
-          publish: pnpm changeset:publish
-          version: pnpm changeset:version
+          publish: bun run changeset:publish
+          version: bun run changeset:version
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
@@ -68,12 +68,12 @@ jobs:
 
           echo "📦 Publishing canary prerelease..."
           git reset --hard origin/main
-          pnpm changeset version --no-git-tag --snapshot canary
+          bunx changeset version --no-git-tag --snapshot canary
           echo "📦 Reinstalling dependencies with updated versions..."
-          pnpm install
-          pnpm changeset:prepublish
+          bun install
+          bun run changeset:prepublish
 
-          pnpm changeset publish --no-git-tag --snapshot canary --tag canary || {
+          bunx changeset publish --no-git-tag --snapshot canary --tag canary || {
             echo "⚠️ Some packages failed to publish (expected if versions exist)"
             exit 0
           }

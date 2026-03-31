@@ -20,7 +20,7 @@ The runtime package provides `RuntimeOrchestrator`, which coordinates all engine
 ## Installation
 
 ```bash
-pnpm install @l8b/runtime
+bun add @l8b/runtime
 ```
 
 ## Basic Usage

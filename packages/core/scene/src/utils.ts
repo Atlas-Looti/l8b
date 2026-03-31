@@ -42,7 +42,7 @@ export function isValidObject(value: unknown): value is Record<string, unknown> 
 /**
  * Normalize path by removing query string, hash, and ensuring leading slash
  */
-export function normalizePath(path: string): string {
+export function normalizeScenePath(path: string): string {
 	const cleanPath = path.split("?")[0].split("#")[0];
 	return cleanPath.startsWith("/") ? cleanPath : `/${cleanPath}`;
 }

@@ -16,7 +16,7 @@ The VM package provides the execution environment for LootiScript:
 ## Installation
 
 ```bash
-pnpm install @l8b/vm
+bun add @l8b/vm
 ```
 
 ## Basic Usage

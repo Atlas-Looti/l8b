@@ -122,7 +122,6 @@ export class GameLoop {
 
 		// Correction for 60fps (reduce jitter)
 		if ((ds === 0 || ds === 2) && updateRate === 60 && Math.abs(fps - 60) < 2) {
-			//console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
 			ds = 1;
 			this.state.floatingFrame = this.state.currentFrame + 1;
 		}

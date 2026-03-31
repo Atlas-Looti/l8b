@@ -7,7 +7,7 @@
  * - Manage state
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import { StatePlayer } from "../playback";
 import { StateRecorder } from "../recording";
 import type { TimeMachineMessage, TimeMachineStatus } from "../types";
@@ -88,16 +88,7 @@ export class TimeMachine {
 
 			this.sendStatus();
 		} catch (err) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7082, {
-				data: {
-					error: String(err),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if ((this.runtime as any)?.listener?.reportError) {
-				(this.runtime as any).listener.reportError(formatted);
-			}
+			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7082, { error: String(err) });
 		}
 	}
 
@@ -153,16 +144,7 @@ export class TimeMachine {
 			this.sendStatus();
 		} catch (err) {
 			this.recording = false;
-			const diagnostic = createDiagnostic(APIErrorCode.E7083, {
-				data: {
-					error: String(err),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if ((this.runtime as any)?.listener?.reportError) {
-				(this.runtime as any).listener.reportError(formatted);
-			}
+			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7083, { error: String(err) });
 		}
 	}
 
@@ -178,16 +160,7 @@ export class TimeMachine {
 			this.recording = false;
 			this.sendStatus();
 		} catch (err) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7083, {
-				data: {
-					error: String(err),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if ((this.runtime as any)?.listener?.reportError) {
-				(this.runtime as any).listener.reportError(formatted);
-			}
+			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7083, { error: String(err) });
 		}
 	}
 
@@ -225,16 +198,7 @@ export class TimeMachine {
 	private setReplayPosition(position: number): void {
 		// Validate time value is finite and non-negative
 		if (!isFinite(position) || position < 0) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7081, {
-				data: {
-					value: String(position),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if ((this.runtime as any)?.listener?.reportError) {
-				(this.runtime as any).listener.reportError(formatted);
-			}
+			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7081, { value: String(position) });
 			return;
 		}
 

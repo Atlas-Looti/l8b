@@ -11,15 +11,15 @@ This directory contains the source code for the L8B documentation site, built wi
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Start development server
-pnpm dev
+bun dev
 ```
 
 ## Build
 
 ```bash
 # Build for production
-pnpm build
+bun build
 ```

@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-L8B (Looti Engine) is a TypeScript-based 2D game engine with a custom scripting language (LootiScript). The project is organized as a monorepo using **pnpm** and Turbo.
+L8B (Looti Engine) is a TypeScript-based 2D game engine with a custom scripting language (LootiScript). The project is organized as a monorepo using **bun** and Turbo.
 
 ## Critical Rules
 
-1.**Package Manager**: **ALWAYS use pnpm**. Never use npm, yarn, or bun.
+1.**Package Manager**: **ALWAYS use bun**. Never use npm, yarn, or pnpm.
     - See `.cursor/rules/monorepo.md` for details.
 2.**Code Style**: Use **Biome** for formatting. Indentation must be **TABS**.
     - See `.cursor/rules/project-essentials.mdc` and `.cursor/rules/typescript.md`.
@@ -62,4 +62,4 @@ See `.cursor/rules/lootiscript.md` and `packages/lootiscript/AGENTS.md`.
 ## Documentation
 
 - Documentation is in `docs/` (VitePress).
-- Run `pnpm run docs:dev` to preview.
+- Run `bun run docs:dev` to preview.

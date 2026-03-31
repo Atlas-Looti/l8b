@@ -16,7 +16,18 @@
  */
 
 import type { CallFrame } from "@l8b/diagnostics";
+import {
+	routineAsFunction as _routineAsFunction,
+	routineAsApplicableFunction as _routineAsApplicableFunction,
+	argToNative as _argToNative,
+} from "./function-bridge";
 import { IC_STATE, type InlineCache } from "./inline-cache";
+import {
+	getPooledArray,
+	getPooledObject,
+	recycleArray as poolRecycleArray,
+	recycleObject as poolRecycleObject,
+} from "./memory-pool";
 import { Routine } from "./routine";
 
 /**
@@ -89,11 +100,6 @@ export class Processor {
 	};
 	profilingEnabled: boolean;
 
-	// Memory Pools
-	static arrayPool: any[][] = [];
-	static objectPool: any[] = [];
-	static MAX_POOL_SIZE = 1000;
-
 	constructor(runner: any) {
 		this.runner = runner;
 		this.locals = [];
@@ -122,49 +128,20 @@ export class Processor {
 		this.profilingEnabled = false;
 	}
 
-	/**
-	 * Get an array from the pool or create new
-	 */
 	getArray(): any[] {
-		if (Processor.arrayPool.length > 0) {
-			const arr = Processor.arrayPool.pop()!;
-			arr.length = 0; // Reset length but keep capacity
-			return arr;
-		}
-		return [];
+		return getPooledArray();
 	}
 
-	/**
-	 * Recycle array to pool
-	 */
-	recycleArray(arr: any[]) {
-		if (Processor.arrayPool.length < Processor.MAX_POOL_SIZE) {
-			Processor.arrayPool.push(arr);
-		}
+	recycleArray(arr: any[]): void {
+		poolRecycleArray(arr);
 	}
 
-	/**
-	 * Get object from pool or create new
-	 */
 	getObject(): any {
-		if (Processor.objectPool.length > 0) {
-			return Processor.objectPool.pop();
-		}
-		return {};
+		return getPooledObject();
 	}
 
-	/**
-	 * Recycle object to pool (only simple objects)
-	 */
-	recycleObject(obj: any) {
-		if (Processor.objectPool.length < Processor.MAX_POOL_SIZE) {
-			// Clear properties - expensive, so only do for small objects
-			// For now we just pool if we can efficiently clear
-			for (const key in obj) {
-				delete obj[key];
-			}
-			Processor.objectPool.push(obj);
-		}
+	recycleObject(obj: any): void {
+		poolRecycleObject(obj);
 	}
 
 	load(routine: Routine): void {
@@ -295,79 +272,16 @@ export class Processor {
 		return obj[prop];
 	}
 
-	/**
-	 * Convert a LootiScript routine to a JavaScript function
-	 *
-	 * Creates a native JS wrapper around a LootiScript routine.
-	 * Allows LootiScript functions to be called from JavaScript (e.g. callbacks).
-	 *
-	 * @param {Routine} routine - The routine to wrap
-	 * @param {RuntimeContext} context - The execution context
-	 * @returns {Function} A JavaScript function that executes the routine
-	 */
 	routineAsFunction(routine: Routine, context: RuntimeContext): Function {
-		let f: Function, proc: Processor;
-		proc = new Processor(this.runner);
-		f = function (this: any) {
-			let a, count, i, j, k, ref, ref1;
-			count = Math.min(routine.num_args, arguments.length);
-			proc.load(routine);
-			for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
-				proc.stack[++proc.stack_index] = arguments[i] || 0;
-			}
-			proc.stack[++proc.stack_index] = arguments.length;
-			if (routine.uses_arguments) {
-				a = [...arguments];
-				for (i = k = 0, ref1 = a.length - 1; k <= ref1; i = k += 1) {
-					if (a[i] == null) {
-						a[i] = 0;
-					}
-				}
-				proc.stack[++proc.stack_index] = a;
-			}
-			return proc.run(context);
-		};
-		//res = proc.stack[0]
-		return f;
+		return _routineAsFunction(this.runner, routine, context);
 	}
 
 	routineAsApplicableFunction(routine: Routine, context: RuntimeContext): Function {
-		let f: Function, proc: Processor;
-		proc = new Processor(this.runner);
-		f = function (this: any) {
-			let a: any[], count: number, i: number, j: number, k: number, ref: number, ref1: number;
-			count = routine.num_args;
-			proc.load(routine);
-			proc.object = this;
-			for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
-				proc.stack[++proc.stack_index] = arguments[i] || 0;
-			}
-			proc.stack[++proc.stack_index] = arguments.length;
-			if (routine.uses_arguments) {
-				a = [...arguments];
-				for (i = k = 0, ref1 = a.length - 1; k <= ref1; i = k += 1) {
-					if (a[i] == null) {
-						a[i] = 0;
-					}
-				}
-				proc.stack[++proc.stack_index] = a;
-			}
-			proc.run(context);
-			return proc.stack[0];
-		};
-		return f;
+		return _routineAsApplicableFunction(this.runner, routine, context);
 	}
 
 	argToNative(arg: any, context: RuntimeContext): any {
-		if (arg instanceof Routine) {
-			return this.routineAsFunction(arg, context);
-		} else {
-			if (arg != null) {
-				return arg;
-			} else {
-				return 0;
-			}
-		}
+		return _argToNative(this.runner, arg, context);
 	}
 
 	modulo(context: RuntimeContext, a: any, b: any): any {

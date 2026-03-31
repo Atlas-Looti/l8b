@@ -55,14 +55,8 @@ function findResolveDir(projectRoot?: string): string {
 	const findWorkspaceRoot = (startDir: string): string | null => {
 		let currentDir = startDir;
 		while (currentDir !== dirname(currentDir)) {
-			const pnpmWorkspacePath = join(currentDir, "pnpm-workspace.yaml");
 			const packageJsonPath = join(currentDir, "package.json");
 			const nodeModulesPath = join(currentDir, "node_modules");
-
-			// Check for pnpm workspace indicator
-			if (existsSync(pnpmWorkspacePath) && existsSync(nodeModulesPath)) {
-				return currentDir;
-			}
 
 			// Check for package.json with workspaces field
 			if (existsSync(packageJsonPath) && existsSync(nodeModulesPath)) {

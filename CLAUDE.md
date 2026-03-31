@@ -4,40 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-L8B (Looti Engine) is a TypeScript-based 2D game engine with a custom scripting language called LootiScript (`.loot` files). It compiles LootiScript to bytecode executed by a custom VM. The project lives in the `l8b/` subdirectory and is organized as a monorepo using **pnpm** workspaces and **Turborepo**.
+L8B (Looti Engine) is a TypeScript-based 2D game engine with a custom scripting language called LootiScript (`.loot` files). It compiles LootiScript to bytecode executed by a custom VM. The project lives in the `l8b/` subdirectory and is organized as a monorepo using **bun** workspaces and **Turborepo**.
 
 ## Commands
 
 All commands run from the `l8b/` directory.
 
 ```bash
-pnpm install                    # Install dependencies
-pnpm run build                  # Build all packages (turbo)
-pnpm run dev                    # Watch mode for all packages
-pnpm run test                   # Run all tests (vitest)
-pnpm run test:watch             # Tests in watch mode
-pnpm run check-types            # TypeScript type checking
-pnpm run lint                   # Biome lint + autofix
-pnpm run lint:check             # Lint without fixing
-pnpm run format                 # Biome format + autofix
-pnpm run ci                     # Full CI: lint:check, format:check, check-types, build, test
+bun install                     # Install dependencies
+bun run build                   # Build all packages (turbo)
+bun run dev                     # Watch mode for all packages
+bun run test                    # Run all tests (vitest)
+bun run test:watch              # Tests in watch mode
+bun run check-types             # TypeScript type checking
+bun run lint                    # Biome lint + autofix
+bun run lint:check              # Lint without fixing
+bun run format                  # Biome format + autofix
+bun run ci                      # Full CI: lint:check, format:check, check-types, build, test
 
 # Single package
-cd packages/core/sprites && pnpm run test          # Test one package
-pnpm --filter @l8b/core/sprites build              # Build one package
-pnpm --filter "./packages/framework/**" build      # Build a group
+cd packages/core/sprites && bun run test             # Test one package
+turbo build --filter=@l8b/core/sprites               # Build one package
+turbo build --filter="./packages/framework/**"        # Build a group
 
 # Docs (VitePress)
-pnpm run docs:dev               # Dev server
-pnpm run docs:build             # Build docs
+bun run docs:dev                # Dev server
+bun run docs:build              # Build docs
 
 # New package scaffold
-pnpm run new
+bun run new
 ```
 
 ## Critical Rules
 
-- **Always use pnpm** (never npm/yarn/bun). Required: `pnpm@10.24.0`, Node `^24.0.0`.
+- **Always use bun** (never npm/yarn/pnpm). Node `^24.0.0`.
 - **Biome** for formatting and linting. Indentation is **tabs**, double quotes, line width 120.
 - The framework does **NOT** use Vite. It has a custom build system (server, bundler, compiler, watcher).
 
@@ -71,7 +71,7 @@ Language server (LSP with completion, hover, diagnostics), diagnostics package (
 
 ## Adding a New Core API
 
-1. `pnpm run new` to scaffold package under `core/`
+1. `bun run new` to scaffold package under `core/`
 2. Implement service with `getInterface()` and `dispose()`
 3. Register in orchestrator (`enggine/runtime/src/core/orchestrator.ts`)
 4. Add type to `GlobalAPI` (`enggine/vm/src/types/global-api.ts`)

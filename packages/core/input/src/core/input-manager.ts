@@ -1,4 +1,4 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import { GamepadInput } from "../devices/gamepad";
 import { KeyboardInput } from "../devices/keyboard";
 import { MouseInput } from "../devices/mouse";
@@ -36,16 +36,7 @@ export class Input {
 	public getKeyboard(): KeyboardState {
 		// Validate keyboard state exists before returning
 		if (!this.keyboard || !this.keyboard.state) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7052, {
-				data: {
-					error: "Keyboard state not available",
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7052, { error: "Keyboard state not available" });
 			// Return empty state as fallback to prevent crashes
 			return {} as KeyboardState;
 		}
@@ -55,16 +46,7 @@ export class Input {
 	public getMouse(): MouseState {
 		// Validate mouse state exists before returning
 		if (!this.mouse || !this.mouse.state) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7052, {
-				data: {
-					error: "Mouse state not available",
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7052, { error: "Mouse state not available" });
 			// Return empty state as fallback to prevent crashes
 			return {} as MouseState;
 		}
@@ -74,16 +56,7 @@ export class Input {
 	public getTouch(): TouchState {
 		// Validate touch state exists before returning
 		if (!this.touch || !this.touch.state) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7052, {
-				data: {
-					error: "Touch state not available",
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7052, { error: "Touch state not available" });
 			// Return empty state as fallback to prevent crashes
 			return {} as TouchState;
 		}
@@ -93,16 +66,7 @@ export class Input {
 	public getGamepad(): GamepadInput {
 		// Check if gamepad API is available in the browser
 		if (!this.gamepad || !navigator.getGamepads) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7051, {
-				data: {
-					device: "gamepad",
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7051, { device: "gamepad" });
 		}
 		return this.gamepad;
 	}

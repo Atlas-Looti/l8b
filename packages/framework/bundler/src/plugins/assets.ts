@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import type { L8BPlugin, BuildContext } from "./index";
-import { createLogger, hashFile } from "@l8b/framework-shared";
+import { MIME_TYPES, createLogger, hashFile } from "@l8b/framework-shared";
 
 const logger = createLogger("assets-plugin");
 
@@ -38,28 +38,6 @@ interface ManifestEntry {
 	type: string;
 }
 
-/**
- * MIME type map
- *
- * TODO: [P2] Consolidate MIME types in @l8b/framework-shared
- * Duplicated in multiple files, creates maintenance burden
- * See: framework_audit_report.md #11
- */
-const MIME_TYPES: Record<string, string> = {
-	".png": "image/png",
-	".jpg": "image/jpeg",
-	".jpeg": "image/jpeg",
-	".gif": "image/gif",
-	".webp": "image/webp",
-	".svg": "image/svg+xml",
-	".mp3": "audio/mpeg",
-	".ogg": "audio/ogg",
-	".wav": "audio/wav",
-	".json": "application/json",
-	".woff": "font/woff",
-	".woff2": "font/woff2",
-	".ttf": "font/ttf",
-};
 
 /**
  * Create assets plugin

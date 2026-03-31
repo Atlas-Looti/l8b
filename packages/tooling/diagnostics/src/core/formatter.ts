@@ -253,6 +253,21 @@ export function formatForBrowser(diagnostic: Diagnostic): string {
 }
 
 /**
+ * Report a runtime error through the listener chain.
+ * Consolidates the repeated createDiagnostic + formatForBrowser + reportError pattern
+ * used across core packages.
+ */
+export function reportRuntimeError(
+	listener: { reportError?: (msg: string) => void } | undefined,
+	code: string,
+	data?: Record<string, unknown>,
+): void {
+	const diagnostic = createDiagnostic(code, { data });
+	const formatted = formatForBrowser(diagnostic);
+	listener?.reportError?.(formatted);
+}
+
+/**
  * Format diagnostic as a simple string (for logging)
  */
 export function formatSimple(diagnostic: Diagnostic): string {

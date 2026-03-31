@@ -1,4 +1,4 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 import { BaseScreen } from "../core/base-screen";
 
 /**
@@ -8,27 +8,13 @@ export class PrimitiveScreen extends BaseScreen {
 	fillRect(x: number, y: number, w: number, h: number, color?: string | number): void {
 		// Validate drawing context
 		if (!this.context) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7092);
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7092, {});
 			return;
 		}
 
 		// Validate drawing parameters
 		if (!isFinite(x) || !isFinite(y) || !isFinite(w) || !isFinite(h) || w <= 0 || h <= 0) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7093, {
-				data: {
-					error: `Invalid parameters: x=${x}, y=${y}, w=${w}, h=${h}`,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7093, { error: `Invalid parameters: x=${x}, y=${y}, w=${w}, h=${h}` });
 			return;
 		}
 

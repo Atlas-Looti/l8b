@@ -2,7 +2,7 @@
  * Storage service - localStorage wrapper with automatic serialization
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 
 export class StorageService {
 	private namespace: string;
@@ -27,16 +27,7 @@ export class StorageService {
 	get(name: string): any {
 		// Validate storage key
 		if (!name || typeof name !== "string" || name.trim() === "") {
-			const diagnostic = createDiagnostic(APIErrorCode.E7063, {
-				data: {
-					key: String(name),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7063, { key: String(name) });
 			return null;
 		}
 
@@ -56,16 +47,7 @@ export class StorageService {
 					return parsed;
 				}
 			} catch (err: any) {
-				const diagnostic = createDiagnostic(APIErrorCode.E7062, {
-					data: {
-						error: `Get operation failed: ${String(err)}`,
-					},
-				});
-				const formatted = formatForBrowser(diagnostic);
-
-				if (this.runtime?.listener?.reportError) {
-					this.runtime.listener.reportError(formatted);
-				}
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7062, { error: `Get operation failed: ${String(err)}` });
 			}
 		}
 
@@ -78,16 +60,7 @@ export class StorageService {
 	set(name: string, value: any): void {
 		// Validate storage key
 		if (!name || typeof name !== "string" || name.trim() === "") {
-			const diagnostic = createDiagnostic(APIErrorCode.E7063, {
-				data: {
-					key: String(name),
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.runtime?.listener?.reportError) {
-				this.runtime.listener.reportError(formatted);
-			}
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7063, { key: String(name) });
 			return;
 		}
 
@@ -132,23 +105,9 @@ export class StorageService {
 			} catch (err: any) {
 				// Check for quota exceeded error
 				if (err.name === "QuotaExceededError" || err.code === 22) {
-					const diagnostic = createDiagnostic(APIErrorCode.E7061);
-					const formatted = formatForBrowser(diagnostic);
-
-					if (this.runtime?.listener?.reportError) {
-						this.runtime.listener.reportError(formatted);
-					}
+					reportRuntimeError(this.runtime?.listener, APIErrorCode.E7061, {});
 				} else {
-					const diagnostic = createDiagnostic(APIErrorCode.E7062, {
-						data: {
-							error: `Set operation failed: ${String(err)}`,
-						},
-					});
-					const formatted = formatForBrowser(diagnostic);
-
-					if (this.runtime?.listener?.reportError) {
-						this.runtime.listener.reportError(formatted);
-					}
+					reportRuntimeError(this.runtime?.listener, APIErrorCode.E7062, { error: `Set operation failed: ${String(err)}` });
 				}
 			}
 		}

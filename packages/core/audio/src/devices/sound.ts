@@ -2,7 +2,7 @@
  * Sound - Sound effect playback
  * Handles loading and playing audio buffers
  */
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
 
 export class Sound {
 	public ready: number = 0;
@@ -40,31 +40,17 @@ export class Sound {
 					this.ready = 1;
 				},
 				(err: any) => {
-					const diagnostic = createDiagnostic(APIErrorCode.E7016, {
-						data: {
-							error: `Audio decoding failed: ${String(err)}`,
-						},
+					reportRuntimeError(this.audio?.runtime?.listener, APIErrorCode.E7016, {
+						error: `Audio decoding failed: ${String(err)}`,
 					});
-					const formatted = formatForBrowser(diagnostic);
-
-					if (this.audio?.runtime?.listener?.reportError) {
-						this.audio.runtime.listener.reportError(formatted);
-					}
 				},
 			);
 		};
 
 		request.onerror = () => {
-			const diagnostic = createDiagnostic(APIErrorCode.E7016, {
-				data: {
-					error: `Failed to load sound: ${url}`,
-				},
+			reportRuntimeError(this.audio?.runtime?.listener, APIErrorCode.E7016, {
+				error: `Failed to load sound: ${url}`,
 			});
-			const formatted = formatForBrowser(diagnostic);
-
-			if (this.audio?.runtime?.listener?.reportError) {
-				this.audio.runtime.listener.reportError(formatted);
-			}
 		};
 
 		request.send();
@@ -93,19 +79,11 @@ export class Sound {
 		gain.gain.value = volume;
 
 		// Create panner
-		let panner: any;
-		if (false && context.createStereoPanner) {
-			panner = context.createStereoPanner();
-			panner.setPan = (p: number) => {
-				panner.pan.value = p;
-			};
-		} else {
-			panner = context.createPanner();
-			panner.panningModel = "equalpower";
-			panner.setPan = (p: number) => {
-				panner.setPosition(p, 0, 1 - Math.abs(p));
-			};
-		}
+		const panner: any = context.createPanner();
+		panner.panningModel = "equalpower";
+		panner.setPan = (p: number) => {
+			panner.setPosition(p, 0, 1 - Math.abs(p));
+		};
 		panner.setPan(pan);
 
 		// Connect nodes

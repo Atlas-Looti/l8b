@@ -9,6 +9,6 @@
 		"build": "l8b build"
 	},
 	"devDependencies": {
-		"@l8b/cli": "latest"
+		"@l8b/cli": "workspace:*"
 	}
 }
