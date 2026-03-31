@@ -46,3 +46,4 @@ bun.lock
 # Misc
 .DS_Store
 *.pem
+.claude/settings.localjson
