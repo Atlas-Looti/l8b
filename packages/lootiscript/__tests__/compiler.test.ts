@@ -75,7 +75,8 @@ end`);
 	describe("Program utility", () => {
 		it("should convert values to string representation", () => {
 			expect(Program.toString(42)).toBe(42);
-			expect(Program.toString("hello")).toBe("hello");
+			// LootiScript wraps string values in quotes for display
+			expect(Program.toString("hello")).toBe('"hello"');
 			expect(Program.toString(null)).toBe(0);
 			expect(Program.toString(undefined)).toBe(0);
 		});
