@@ -1,0 +1,27 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: #0a0a1a;
+	color: #ccc;
+	font-family: "Press Start 2P", monospace;
+	font-size: 10px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow-x: hidden;
+}
+
+#root {
+	min-height: 100vh;
+}
+
+button {
+	font-family: inherit;
+}

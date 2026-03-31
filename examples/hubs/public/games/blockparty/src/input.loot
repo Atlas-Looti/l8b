@@ -1,0 +1,317 @@
+// Input handling for BlockParti
+// Center-based coords: (0,0) = center, +y = up
+
+selectedPiece = -1
+cursorX = 0
+cursorY = 0
+hoverValid = false
+useKeyboard = false
+
+// Drag state
+dragIdx = -1
+dragPiece = -1
+dragColorIdx = 0
+dragScreenX = 0
+dragScreenY = 0
+isDragging = false
+
+// Convert screen position to grid col/row
+screenToGridCol = function(sx)
+	return floor((sx - gridLeftX) / cellSize)
+end
+
+screenToGridRow = function(sy)
+	return floor((gridTopY - sy) / cellSize)
+end
+
+handleInput = function()
+	if keyboard.press.LEFT or keyboard.press.RIGHT or keyboard.press.UP or keyboard.press.DOWN then
+		useKeyboard = true
+	end
+	if touch.press or mouse.press then
+		useKeyboard = false
+	end
+
+	if useKeyboard then
+		handleKeyboard()
+	else
+		handleTouch()
+	end
+end
+
+handleKeyboard = function()
+	if keyboard.press.LEFT then
+		cursorX = max(0, cursorX - 1)
+	end
+	if keyboard.press.RIGHT then
+		cursorX = min(BOARD_SIZE - 1, cursorX + 1)
+	end
+	if keyboard.press.UP then
+		cursorY = max(0, cursorY - 1)
+	end
+	if keyboard.press.DOWN then
+		cursorY = min(BOARD_SIZE - 1, cursorY + 1)
+	end
+
+	// Z: select or place
+	if keyboard.press.Z then
+		if selectedPiece == -1 then
+			for i = 0 to HAND_SIZE - 1
+				if not handUsed[i] then
+					selectedPiece = i
+					playSelect()
+					break
+				end
+			end
+		else
+			tryPlacePiece(cursorX, cursorY)
+		end
+	end
+
+	// X: cycle piece
+	if keyboard.press.X then
+		if selectedPiece != -1 then
+			local start = selectedPiece
+			local found = false
+			for j = 1 to HAND_SIZE - 1
+				local next = (start + j) % HAND_SIZE
+				if not handUsed[next] then
+					selectedPiece = next
+					playSelect()
+					found = true
+					break
+				end
+			end
+			if not found then
+				selectedPiece = -1
+			end
+		end
+	end
+
+	if selectedPiece != -1 then
+		hoverValid = canPlace(hand[selectedPiece], cursorX, cursorY)
+	else
+		hoverValid = false
+	end
+end
+
+handleTouch = function()
+	local tx = 0
+	local ty = 0
+	local pressing = false
+	local holding = false
+	local releasing = false
+
+	if touch.touching or touch.press or touch.release then
+		tx = touch.x
+		ty = touch.y
+		pressing = touch.press
+		holding = touch.touching
+		releasing = touch.release
+	else
+		tx = mouse.x
+		ty = mouse.y
+		pressing = mouse.press
+		holding = mouse.left
+		releasing = mouse.release
+	end
+
+	local sw = screen.width
+	local handSpacing = sw / HAND_SIZE
+	local pieceDrawSize = cellSize * 0.65
+
+	local sh = screen.height
+	local handTop = handCenterY + 14
+	local handBot = -sh / 2
+	local piecesY = (handTop + handBot) / 2 + 4
+
+	// Start drag or tap
+	if pressing then
+		local startedDrag = false
+
+		// Check hand pieces
+		for i = 0 to HAND_SIZE - 1
+			if not handUsed[i] then
+				local pieceIdx = hand[i]
+				local pw = getPieceW(pieceIdx)
+				local ph = getPieceH(pieceIdx)
+
+				local slotX = -sw / 2 + handSpacing * i + handSpacing / 2
+				local slotY = piecesY
+
+				local hitW = pw * pieceDrawSize / 2 + 12
+				local hitH = ph * pieceDrawSize / 2 + 12
+
+				if abs(tx - slotX) < hitW and abs(ty - slotY) < hitH then
+					dragIdx = i
+					dragPiece = pieceIdx
+					dragColorIdx = handColors[i]
+					dragScreenX = tx
+					dragScreenY = ty
+					isDragging = true
+					selectedPiece = -1
+					startedDrag = true
+					playSelect()
+					break
+				end
+			end
+		end
+
+		// Tap on grid to place selected piece
+		if not startedDrag and selectedPiece != -1 then
+			local gc = screenToGridCol(tx)
+			local gr = screenToGridRow(ty)
+			if gc >= 0 and gc < BOARD_SIZE and gr >= 0 and gr < BOARD_SIZE then
+				tryPlacePiece(gc, gr)
+			end
+		end
+
+		// Tap on piece to select (no drag)
+		if not startedDrag and selectedPiece == -1 then
+			for i = 0 to HAND_SIZE - 1
+				if not handUsed[i] then
+					local pieceIdx = hand[i]
+					local pw = getPieceW(pieceIdx)
+					local ph = getPieceH(pieceIdx)
+					local slotX = -sw / 2 + handSpacing * i + handSpacing / 2
+					local slotY = piecesY
+					local hitW = pw * pieceDrawSize / 2 + 10
+					local hitH = ph * pieceDrawSize / 2 + 10
+					if abs(tx - slotX) < hitW and abs(ty - slotY) < hitH then
+						selectedPiece = i
+						playSelect()
+						break
+					end
+				end
+			end
+		end
+	end
+
+	// Update drag
+	if isDragging and holding then
+		dragScreenX = tx
+		dragScreenY = ty
+
+		// Map drag position to grid (piece drawn above finger)
+		local pieceAboveY = dragScreenY + getPieceH(dragPiece) * cellSize / 2 + 15
+		local gc = screenToGridCol(dragScreenX - getPieceW(dragPiece) * cellSize / 2 + cellSize / 2)
+		local gr = screenToGridRow(pieceAboveY + getPieceH(dragPiece) * cellSize / 2 - cellSize / 2)
+
+		cursorX = max(0, min(BOARD_SIZE - getPieceW(dragPiece), gc))
+		cursorY = max(0, min(BOARD_SIZE - getPieceH(dragPiece), gr))
+		hoverValid = canPlace(dragPiece, cursorX, cursorY)
+	end
+
+	// Release drag
+	if isDragging and releasing then
+		if hoverValid then
+			placePiece(dragPiece, cursorX, cursorY, dragColorIdx)
+			local blockCount = getPieceBlockCount(dragPiece)
+			score += blockCount
+			playPlace()
+			handUsed[dragIdx] = 1
+
+			local cleared = checkLines()
+			if cleared > 0 then
+				combo += cleared
+				local bonus = floor(cleared * BOARD_SIZE * (combo / 2) * blockCount)
+				score += bonus
+				noComboCount = 0
+				flashTimer = 15
+				boardShake = 14
+				playLineClear(cleared)
+				if combo > 1 then
+					playCombo()
+					comboPopupTimer = 60
+					comboPopupValue = combo
+				end
+			else
+				noComboCount += 1
+				if noComboCount >= HAND_SIZE then
+					combo = 0
+					noComboCount = 0
+				end
+			end
+
+			if allHandUsed() then
+				generateHand()
+			end
+
+			if not canAnyPieceFit() then
+				state = "gameover"
+				gameoverTimer = 0
+				if score > highScore then
+					highScore = score
+					storage.set("blockparti_highscore", highScore)
+				end
+				playGameOver()
+			end
+		end
+
+		dragIdx = -1
+		dragPiece = -1
+		isDragging = false
+		hoverValid = false
+	end
+
+	// Mouse hover for selected piece (non-drag)
+	if not isDragging and selectedPiece != -1 and not pressing then
+		local gc = screenToGridCol(tx)
+		local gr = screenToGridRow(ty)
+		if gc >= 0 and gc < BOARD_SIZE and gr >= 0 and gr < BOARD_SIZE then
+			cursorX = gc
+			cursorY = gr
+			hoverValid = canPlace(hand[selectedPiece], gc, gr)
+		else
+			hoverValid = false
+		end
+	end
+end
+
+tryPlacePiece = function(gx, gy)
+	if selectedPiece == -1 then return end
+
+	local pieceIdx = hand[selectedPiece]
+	if canPlace(pieceIdx, gx, gy) then
+		placePiece(pieceIdx, gx, gy, handColors[selectedPiece])
+		local blockCount = getPieceBlockCount(pieceIdx)
+		score += blockCount
+		playPlace()
+		handUsed[selectedPiece] = 1
+		selectedPiece = -1
+
+		local cleared = checkLines()
+		if cleared > 0 then
+			combo += cleared
+			local bonus = floor(cleared * BOARD_SIZE * (combo / 2) * blockCount)
+			score += bonus
+			noComboCount = 0
+			flashTimer = 15
+			boardShake = 8
+			playLineClear(cleared)
+			if combo > 1 then
+				playCombo()
+			end
+		else
+			noComboCount += 1
+			if noComboCount >= HAND_SIZE then
+				combo = 0
+				noComboCount = 0
+			end
+		end
+
+		if allHandUsed() then
+			generateHand()
+		end
+
+		if not canAnyPieceFit() then
+			state = "gameover"
+			gameoverTimer = 0
+			if score > highScore then
+				highScore = score
+				storage.set("blockparti_highscore", highScore)
+			end
+			playGameOver()
+		end
+	end
+end

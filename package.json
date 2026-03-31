@@ -8,7 +8,7 @@
 		"packages/**/*",
 		"scripts/**/*",
 		"apps/**/*",
-		"site",
+
 		"!**/dist/**",
 		"!**/next/**",
 		"!**/l8b/**",

@@ -1,0 +1,25 @@
+scene("battle", object
+// Called every time scene becomes active
+onEnter = function()
+	print("Entered battle scene")
+end
+
+// Called when leaving this scene
+onLeave = function()
+	print("Leaving battle scene")
+end
+
+update = function()
+	if keyboard.press.ESCAPE then
+		// Use router.back() to go back in browser history
+		router.back()
+	end
+end
+
+draw = function()
+	screen.clear("rgb(60, 20, 20)")
+	screen.drawText("BATTLE SCENE", 0, 20, 30, "red")
+	screen.drawText("Press ESC to go back", 0, -20, 20, "rgb(200, 100, 100)")
+end
+end)
+
