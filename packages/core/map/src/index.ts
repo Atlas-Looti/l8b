@@ -4,7 +4,7 @@
  * Architecture:
  * - core/: TileMap runtime with load/update/save helpers
  * - drawing/: Canvas rendering utilities for animated tiles
- * - shared/: Sprite dictionary helpers + reference normalization
+ * - shared/: Reference normalization utilities
  * - data/: Raw map data types and loaders
  *
  * Export notes:

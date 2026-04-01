@@ -7,9 +7,9 @@ export function getWordAtPosition(document: TextDocument, position: Position): s
 		start: Position.create(position.line, 0),
 		end: Position.create(position.line, Number.MAX_SAFE_INTEGER),
 	});
-	const regex = /[A-Za-z_][A-Za-z0-9_]*/g;
+	const wordRegex = /\b[A-Za-z_][A-Za-z0-9_]*\b/g;
 	let match: RegExpExecArray | null;
-	while ((match = regex.exec(line))) {
+	while ((match = wordRegex.exec(line)) !== null) {
 		const start = match.index;
 		const end = start + match[0].length;
 		if (position.character >= start && position.character <= end) {

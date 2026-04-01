@@ -4,7 +4,6 @@
  * Architecture:
  * - core/: Audio orchestrator (context + VM interface)
  * - devices/: Beeper, Sound, Music implementations
- * - shared/: Common helpers and warnings
  */
 
 export { AudioCore } from "./core";

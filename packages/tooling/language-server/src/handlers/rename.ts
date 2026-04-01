@@ -9,7 +9,7 @@ import {
 	type WorkspaceEdit,
 } from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { getWordAtPosition } from "../document-state";
+import { getWordAtPosition } from "../utils";
 
 // Reserved keywords that cannot be used as identifiers
 const RESERVED_KEYWORDS = [

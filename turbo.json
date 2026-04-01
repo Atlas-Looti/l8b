@@ -29,7 +29,6 @@
 		},
 		"test": {
 			"dependsOn": ["^build"],
-			"outputs": ["coverage/**"],
 			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 		},
 		"dev": {

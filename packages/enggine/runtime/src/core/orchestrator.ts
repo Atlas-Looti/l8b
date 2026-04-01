@@ -447,9 +447,12 @@ export class RuntimeOrchestrator {
 	}
 
 	/**
-	 * Handle watch step callback (for debugging)
+	 * Handle watch step callback — advance the TimeMachine loop playback by one tick.
+	 * Called after draw each frame where the game actually ran updates (ds > 0).
 	 */
-	private handleWatchStep(): void {}
+	private handleWatchStep(): void {
+		this.timeMachine?.loopStep();
+	}
 
 	/**
 	 * Update call (for time machine)

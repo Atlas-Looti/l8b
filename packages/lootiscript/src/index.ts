@@ -27,6 +27,7 @@ export { Routine, OPCODES } from "./v1/routine";
 
 // ─── Execution engine ─────────────────────────────────────────────────────────
 export { Processor } from "./v1/processor";
+export type { RuntimeClass, RuntimeContext, RuntimeGlobal, RuntimeValue } from "./v1/processor-types";
 export { Runner, Thread } from "./v1/runner";
 
 // ─── Debugging / dev tools ────────────────────────────────────────────────────

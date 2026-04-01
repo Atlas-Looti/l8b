@@ -287,6 +287,17 @@ export class TimeMachine {
 	}
 
 	/**
+	 * Advance the loop playback by one tick.
+	 * Call once per real game frame (from the orchestrator's watch-step hook).
+	 * No-op when not looping.
+	 */
+	loopStep(): void {
+		if (this.player.isLooping()) {
+			this.player.executeCallback();
+		}
+	}
+
+	/**
 	 * Set status callback
 	 */
 	onStatus(callback: (status: TimeMachineStatus) => void): void {

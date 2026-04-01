@@ -72,8 +72,8 @@ export const ListLib = {
 	splice: <T>(arr: T[], start: number, deleteCount?: number, ...items: T[]): T[] =>
 		arr.splice(start, deleteCount ?? arr.length - start, ...items),
 
-	// Utility methods for common array operations
-	fill: <T>(arr: T[], value: T, start?: number, end?: number): T[] => [...arr].fill(value, start, end),
+	/** Fills arr in-place (matches native Array.prototype.fill behaviour). */
+	fill: <T>(arr: T[], value: T, start?: number, end?: number): T[] => arr.fill(value, start, end),
 
 	join: <T>(arr: T[], separator: string = ","): string => arr.join(separator),
 

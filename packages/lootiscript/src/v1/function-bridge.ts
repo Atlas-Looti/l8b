@@ -5,7 +5,7 @@
  * (e.g., scene lifecycle callbacks, event handlers).
  */
 
-import type { RuntimeContext } from "./processor";
+import type { RuntimeContext } from "./processor-types";
 import { Routine } from "./routine";
 
 /**

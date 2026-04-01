@@ -28,41 +28,20 @@ import {
 	recycleArray as poolRecycleArray,
 	recycleObject as poolRecycleObject,
 } from "./memory-pool";
+import {
+	operatorAdd,
+	operatorBand,
+	operatorBor,
+	operatorDiv,
+	operatorModulo,
+	operatorMul,
+	operatorNegate,
+	operatorSub,
+} from "./processor-operators";
+// Re-export runtime types so existing imports from "./processor" keep working.
+export type { RuntimeClass, RuntimeContext, RuntimeGlobal, RuntimeValue } from "./processor-types";
+import type { RuntimeContext, RuntimeGlobal, RuntimeValue } from "./processor-types";
 import { Routine } from "./routine";
-
-/**
- * Runtime context for script execution
- */
-export interface RuntimeContext {
-	global: RuntimeGlobal;
-	[key: string]: any;
-}
-
-/**
- * Global object containing built-in types and functions
- */
-export interface RuntimeGlobal {
-	List?: any;
-	String?: any;
-	Object?: any;
-	[key: string]: any;
-}
-
-/**
- * Runtime value that can have a class property
- */
-export interface RuntimeValue {
-	class?: string | RuntimeClass;
-	[key: string]: any;
-}
-
-/**
- * Runtime class object
- */
-export interface RuntimeClass {
-	class?: RuntimeClass | string;
-	[key: string]: any;
-}
 
 /**
  * Processor - Executes LootiScript bytecode
@@ -290,316 +269,6 @@ export class Processor {
 
 	argToNative(arg: any, context: RuntimeContext): any {
 		return _argToNative(this.runner, arg, context);
-	}
-
-	modulo(context: RuntimeContext, a: any, b: any): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				(a as any) %= b;
-				if (isFinite(a as any)) {
-					return a;
-				} else {
-					return 0;
-				}
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["%"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["%"];
-		}
-		if (f == null) {
-			f = context.global.Object["%"];
-		}
-		if (f != null && f instanceof Routine) {
-			if (f.as_function == null) {
-				f.as_function = this.routineAsApplicableFunction(f, context);
-			}
-			f = f.as_function;
-			return f.call(context.global, a, b);
-		} else {
-			return 0;
-		}
-	}
-
-	add(context: RuntimeContext, a: any, b: any, self: number): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			obj = context.global.String;
-		} else {
-			obj = a;
-		}
-		f = obj["+"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["+"];
-		}
-		if (f == null) {
-			f = context.global.Object["+"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, a, b, self);
-			} else if (typeof f === "function") {
-				return f.call(context.global, a, b, self);
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	sub(context: RuntimeContext, a: any, b: any, self: number): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				(a as any) -= b;
-				if (isFinite(a as any)) {
-					return a;
-				} else {
-					return 0;
-				}
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["-"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["-"];
-		}
-		if (f == null) {
-			f = context.global.Object["-"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, a, b, self);
-			} else if (typeof f === "function") {
-				return f.call(context.global, a, b, self);
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	negate(context: RuntimeContext, a: any): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				return -(a as any);
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["-"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["-"];
-		}
-		if (f == null) {
-			f = context.global.Object["-"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, 0, a);
-			} else if (typeof f === "function") {
-				return f.call(context.global, 0, a);
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	mul(context: RuntimeContext, a: any, b: any, self: number): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				(a as any) *= b;
-				if (isFinite(a as any)) {
-					return a;
-				} else {
-					return 0;
-				}
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["*"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["*"];
-		}
-		if (f == null) {
-			f = context.global.Object["*"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, a, b, self);
-			} else if (typeof f === "function") {
-				return f.call(context.global, a, b, self);
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	div(context: RuntimeContext, a: any, b: any, self: number): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				(a as any) /= b;
-				if (isFinite(a as any)) {
-					return a;
-				} else {
-					return 0;
-				}
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["/"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["/"];
-		}
-		if (f == null) {
-			f = context.global.Object["/"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, a, b, self);
-			} else if (typeof f === "function") {
-				return f.call(context.global, a, b, self);
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	band(context: RuntimeContext, a: any, b: any, self: number): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				(a as any) &= b;
-				if (isFinite(a as any)) {
-					return a;
-				} else {
-					return 0;
-				}
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["&"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["&"];
-		}
-		if (f == null) {
-			f = context.global.Object["&"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, a, b, self);
-			} else if (typeof f === "function") {
-				return f.call(context.global, a, b, self);
-			}
-		} else {
-			return 0;
-		}
-	}
-
-	bor(context: RuntimeContext, a: any, b: any, self: number): any {
-		let f: any, obj: any;
-		if (Array.isArray(a)) {
-			obj = context.global.List;
-		} else if (typeof a === "string") {
-			if (isFinite(a as any)) {
-				(a as any) |= b;
-				if (isFinite(a as any)) {
-					return a;
-				} else {
-					return 0;
-				}
-			} else {
-				obj = context.global.String;
-			}
-		} else {
-			obj = a;
-		}
-		f = obj["|"];
-		while (f == null && obj.class != null) {
-			obj = obj.class;
-			f = obj["|"];
-		}
-		if (f == null) {
-			f = context.global.Object["|"];
-		}
-		if (f != null) {
-			if (f instanceof Routine) {
-				if (f.as_function == null) {
-					f.as_function = this.routineAsApplicableFunction(f, context);
-				}
-				f = f.as_function;
-				return f.call(context.global, a, b, self);
-			} else if (typeof f === "function") {
-				return f.call(context.global, a, b, self);
-			}
-		} else {
-			return 0;
-		}
 	}
 
 	/**
@@ -1114,7 +783,7 @@ export class Processor {
 						a += b;
 						stack[stack_index] = isFinite(a) || typeof b === "string" ? a : 0;
 					} else {
-						stack[stack_index] = this.add(context, a, b, arg1[op_index]);
+						stack[stack_index] = operatorAdd(this.runner, context, a, b, arg1[op_index]);
 					}
 					op_index++;
 					break;
@@ -1125,7 +794,7 @@ export class Processor {
 						a -= b;
 						stack[stack_index] = isFinite(a) ? a : 0;
 					} else {
-						stack[stack_index] = this.sub(context, a, b, arg1[op_index]);
+						stack[stack_index] = operatorSub(this.runner, context, a, b, arg1[op_index]);
 					}
 					op_index++;
 					break;
@@ -1136,7 +805,7 @@ export class Processor {
 						a *= b;
 						stack[stack_index] = isFinite(a) ? a : 0;
 					} else {
-						stack[stack_index] = this.mul(context, a, b, 0);
+						stack[stack_index] = operatorMul(this.runner, context, a, b, 0);
 					}
 					op_index++;
 					break;
@@ -1147,7 +816,7 @@ export class Processor {
 						a /= b;
 						stack[stack_index] = isFinite(a) ? a : 0;
 					} else {
-						stack[stack_index] = this.div(context, a, b, 0);
+						stack[stack_index] = operatorDiv(this.runner, context, a, b, 0);
 					}
 					op_index++;
 					break;
@@ -1158,7 +827,7 @@ export class Processor {
 						a %= b;
 						stack[stack_index] = isFinite(a) ? a : 0;
 					} else {
-						stack[stack_index] = this.modulo(context, a, b);
+						stack[stack_index] = operatorModulo(this.runner, context, a, b);
 					}
 					op_index++;
 					break;
@@ -1169,7 +838,7 @@ export class Processor {
 						a &= b;
 						stack[stack_index] = isFinite(a) ? a : 0;
 					} else {
-						stack[stack_index] = this.band(context, a, b, 0);
+						stack[stack_index] = operatorBand(this.runner, context, a, b, 0);
 					}
 					op_index++;
 					break;
@@ -1180,7 +849,7 @@ export class Processor {
 						a |= b;
 						stack[stack_index] = isFinite(a) ? a : 0;
 					} else {
-						stack[stack_index] = this.bor(context, a, b, 0);
+						stack[stack_index] = operatorBor(this.runner, context, a, b, 0);
 					}
 					op_index++;
 					break;
@@ -1199,7 +868,7 @@ export class Processor {
 					if (typeof a === "number") {
 						stack[stack_index] = -a;
 					} else {
-						stack[stack_index] = this.negate(context, a);
+						stack[stack_index] = operatorNegate(this.runner, context, a);
 					}
 					op_index++;
 					break;
@@ -2088,7 +1757,7 @@ export class Processor {
 						stack[stack_index] = isFinite(b) ? b : 0;
 					} else {
 						// Fallback to full add logic for non-numbers
-						stack[stack_index] = this.add(context, b, a, 0);
+						stack[stack_index] = operatorAdd(this.runner, context, b, a, 0);
 					}
 					op_index++;
 					break;

@@ -125,6 +125,31 @@ export class StorageService {
 	}
 
 	/**
+	 * Delete a single key from storage (cache + localStorage + any pending write)
+	 */
+	delete(name: string): void {
+		if (!name || typeof name !== "string" || name.trim() === "") {
+			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7063, { key: String(name) });
+			return;
+		}
+
+		// Remove from in-memory state
+		this.cache.delete(name);
+		this.pendingWrites.delete(name);
+
+		// Remove from localStorage
+		if (typeof localStorage !== "undefined") {
+			try {
+				localStorage.removeItem(`${this.namespace}.${name}`);
+			} catch (err: any) {
+				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7062, {
+					error: `Delete operation failed: ${String(err)}`,
+				});
+			}
+		}
+	}
+
+	/**
 	 * Clear all storage for this namespace
 	 */
 	clear(): void {
@@ -195,7 +220,11 @@ export class StorageService {
 		return result;
 	}
 
-	private interfaceCache: { set: (name: string, value: unknown) => void; get: (name: string) => unknown } | null = null;
+	private interfaceCache: {
+		set: (name: string, value: unknown) => void;
+		get: (name: string) => unknown;
+		delete: (name: string) => void;
+	} | null = null;
 
 	/**
 	 * Get storage interface for game code
@@ -207,6 +236,7 @@ export class StorageService {
 		this.interfaceCache = {
 			set: (name: string, value: any) => this.set(name, value),
 			get: (name: string) => this.get(name),
+			delete: (name: string) => this.delete(name),
 		};
 		return this.interfaceCache;
 	}

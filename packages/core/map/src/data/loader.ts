@@ -1,10 +1,9 @@
 import type { Sprite } from "@l8b/sprites";
-import { getDefaultSprites } from "../shared/sprites";
 import type { MapData } from "./types";
 
 export const loadMapData = (
 	data: string,
-	sprites: Record<string, Sprite> = getDefaultSprites(),
+	sprites: Record<string, Sprite> = {},
 ): MapData & {
 	spritesDict: Record<string, Sprite>;
 } => {

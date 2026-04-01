@@ -1,6 +1,7 @@
 import { type Connection, type Definition, Location, type TextDocuments } from "vscode-languageserver/node";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { getDocumentStates, getWordAtPosition } from "../document-state";
+import { getDocumentStates } from "../document-state";
+import { getWordAtPosition } from "../utils";
 
 export function setupDefinitionHandler(connection: Connection, documents: TextDocuments<TextDocument>) {
 	connection.onDefinition((params): Definition | null => {

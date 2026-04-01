@@ -11,6 +11,11 @@ import { previewCommand } from "./commands/preview";
 
 const logger = createLogger("cli");
 
+/** Resolve the project root from an optional CLI positional argument. */
+function resolveProjectRoot(root?: string): string {
+	return resolve(root || ".");
+}
+
 /**
  * Run CLI
  */
@@ -26,7 +31,7 @@ export async function run(args: string[]): Promise<void> {
 		.option("-h, --host [host]", "Dev server host", { default: "localhost" })
 		.option("-o, --open", "Open browser automatically")
 		.action(async (root, options) => {
-			const resolvedRoot = resolve(root || ".");
+			const resolvedRoot = resolveProjectRoot(root);
 			await devCommand({
 				root: resolvedRoot,
 				port: options.port,
@@ -47,7 +52,7 @@ export async function run(args: string[]): Promise<void> {
 			default: "esbuild",
 		})
 		.action(async (root, options) => {
-			const resolvedRoot = resolve(root || ".");
+			const resolvedRoot = resolveProjectRoot(root);
 			await buildCommand({
 				root: resolvedRoot,
 				minify: options.minify,
@@ -66,7 +71,7 @@ export async function run(args: string[]): Promise<void> {
 		.option("-o, --open", "Open browser automatically")
 		.option("--outDir <dir>", "Output directory", { default: "dist" })
 		.action(async (root, options) => {
-			const resolvedRoot = resolve(root || ".");
+			const resolvedRoot = resolveProjectRoot(root);
 			await previewCommand({
 				root: resolvedRoot,
 				port: options.port,

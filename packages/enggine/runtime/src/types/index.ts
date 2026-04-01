@@ -15,9 +15,4 @@ export type {
 	RuntimeOptions,
 	RuntimeState,
 } from "./runtime";
-export type { SystemAPI } from "./system";
-export type {
-	GlobalAPI,
-	MetaFunctions,
-	VMContext,
-} from "./vm";
+export type { GlobalAPI, MetaFunctions, SystemAPI, VMContext, VMWarnings, WarningInfo } from "./vm";

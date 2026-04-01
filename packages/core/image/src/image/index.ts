@@ -16,6 +16,17 @@ import * as SpriteRenderingOps from "./sprite-rendering";
 import * as TextOps from "./text";
 import * as TransformOps from "./transform";
 
+/**
+ * For variadic shape methods, the last argument may optionally be a color string.
+ * This helper splits the args into point pairs and an optional color.
+ */
+function splitColorArg(args: any[]): { points: any[]; color: string | undefined } {
+	if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
+		return { points: args.slice(0, -1), color: args[args.length - 1] };
+	}
+	return { points: args, color: undefined };
+}
+
 export class Image {
 	private _canvas!: HTMLCanvasElement;
 	private _context: CanvasRenderingContext2D | null = null;
@@ -298,47 +309,37 @@ export class Image {
 
 	drawPolyline(...args: any[]): void {
 		this.initContext();
-		if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
-			this.setColor(args[args.length - 1]);
-			args = args.slice(0, -1);
-		}
-		ShapeOps.drawPolyline(this._context!, this._state, args);
+		const { points, color } = splitColorArg(args);
+		this.setColor(color);
+		ShapeOps.drawPolyline(this._context!, this._state, points);
 	}
 
 	drawPolygon(...args: any[]): void {
 		this.initContext();
-		if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
-			this.setColor(args[args.length - 1]);
-			args = args.slice(0, -1);
-		}
-		ShapeOps.drawPolygon(this._context!, this._state, args);
+		const { points, color } = splitColorArg(args);
+		this.setColor(color);
+		ShapeOps.drawPolygon(this._context!, this._state, points);
 	}
 
 	fillPolygon(...args: any[]): void {
 		this.initContext();
-		if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
-			this.setColor(args[args.length - 1]);
-			args = args.slice(0, -1);
-		}
-		ShapeOps.fillPolygon(this._context!, this._state, args);
+		const { points, color } = splitColorArg(args);
+		this.setColor(color);
+		ShapeOps.fillPolygon(this._context!, this._state, points);
 	}
 
 	drawQuadCurve(...args: any[]): void {
 		this.initContext();
-		if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
-			this.setColor(args[args.length - 1]);
-			args = args.slice(0, -1);
-		}
-		ShapeOps.drawQuadCurve(this._context!, this._state, args);
+		const { points, color } = splitColorArg(args);
+		this.setColor(color);
+		ShapeOps.drawQuadCurve(this._context!, this._state, points);
 	}
 
 	drawBezierCurve(...args: any[]): void {
 		this.initContext();
-		if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
-			this.setColor(args[args.length - 1]);
-			args = args.slice(0, -1);
-		}
-		ShapeOps.drawBezierCurve(this._context!, this._state, args);
+		const { points, color } = splitColorArg(args);
+		this.setColor(color);
+		ShapeOps.drawBezierCurve(this._context!, this._state, points);
 	}
 
 	drawArc(x: number, y: number, radius: number, angle1: number, angle2: number, ccw: boolean, color?: string): void {

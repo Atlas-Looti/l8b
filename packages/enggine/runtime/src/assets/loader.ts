@@ -7,7 +7,7 @@
  * - Show loading bar
  */
 
-import { Sound, Music } from "@l8b/audio";
+import { AudioCore, Sound, Music } from "@l8b/audio";
 import { DEFAULT_BLOCK_SIZE, LOADING_BAR_THROTTLE_MS } from "../constants";
 import { loadMap } from "@l8b/map";
 import { loadSprite } from "@l8b/sprites";
@@ -18,9 +18,9 @@ export class AssetLoader {
 	private resources: Resources;
 	private collections: AssetCollections;
 	private loadingBarTime: number | null = null;
-	private audioCore: any;
+	private audioCore: AudioCore;
 
-	constructor(url: string, resources: Resources, audioCore: any) {
+	constructor(url: string, resources: Resources, audioCore: AudioCore) {
 		this.url = url;
 		this.resources = resources;
 		this.audioCore = audioCore;
@@ -140,15 +140,9 @@ export class AssetLoader {
 					const soundInstance = new Sound(this.audioCore, url);
 					this.collections.sounds[name] = soundInstance;
 
-					// Wait for sound to be ready
-					const checkReady = () => {
-						if (soundInstance.ready) {
-							resolve();
-						} else {
-							setTimeout(checkReady, 50);
-						}
-					};
-					checkReady();
+					// Resolve immediately — Sound loading is async internally;
+					// readiness is checked via `isReady()` / `getProgress()` during the game loop.
+					resolve();
 				} catch (err) {
 					console.error(`Failed to load sound ${name}:`, err);
 					// Create placeholder Sound instance

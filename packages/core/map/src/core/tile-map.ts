@@ -7,7 +7,6 @@ import type { Sprite } from "@l8b/sprites";
 import type { MapData, SpriteDictionary } from "../data/types";
 import { drawTile, ensureCanvas, queueAnimatedTile, type RenderState, renderAnimatedTiles } from "../drawing/renderer";
 import { normalizeRefForStorage, normalizeRefForUsage } from "../shared/references";
-import { getDefaultSprites } from "../shared/sprites";
 
 export class TileMap {
 	public width: number;
@@ -48,7 +47,7 @@ export class TileMap {
 		this.height = height;
 		this.block_width = block_width;
 		this.block_height = block_height;
-		this.sprites = sprites ?? getDefaultSprites();
+		this.sprites = sprites ?? {};
 		this.clear();
 	}
 
