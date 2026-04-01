@@ -10,13 +10,23 @@ export interface ProfilerMetrics {
 	avgFrameTime: number;
 }
 
+const MAX_SAMPLES = 100;
+
 export class VMProfiler {
 	private startTime: number = 0;
 	private startOps: number = 0;
 	private startAllocations: number = 0;
 	private frameCount: number = 0;
-	private samples: ProfilerMetrics[] = [];
+	private sampleCount: number = 0;
 	private processor: Processor;
+
+	// Running totals for O(1) average computation
+	private totalOps: number = 0;
+	private totalTime: number = 0;
+	private totalAllocations: number = 0;
+	private totalFrames: number = 0;
+	private totalOpsPerSec: number = 0;
+	private totalAvgFrameTime: number = 0;
 
 	constructor(processor: Processor) {
 		this.processor = processor;
@@ -34,18 +44,31 @@ export class VMProfiler {
 		const duration = endTime - this.startTime;
 		const currentOps = (this.processor as any).metrics?.ops || 0;
 		const currentAllocations = (this.processor as any).metrics?.allocations || 0;
+		const ops = currentOps - this.startOps;
+		const allocations = currentAllocations - this.startAllocations;
+		const opsPerSec = (ops / duration) * 1000;
+		const avgFrameTime = duration / (this.frameCount || 1);
 
 		const metrics: ProfilerMetrics = {
-			ops: currentOps - this.startOps,
+			ops,
 			time: duration,
-			allocations: currentAllocations - this.startAllocations,
+			allocations,
 			frames: this.frameCount,
-			samples: this.samples.length,
-			opsPerSec: ((currentOps - this.startOps) / duration) * 1000,
-			avgFrameTime: duration / (this.frameCount || 1),
+			samples: this.sampleCount + 1,
+			opsPerSec,
+			avgFrameTime,
 		};
 
-		this.samples.push(metrics);
+		if (this.sampleCount < MAX_SAMPLES) {
+			this.totalOps += ops;
+			this.totalTime += duration;
+			this.totalAllocations += allocations;
+			this.totalFrames += this.frameCount;
+			this.totalOpsPerSec += opsPerSec;
+			this.totalAvgFrameTime += avgFrameTime;
+			this.sampleCount++;
+		}
+
 		return metrics;
 	}
 
@@ -54,28 +77,28 @@ export class VMProfiler {
 	}
 
 	getAverageMetrics(): ProfilerMetrics {
-		if (this.samples.length === 0) {
+		if (this.sampleCount === 0) {
 			return this.stop();
 		}
 
-		const total = this.samples.reduce((acc, curr) => ({
-			ops: acc.ops + curr.ops,
-			time: acc.time + curr.time,
-			allocations: acc.allocations + curr.allocations,
-			frames: acc.frames + curr.frames,
-			samples: acc.samples + curr.samples,
-			opsPerSec: acc.opsPerSec + curr.opsPerSec,
-			avgFrameTime: acc.avgFrameTime + curr.avgFrameTime,
-		}));
-
 		return {
-			ops: total.ops / this.samples.length,
-			time: total.time / this.samples.length,
-			allocations: total.allocations / this.samples.length,
-			frames: total.frames / this.samples.length,
-			samples: this.samples.length,
-			opsPerSec: total.opsPerSec / this.samples.length,
-			avgFrameTime: total.avgFrameTime / this.samples.length,
+			ops: this.totalOps / this.sampleCount,
+			time: this.totalTime / this.sampleCount,
+			allocations: this.totalAllocations / this.sampleCount,
+			frames: this.totalFrames / this.sampleCount,
+			samples: this.sampleCount,
+			opsPerSec: this.totalOpsPerSec / this.sampleCount,
+			avgFrameTime: this.totalAvgFrameTime / this.sampleCount,
 		};
+	}
+
+	reset() {
+		this.sampleCount = 0;
+		this.totalOps = 0;
+		this.totalTime = 0;
+		this.totalAllocations = 0;
+		this.totalFrames = 0;
+		this.totalOpsPerSec = 0;
+		this.totalAvgFrameTime = 0;
 	}
 }

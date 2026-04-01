@@ -63,6 +63,7 @@ export class RuntimeOrchestrator {
 	private debugLogger = new DebugLogger();
 	private frameCount: number = 0;
 	private readonly DEBUG_UPDATE_FREQUENCY = 10;
+	private lastUpdateRate: number = -1;
 
 	constructor(options: RuntimeOptions = {}) {
 		this.options = options;
@@ -353,10 +354,10 @@ export class RuntimeOrchestrator {
 		if (!this.vm || !this.gameLoop) return;
 		try {
 			const updateRate = this.vm.context?.global?.system?.update_rate;
-			if (updateRate != null && updateRate > 0 && Number.isFinite(updateRate)) {
-				this.gameLoop.setUpdateRate(updateRate);
-			} else {
-				this.gameLoop.setUpdateRate(60);
+			const rate = updateRate != null && updateRate > 0 && Number.isFinite(updateRate) ? updateRate : 60;
+			if (rate !== this.lastUpdateRate) {
+				this.lastUpdateRate = rate;
+				this.gameLoop.setUpdateRate(rate);
 			}
 		} catch {}
 	}

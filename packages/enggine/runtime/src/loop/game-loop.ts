@@ -160,9 +160,7 @@ export class GameLoop {
 	 * Get current state
 	 */
 	getState(): GameLoopState {
-		return {
-			...this.state,
-		};
+		return this.state;
 	}
 
 	/**

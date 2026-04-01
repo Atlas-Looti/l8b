@@ -5,40 +5,47 @@
 import { Random } from "@l8b/lootiscript";
 import type { GlobalAPI, MetaFunctions, VMContext } from "./types";
 
+// Shared math lambdas — allocated once, reused across all VM instances
+const _baseMeta = {
+	round: (x: number) => Math.round(x),
+	floor: (x: number) => Math.floor(x),
+	ceil: (x: number) => Math.ceil(x),
+	abs: (x: number) => Math.abs(x),
+	min: (x: number, y: number) => Math.min(x, y),
+	max: (x: number, y: number) => Math.max(x, y),
+	sqrt: (x: number) => Math.sqrt(x),
+	pow: (x: number, y: number) => x ** y,
+	sin: (x: number) => Math.sin(x),
+	cos: (x: number) => Math.cos(x),
+	tan: (x: number) => Math.tan(x),
+	asin: (x: number) => Math.asin(x),
+	acos: (x: number) => Math.acos(x),
+	atan: (x: number) => Math.atan(x),
+	atan2: (y: number, x: number) => Math.atan2(y, x),
+	sind: (x: number) => Math.sin((x / 180) * Math.PI),
+	cosd: (x: number) => Math.cos((x / 180) * Math.PI),
+	tand: (x: number) => Math.tan((x / 180) * Math.PI),
+	asind: (x: number) => (Math.asin(x) * 180) / Math.PI,
+	acosd: (x: number) => (Math.acos(x) * 180) / Math.PI,
+	atand: (x: number) => (Math.atan(x) * 180) / Math.PI,
+	atan2d: (y: number, x: number) => (Math.atan2(y, x) * 180) / Math.PI,
+	log: (x: number) => Math.log(x),
+	exp: (x: number) => Math.exp(x),
+	random: new Random(0),
+	PI: Math.PI,
+	true: 1 as const,
+	false: 0 as const,
+};
+
+const _defaultPrint = (text: any) => console.log(text);
+
 /**
  * Create meta functions (built-in functions)
  */
 export function createMetaFunctions(customPrint?: (text: any) => void): MetaFunctions {
 	return {
-		print: customPrint || ((text: any) => console.log(text)),
-		round: (x: number) => Math.round(x),
-		floor: (x: number) => Math.floor(x),
-		ceil: (x: number) => Math.ceil(x),
-		abs: (x: number) => Math.abs(x),
-		min: (x: number, y: number) => Math.min(x, y),
-		max: (x: number, y: number) => Math.max(x, y),
-		sqrt: (x: number) => Math.sqrt(x),
-		pow: (x: number, y: number) => x ** y,
-		sin: (x: number) => Math.sin(x),
-		cos: (x: number) => Math.cos(x),
-		tan: (x: number) => Math.tan(x),
-		asin: (x: number) => Math.asin(x),
-		acos: (x: number) => Math.acos(x),
-		atan: (x: number) => Math.atan(x),
-		atan2: (y: number, x: number) => Math.atan2(y, x),
-		sind: (x: number) => Math.sin((x / 180) * Math.PI),
-		cosd: (x: number) => Math.cos((x / 180) * Math.PI),
-		tand: (x: number) => Math.tan((x / 180) * Math.PI),
-		asind: (x: number) => (Math.asin(x) * 180) / Math.PI,
-		acosd: (x: number) => (Math.acos(x) * 180) / Math.PI,
-		atand: (x: number) => (Math.atan(x) * 180) / Math.PI,
-		atan2d: (y: number, x: number) => (Math.atan2(y, x) * 180) / Math.PI,
-		log: (x: number) => Math.log(x),
-		exp: (x: number) => Math.exp(x),
-		random: new Random(0),
-		PI: Math.PI,
-		true: 1,
-		false: 0,
+		..._baseMeta,
+		print: customPrint ?? _defaultPrint,
 	};
 }
 
@@ -46,8 +53,11 @@ export function createMetaFunctions(customPrint?: (text: any) => void): MetaFunc
  * Create VM context
  */
 export function createVMContext(meta: Partial<MetaFunctions>, global: Partial<GlobalAPI>): VMContext {
-	const fullMeta = createMetaFunctions(meta.print);
-	Object.assign(fullMeta, meta);
+	const fullMeta: MetaFunctions = {
+		..._baseMeta,
+		print: meta.print ?? _defaultPrint,
+		...meta,
+	};
 
 	return {
 		meta: fullMeta as MetaFunctions,

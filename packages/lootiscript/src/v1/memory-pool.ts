@@ -42,12 +42,13 @@ export function getPooledObject(): any {
 }
 
 /**
- * Recycle object to pool (clears properties)
+ * Recycle object to pool (clears own enumerable properties)
  */
 export function recycleObject(obj: any): void {
 	if (objectPool.length < MAX_POOL_SIZE) {
-		for (const key in obj) {
-			delete obj[key];
+		const keys = Object.keys(obj);
+		for (let i = 0; i < keys.length; i++) {
+			delete obj[keys[i]];
 		}
 		objectPool.push(obj);
 	}
