@@ -1,13 +1,13 @@
 import type { GameDefinition } from "./types";
 
 function img(file: string) {
-	return { file: `sprites/${file}`, version: 1 };
+	return { file, version: 1 };
 }
 function map(file: string) {
-	return { file: `maps/${file}`, version: 1 };
+	return { file, version: 1 };
 }
 function snd(file: string) {
-	return { file: `sounds/${file}`, version: 1 };
+	return { file, version: 1 };
 }
 
 export const games: GameDefinition[] = [
