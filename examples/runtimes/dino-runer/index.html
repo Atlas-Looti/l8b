@@ -2,39 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
     <title>Dino Runner</title>
     <style>
       @font-face {
-        font-family: "PressStart2P";
-        src: url("/fonts/PressStart2P.ttf") format("truetype");
+        font-family: "BitCell";
+        src: url("/fonts/BitCell.ttf") format("truetype");
         font-display: swap;
       }
       :root {
         color-scheme: dark;
       }
       * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
       html,
       body {
-        margin: 0;
-        padding: 0;
         width: 100%;
         height: 100%;
-        background: #0d1117;
-        font-family: "PressStart2P", system-ui, sans-serif;
-      }
-      body {
-        display: flex;
-        align-items: stretch;
-        justify-content: stretch;
+        overflow: hidden;
+        background: #000;
+        touch-action: none;
+        -webkit-tap-highlight-color: transparent;
       }
       canvas {
         width: 100%;
         height: 100%;
         display: block;
-        background: #000;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
       }
     </style>
   </head>

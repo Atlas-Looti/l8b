@@ -1,5 +1,4 @@
-import { useRef } from "react";
-import { getGame } from "../registry";
+import { useCallback, useEffect, useRef } from "react";
 import { useGameRuntime } from "../hooks/useGameRuntime";
 import "./GamePlayer.css";
 
@@ -10,21 +9,39 @@ interface GamePlayerProps {
 
 export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const { loading, error, stop } = useGameRuntime(gameId, canvasRef);
-	const game = getGame(gameId);
 
-	const handleBack = () => {
+	const handleBack = useCallback(() => {
 		stop();
 		onBack();
-	};
+	}, [onBack]);
+
+	const { loading, error, stop } = useGameRuntime(gameId, canvasRef, {
+		onMessage: useCallback(
+			(msg: unknown) => {
+				// "quit" — go back to hub (string or object form)
+				if (
+					msg === "quit" ||
+					(typeof msg === "object" && msg !== null && (msg as Record<string, unknown>).type === "quit")
+				) {
+					handleBack();
+				}
+			},
+			[handleBack],
+		),
+	});
+
+	// ESC key as a fallback to leave the game
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") handleBack();
+		};
+		window.addEventListener("keydown", onKeyDown);
+		return () => window.removeEventListener("keydown", onKeyDown);
+	}, [handleBack]);
 
 	return (
 		<div className="player">
 			<div className="player-scanlines" />
-
-			<button className="player-back" onClick={handleBack}>
-				{"<< BACK"}
-			</button>
 
 			{loading && (
 				<div className="player-loading">
@@ -47,17 +64,9 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 				</div>
 			)}
 
-			<div
-				className={`player-canvas-wrap ${game?.orientation === "portrait" ? "portrait" : "landscape"}`}
-			>
+			<div className="player-canvas-wrap">
 				<canvas ref={canvasRef} className="player-canvas" />
 			</div>
-
-			{!loading && !error && (
-				<div className="player-info">
-					<span className="player-game-name">{game?.name}</span>
-				</div>
-			)}
 		</div>
 	);
 }

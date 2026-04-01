@@ -20,6 +20,8 @@ export interface SystemAPI {
 	loading?: number;
 	pause: () => void;
 	exit: () => void;
+	/** Send a message to the host application (hub, iframe parent, etc.) */
+	postMessage: (message: any) => void;
 	prompt: (text: string, callback: (result: string) => void) => void;
 	say: (text: string) => void;
 	file: {

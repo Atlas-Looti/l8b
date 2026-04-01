@@ -8,7 +8,7 @@ init = function()
   speed = 1.7
   hero_y = 0
   hero_vy = 0
-  screen.setFont("PressStart2P")
+  screen.setFont("BitCell")
 end
 
 update = function()

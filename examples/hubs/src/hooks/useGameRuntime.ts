@@ -2,10 +2,21 @@ import { RuntimeOrchestrator } from "@l8b/runtime";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getGame } from "../registry";
 
-export function useGameRuntime(gameId: string, canvasRef: React.RefObject<HTMLCanvasElement | null>) {
+export interface GameRuntimeCallbacks {
+	/** Called when the game sends a message via system.postMessage() */
+	onMessage?: (message: unknown) => void;
+}
+
+export function useGameRuntime(
+	gameId: string,
+	canvasRef: React.RefObject<HTMLCanvasElement | null>,
+	callbacks: GameRuntimeCallbacks = {},
+) {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const runtimeRef = useRef<InstanceType<typeof RuntimeOrchestrator> | null>(null);
+	const callbacksRef = useRef(callbacks);
+	callbacksRef.current = callbacks;
 
 	const stop = useCallback(() => {
 		if (runtimeRef.current) {
@@ -67,7 +78,9 @@ export function useGameRuntime(gameId: string, canvasRef: React.RefObject<HTMLCa
 					listener: {
 						log: (message: string) => console.log(`[${gameId}]`, message),
 						reportError: (err: unknown) => console.error(`[${gameId} ERROR]`, err),
-						postMessage: (msg: unknown) => console.log(`[${gameId} MSG]`, msg),
+						postMessage: (msg: unknown) => {
+							callbacksRef.current.onMessage?.(msg);
+						},
 					},
 				});
 

@@ -1,7 +1,7 @@
 t = 0
 
 init = function()
-  screen.setFont("PressStart2P")
+  screen.setFont("BitCell")
 end
 
 update = function()

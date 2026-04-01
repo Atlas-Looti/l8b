@@ -67,6 +67,10 @@ export class System {
 				}
 			},
 
+			postMessage: (message: any) => {
+				this.listener.postMessage?.(message);
+			},
+
 			prompt: (text: string, callback: (result: string) => void) => {
 				if (typeof window !== "undefined") {
 					const result = window.prompt(text);

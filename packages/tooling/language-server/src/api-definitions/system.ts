@@ -51,6 +51,11 @@ export const systemApi: Partial<GlobalApi> = {
 				signature: "system.exit()",
 				description: "Exit game",
 			},
+			postMessage: {
+				type: "method",
+				signature: "system.postMessage(message)",
+				description: "Send a message to the host application. Use to trigger navigation, events, or custom host callbacks. Example: system.postMessage(\"quit\") to go back to the hub.",
+			},
 			prompt: {
 				type: "method",
 				signature: "system.prompt(text, callback)",
