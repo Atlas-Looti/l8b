@@ -1,0 +1,238 @@
+// ─── HUD Module ─────────────────────────────────────────────
+// Shared hamburger menu for all games in hubs.
+// Usage: call hudUpdate() at start of update, hudDraw() at end of draw.
+// When hud_open is true, game should skip its own update logic.
+// ─────────────────────────────────────────────────────────────
+
+hud_open = 0
+hud_volume = 1
+hud_btn_size = 0
+hud_margin = 0
+hud_pressed = 0
+hud_hover_item = ""
+
+// ─── Helpers ────────────────────────────────────────────────
+
+hud_hitTest = function(px, py, tx, ty, tw, th)
+  local dx = px - tx
+  local dy = py - ty
+  if dx > -tw/2 and dx < tw/2 and dy > -th/2 and dy < th/2 then
+    return 1
+  end
+  return 0
+end
+
+hud_getPointer = function()
+  local obj = object end
+  if touch.touching then
+    obj.x = touch.x
+    obj.y = touch.y
+    obj.down = touch.touching
+    obj.tap = touch.press
+  else
+    obj.x = mouse.x
+    obj.y = mouse.y
+    obj.down = mouse.left
+    obj.tap = mouse.press
+  end
+  return obj
+end
+
+// ─── Update ─────────────────────────────────────────────────
+
+hudUpdate = function()
+  local sw = screen.width
+  local sh = screen.height
+  hud_btn_size = round(min(sw, sh) * 0.04)
+  if hud_btn_size < 8 then hud_btn_size = 8 end
+  hud_margin = hud_btn_size * 0.8
+
+  local ptr = hud_getPointer()
+  local tap = ptr.tap
+
+  // Hamburger button position (top-right)
+  local hx = sw/2 - hud_margin - hud_btn_size/2
+  local hy = sh/2 - hud_margin - hud_btn_size/2
+
+  if not hud_open then
+    // Check hamburger button tap
+    if tap and hud_hitTest(ptr.x, ptr.y, hx, hy, hud_btn_size*1.5, hud_btn_size*1.5) then
+      hud_open = 1
+    end
+    return
+  end
+
+  // ─── Menu is open ───
+  local panelW = min(sw * 0.5, 200)
+  local panelH = min(sh * 0.55, 240)
+  local itemH = panelH / 6
+  local itemW = panelW * 0.75
+  local baseY = panelH/2 - itemH * 1.5
+
+  hud_hover_item = ""
+
+  if tap then
+    // RESUME button
+    local ry = baseY - itemH * 0
+    if hud_hitTest(ptr.x, ptr.y, 0, ry, itemW, itemH) then
+      hud_open = 0
+      return
+    end
+
+    // VOLUME bar
+    local vy = baseY - itemH * 1.5
+    local barW = itemW * 0.7
+    local barH = itemH * 0.35
+    if hud_hitTest(ptr.x, ptr.y, 0, vy, itemW, itemH) then
+      local rel = (ptr.x + barW/2) / barW
+      if rel < 0 then rel = 0 end
+      if rel > 1 then rel = 1 end
+      hud_volume = rel
+      audio.setVolume(hud_volume)
+    end
+
+    // QUIT button
+    local qy = baseY - itemH * 3
+    if hud_hitTest(ptr.x, ptr.y, 0, qy, itemW, itemH) then
+      player.postMessage("quit")
+      return
+    end
+  end
+
+  // Volume drag while holding
+  if ptr.down and hud_open then
+    local vy = baseY - itemH * 1.5
+    local barW = itemW * 0.7
+    if hud_hitTest(ptr.x, ptr.y, 0, vy, itemW, itemH) then
+      local rel = (ptr.x + barW/2) / barW
+      if rel < 0 then rel = 0 end
+      if rel > 1 then rel = 1 end
+      hud_volume = rel
+      audio.setVolume(hud_volume)
+    end
+  end
+
+  // Hover detection for visual feedback
+  local ry = baseY - itemH * 0
+  if hud_hitTest(ptr.x, ptr.y, 0, ry, itemW, itemH) then
+    hud_hover_item = "resume"
+  end
+  local qy = baseY - itemH * 3
+  if hud_hitTest(ptr.x, ptr.y, 0, qy, itemW, itemH) then
+    hud_hover_item = "quit"
+  end
+end
+
+// ─── Draw ───────────────────────────────────────────────────
+
+hudDraw = function()
+  local sw = screen.width
+  local sh = screen.height
+  local sz = hud_btn_size
+  if sz == 0 then sz = 8 end
+  local mg = sz * 0.8
+
+  // Save state
+  screen.setDrawAnchor(0, 0)
+  screen.setDrawRotation(0)
+  screen.setDrawScale(1)
+  screen.setTranslation(0, 0)
+  screen.setScale(1, 1)
+  screen.setRotation(0)
+
+  // ─── Hamburger icon (always visible, top-right) ───
+  local hx = sw/2 - mg - sz/2
+  local hy = sh/2 - mg - sz/2
+  local barW = sz * 0.7
+  local barH = sz * 0.1
+  if barH < 1 then barH = 1 end
+  local gap = sz * 0.25
+
+  // Icon background
+  screen.setAlpha(0.5)
+  screen.fillRound(hx, hy, sz*1.2, sz*1.2, "rgba(0,0,0,0.6)")
+  screen.setAlpha(1)
+
+  // Three bars
+  screen.fillRect(hx, hy + gap, barW, barH, "#00fff5")
+  screen.fillRect(hx, hy, barW, barH, "#00fff5")
+  screen.fillRect(hx, hy - gap, barW, barH, "#00fff5")
+
+  if not hud_open then
+    return
+  end
+
+  // ─── Dark overlay ───
+  screen.setAlpha(0.7)
+  screen.fillRect(0, 0, sw, sh, "#000")
+  screen.setAlpha(1)
+
+  // ─── Menu panel ───
+  local panelW = min(sw * 0.5, 200)
+  local panelH = min(sh * 0.55, 240)
+
+  screen.fillRoundRect(0, 0, panelW, panelH, 4, "rgba(10,10,30,0.95)")
+  screen.drawRoundRect(0, 0, panelW, panelH, 4, "rgba(0,255,245,0.3)")
+
+  local itemH = panelH / 6
+  local itemW = panelW * 0.75
+  local baseY = panelH/2 - itemH * 1.5
+  local fontSize = round(itemH * 0.35)
+  if fontSize < 5 then fontSize = 5 end
+  local smallFont = round(fontSize * 0.7)
+
+  // ─── Title ───
+  local titleY = panelH/2 - itemH * 0.4
+  screen.drawText("MENU", 0, titleY, fontSize, "rgba(0,255,245,0.5)")
+
+  // ─── RESUME ───
+  local ry = baseY - itemH * 0
+  if hud_hover_item == "resume" then
+    screen.setAlpha(0.15)
+    screen.fillRoundRect(0, ry, itemW, itemH*0.8, 2, "#00fff5")
+    screen.setAlpha(1)
+  end
+  screen.drawText("▶ RESUME", 0, ry, fontSize, "#00fff5")
+
+  // ─── VOLUME ───
+  local vy = baseY - itemH * 1.5
+  local barDrawW = itemW * 0.7
+  local barDrawH = itemH * 0.2
+  if barDrawH < 2 then barDrawH = 2 end
+
+  screen.drawText("VOLUME", 0, vy + itemH*0.3, smallFont, "rgba(255,255,255,0.4)")
+
+  // Volume track
+  screen.fillRoundRect(0, vy, barDrawW, barDrawH, 1, "rgba(255,255,255,0.15)")
+  // Volume fill
+  local fillW = barDrawW * hud_volume
+  local fillX = -barDrawW/2 + fillW/2
+  if fillW > 1 then
+    screen.fillRoundRect(fillX, vy, fillW, barDrawH, 1, "#00fff5")
+  end
+  // Volume knob
+  local knobX = -barDrawW/2 + barDrawW * hud_volume
+  local knobR = barDrawH * 1.5
+  screen.fillRound(knobX, vy, knobR, knobR, "#FFF")
+
+  // Volume percentage
+  local volPct = round(hud_volume * 100)
+  screen.drawText(volPct + "%", 0, vy - itemH*0.35, smallFont, "rgba(255,255,255,0.4)")
+
+  // ─── FPS ───
+  local fy = baseY - itemH * 2.3
+  local currentFps = round(system.fps)
+  screen.drawText("FPS: " + currentFps, 0, fy, smallFont, "rgba(255,255,255,0.3)")
+
+  // ─── QUIT ───
+  local qy = baseY - itemH * 3
+  if hud_hover_item == "quit" then
+    screen.setAlpha(0.15)
+    screen.fillRoundRect(0, qy, itemW, itemH*0.8, 2, "#ff1744")
+    screen.setAlpha(1)
+  end
+  screen.drawText("✕ QUIT", 0, qy, fontSize, "#ff1744")
+
+  // Reset alpha
+  screen.setAlpha(1)
+end

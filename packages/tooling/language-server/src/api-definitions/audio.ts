@@ -31,6 +31,21 @@ export const audioApi: Partial<GlobalApi> = {
 				description: "Play background music",
 				signature: "audio.playMusic(music: string | Music, volume?: number, loopit?: boolean): number",
 			},
+			setVolume: {
+				type: "method",
+				description: "Set master volume (0-1). Applied as multiplier to all sound and music playback.",
+				signature: "audio.setVolume(volume: number): void",
+			},
+			getVolume: {
+				type: "method",
+				description: "Get current master volume (0-1)",
+				signature: "audio.getVolume(): number",
+			},
+			stopAll: {
+				type: "method",
+				description: "Stop all currently playing sounds and music",
+				signature: "audio.stopAll(): void",
+			},
 		},
 	},
 };

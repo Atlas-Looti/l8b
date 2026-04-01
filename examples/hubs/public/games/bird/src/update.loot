@@ -7,6 +7,8 @@ physics = function()
 end
 
 update = function()
+  hudUpdate()
+  if hud_open then return end
   if status == "welcome" or status == 0 then
     scroll_speed = 5
     bird_x += scroll_speed*0.1

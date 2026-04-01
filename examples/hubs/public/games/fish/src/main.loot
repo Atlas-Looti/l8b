@@ -1,4 +1,6 @@
 update = function()
+  hudUpdate()
+  if hud_open then return end
   if status == "lost" then
     if (touch.touching and not previous_touching) or (keyboard.SPACE and not previous_space) or (gamepad.A and not previous_A) then
       status = 0

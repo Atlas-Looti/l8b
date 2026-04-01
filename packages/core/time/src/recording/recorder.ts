@@ -7,6 +7,7 @@
  * - Exclude non-serializable objects
  */
 import { DEFAULT_RECORD_BUFFER_FRAMES } from "../constants";
+import { deepCopy } from "../utils";
 
 import type { StateSnapshot } from "../types";
 
@@ -98,45 +99,7 @@ export class StateRecorder {
 		this.recordLength = this.history.length;
 	}
 
-	/**
-	 * Convert state to storable format (deep copy, exclude references)
-	 */
 	private makeStorableState(value: any): any {
-		if (value == null) {
-			return value;
-		}
-
-		// Skip excluded objects to avoid serializing non-game state
-		if (this.excluded.includes(value)) {
-			return null;
-		}
-
-		// Primitives can be stored directly without deep copying
-		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-			return value;
-		}
-
-		// Recursively deep copy array elements
-		if (Array.isArray(value)) {
-			const result: any[] = [];
-			for (let i = 0; i < value.length; i++) {
-				result[i] = this.makeStorableState(value[i]);
-			}
-			return result;
-		}
-
-		// Recursively deep copy object properties
-		if (typeof value === "object") {
-			const result: any = {};
-			for (const key in value) {
-				if (Object.hasOwn(value, key)) {
-					result[key] = this.makeStorableState(value[key]);
-				}
-			}
-			return result;
-		}
-
-		// Functions and other non-serializable types are excluded
-		return null;
+		return deepCopy(value, this.excluded);
 	}
 }

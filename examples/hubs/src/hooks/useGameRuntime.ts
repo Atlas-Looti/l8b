@@ -45,23 +45,36 @@ export function useGameRuntime(
 
 				const baseUrl = `/games/${gameId}/`;
 
-				// Fetch all .loot source files in parallel
-				const sourceEntries = await Promise.all(
-					game!.sources.map(async (filename) => {
-						const url = `${baseUrl}src/${filename}`;
-						const res = await fetch(url);
-						if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-						const code = await res.text();
-						// Module name = filename without .loot extension
-						const moduleName = filename.replace(/\.loot$/, "");
-						return [moduleName, code] as const;
-					}),
-				);
+				// Fetch shared modules and game source files in parallel
+				const [sharedEntries, gameEntries] = await Promise.all([
+					// Shared modules (loaded first so game code can call them)
+					Promise.all(
+						["/shared/hud.loot"].map(async (path) => {
+							const res = await fetch(path);
+							if (!res.ok) throw new Error(`Failed to fetch shared module ${path}: ${res.status}`);
+							const code = await res.text();
+							const moduleName = path.split("/").pop()!.replace(/\.loot$/, "");
+							return [moduleName, code] as const;
+						}),
+					),
+					// Game source files
+					Promise.all(
+						game!.sources.map(async (filename) => {
+							const url = `${baseUrl}src/${filename}`;
+							const res = await fetch(url);
+							if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+							const code = await res.text();
+							const moduleName = filename.replace(/\.loot$/, "");
+							return [moduleName, code] as const;
+						}),
+					),
+				]);
 
 				if (cancelled) return;
 
 				const sources: Record<string, string> = {};
-				for (const [name, code] of sourceEntries) {
+				// Shared modules first, then game modules
+				for (const [name, code] of [...sharedEntries, ...gameEntries]) {
 					sources[name] = code;
 				}
 

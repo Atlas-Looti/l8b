@@ -11,6 +11,8 @@ init = function()
 end
 
 update = function()
+ hudUpdate()
+ if hud_open then return end
  if gameover then
   gameover += 1
   if gameover>300 then init() end
@@ -79,4 +81,5 @@ if gameover then
   screen.drawText("READY?",0,30,50,"#FFF")
  end
  //  screen.drawText(system.fps,-80,80,10,"#FFF")
+ hudDraw()
 end

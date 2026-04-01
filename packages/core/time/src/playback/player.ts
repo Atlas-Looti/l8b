@@ -7,6 +7,7 @@
  * - Control playback position
  */
 import { DEFAULT_LOOP_BUFFER_FRAMES } from "../constants";
+import { deepCopy } from "../utils";
 
 import type { StateSnapshot } from "../types";
 
@@ -96,7 +97,7 @@ export class StatePlayer {
 		// Apply snapshot properties to target object via deep copy
 		for (const key in snapshot) {
 			if (Object.hasOwn(snapshot, key)) {
-				target[key] = this.deepCopy(snapshot[key]);
+				target[key] = deepCopy(snapshot[key]);
 			}
 		}
 	}
@@ -124,32 +125,4 @@ export class StatePlayer {
 		return protected_keys.includes(key);
 	}
 
-	/**
-	 * Deep copy a value
-	 */
-	private deepCopy(value: any): any {
-		if (value == null) {
-			return value;
-		}
-
-		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-			return value;
-		}
-
-		if (Array.isArray(value)) {
-			return value.map((item) => this.deepCopy(item));
-		}
-
-		if (typeof value === "object") {
-			const result: any = {};
-			for (const key in value) {
-				if (Object.hasOwn(value, key)) {
-					result[key] = this.deepCopy(value[key]);
-				}
-			}
-			return result;
-		}
-
-		return value;
-	}
 }

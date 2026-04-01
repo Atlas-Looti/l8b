@@ -3,7 +3,25 @@
  */
 
 /**
- * System API exposed to game code
+ * Player API exposed to game code - controls player UX
+ */
+export interface PlayerAPI {
+	/** Pause the game loop */
+	pause: () => void;
+	/** Resume the game loop */
+	resume: () => void;
+	/** Send a custom message to the host application */
+	postMessage: (message: any) => void;
+	/** Set target update rate (FPS) */
+	setFps: (fps: number) => void;
+	/** Current FPS (read-only) */
+	readonly fps: number;
+	/** Target update rate in Hz (read/write) */
+	update_rate: number;
+}
+
+/**
+ * System API exposed to game code - system info and utilities
  */
 export interface SystemAPI {
 	time: number;
@@ -18,10 +36,6 @@ export interface SystemAPI {
 		gamepad: number;
 	};
 	loading?: number;
-	pause: () => void;
-	exit: () => void;
-	/** Send a message to the host application (hub, iframe parent, etc.) */
-	postMessage: (message: any) => void;
 	prompt: (text: string, callback: (result: string) => void) => void;
 	say: (text: string) => void;
 	file: {
@@ -83,6 +97,7 @@ export interface GlobalAPI {
 	scene: Record<string, any>;
 	route: Record<string, any>;
 	router: Record<string, any>;
+	player: Record<string, any>;
 	system: SystemAPI;
 	fonts?: Record<string, any>;
 	Sound?: any;

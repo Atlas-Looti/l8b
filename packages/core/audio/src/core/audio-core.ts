@@ -25,6 +25,7 @@ export class AudioCore {
 	private workletNode?: AudioWorkletNode;
 	private beeper?: Beeper;
 	private runtime: any;
+	private masterVolume: number = 1;
 
 	constructor(runtime: any) {
 		this.runtime = runtime;
@@ -45,12 +46,21 @@ export class AudioCore {
 		this.wakeupList.push(item);
 	}
 
-	private interfaceCache: {
-		beep: (sequence: string) => void;
-		cancelBeeps: () => void;
-		playSound: (sound: unknown, volume?: number, pitch?: number, pan?: number, loopit?: boolean) => number;
-		playMusic: (music: unknown, volume?: number, loopit?: boolean) => number;
-	} | null = null;
+	private interfaceCache: Record<string, any> | null = null;
+
+	/**
+	 * Set master volume (0-1). Applied as a multiplier to all sound/music playback.
+	 */
+	public setVolume(volume: number): void {
+		this.masterVolume = Math.max(0, Math.min(1, volume));
+	}
+
+	/**
+	 * Get current master volume (0-1)
+	 */
+	public getVolume(): number {
+		return this.masterVolume;
+	}
 
 	/**
 	 * Get interface for game code
@@ -65,6 +75,9 @@ export class AudioCore {
 			playSound: (sound: any, volume?: number, pitch?: number, pan?: number, loopit?: boolean) =>
 				this.playSound(sound, volume, pitch, pan, loopit),
 			playMusic: (music: any, volume?: number, loopit?: boolean) => this.playMusic(music, volume, loopit),
+			setVolume: (volume: number) => this.setVolume(volume),
+			getVolume: () => this.getVolume(),
+			stopAll: () => this.stopAll(),
 		};
 		return this.interfaceCache;
 	}
@@ -80,7 +93,7 @@ export class AudioCore {
 				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7013, { soundName });
 				return 0;
 			}
-			return s.play(volume, pitch, pan, loopit);
+			return s.play(volume * this.masterVolume, pitch, pan, loopit);
 		}
 		return 0;
 	}
@@ -96,7 +109,7 @@ export class AudioCore {
 				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7014, { musicName });
 				return 0;
 			}
-			return m.play(volume, loopit);
+			return m.play(volume * this.masterVolume, loopit);
 		}
 		return 0;
 	}

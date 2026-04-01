@@ -41,21 +41,6 @@ export const systemApi: Partial<GlobalApi> = {
 				type: "property",
 				description: "Input device availability",
 			},
-			pause: {
-				type: "method",
-				signature: "system.pause()",
-				description: "Pause game execution",
-			},
-			exit: {
-				type: "method",
-				signature: "system.exit()",
-				description: "Exit game",
-			},
-			postMessage: {
-				type: "method",
-				signature: "system.postMessage(message)",
-				description: "Send a message to the host application. Use to trigger navigation, events, or custom host callbacks. Example: system.postMessage(\"quit\") to go back to the hub.",
-			},
 			prompt: {
 				type: "method",
 				signature: "system.prompt(text, callback)",

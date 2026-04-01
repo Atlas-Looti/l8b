@@ -5,6 +5,8 @@ init = function()
 end
 
 update = function()
+  hudUpdate()
+  if hud_open then return end
   t = t + 1
 end
 
@@ -37,4 +39,5 @@ draw = function()
   cy = 0
   drawWaveText("this is l8b", cx, cy - 10, 10, 4, 10, 0.4, 0)
   drawWaveText("nice to meet you", cx, cy + 6, 8, 3, 12, 0.38, 120)
+  hudDraw()
 end

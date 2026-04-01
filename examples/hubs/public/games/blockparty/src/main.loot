@@ -71,6 +71,8 @@ startGame = function()
 end
 
 update = function()
+	hudUpdate()
+	if hud_open then return end
 	local sw = screen.width
 	local sh = screen.height
 
@@ -132,6 +134,7 @@ draw = function()
 		drawGame()
 		drawGameOver()
 	end
+	hudDraw()
 end
 
 // ========== HELPERS ==========

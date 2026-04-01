@@ -12,6 +12,7 @@
 
 import { AudioCore } from "@l8b/audio";
 import { Palette } from "@l8b/palette";
+import { PlayerService } from "@l8b/player";
 import { SceneManager } from "@l8b/scene";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
@@ -45,6 +46,7 @@ export class RuntimeOrchestrator {
 	public audio: AudioCore;
 	public input: InputManager;
 	public system: System;
+	public playerService: PlayerService;
 	public sceneManager: SceneManager;
 	public vm: L8BVM | null = null;
 
@@ -78,7 +80,17 @@ export class RuntimeOrchestrator {
 
 		this.audio = new AudioCore(this);
 		this.input = new InputManager(this.screen.getCanvas());
-		this.system = new System(this.listener);
+		this.system = new System();
+		this.playerService = new PlayerService({
+			pause: () => this.gameLoop?.stop(),
+			resume: () => this.gameLoop?.resume(),
+			postMessage: (message: any) => this.listener.postMessage?.(message),
+			getFps: () => this.system.getAPI().fps,
+			getUpdateRate: () => this.system.getAPI().update_rate,
+			setUpdateRate: (rate: number) => {
+				this.system.getAPI().update_rate = rate;
+			},
+		});
 		this.sceneManager = new SceneManager();
 		this.assetLoader = new AssetLoader(options.url || "", options.resources || {}, this.audio, this.listener);
 
@@ -219,6 +231,7 @@ export class RuntimeOrchestrator {
 			sounds: this.sounds,
 			music: this.music,
 			assets: this.assets,
+			player: this.playerService.getInterface(),
 			system: this.system.getAPI(),
 			scene: (name: string, def: any) => {
 				const convertedDef = this.convertSceneDefinition(def);

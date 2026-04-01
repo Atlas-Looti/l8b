@@ -52,4 +52,5 @@ draw = function()
     screen.drawText(score,screen.width/2-30-1,screen.height/2-40-1,25,"#000")
     screen.drawText(score,screen.width/2-30,screen.height/2-40,25,"#FFF")
   end
+  hudDraw()
 end

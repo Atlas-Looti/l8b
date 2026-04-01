@@ -12,6 +12,8 @@ init = function()
 end
 
 update = function()
+  hudUpdate()
+  if hud_open then return end
   if gameover>0 then
     gameover = gameover+1
     if gameover>300 then init() end
@@ -73,4 +75,5 @@ draw = function()
   elsif not running then
     screen.drawText("READY?",0,30,28,"#000")
   end
+  hudDraw()
 end

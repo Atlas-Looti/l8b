@@ -34,6 +34,7 @@
 		"@l8b/sprites": "workspace:*",
 		"@l8b/image": "workspace:*",
 		"@l8b/map": "workspace:*",
+		"@l8b/player": "workspace:*",
 		"@l8b/scene": "workspace:*",
 		"@l8b/diagnostics": "workspace:*",
 		"@l8b/palette": "workspace:*"

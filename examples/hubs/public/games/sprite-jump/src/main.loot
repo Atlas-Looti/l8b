@@ -13,6 +13,8 @@ gamemode = "start" //It will either be "start", "playing", or "gameover"
 end
 
 update = function()
+ hudUpdate()
+ if hud_open then return end
  playerupdate()
  platformupdate()
 end
@@ -36,4 +38,5 @@ if gamemode == "gameover" then
  end
  displayGameOver()
 end
+hudDraw()
 end

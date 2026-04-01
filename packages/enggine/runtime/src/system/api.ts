@@ -4,15 +4,11 @@
 
 import type { SystemAPI } from "@l8b/vm";
 import { DEFAULT_FPS, DEFAULT_UPDATE_RATE } from "../constants";
-import type { RuntimeListener } from "../types";
 
 export class System {
-	private listener: RuntimeListener;
 	private systemAPI: SystemAPI;
 
-	constructor(listener: RuntimeListener = {}) {
-		this.listener = listener;
-
+	constructor() {
 		// Create system API with mutable state
 		this.systemAPI = {
 			// Time
@@ -53,24 +49,7 @@ export class System {
 			// Loading progress
 			loading: 0,
 
-			// Control functions
-			pause: () => {
-				if (this.listener.codePaused) {
-					this.listener.codePaused();
-				}
-			},
-
-			exit: () => {
-				// Exit game (close window or return to menu)
-				if (typeof window !== "undefined") {
-					window.close();
-				}
-			},
-
-			postMessage: (message: any) => {
-				this.listener.postMessage?.(message);
-			},
-
+			// Utility functions
 			prompt: (text: string, callback: (result: string) => void) => {
 				if (typeof window !== "undefined") {
 					const result = window.prompt(text);

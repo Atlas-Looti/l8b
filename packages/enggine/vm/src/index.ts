@@ -7,6 +7,7 @@ export type {
 	ErrorInfo,
 	GlobalAPI,
 	MetaFunctions,
+	PlayerAPI,
 	SystemAPI,
 	VMContext,
 	VMWarnings,

@@ -9,6 +9,7 @@ import { coreApi } from "./core";
 import { inputApi } from "./input";
 import { mapApi } from "./map";
 import { paletteApi } from "./palette";
+import { playerApi } from "./player";
 import { sceneApi } from "./scene";
 import { screenApi } from "./screen";
 import { spritesApi } from "./sprites";
@@ -23,6 +24,7 @@ export const GLOBAL_API: GlobalApi = {
 	...screenApi,
 	...audioApi,
 	...inputApi,
+	...playerApi,
 	...systemApi,
 	...sceneApi,
 	...spritesApi,
