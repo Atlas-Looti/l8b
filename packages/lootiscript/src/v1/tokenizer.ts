@@ -235,33 +235,6 @@ export class Tokenizer implements ITokenizer {
 		return new Token(this, d ? d[0] : this.chars[c], c);
 	}
 
-	parseEquals(_c: string): Token {
-		if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
-			this.nextChar();
-			return new Token(this, Token.TYPE_DOUBLE_EQUALS, "==");
-		} else {
-			return new Token(this, Token.TYPE_EQUALS, "=");
-		}
-	}
-
-	parseGreater(_c: string): Token {
-		if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
-			this.nextChar();
-			return new Token(this, Token.TYPE_GREATER_OR_EQUALS, ">=");
-		} else {
-			return new Token(this, Token.TYPE_GREATER, ">");
-		}
-	}
-
-	parseLower(_c: string): Token {
-		if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
-			this.nextChar();
-			return new Token(this, Token.TYPE_LOWER_OR_EQUALS, "<=");
-		} else {
-			return new Token(this, Token.TYPE_LOWER, "<");
-		}
-	}
-
 	parseUnequals(_c: string): Token {
 		if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
 			this.nextChar();

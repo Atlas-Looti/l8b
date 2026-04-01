@@ -16,7 +16,7 @@ import { SceneManager } from "@l8b/scene";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
 import { type GlobalAPI, L8BVM, type MetaFunctions, Random, Routine } from "@l8b/vm";
-import { AssetLoader, createSoundClass, Image, TileMap, Sprite } from "../assets";
+import { AssetLoader, Sound, Image, TileMap, Sprite } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
 import { GameLoop } from "../loop";
@@ -229,7 +229,7 @@ export class RuntimeOrchestrator {
 			Image: Image,
 			Sprite: Sprite,
 			TileMap: TileMap,
-			Sound: createSoundClass(this.audio),
+			Sound: Sound,
 			Palette: Palette,
 			Random: Random,
 			ObjectPool: ObjectPool,

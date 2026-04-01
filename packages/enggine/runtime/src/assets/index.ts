@@ -3,7 +3,6 @@
  */
 
 export {
-	createSoundClass,
 	Image,
 	TileMap,
 	Sound,
