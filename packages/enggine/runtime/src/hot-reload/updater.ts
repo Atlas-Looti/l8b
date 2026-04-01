@@ -86,7 +86,6 @@ export class SourceUpdater {
 			// Handle exceptions during compilation or execution
 			// Only report errors if report_errors flag is true
 			if (this.reportErrors) {
-				console.error(err);
 				err.file = file;
 				this.listener.reportError?.(err);
 				return false;

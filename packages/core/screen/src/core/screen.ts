@@ -1,4 +1,4 @@
-import type { Map } from "@l8b/map";
+import type { TileMap as Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 import type { TextureSource } from "../tri";
 import { TriangleScreen } from "../tri/triangle-screen";
@@ -40,20 +40,7 @@ export class Screen extends TriangleScreen {
 			drawRound: (x: number, y: number, w: number, h: number, c?: string | number) => screen.drawRound(x, y, w, h, c),
 			drawSprite: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) =>
 				screen.drawSprite(sprite, x, y, w, h),
-			drawImage: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) =>
-				screen.drawSprite(sprite, x, y, w, h),
 			drawSpritePart: (
-				sprite: Sprite | string,
-				sx: number,
-				sy: number,
-				sw: number,
-				sh: number,
-				x: number,
-				y: number,
-				w?: number,
-				h?: number,
-			) => screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h),
-			drawImagePart: (
 				sprite: Sprite | string,
 				sx: number,
 				sy: number,

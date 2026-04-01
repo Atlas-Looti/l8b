@@ -1,11 +1,11 @@
-import { Runtime } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@l8b/runtime";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getGame } from "../registry";
 
 export function useGameRuntime(gameId: string, canvasRef: React.RefObject<HTMLCanvasElement | null>) {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const runtimeRef = useRef<InstanceType<typeof Runtime> | null>(null);
+	const runtimeRef = useRef<InstanceType<typeof RuntimeOrchestrator> | null>(null);
 
 	const stop = useCallback(() => {
 		if (runtimeRef.current) {
@@ -57,7 +57,7 @@ export function useGameRuntime(gameId: string, canvasRef: React.RefObject<HTMLCa
 				canvas!.width = game!.width;
 				canvas!.height = game!.height;
 
-				const runtime = new Runtime({
+				const runtime = new RuntimeOrchestrator({
 					canvas: canvas!,
 					width: game!.width,
 					height: game!.height,

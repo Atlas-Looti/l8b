@@ -5,7 +5,7 @@
  */
 
 import { Sound } from "@l8b/audio";
-import { Map as TileMap } from "@l8b/map";
+import { TileMap } from "@l8b/map";
 import { Image } from "@l8b/image";
 import { Sprite } from "@l8b/sprites";
 
@@ -19,4 +19,4 @@ export function createSoundClass(_audio: any): typeof Sound {
 /**
  * Export constructors for game code
  */
-export { Image, Sprite, TileMap as Map, Sound };
+export { Image, Sprite, TileMap, Sound };

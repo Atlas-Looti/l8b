@@ -265,9 +265,3 @@ export function SaveMap(map: TileMap): string {
 	return JSON.stringify(payload);
 }
 
-// Export aliases for backward compatibility and convenience
-export const Map = TileMap;
-export const loadMap = LoadMap;
-export const updateMap = UpdateMap;
-export const saveMap = SaveMap;
-export default TileMap;

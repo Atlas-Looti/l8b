@@ -3,7 +3,7 @@
  */
 
 import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
-import type { Map } from "@l8b/map";
+import type { TileMap as Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 
 import { PrimitiveScreen } from "./primitives-screen";
@@ -103,13 +103,6 @@ export class SpriteScreen extends PrimitiveScreen {
 	}
 
 	/**
-	 * Alias for drawSprite (for Image compatibility)
-	 */
-	drawImage(sprite: Sprite | string | any, x: number, y: number, w?: number, h?: number): void {
-		this.drawSprite(sprite, x, y, w, h);
-	}
-
-	/**
 	 * Draw a portion of a sprite
 	 */
 	drawSpritePart(
@@ -162,23 +155,6 @@ export class SpriteScreen extends PrimitiveScreen {
 				h,
 			);
 		}
-	}
-
-	/**
-	 * Alias for drawSpritePart (for Image compatibility)
-	 */
-	drawImagePart(
-		sprite: Sprite | string | any,
-		sx: number,
-		sy: number,
-		sw: number,
-		sh: number,
-		x: number,
-		y: number,
-		w?: number,
-		h?: number,
-	): void {
-		this.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-import type { Map } from "@l8b/map";
+import type { TileMap as Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 import type { TextureSource } from "../tri";
 
@@ -39,19 +39,7 @@ export interface ScreenInterface {
 	drawRoundRect: (x: number, y: number, w: number, h: number, r?: number, c?: string | number) => void;
 	drawRound: (x: number, y: number, w: number, h: number, c?: string | number) => void;
 	drawSprite: (sprite: Sprite | string, x: number, y: number, w?: number, h?: number) => void;
-	drawImage: (sprite: Sprite | string | any, x: number, y: number, w?: number, h?: number) => void;
 	drawSpritePart: (
-		sprite: Sprite | string | any,
-		sx: number,
-		sy: number,
-		sw: number,
-		sh: number,
-		x: number,
-		y: number,
-		w?: number,
-		h?: number,
-	) => void;
-	drawImagePart: (
 		sprite: Sprite | string | any,
 		sx: number,
 		sy: number,

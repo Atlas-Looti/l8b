@@ -16,7 +16,7 @@ import { SceneManager } from "@l8b/scene";
 import { Screen } from "@l8b/screen";
 import { TimeMachine } from "@l8b/time";
 import { type GlobalAPI, L8BVM, type MetaFunctions, Random, Routine } from "@l8b/vm";
-import { AssetLoader, createSoundClass, Image, Map, Sprite } from "../assets";
+import { AssetLoader, createSoundClass, Image, TileMap, Sprite } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
 import { GameLoop } from "../loop";
@@ -79,7 +79,7 @@ export class RuntimeOrchestrator {
 		this.input = new InputManager(this.screen.getCanvas());
 		this.system = new System(this.listener);
 		this.sceneManager = new SceneManager();
-		this.assetLoader = new AssetLoader(options.url || "", options.resources || {}, this.audio);
+		this.assetLoader = new AssetLoader(options.url || "", options.resources || {}, this.audio, this.listener);
 
 		this.logStep("RuntimeOrchestrator constructed", {
 			width: this.screen.width,
@@ -164,7 +164,7 @@ export class RuntimeOrchestrator {
 		if (!def || typeof def !== "object") return def;
 
 		if (!this.vm?.runner?.main_thread?.processor) {
-			console.warn(`[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.`);
+			this.listener.log?.("[RuntimeOrchestrator] VM not ready for scene conversion. Scene functions may not work correctly.");
 			return def;
 		}
 
@@ -227,7 +227,7 @@ export class RuntimeOrchestrator {
 			router: this.sceneManager.router.getInterface(),
 			Image: Image,
 			Sprite: Sprite,
-			Map: Map,
+			TileMap: TileMap,
 			Sound: createSoundClass(this.audio),
 			Palette: Palette,
 			Random: Random,

@@ -2,7 +2,7 @@
 
  */
 
-import { Runtime } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@l8b/runtime";
 import mainLootiScript from "./scripts/main.loot?raw";
 
 // Debug: log the game code
@@ -16,7 +16,7 @@ canvas.width = 1920;
 canvas.height = 1080;
 
 // Create runtime
-const runtime = new Runtime({
+const runtime = new RuntimeOrchestrator({
 	canvas,
 	width: 1920,
 	height: 1080,
@@ -25,13 +25,13 @@ const runtime = new Runtime({
 		main: mainLootiScript,
 	},
 	listener: {
-		log: (message) => {
+		log: (message: string) => {
 			console.log("[GAME]", message);
 		},
-		reportError: (error) => {
+		reportError: (error: unknown) => {
 			console.error("[GAME ERROR]", error);
 		},
-		postMessage: (msg) => {
+		postMessage: (msg: unknown) => {
 			console.log("[GAME MESSAGE]", msg);
 		},
 	},

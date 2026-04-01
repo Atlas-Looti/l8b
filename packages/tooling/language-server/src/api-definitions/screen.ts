@@ -142,20 +142,10 @@ export const screenApi: Partial<GlobalApi> = {
 				signature: "screen.drawRound(x, y, w, h, color?)",
 				description: "Draw round outline",
 			},
-			drawImage: {
-				type: "method",
-				signature: "screen.drawImage(sprite, x, y, w?, h?)",
-				description: "Draw image (alias for drawSprite)",
-			},
 			drawSpritePart: {
 				type: "method",
 				signature: "screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w?, h?)",
 				description: "Draw part of sprite",
-			},
-			drawImagePart: {
-				type: "method",
-				signature: "screen.drawImagePart(sprite, sx, sy, sw, sh, x, y, w?, h?)",
-				description: "Draw part of image",
 			},
 			drawMap: {
 				type: "method",

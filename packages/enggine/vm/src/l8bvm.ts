@@ -70,11 +70,6 @@ export class L8BVM {
 		// Create Runner instance with reference to this VM for bidirectional communication
 		this.runner = new Runner(this as any);
 
-		// Wire up native error reporting
-		this.runner.onNativeError = (error: unknown) => {
-			console.error("[l8b:vm] Native function error:", error);
-		};
-
 		// Initialize Runner and create main execution thread
 		this.runner.init();
 

@@ -690,7 +690,6 @@ export class Processor {
 					break;
 				case 27: // OPCODE_UPDATE_CLASS
 					name = arg1[op_index];
-					// TODO: set classname to variable name
 					if (object[name] != null && typeof object[name] === "object") {
 						obj = object[name];
 						src = stack[stack_index];

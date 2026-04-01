@@ -15,3 +15,6 @@ export const DEFAULT_BLOCK_SIZE = 16;
 
 /** Minimum interval between loading bar redraws in ms (~60fps) */
 export const LOADING_BAR_THROTTLE_MS = 16;
+
+/** Timeout in ms for individual asset loads (sprite/map HTTP requests) */
+export const ASSET_LOAD_TIMEOUT_MS = 30_000;

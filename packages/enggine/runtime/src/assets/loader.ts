@@ -8,10 +8,24 @@
  */
 
 import { AudioCore, Sound, Music } from "@l8b/audio";
-import { DEFAULT_BLOCK_SIZE, LOADING_BAR_THROTTLE_MS } from "../constants";
-import { loadMap } from "@l8b/map";
-import { loadSprite } from "@l8b/sprites";
+import { ASSET_LOAD_TIMEOUT_MS, DEFAULT_BLOCK_SIZE, LOADING_BAR_THROTTLE_MS } from "../constants";
+import { LoadMap } from "@l8b/map";
+import { LoadSprite } from "@l8b/sprites";
 import type { AssetCollections, Resources } from "../types";
+import type { RuntimeListener } from "../types";
+
+/**
+ * Race a promise against a timeout.
+ * Rejects with a descriptive error if `ms` elapses before the promise settles.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+	return Promise.race([
+		promise,
+		new Promise<T>((_, reject) =>
+			setTimeout(() => reject(new Error(`Asset load timed out after ${ms}ms`)), ms),
+		),
+	]);
+}
 
 export class AssetLoader {
 	private url: string;
@@ -19,11 +33,13 @@ export class AssetLoader {
 	private collections: AssetCollections;
 	private loadingBarTime: number | null = null;
 	private audioCore: AudioCore;
+	private listener?: RuntimeListener;
 
-	constructor(url: string, resources: Resources, audioCore: AudioCore) {
+	constructor(url: string, resources: Resources, audioCore: AudioCore, listener?: RuntimeListener) {
 		this.url = url;
 		this.resources = resources;
 		this.audioCore = audioCore;
+		this.listener = listener;
 		this.collections = {
 			sprites: {},
 			maps: {},
@@ -61,14 +77,29 @@ export class AssetLoader {
 					const url = `${this.url}sprites/${img.file}?v=${img.version || 0}`;
 
 					try {
-						// Load sprite using @l8b/sprites
-						const sprite = loadSprite(url, img.properties, () => {
+						// Wrap the callback-based loadSprite in a promise so we can apply a timeout.
+						// If the HTTP request never completes, withTimeout rejects after ASSET_LOAD_TIMEOUT_MS.
+						const inner = new Promise<void>((res) => {
+							const sprite = LoadSprite(url, img.properties, res);
+							this.collections.sprites[name] = sprite;
+						});
+
+						withTimeout(inner, ASSET_LOAD_TIMEOUT_MS).then(resolve).catch((err) => {
+							this.listener?.log?.(`[AssetLoader] Failed to load sprite "${name}": ${String(err)}`);
+							// Create placeholder so the game can still start
+							this.collections.sprites[name] = {
+								name,
+								ready: false,
+								frames: [],
+								fps: (img.properties as any)?.fps || 5,
+								width: 0,
+								height: 0,
+							} as any;
 							resolve();
 						});
-						this.collections.sprites[name] = sprite;
 					} catch (err) {
-						console.error(`Failed to load sprite ${name}:`, err);
-						// Create placeholder on error
+						this.listener?.log?.(`[AssetLoader] Failed to load sprite "${name}": ${String(err)}`);
+						// Create placeholder on synchronous error
 						this.collections.sprites[name] = {
 							name,
 							ready: false,
@@ -98,14 +129,29 @@ export class AssetLoader {
 					const url = `${this.url}maps/${mapRes.file}?v=${mapRes.version || 0}`;
 
 					try {
-						// Load map using @l8b/map
-						const mapData = loadMap(url, this.collections.sprites, () => {
+						// Wrap the callback-based loadMap in a promise so we can apply a timeout.
+						const inner = new Promise<void>((res) => {
+							const mapData = LoadMap(url, this.collections.sprites, res);
+							this.collections.maps[name] = mapData;
+						});
+
+						withTimeout(inner, ASSET_LOAD_TIMEOUT_MS).then(resolve).catch((err) => {
+							this.listener?.log?.(`[AssetLoader] Failed to load map "${name}": ${String(err)}`);
+							// Create placeholder so the game can still start
+							this.collections.maps[name] = {
+								name,
+								ready: false,
+								width: 0,
+								height: 0,
+								block_width: DEFAULT_BLOCK_SIZE,
+								block_height: DEFAULT_BLOCK_SIZE,
+								data: [],
+							} as any;
 							resolve();
 						});
-						this.collections.maps[name] = mapData;
 					} catch (err) {
-						console.error(`Failed to load map ${name}:`, err);
-						// Create placeholder on error
+						this.listener?.log?.(`[AssetLoader] Failed to load map "${name}": ${String(err)}`);
+						// Create placeholder on synchronous error
 						this.collections.maps[name] = {
 							name,
 							ready: false,
@@ -135,17 +181,13 @@ export class AssetLoader {
 				const url = `${this.url}sounds/${sound.file}?v=${sound.version || 0}`;
 
 				try {
-					// Create Sound instance from @l8b/audio
-					// Sound class will handle loading via XMLHttpRequest and AudioBuffer
+					// Sound class handles loading via XMLHttpRequest and AudioBuffer internally.
+					// Resolve immediately — readiness is polled via isReady()/getProgress() in the game loop.
 					const soundInstance = new Sound(this.audioCore, url);
 					this.collections.sounds[name] = soundInstance;
-
-					// Resolve immediately — Sound loading is async internally;
-					// readiness is checked via `isReady()` / `getProgress()` during the game loop.
 					resolve();
 				} catch (err) {
-					console.error(`Failed to load sound ${name}:`, err);
-					// Create placeholder Sound instance
+					this.listener?.log?.(`[AssetLoader] Failed to load sound "${name}": ${String(err)}`);
 					this.collections.sounds[name] = new Sound(this.audioCore, url);
 					resolve();
 				}
@@ -167,16 +209,12 @@ export class AssetLoader {
 				const url = `${this.url}music/${mus.file}?v=${mus.version || 0}`;
 
 				try {
-					// Create Music instance from @l8b/audio
-					// Music class handles HTML5 Audio internally
+					// Music class handles HTML5 Audio internally (streaming — ready immediately).
 					const musicInstance = new Music(this.audioCore, url);
 					this.collections.music[name] = musicInstance;
-
-					// Music is ready immediately (streaming)
 					resolve();
 				} catch (err) {
-					console.error(`Failed to load music ${name}:`, err);
-					// Create placeholder Music instance
+					this.listener?.log?.(`[AssetLoader] Failed to load music "${name}": ${String(err)}`);
 					this.collections.music[name] = new Music(this.audioCore, url);
 					resolve();
 				}

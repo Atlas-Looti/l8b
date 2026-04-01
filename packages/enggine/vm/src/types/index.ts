@@ -86,7 +86,7 @@ export interface GlobalAPI {
 	Sound?: any;
 	Image?: any;
 	Sprite?: any;
-	Map?: any;
+	TileMap?: any;
 	Palette?: any;
 	Random?: any;
 }

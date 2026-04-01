@@ -15,7 +15,7 @@
  * No WebGL, no GPU - just CPU pixel manipulation.
  */
 
-import type { Map } from "@l8b/map";
+import type { TileMap as Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 
 export interface Vec2 {

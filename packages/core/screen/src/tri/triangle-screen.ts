@@ -1,4 +1,4 @@
-import type { Map } from "@l8b/map";
+import type { TileMap as Map } from "@l8b/map";
 import type { Sprite } from "@l8b/sprites";
 
 import { TextScreen } from "../drawing/text-screen";

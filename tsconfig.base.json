@@ -18,7 +18,7 @@
 		"noErrorTruncation": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"baseUrl": ".",
+		"ignoreDeprecations": "6.0",
 		"noUnusedLocals": true,
 		"noUnusedParameters": true
 	},

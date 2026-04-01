@@ -9,7 +9,7 @@
  * - Scene lifecycle hooks (init, onEnter, onLeave, update, draw)
  */
 
-import { Runtime } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@l8b/runtime";
 
 import mainLootiScript from "./scripts/main.loot?raw";
 import battleScene from "./scripts/scenes/battle.loot?raw";
@@ -26,7 +26,7 @@ canvas.width = width;
 canvas.height = height;
 
 // Create runtime with multiple source files
-const runtime = new Runtime({
+const runtime = new RuntimeOrchestrator({
 	canvas,
 	width,
 	height,

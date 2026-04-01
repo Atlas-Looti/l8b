@@ -5,7 +5,7 @@
 export {
 	createSoundClass,
 	Image,
-	Map,
+	TileMap,
 	Sound,
 	Sprite,
 } from "./constructors";
