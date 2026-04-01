@@ -11,7 +11,7 @@ import { AudioCore, Sound, Music } from "@l8b/audio";
 import { ASSET_LOAD_TIMEOUT_MS, DEFAULT_BLOCK_SIZE, LOADING_BAR_THROTTLE_MS } from "../constants";
 import { LoadMap } from "@l8b/map";
 import { LoadSprite } from "@l8b/sprites";
-import type { AssetCollections, Resources } from "../types";
+import type { AssetCollections, ResourceFile, Resources } from "../types";
 import type { RuntimeListener } from "../types";
 
 /**
@@ -65,49 +65,36 @@ export class AssetLoader {
 	}
 
 	/**
-	 * Load sprites
+	 * Load a set of callback-based assets (sprites or maps) with timeout and placeholder fallback.
 	 */
-	private async loadSprites(): Promise<void> {
-		if (!this.resources.images) return;
+	private async loadCallbackAssets<TRes extends ResourceFile>(
+		resources: TRes[] | undefined,
+		urlPrefix: string,
+		collectionKey: "sprites" | "maps",
+		load: (url: string, res: TRes, onReady: () => void) => any,
+		createPlaceholder: (name: string, res: TRes) => any,
+	): Promise<void> {
+		if (!resources) return;
 
-		const promises = this.resources.images.map(
-			(img) =>
+		const promises = resources.map(
+			(res) =>
 				new Promise<void>((resolve) => {
-					const name = img.file.split(".")[0].replace(/-/g, "/");
-					const url = `${this.url}sprites/${img.file}?v=${img.version || 0}`;
+					const name = res.file.split(".")[0].replace(/-/g, "/");
+					const url = `${this.url}${urlPrefix}/${res.file}?v=${res.version || 0}`;
 
 					try {
-						// Wrap the callback-based loadSprite in a promise so we can apply a timeout.
-						// If the HTTP request never completes, withTimeout rejects after ASSET_LOAD_TIMEOUT_MS.
-						const inner = new Promise<void>((res) => {
-							const sprite = LoadSprite(url, img.properties, res);
-							this.collections.sprites[name] = sprite;
+						const inner = new Promise<void>((onReady) => {
+							this.collections[collectionKey][name] = load(url, res, onReady);
 						});
 
 						withTimeout(inner, ASSET_LOAD_TIMEOUT_MS).then(resolve).catch((err) => {
-							this.listener?.log?.(`[AssetLoader] Failed to load sprite "${name}": ${String(err)}`);
-							// Create placeholder so the game can still start
-							this.collections.sprites[name] = {
-								name,
-								ready: false,
-								frames: [],
-								fps: (img.properties as any)?.fps || 5,
-								width: 0,
-								height: 0,
-							} as any;
+							this.listener?.log?.(`[AssetLoader] Failed to load ${collectionKey.slice(0, -1)} "${name}": ${String(err)}`);
+							this.collections[collectionKey][name] = createPlaceholder(name, res);
 							resolve();
 						});
 					} catch (err) {
-						this.listener?.log?.(`[AssetLoader] Failed to load sprite "${name}": ${String(err)}`);
-						// Create placeholder on synchronous error
-						this.collections.sprites[name] = {
-							name,
-							ready: false,
-							frames: [],
-							fps: (img.properties as any)?.fps || 5,
-							width: 0,
-							height: 0,
-						} as any;
+						this.listener?.log?.(`[AssetLoader] Failed to load ${collectionKey.slice(0, -1)} "${name}": ${String(err)}`);
+						this.collections[collectionKey][name] = createPlaceholder(name, res);
 						resolve();
 					}
 				}),
@@ -117,56 +104,44 @@ export class AssetLoader {
 	}
 
 	/**
+	 * Load sprites
+	 */
+	private async loadSprites(): Promise<void> {
+		await this.loadCallbackAssets(
+			this.resources.images,
+			"sprites",
+			"sprites",
+			(url, img, onReady) => LoadSprite(url, img.properties, onReady),
+			(name, img) => ({
+				name,
+				ready: false,
+				frames: [],
+				fps: (img.properties as any)?.fps || 5,
+				width: 0,
+				height: 0,
+			}),
+		);
+	}
+
+	/**
 	 * Load maps
 	 */
 	private async loadMaps(): Promise<void> {
-		if (!this.resources.maps) return;
-
-		const promises = this.resources.maps.map(
-			(mapRes) =>
-				new Promise<void>((resolve) => {
-					const name = mapRes.file.split(".")[0].replace(/-/g, "/");
-					const url = `${this.url}maps/${mapRes.file}?v=${mapRes.version || 0}`;
-
-					try {
-						// Wrap the callback-based loadMap in a promise so we can apply a timeout.
-						const inner = new Promise<void>((res) => {
-							const mapData = LoadMap(url, this.collections.sprites, res);
-							this.collections.maps[name] = mapData;
-						});
-
-						withTimeout(inner, ASSET_LOAD_TIMEOUT_MS).then(resolve).catch((err) => {
-							this.listener?.log?.(`[AssetLoader] Failed to load map "${name}": ${String(err)}`);
-							// Create placeholder so the game can still start
-							this.collections.maps[name] = {
-								name,
-								ready: false,
-								width: 0,
-								height: 0,
-								block_width: DEFAULT_BLOCK_SIZE,
-								block_height: DEFAULT_BLOCK_SIZE,
-								data: [],
-							} as any;
-							resolve();
-						});
-					} catch (err) {
-						this.listener?.log?.(`[AssetLoader] Failed to load map "${name}": ${String(err)}`);
-						// Create placeholder on synchronous error
-						this.collections.maps[name] = {
-							name,
-							ready: false,
-							width: 0,
-							height: 0,
-							block_width: DEFAULT_BLOCK_SIZE,
-							block_height: DEFAULT_BLOCK_SIZE,
-							data: [],
-						} as any;
-						resolve();
-					}
-				}),
+		await this.loadCallbackAssets(
+			this.resources.maps,
+			"maps",
+			"maps",
+			(url, _mapRes, onReady) => LoadMap(url, this.collections.sprites, onReady),
+			(name) => ({
+				name,
+				ready: false,
+				width: 0,
+				height: 0,
+				block_width: DEFAULT_BLOCK_SIZE,
+				block_height: DEFAULT_BLOCK_SIZE,
+				data: [],
+			}),
 		);
-
-		await Promise.all(promises);
 	}
 
 	/**

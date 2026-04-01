@@ -23,7 +23,7 @@ export function GameHub({ onSelectGame }: GameHubProps) {
 
 	return (
 		<div className="hub">
-			<div className="hub-scanlines" />
+			<div className="scanlines hub-scanlines" />
 			<header className="hub-header">
 				<h1 className="hub-title">
 					<span className="hub-title-l8b">L8B</span> ARCADE

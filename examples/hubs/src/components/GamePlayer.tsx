@@ -9,9 +9,10 @@ interface GamePlayerProps {
 
 export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const stopRef = useRef<() => void>(() => {});
 
 	const handleBack = useCallback(() => {
-		stop();
+		stopRef.current();
 		onBack();
 	}, [onBack]);
 
@@ -30,6 +31,8 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 		),
 	});
 
+	stopRef.current = stop;
+
 	// ESC key as a fallback to leave the game
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
@@ -41,7 +44,7 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 
 	return (
 		<div className="player">
-			<div className="player-scanlines" />
+			<div className="scanlines player-scanlines" />
 
 			{loading && (
 				<div className="player-loading">

@@ -1184,95 +1184,64 @@ export class Parser {
 		return new NewCall(token, exp);
 	}
 
-	parseAfter(after: Token): After {
-		let line: Statement | null;
+	private tryParseMultiplier(): { multiplier: number | null; token: Token } {
 		let multiplier: number | null = null;
-		const sequence: Statement[] = [];
-		this.nesting += 1;
-		this.addTerminable(after);
-		const delay = this.assertExpression();
 		let token = this.nextToken();
 		if (token.type === Token.TYPE_IDENTIFIER && Parser.multipliers[token.value as string]) {
-			// Get multiplier value directly as number
 			multiplier = Parser.multipliers[token.value as string];
 			token = this.nextToken();
 		}
-		if (token == null || token.type !== Token.TYPE_DO) {
-			return this.error("Expected keyword 'do'") as After;
-		}
-		while (true) {
-			token = this.nextToken();
-			if (token.type === Token.TYPE_END) {
-				this.nesting -= 1;
-				this.endTerminable();
-				return new After(after, delay, sequence, token, multiplier);
-			} else {
-				this.tokenizer.pushBack(token);
-				line = this.parseLine();
-				if (line != null) {
-					sequence.push(line);
-				} else {
-					this.error("Unexpected data while parsing after");
-				}
-			}
-		}
+		return { multiplier, token };
 	}
 
-	parseEvery(every: Token): Every {
-		let line: Statement | null;
-		let multiplier: number | null = null;
+	private parseBlock(keyword: string): { sequence: Statement[]; endToken: Token } {
 		const sequence: Statement[] = [];
-		this.nesting += 1;
-		this.addTerminable(every);
-		const delay = this.assertExpression();
-		let token = this.nextToken();
-		if (token.type === Token.TYPE_IDENTIFIER && Parser.multipliers[token.value as string]) {
-			// Get multiplier value directly as number
-			multiplier = Parser.multipliers[token.value as string];
-			token = this.nextToken();
-		}
-		if (token == null || token.type !== Token.TYPE_DO) {
-			return this.error("Expected keyword 'do'") as Every;
-		}
-		while (true) {
-			token = this.nextToken();
-			if (token.type === Token.TYPE_END) {
-				this.nesting -= 1;
-				this.endTerminable();
-				return new Every(every, delay, sequence, token, multiplier);
-			} else {
-				this.tokenizer.pushBack(token);
-				line = this.parseLine();
-				if (line != null) {
-					sequence.push(line);
-				} else {
-					this.error("Unexpected data while parsing after");
-				}
-			}
-		}
-	}
-
-	parseDo(do_token: Token): Do {
-		let line: Statement | null;
-		const sequence: Statement[] = [];
-		this.nesting += 1;
-		this.addTerminable(do_token);
 		while (true) {
 			const token = this.nextToken();
 			if (token.type === Token.TYPE_END) {
 				this.nesting -= 1;
 				this.endTerminable();
-				return new Do(do_token, sequence, token);
+				return { sequence, endToken: token };
+			}
+			this.tokenizer.pushBack(token);
+			const line = this.parseLine();
+			if (line != null) {
+				sequence.push(line);
 			} else {
-				this.tokenizer.pushBack(token);
-				line = this.parseLine();
-				if (line != null) {
-					sequence.push(line);
-				} else {
-					this.error("Unexpected data while parsing after");
-				}
+				this.error(`Unexpected data while parsing ${keyword}`);
 			}
 		}
+	}
+
+	parseAfter(after: Token): After {
+		this.nesting += 1;
+		this.addTerminable(after);
+		const delay = this.assertExpression();
+		const { multiplier, token } = this.tryParseMultiplier();
+		if (token == null || token.type !== Token.TYPE_DO) {
+			return this.error("Expected keyword 'do'") as After;
+		}
+		const { sequence, endToken } = this.parseBlock("after");
+		return new After(after, delay, sequence, endToken, multiplier);
+	}
+
+	parseEvery(every: Token): Every {
+		this.nesting += 1;
+		this.addTerminable(every);
+		const delay = this.assertExpression();
+		const { multiplier, token } = this.tryParseMultiplier();
+		if (token == null || token.type !== Token.TYPE_DO) {
+			return this.error("Expected keyword 'do'") as Every;
+		}
+		const { sequence, endToken } = this.parseBlock("every");
+		return new Every(every, delay, sequence, endToken, multiplier);
+	}
+
+	parseDo(do_token: Token): Do {
+		this.nesting += 1;
+		this.addTerminable(do_token);
+		const { sequence, endToken } = this.parseBlock("do");
+		return new Do(do_token, sequence, endToken);
 	}
 
 	parseSleep(sleep: Token): Sleep {
@@ -1281,7 +1250,6 @@ export class Parser {
 		const token = this.nextToken();
 		if (token != null) {
 			if (token.type === Token.TYPE_IDENTIFIER && Parser.multipliers[token.value as string]) {
-				// Get multiplier value directly as number
 				multiplier = Parser.multipliers[token.value as string];
 			} else {
 				this.tokenizer.pushBack(token);

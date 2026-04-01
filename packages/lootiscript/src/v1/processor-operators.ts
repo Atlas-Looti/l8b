@@ -21,7 +21,7 @@ import { routineAsApplicableFunction as _routineAsApplicableFunction } from "./f
 import { Routine } from "./routine";
 import type { RuntimeContext } from "./processor-types";
 
-// ─── Internal helper ───────────────────────────────────────────────────────
+// ─── Internal helpers ─────────────────────────────────────────────────────
 
 /**
  * If `f` is a Routine, lazily cache its JS wrapper on `f.as_function` and
@@ -43,147 +43,80 @@ function resolveCallable(
 	return null;
 }
 
+/**
+ * Shared dispatch logic for binary operators.
+ *
+ * 1. Determine the target object based on operand type
+ * 2. Optionally short-circuit numeric strings with a native JS operation
+ * 3. Walk the class chain looking for the operator symbol
+ * 4. Fall back to the Object prototype
+ * 5. Resolve and invoke
+ */
+function dispatchBinaryOp(
+	runner: any,
+	context: RuntimeContext,
+	op: string,
+	a: any,
+	b: any,
+	self: number | undefined,
+	nativeStringOp?: (a: any, b: any) => number,
+): any {
+	let obj: any;
+	if (Array.isArray(a)) {
+		obj = context.global.List;
+	} else if (typeof a === "string") {
+		if (nativeStringOp && isFinite(a as any)) {
+			const r = nativeStringOp(a, b);
+			return isFinite(r) ? r : 0;
+		}
+		obj = context.global.String;
+	} else {
+		obj = a;
+	}
+
+	let f = obj[op];
+	while (f == null && obj.class != null) {
+		obj = obj.class;
+		f = obj[op];
+	}
+	if (f == null) {
+		f = context.global.Object[op];
+	}
+	if (f != null) {
+		const fn = resolveCallable(runner, f, context);
+		if (fn) return fn.call(context.global, a, b, self);
+	}
+	return 0;
+}
+
 // ─── Operator implementations ──────────────────────────────────────────────
 
-export function operatorAdd(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-	self: number,
-): any {
-	let f: any, obj: any;
-	if (Array.isArray(a)) {
-		obj = context.global.List;
-	} else if (typeof a === "string") {
-		obj = context.global.String;
-	} else {
-		obj = a;
-	}
-	f = obj["+"];
-	while (f == null && obj.class != null) {
-		obj = obj.class;
-		f = obj["+"];
-	}
-	if (f == null) {
-		f = context.global.Object["+"];
-	}
-	if (f != null) {
-		const fn = resolveCallable(runner, f, context);
-		if (fn) return fn.call(context.global, a, b, self);
-	}
-	return 0;
+export function operatorAdd(runner: any, context: RuntimeContext, a: any, b: any, self: number): any {
+	return dispatchBinaryOp(runner, context, "+", a, b, self);
 }
 
-export function operatorSub(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-	self: number,
-): any {
-	let f: any, obj: any;
-	if (Array.isArray(a)) {
-		obj = context.global.List;
-	} else if (typeof a === "string") {
-		if (isFinite(a as any)) {
-			const r = (a as any) - b;
-			return isFinite(r) ? r : 0;
-		}
-		obj = context.global.String;
-	} else {
-		obj = a;
-	}
-	f = obj["-"];
-	while (f == null && obj.class != null) {
-		obj = obj.class;
-		f = obj["-"];
-	}
-	if (f == null) {
-		f = context.global.Object["-"];
-	}
-	if (f != null) {
-		const fn = resolveCallable(runner, f, context);
-		if (fn) return fn.call(context.global, a, b, self);
-	}
-	return 0;
+export function operatorSub(runner: any, context: RuntimeContext, a: any, b: any, self: number): any {
+	return dispatchBinaryOp(runner, context, "-", a, b, self, (a, b) => a - b);
 }
 
-export function operatorMul(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-	self: number,
-): any {
-	let f: any, obj: any;
-	if (Array.isArray(a)) {
-		obj = context.global.List;
-	} else if (typeof a === "string") {
-		if (isFinite(a as any)) {
-			const r = (a as any) * b;
-			return isFinite(r) ? r : 0;
-		}
-		obj = context.global.String;
-	} else {
-		obj = a;
-	}
-	f = obj["*"];
-	while (f == null && obj.class != null) {
-		obj = obj.class;
-		f = obj["*"];
-	}
-	if (f == null) {
-		f = context.global.Object["*"];
-	}
-	if (f != null) {
-		const fn = resolveCallable(runner, f, context);
-		if (fn) return fn.call(context.global, a, b, self);
-	}
-	return 0;
+export function operatorMul(runner: any, context: RuntimeContext, a: any, b: any, self: number): any {
+	return dispatchBinaryOp(runner, context, "*", a, b, self, (a, b) => a * b);
 }
 
-export function operatorDiv(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-	self: number,
-): any {
-	let f: any, obj: any;
-	if (Array.isArray(a)) {
-		obj = context.global.List;
-	} else if (typeof a === "string") {
-		if (isFinite(a as any)) {
-			const r = (a as any) / b;
-			return isFinite(r) ? r : 0;
-		}
-		obj = context.global.String;
-	} else {
-		obj = a;
-	}
-	f = obj["/"];
-	while (f == null && obj.class != null) {
-		obj = obj.class;
-		f = obj["/"];
-	}
-	if (f == null) {
-		f = context.global.Object["/"];
-	}
-	if (f != null) {
-		const fn = resolveCallable(runner, f, context);
-		if (fn) return fn.call(context.global, a, b, self);
-	}
-	return 0;
+export function operatorDiv(runner: any, context: RuntimeContext, a: any, b: any, self: number): any {
+	return dispatchBinaryOp(runner, context, "/", a, b, self, (a, b) => a / b);
 }
 
-export function operatorModulo(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-): any {
-	let f: any, obj: any;
+export function operatorBand(runner: any, context: RuntimeContext, a: any, b: any, self: number): any {
+	return dispatchBinaryOp(runner, context, "&", a, b, self, (a, b) => a & b);
+}
+
+export function operatorBor(runner: any, context: RuntimeContext, a: any, b: any, self: number): any {
+	return dispatchBinaryOp(runner, context, "|", a, b, self, (a, b) => a | b);
+}
+
+export function operatorModulo(runner: any, context: RuntimeContext, a: any, b: any): any {
+	let obj: any;
 	if (Array.isArray(a)) {
 		obj = context.global.List;
 	} else if (typeof a === "string") {
@@ -195,7 +128,8 @@ export function operatorModulo(
 	} else {
 		obj = a;
 	}
-	f = obj["%"];
+
+	let f = obj["%"];
 	while (f == null && obj.class != null) {
 		obj = obj.class;
 		f = obj["%"];
@@ -214,76 +148,8 @@ export function operatorModulo(
 	return 0;
 }
 
-export function operatorBand(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-	self: number,
-): any {
-	let f: any, obj: any;
-	if (Array.isArray(a)) {
-		obj = context.global.List;
-	} else if (typeof a === "string") {
-		if (isFinite(a as any)) {
-			const r = (a as any) & b;
-			return isFinite(r) ? r : 0;
-		}
-		obj = context.global.String;
-	} else {
-		obj = a;
-	}
-	f = obj["&"];
-	while (f == null && obj.class != null) {
-		obj = obj.class;
-		f = obj["&"];
-	}
-	if (f == null) {
-		f = context.global.Object["&"];
-	}
-	if (f != null) {
-		const fn = resolveCallable(runner, f, context);
-		if (fn) return fn.call(context.global, a, b, self);
-	}
-	return 0;
-}
-
-export function operatorBor(
-	runner: any,
-	context: RuntimeContext,
-	a: any,
-	b: any,
-	self: number,
-): any {
-	let f: any, obj: any;
-	if (Array.isArray(a)) {
-		obj = context.global.List;
-	} else if (typeof a === "string") {
-		if (isFinite(a as any)) {
-			const r = (a as any) | b;
-			return isFinite(r) ? r : 0;
-		}
-		obj = context.global.String;
-	} else {
-		obj = a;
-	}
-	f = obj["|"];
-	while (f == null && obj.class != null) {
-		obj = obj.class;
-		f = obj["|"];
-	}
-	if (f == null) {
-		f = context.global.Object["|"];
-	}
-	if (f != null) {
-		const fn = resolveCallable(runner, f, context);
-		if (fn) return fn.call(context.global, a, b, self);
-	}
-	return 0;
-}
-
 export function operatorNegate(runner: any, context: RuntimeContext, a: any): any {
-	let f: any, obj: any;
+	let obj: any;
 	if (Array.isArray(a)) {
 		obj = context.global.List;
 	} else if (typeof a === "string") {
@@ -292,7 +158,8 @@ export function operatorNegate(runner: any, context: RuntimeContext, a: any): an
 	} else {
 		obj = a;
 	}
-	f = obj["-"];
+
+	let f = obj["-"];
 	while (f == null && obj.class != null) {
 		obj = obj.class;
 		f = obj["-"];

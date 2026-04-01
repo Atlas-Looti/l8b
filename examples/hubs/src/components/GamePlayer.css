@@ -9,17 +9,7 @@
 }
 
 .player-scanlines {
-	position: fixed;
-	inset: 0;
-	pointer-events: none;
 	z-index: 110;
-	background: repeating-linear-gradient(
-		0deg,
-		transparent,
-		transparent 2px,
-		rgba(0, 0, 0, 0.06) 2px,
-		rgba(0, 0, 0, 0.06) 4px
-	);
 }
 
 
