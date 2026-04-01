@@ -54,7 +54,7 @@ export class GameLoop {
 	 */
 	start(): void {
 		this.stopped = false;
-		this.state.lastTime = Date.now();
+		this.state.lastTime = performance.now();
 		this.state.currentFrame = 0;
 		this.state.floatingFrame = 0;
 		this.loop();
@@ -77,7 +77,7 @@ export class GameLoop {
 	resume(): void {
 		if (!this.stopped) return;
 		this.stopped = false;
-		this.state.lastTime = Date.now();
+		this.state.lastTime = performance.now();
 		this.loop();
 	}
 
@@ -90,7 +90,7 @@ export class GameLoop {
 		// Schedule next frame
 		this.animationFrameId = requestAnimationFrame(this.loop);
 
-		const time = Date.now();
+		const time = performance.now();
 
 		// Recover from long pause (tab switch, etc)
 		if (Math.abs(time - this.state.lastTime) > PAUSE_THRESHOLD_MS) {

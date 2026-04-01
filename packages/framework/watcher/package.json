@@ -26,9 +26,7 @@
 		"@l8b/framework-shared": "workspace:*",
 		"chokidar": "^4.0.1"
 	},
-	"devDependencies": {
-		"@types/node": "^22.10.1"
-	},
+	"devDependencies": {},
 	"keywords": [
 		"l8b",
 		"framework",

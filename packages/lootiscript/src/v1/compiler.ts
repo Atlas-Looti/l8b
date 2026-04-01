@@ -170,6 +170,66 @@ export class Compiler {
 				continue;
 			}
 
+			// Fusion: LOAD_VALUE (number) + SUB -> LOAD_CONST_SUB
+			if (ops[i] === OPCODES.LOAD_VALUE && typeof args[i] === "number" && ops[i + 1] === OPCODES.SUB) {
+				const val = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_CONST_SUB;
+				args[i] = val;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_VALUE (number) + MUL -> LOAD_CONST_MUL
+			if (ops[i] === OPCODES.LOAD_VALUE && typeof args[i] === "number" && ops[i + 1] === OPCODES.MUL) {
+				const val = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_CONST_MUL;
+				args[i] = val;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_LOCAL + ADD -> LOAD_LOCAL_ADD
+			if (ops[i] === OPCODES.LOAD_LOCAL && ops[i + 1] === OPCODES.ADD) {
+				const localIdx = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_LOCAL_ADD;
+				args[i] = localIdx;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_LOCAL + SUB -> LOAD_LOCAL_SUB
+			if (ops[i] === OPCODES.LOAD_LOCAL && ops[i + 1] === OPCODES.SUB) {
+				const localIdx = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_LOCAL_SUB;
+				args[i] = localIdx;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
 			i++;
 		}
 	}

@@ -25,9 +25,7 @@
 	"dependencies": {
 		"@l8b/framework-shared": "workspace:*"
 	},
-	"devDependencies": {
-		"@types/node": "^22.10.1"
-	},
+	"devDependencies": {},
 	"keywords": [
 		"l8b",
 		"framework",

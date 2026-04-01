@@ -79,6 +79,10 @@ export class Processor {
 	};
 	profilingEnabled: boolean;
 
+	// Reusable argv array for native function calls with >3 args
+	// Avoids allocating a new array per call — just reset length
+	private _argv: any[] = [];
+
 	constructor(runner: any) {
 		this.runner = runner;
 		this.locals = [];
@@ -1140,7 +1144,7 @@ export class Processor {
 								stack_index -= 1;
 								break;
 							default:
-								argv = [];
+								argv = this._argv; argv.length = 0;
 								stack_index -= args;
 								for (i = n = 0, ref6 = args - 1; n <= ref6; i = n += 1) {
 									argv[i] = this.argToNative(stack[stack_index + i], context);
@@ -1248,7 +1252,7 @@ export class Processor {
 								stack[--stack_index] = v != null ? v : 0;
 								break;
 							default:
-								argv = [];
+								argv = this._argv; argv.length = 0;
 								stack_index -= args;
 								for (i = q = 0, ref9 = args - 1; q <= ref9; i = q += 1) {
 									argv[i] = this.argToNative(stack[stack_index + i], context);
@@ -1361,7 +1365,7 @@ export class Processor {
 								stack_index -= 2;
 								break;
 							default:
-								argv = [];
+								argv = this._argv; argv.length = 0;
 								stack_index -= args + 1;
 								for (i = u = 0, ref12 = args - 1; u <= ref12; i = u += 1) {
 									argv[i] = this.argToNative(stack[stack_index + i], context);
@@ -1601,7 +1605,7 @@ export class Processor {
 								stack[stack_index] = v != null ? v : 0;
 								break;
 							default:
-								argv = [];
+								argv = this._argv; argv.length = 0;
 								stack_index -= args - 1; // Point to first arg
 								for (i = 0; i < args; i++) {
 									argv[i] = this.argToNative(stack[stack_index + i], context);
@@ -1725,7 +1729,7 @@ export class Processor {
 								stack_index--;
 								break;
 							default:
-								argv = [];
+								argv = this._argv; argv.length = 0;
 								stack_index -= args;
 								for (i = 0; i < args; i++) {
 									argv[i] = this.argToNative(stack[stack_index + i], context);
@@ -1757,6 +1761,58 @@ export class Processor {
 					} else {
 						// Fallback to full add logic for non-numbers
 						stack[stack_index] = operatorAdd(this.runner, context, b, a, 0);
+					}
+					op_index++;
+					break;
+
+				case 123: // LOAD_CONST_SUB
+					a = arg1[op_index];
+					b = stack[stack_index];
+
+					if (typeof b === "number") {
+						b -= a;
+						stack[stack_index] = isFinite(b) ? b : 0;
+					} else {
+						stack[stack_index] = operatorSub(this.runner, context, b, a, 0);
+					}
+					op_index++;
+					break;
+
+				case 124: // LOAD_CONST_MUL
+					a = arg1[op_index];
+					b = stack[stack_index];
+
+					if (typeof b === "number") {
+						b *= a;
+						stack[stack_index] = isFinite(b) ? b : 0;
+					} else {
+						stack[stack_index] = operatorMul(this.runner, context, b, a, 0);
+					}
+					op_index++;
+					break;
+
+				case 125: // LOAD_LOCAL_ADD
+					a = locals[locals_offset + arg1[op_index]];
+					b = stack[stack_index];
+
+					if (typeof b === "number" && typeof a === "number") {
+						b += a;
+						stack[stack_index] = isFinite(b) ? b : 0;
+					} else {
+						stack[stack_index] = operatorAdd(this.runner, context, b, a, 0);
+					}
+					op_index++;
+					break;
+
+				case 126: // LOAD_LOCAL_SUB
+					a = locals[locals_offset + arg1[op_index]];
+					b = stack[stack_index];
+
+					if (typeof b === "number" && typeof a === "number") {
+						b -= a;
+						stack[stack_index] = isFinite(b) ? b : 0;
+					} else {
+						stack[stack_index] = operatorSub(this.runner, context, b, a, 0);
 					}
 					op_index++;
 					break;

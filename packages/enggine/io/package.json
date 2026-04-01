@@ -21,7 +21,6 @@
 		"@l8b/diagnostics": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/node": "^22.19.1",
 		"tsup": "^8.0.0",
 		"typescript": "^5.9.3"
 	},

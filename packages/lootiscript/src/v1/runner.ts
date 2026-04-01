@@ -407,7 +407,7 @@ export class Runner {
 		} else {
 			margin = Math.floor((1000 / this.fps) * 0.8);
 		}
-		time = Date.now();
+		time = performance.now();
 		// Allocate 100ms time budget for main thread to prevent interrupting draw() mid-frame
 		// This ensures smooth rendering even under heavy computational load
 		time_limit = time + 100;
@@ -415,7 +415,7 @@ export class Runner {
 		processor = this.main_thread.processor;
 		if (!processor.done) {
 			if (this.main_thread.sleep_until != null) {
-				if (Date.now() >= this.main_thread.sleep_until) {
+				if (performance.now() >= this.main_thread.sleep_until) {
 					delete this.main_thread.sleep_until;
 					this.process(this.main_thread, time_out);
 				}
@@ -423,7 +423,7 @@ export class Runner {
 				this.process(this.main_thread, time_out);
 			}
 		}
-		while (processor.done && Date.now() < time_out && this.main_thread.loadNext()) {
+		while (processor.done && performance.now() < time_out && this.main_thread.loadNext()) {
 			this.process(this.main_thread, time_out);
 		}
 		// Secondary threads receive remaining time budget after main thread completes
@@ -449,7 +449,7 @@ export class Runner {
 					processor = t.processor;
 					if (!processor.done) {
 						if (t.sleep_until != null) {
-							if (Date.now() >= t.sleep_until) {
+							if (performance.now() >= t.sleep_until) {
 								delete t.sleep_until;
 								this.process(t, time_out);
 								processing = true;
@@ -483,7 +483,7 @@ export class Runner {
 					}
 				}
 			}
-			if (Date.now() > time_limit) {
+			if (performance.now() > time_limit) {
 				break;
 			}
 		}
@@ -499,7 +499,7 @@ export class Runner {
 		}
 		// Reuse variable for main thread reference to avoid allocation
 		t = this.threads[0];
-		dt = Date.now() - time;
+		dt = performance.now() - time;
 		const dt_limit = time_limit - time;
 		load = (dt / dt_limit) * 100;
 		this.cpu_load = this.cpu_load * 0.9 + load * 0.1;
@@ -513,7 +513,7 @@ export class Runner {
 		t = new Thread(this);
 		t.routine = routine;
 		this.threads.push(t);
-		t.start_time = Date.now() + delay - 1000 / this.fps;
+		t.start_time = performance.now() + delay - 1000 / this.fps;
 		if (repeat) {
 			t.repeat = repeat;
 			t.delay = delay;
@@ -529,7 +529,7 @@ export class Runner {
 
 	sleep(value: number): void {
 		if (this.current_thread != null) {
-			this.current_thread.sleep_until = Date.now() + Math.max(0, value);
+			this.current_thread.sleep_until = performance.now() + Math.max(0, value);
 		}
 	}
 }

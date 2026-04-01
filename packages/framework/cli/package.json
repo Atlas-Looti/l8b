@@ -34,7 +34,6 @@
 		"cac": "^6.7.14"
 	},
 	"devDependencies": {
-		"@types/node": "^22.10.1",
 		"sirv": "^2.0.4"
 	},
 	"keywords": [

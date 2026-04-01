@@ -1,15 +1,29 @@
 import { SpriteScreen } from "./sprite-screen";
 
 export class TextScreen extends SpriteScreen {
+	// Font string cache — avoid rebuilding template string every draw call
+	private _cachedFontSize = -1;
+	private _cachedFontName = "";
+	private _cachedFontString = "";
+
+	private getFontString(size: number): string {
+		if (size !== this._cachedFontSize || this.font !== this._cachedFontName) {
+			this._cachedFontSize = size;
+			this._cachedFontName = this.font;
+			this._cachedFontString = `${size}pt ${this.font}`;
+		}
+		return this._cachedFontString;
+	}
+
 	textWidth(text: string, size: number): number {
-		this.context.font = `${size}pt ${this.font}`;
+		this.context.font = this.getFontString(size);
 		return this.context.measureText(text).width;
 	}
 
 	drawText(text: string, x: number, y: number, size: number, color?: string | number): void {
 		if (color) this.setColor(color);
 		this.context.globalAlpha = this.alpha;
-		this.context.font = `${size}pt ${this.font}`;
+		this.context.font = this.getFontString(size);
 		this.context.textAlign = "center";
 		this.context.textBaseline = "middle";
 		const w = this.context.measureText(text).width;
@@ -25,7 +39,7 @@ export class TextScreen extends SpriteScreen {
 	drawTextOutline(text: string, x: number, y: number, size: number, color?: string | number): void {
 		if (color) this.setColor(color);
 		this.context.globalAlpha = this.alpha;
-		this.context.font = `${size}pt ${this.font}`;
+		this.context.font = this.getFontString(size);
 		this.context.lineWidth = this.line_width;
 		this.context.textAlign = "center";
 		this.context.textBaseline = "middle";

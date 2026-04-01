@@ -181,23 +181,11 @@ export class BaseScreen {
 	}
 
 	clear(color?: string): void {
-		const fill = this.context.fillStyle;
-		const stroke = this.context.strokeStyle;
-		const blending_save = this.context.globalCompositeOperation;
-
 		this.context.globalAlpha = 1;
 		this.context.globalCompositeOperation = "source-over";
-		if (color) {
-			this.setColor(color);
-		} else {
-			this.context.fillStyle = "#000";
-		}
-
+		this.context.fillStyle = color || "#000";
+		this.context.strokeStyle = color || "#000";
 		this.context.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-
-		this.context.fillStyle = fill;
-		this.context.strokeStyle = stroke;
-		this.context.globalCompositeOperation = blending_save;
 		this.zBuffer.clear();
 	}
 

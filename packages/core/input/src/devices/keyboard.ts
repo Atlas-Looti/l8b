@@ -14,6 +14,9 @@ export class KeyboardInput {
 
 	private previous: Record<string, number> = {};
 
+	// Track only keys that changed since last update() — avoids O(n) iteration of all keys
+	private dirtyKeys: Set<string> = new Set();
+
 	constructor(target: Document = hasDocument ? document : (undefined as any)) {
 		if (!target) {
 			return;
@@ -43,15 +46,21 @@ export class KeyboardInput {
 			event.preventDefault();
 		}
 		const codeKey = this.convertCode(event.code);
+		const upperKey = event.key.toUpperCase();
 		this.state[codeKey] = 1;
-		this.state[event.key.toUpperCase()] = 1;
+		this.state[upperKey] = 1;
+		this.dirtyKeys.add(codeKey);
+		this.dirtyKeys.add(upperKey);
 		this.updateDirectional();
 	}
 
 	private handleKeyUp(event: KeyboardEvent): void {
 		const codeKey = this.convertCode(event.code);
+		const upperKey = event.key.toUpperCase();
 		this.state[codeKey] = 0;
-		this.state[event.key.toUpperCase()] = 0;
+		this.state[upperKey] = 0;
+		this.dirtyKeys.add(codeKey);
+		this.dirtyKeys.add(upperKey);
 		this.updateDirectional();
 	}
 
@@ -63,30 +72,27 @@ export class KeyboardInput {
 	}
 
 	public update(): void {
-		for (const key in this.state.press) {
-			this.state.press[key] = 0;
+		// Clear previous press/release state only for dirty keys
+		for (const key of this.dirtyKeys) {
+			if (this.state.press[key]) this.state.press[key] = 0;
+			if (this.state.release[key]) this.state.release[key] = 0;
 		}
-		for (const key in this.state.release) {
-			this.state.release[key] = 0;
-		}
-		for (const key in this.previous) {
-			if (this.previous[key] && !this.state[key]) {
+
+		// Detect press/release transitions only for dirty keys
+		for (const key of this.dirtyKeys) {
+			const current = this.state[key] as number;
+			const prev = this.previous[key] || 0;
+
+			if (current && !prev) {
+				this.state.press[key] = 1;
+			} else if (!current && prev) {
 				this.state.release[key] = 1;
 			}
+
+			this.previous[key] = current;
 		}
-		for (const key in this.state) {
-			if (key === "press" || key === "release") continue;
-			if (this.state[key] && !this.previous[key]) {
-				this.state.press[key] = 1;
-			}
-		}
-		for (const key in this.previous) {
-			this.previous[key] = 0;
-		}
-		for (const key in this.state) {
-			if (key === "press" || key === "release") continue;
-			this.previous[key] = this.state[key] as number;
-		}
+
+		this.dirtyKeys.clear();
 	}
 
 	public reset(): void {
@@ -97,5 +103,6 @@ export class KeyboardInput {
 		for (const key in this.previous) {
 			this.previous[key] = 0;
 		}
+		this.dirtyKeys.clear();
 	}
 }

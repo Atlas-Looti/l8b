@@ -9,6 +9,31 @@ import type { Sprite } from "@l8b/sprites";
 import { PrimitiveScreen } from "./primitives-screen";
 
 export class SpriteScreen extends PrimitiveScreen {
+	// Cache imageSmoothingEnabled — only set when pixelated flag changes
+	private _lastImageSmoothing = true;
+
+	// Cache frame time once per draw frame instead of per-sprite
+	protected _frameTime = 0;
+
+	/**
+	 * Initialize draw state (called before each draw frame)
+	 */
+	override initDraw(): void {
+		super.initDraw();
+		this._frameTime = performance.now();
+	}
+
+	/**
+	 * Set imageSmoothingEnabled only when it actually changes
+	 */
+	protected setImageSmoothing(): void {
+		const smooth = !this.pixelated;
+		if (smooth !== this._lastImageSmoothing) {
+			this.context.imageSmoothingEnabled = smooth;
+			this._lastImageSmoothing = smooth;
+		}
+	}
+
 	/**
 	 * Get the canvas for the current sprite frame
 	 */
@@ -55,14 +80,14 @@ export class SpriteScreen extends PrimitiveScreen {
 
 		const spriteObj = sprite as Sprite;
 
-		// Handle multi-frame sprites
+		// Handle multi-frame sprites — use cached _frameTime instead of Date.now() per call
 		if (spriteObj.frames && spriteObj.frames.length > 1) {
 			if (frame === null) {
 				if (spriteObj.animation_start === 0) {
-					spriteObj.animation_start = Date.now();
+					spriteObj.animation_start = this._frameTime;
 				}
 				const dt = 1000 / spriteObj.fps;
-				frame = Math.floor((Date.now() - spriteObj.animation_start) / dt) % spriteObj.frames.length;
+				frame = Math.floor((this._frameTime - spriteObj.animation_start) / dt) % spriteObj.frames.length;
 			}
 			if (frame >= 0 && frame < spriteObj.frames.length) {
 				return spriteObj.frames[frame].canvas;
@@ -93,7 +118,7 @@ export class SpriteScreen extends PrimitiveScreen {
 		}
 
 		this.context.globalAlpha = this.alpha;
-		this.context.imageSmoothingEnabled = !this.pixelated;
+		this.setImageSmoothing();
 		if (this.initDrawOp(x, -y)) {
 			this.context.drawImage(canvas, -w / 2 - (this.anchor_x * w) / 2, -h / 2 + (this.anchor_y * h) / 2, w, h);
 			this.closeDrawOp();
@@ -128,7 +153,7 @@ export class SpriteScreen extends PrimitiveScreen {
 		}
 
 		this.context.globalAlpha = this.alpha;
-		this.context.imageSmoothingEnabled = !this.pixelated;
+		this.setImageSmoothing();
 		if (this.initDrawOp(x, -y)) {
 			this.context.drawImage(
 				canvas,
@@ -176,7 +201,7 @@ export class SpriteScreen extends PrimitiveScreen {
 		}
 
 		this.context.globalAlpha = this.alpha;
-		this.context.imageSmoothingEnabled = !this.pixelated;
+		this.setImageSmoothing();
 		if (this.initDrawOp(x, -y)) {
 			mapObj.draw(this.context, -w / 2 - (this.anchor_x * w) / 2, -h / 2 + (this.anchor_y * h) / 2, w, h);
 			this.closeDrawOp();
