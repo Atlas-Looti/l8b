@@ -1,0 +1,46 @@
+// Block Party — Unified placement and scoring logic
+
+executePlacement = function(pieceIdx, gx, gy, colorIdx, handSlot)
+	placePiece(pieceIdx, gx, gy, colorIdx)
+	local blockCount = getPieceBlockCount(pieceIdx)
+	score += blockCount
+	playPlace()
+	handUsed[handSlot] = 1
+	selectedPiece = -1
+
+	local cleared = checkLines()
+	if cleared > 0 then
+		combo += cleared
+		local bonus = floor(cleared * BOARD_SIZE * (combo / 2) * blockCount)
+		score += bonus
+		noComboCount = 0
+		flashTimer = 15
+		boardShake = 14
+		playLineClear(cleared)
+		if combo > 1 then
+			playCombo()
+			comboPopupTimer = 60
+			comboPopupValue = combo
+		end
+	else
+		noComboCount += 1
+		if noComboCount >= HAND_SIZE then
+			combo = 0
+			noComboCount = 0
+		end
+	end
+
+	if allHandUsed() then
+		generateHand()
+	end
+
+	if not canAnyPieceFit() then
+		state = "gameover"
+		gameoverTimer = 0
+		if score > highScore then
+			highScore = score
+			storage.set("blockparti_highscore", highScore)
+		end
+		playGameOver()
+	end
+end

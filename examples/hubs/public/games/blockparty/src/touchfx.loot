@@ -1,0 +1,57 @@
+// Block Party — Touch particle effect
+// Spawns small colorful blocks on tap that scatter and fade out
+
+touchParticles = []
+
+spawnTouchFX = function(px, py)
+	local count = 5 + floor(random.next() * 4)
+	for i = 0 to count - 1
+		local p = object end
+		p.x = px
+		p.y = py
+		local angle = random.next() * 3.14159 * 2
+		local speed = 1.5 + random.next() * 3
+		p.vx = cos(angle) * speed
+		p.vy = sin(angle) * speed
+		p.size = 4 + floor(random.next() * 6)
+		p.color = floor(random.next() * pieceColors.length)
+		p.life = 20 + floor(random.next() * 15)
+		p.maxLife = p.life
+		p.rot = random.next() * 3.14159 * 2
+		p.rotSpeed = (random.next() - 0.5) * 0.3
+		touchParticles.push(p)
+	end
+end
+
+updateTouchFX = function()
+	local i = 0
+	while i < touchParticles.length
+		local p = touchParticles[i]
+		p.x += p.vx
+		p.y += p.vy
+		p.vy -= 0.08
+		p.vx *= 0.96
+		p.vy *= 0.96
+		p.rot += p.rotSpeed
+		p.life -= 1
+		if p.life <= 0 then
+			touchParticles.splice(i, 1)
+		else
+			i += 1
+		end
+	end
+end
+
+drawTouchFX = function()
+	for i = 0 to touchParticles.length - 1
+		local p = touchParticles[i]
+		local alpha = p.life / p.maxLife
+		local sz = p.size * (0.5 + alpha * 0.5)
+		local ci = p.color
+		screen.setAlpha(alpha * 0.8)
+		screen.setDrawRotation(p.rot)
+		drawBlock(p.x, p.y, sz, pieceColors[ci], pieceColorsDark[ci], pieceColorsLight[ci])
+		screen.setDrawRotation(0)
+		screen.setAlpha(1)
+	end
+end

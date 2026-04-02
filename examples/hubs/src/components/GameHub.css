@@ -1,93 +1,72 @@
 .hub {
 	position: relative;
 	min-height: 100vh;
-	padding: 40px 24px;
+	padding: 48px 24px;
 	max-width: 960px;
 	margin: 0 auto;
 	touch-action: pan-y;
 }
 
-.hub-scanlines {
-	z-index: 999;
-	--scanline-color: rgba(0, 0, 0, 0.08);
-}
-
 .hub-header {
 	text-align: center;
-	margin-bottom: 32px;
+	margin-bottom: 36px;
 }
 
 .hub-title {
 	font-size: 28px;
+	font-weight: 700;
 	margin: 0 0 8px;
-	color: #fff;
-	text-shadow:
-		0 0 20px rgba(0, 255, 245, 0.4),
-		0 0 60px rgba(0, 255, 245, 0.15);
-	animation: titlePulse 3s ease-in-out infinite;
+	color: #111;
 }
 
 .hub-title-l8b {
-	color: #00fff5;
-}
-
-@keyframes titlePulse {
-	0%,
-	100% {
-		text-shadow:
-			0 0 20px rgba(0, 255, 245, 0.4),
-			0 0 60px rgba(0, 255, 245, 0.15);
-	}
-	50% {
-		text-shadow:
-			0 0 30px rgba(0, 255, 245, 0.6),
-			0 0 80px rgba(0, 255, 245, 0.25);
-	}
+	color: #4f46e5;
 }
 
 .hub-subtitle {
 	margin: 0;
-	font-size: 9px;
-	color: rgba(255, 255, 255, 0.4);
-	letter-spacing: 3px;
+	font-size: 14px;
+	color: #888;
+	font-weight: 400;
 }
 
 .hub-filters {
 	display: flex;
 	justify-content: center;
-	gap: 4px;
-	margin-bottom: 28px;
+	gap: 8px;
+	margin-bottom: 32px;
 	flex-wrap: wrap;
 }
 
 .hub-filter {
-	padding: 6px 14px;
-	background: transparent;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 2px;
-	color: rgba(255, 255, 255, 0.4);
+	padding: 8px 16px;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 20px;
+	color: #666;
 	font-family: inherit;
-	font-size: 8px;
+	font-size: 13px;
+	font-weight: 500;
 	cursor: pointer;
-	letter-spacing: 1px;
 	transition: all 0.2s ease;
 }
 
 .hub-filter:hover {
-	color: rgba(255, 255, 255, 0.7);
-	border-color: rgba(255, 255, 255, 0.2);
+	color: #333;
+	border-color: #ccc;
+	background: #fafafa;
 }
 
 .hub-filter.active {
-	color: #00fff5;
-	border-color: #00fff5;
-	background: rgba(0, 255, 245, 0.05);
+	color: #fff;
+	border-color: #4f46e5;
+	background: #4f46e5;
 }
 
 .hub-grid {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	gap: 16px;
+	gap: 20px;
 }
 
 @media (max-width: 768px) {
@@ -95,7 +74,7 @@
 		grid-template-columns: repeat(2, 1fr);
 	}
 	.hub-title {
-		font-size: 20px;
+		font-size: 24px;
 	}
 }
 
@@ -113,17 +92,16 @@
 	justify-content: center;
 	align-items: center;
 	gap: 12px;
-	margin-top: 40px;
+	margin-top: 48px;
 	padding-top: 20px;
-	border-top: 1px solid rgba(255, 255, 255, 0.05);
-	font-size: 7px;
-	color: rgba(255, 255, 255, 0.2);
-	letter-spacing: 2px;
+	border-top: 1px solid #e5e5e5;
+	font-size: 12px;
+	color: #aaa;
 }
 
 .hub-footer-dot {
 	width: 3px;
 	height: 3px;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.2);
+	background: #ccc;
 }

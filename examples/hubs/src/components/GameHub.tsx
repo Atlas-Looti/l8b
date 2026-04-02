@@ -9,11 +9,11 @@ interface GameHubProps {
 }
 
 const categories: { label: string; value: GameCategory | "all" }[] = [
-	{ label: "ALL", value: "all" },
-	{ label: "ARCADE", value: "arcade" },
-	{ label: "PUZZLE", value: "puzzle" },
-	{ label: "ADVENTURE", value: "adventure" },
-	{ label: "DEMO", value: "demo" },
+	{ label: "All", value: "all" },
+	{ label: "Arcade", value: "arcade" },
+	{ label: "Puzzle", value: "puzzle" },
+	{ label: "Adventure", value: "adventure" },
+	{ label: "Demo", value: "demo" },
 ];
 
 export function GameHub({ onSelectGame }: GameHubProps) {
@@ -23,12 +23,11 @@ export function GameHub({ onSelectGame }: GameHubProps) {
 
 	return (
 		<div className="hub">
-			<div className="scanlines hub-scanlines" />
 			<header className="hub-header">
 				<h1 className="hub-title">
-					<span className="hub-title-l8b">L8B</span> ARCADE
+					<span className="hub-title-l8b">L8B</span> Games
 				</h1>
-				<p className="hub-subtitle">SELECT A GAME TO PLAY</p>
+				<p className="hub-subtitle">Select a game to play</p>
 			</header>
 
 			<nav className="hub-filters">
@@ -50,9 +49,9 @@ export function GameHub({ onSelectGame }: GameHubProps) {
 			</div>
 
 			<footer className="hub-footer">
-				<span>POWERED BY LOOTISCRIPT</span>
+				<span>Powered by LootiScript</span>
 				<span className="hub-footer-dot" />
-				<span>{games.length} GAMES</span>
+				<span>{games.length} games</span>
 			</footer>
 		</div>
 	);

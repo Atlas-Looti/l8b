@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //PID 27236 //F)",
+      "Read(//c/Users/hi/Desktop/workspace/l8b/**)",
+      "Bash(bun run:*)",
+      "Bash(find /c/Users/hi/Desktop/workspace/l8b -name particles.loot -o -name *particle* -type f)"
+    ]
+  }
+}

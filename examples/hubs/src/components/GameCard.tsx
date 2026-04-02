@@ -28,7 +28,7 @@ export function GameCard({ game, onSelect }: GameCardProps) {
 				<span className="game-card-orientation">
 					{game.orientation === "portrait" ? "[|]" : "[-]"}
 				</span>
-				<span className="game-card-play">PLAY</span>
+				<span className="game-card-play">Play</span>
 			</div>
 		</button>
 	);

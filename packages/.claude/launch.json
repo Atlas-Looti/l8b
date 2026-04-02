@@ -1,0 +1,11 @@
+{
+	"version": "0.0.1",
+	"configurations": [
+		{
+			"name": "hubs",
+			"runtimeExecutable": "bun",
+			"runtimeArgs": ["run", "--cwd", "C:/Users/hi/Desktop/workspace/l8b/examples/hubs", "dev", "--host"],
+			"port": 5173
+		}
+	]
+}

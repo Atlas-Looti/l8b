@@ -24,7 +24,8 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 					msg === "quit" ||
 					(typeof msg === "object" && msg !== null && (msg as Record<string, unknown>).type === "quit")
 				) {
-					handleBack();
+					// Defer so we don't stop the runtime from within its own game-loop callback
+					setTimeout(() => handleBack(), 0);
 				}
 			},
 			[handleBack],
@@ -44,11 +45,9 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 
 	return (
 		<div className="player">
-			<div className="scanlines player-scanlines" />
-
 			{loading && (
 				<div className="player-loading">
-					<div className="player-loading-text">LOADING</div>
+					<div className="player-loading-text">Loading</div>
 					<div className="player-loading-dots">
 						<span />
 						<span />
@@ -59,10 +58,10 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 
 			{error && (
 				<div className="player-error">
-					<div className="player-error-title">ERROR</div>
+					<div className="player-error-title">Error</div>
 					<div className="player-error-msg">{error}</div>
 					<button className="player-error-btn" onClick={handleBack}>
-						BACK TO HUB
+						Back to Hub
 					</button>
 				</div>
 			)}

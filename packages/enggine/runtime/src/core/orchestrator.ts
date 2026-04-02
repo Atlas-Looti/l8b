@@ -505,6 +505,7 @@ export class RuntimeOrchestrator {
 	stop(): void {
 		this.logStep("lifecycle: stop requested");
 		this.gameLoop?.stop();
+		this.audio.stopAll();
 	}
 
 	/**

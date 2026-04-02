@@ -1,0 +1,42 @@
+// Block Party — Drawing helper functions
+
+cellCX = function(col)
+	return gridLeftX + col * cellSize + cellSize / 2
+end
+
+cellCY = function(row)
+	return gridTopY - row * cellSize - cellSize / 2
+end
+
+drawTextOutline = function(text, x, y, size, color, outColor)
+	screen.drawText(text, x + 1, y + 1, size, outColor)
+	screen.drawText(text, x - 1, y + 1, size, outColor)
+	screen.drawText(text, x + 1, y - 1, size, outColor)
+	screen.drawText(text, x - 1, y - 1, size, outColor)
+	screen.drawText(text, x, y, size, color)
+end
+
+// Glossy 3D block (Block Blast style)
+drawBlock = function(x, y, size, color, darkColor, lightColor)
+	local border = max(1, floor(size * 0.14))
+	local half = size / 2
+
+	// Main fill
+	screen.fillRect(x, y, size, size, color)
+
+	// Top highlight
+	screen.fillRect(x, y + half - border / 2, size, border, lightColor)
+	// Left highlight
+	screen.fillRect(x - half + border / 2, y, border, size, lightColor)
+	// Bottom shadow
+	screen.fillRect(x, y - half + border / 2, size, border, darkColor)
+	// Right shadow
+	screen.fillRect(x + half - border / 2, y, border, size, darkColor)
+
+	// Inner glossy shine
+	local shineW = floor(size * 0.3)
+	local shineH = floor(size * 0.15)
+	screen.setAlpha(0.25)
+	screen.fillRect(x - size * 0.15, y + size * 0.15, shineW, shineH, "#FFF")
+	screen.setAlpha(1)
+end
