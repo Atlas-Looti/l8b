@@ -111,6 +111,11 @@ class OPCODES_CLASS {
 	readonly LOAD_CONST_MUL = 124;
 	readonly LOAD_LOCAL_ADD = 125;
 	readonly LOAD_LOCAL_SUB = 126;
+	readonly LOAD_LOCAL_MUL = 127;
+	readonly LOAD_CONST_DIV = 128;
+	readonly LOAD_LOCAL_LT = 129;
+	readonly LOAD_LOCAL_GT = 130;
+	readonly LOAD_LOCAL_EQ = 131;
 
 	constructor() {
 		this.set("TYPE", 1);
@@ -186,6 +191,11 @@ class OPCODES_CLASS {
 		this.set("LOAD_CONST_MUL", 124); // LOAD_VALUE + MUL
 		this.set("LOAD_LOCAL_ADD", 125); // LOAD_LOCAL + ADD
 		this.set("LOAD_LOCAL_SUB", 126); // LOAD_LOCAL + SUB
+		this.set("LOAD_LOCAL_MUL", 127); // LOAD_LOCAL + MUL
+		this.set("LOAD_CONST_DIV", 128); // LOAD_VALUE + DIV
+		this.set("LOAD_LOCAL_LT", 129); // LOAD_LOCAL + LT
+		this.set("LOAD_LOCAL_GT", 130); // LOAD_LOCAL + GT
+		this.set("LOAD_LOCAL_EQ", 131); // LOAD_LOCAL + EQ
 	}
 
 	[key: string | number]: any;

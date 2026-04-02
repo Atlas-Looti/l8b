@@ -21,9 +21,9 @@ export const ListLib = {
 	every: <T>(arr: T[], fn: (item: T, index: number) => boolean): boolean => arr.every(fn),
 
 	// Array manipulation methods (non-mutating, returns new arrays)
-	reverse: <T>(arr: T[]): T[] => [...arr].reverse(),
+	reverse: <T>(arr: T[]): T[] => arr.slice().reverse(),
 
-	sort: <T>(arr: T[], fn?: (a: T, b: T) => number): T[] => [...arr].sort(fn),
+	sort: <T>(arr: T[], fn?: (a: T, b: T) => number): T[] => arr.slice().sort(fn),
 
 	slice: <T>(arr: T[], start: number, end?: number): T[] => arr.slice(start, end),
 

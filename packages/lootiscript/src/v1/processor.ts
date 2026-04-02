@@ -967,9 +967,9 @@ export class Processor {
 						locals[locals_offset + iter] = iterator;
 						op_index = arg1[op_index][1];
 					}
-					if (op_count++ > 100) {
+					if (op_count++ > 500) {
 						op_count = 0;
-						if (Date.now() > this.time_limit) {
+						if (performance.now() > this.time_limit) {
 							restore_op_index = op_index;
 							op_index = length; // stop the loop without adding a condition statement
 						}
@@ -1012,9 +1012,9 @@ export class Processor {
 					} else {
 						op_index++;
 					}
-					if (op_count++ > 100) {
+					if (op_count++ > 500) {
 						op_count = 0;
-						if (Date.now() > this.time_limit) {
+						if (performance.now() > this.time_limit) {
 							restore_op_index = op_index;
 							op_index = length; // stop the loop without adding a condition statement
 						}
@@ -1022,9 +1022,9 @@ export class Processor {
 					break;
 				case 80: // OPCODE_JUMP
 					op_index = arg1[op_index];
-					if (op_count++ > 100) {
+					if (op_count++ > 500) {
 						op_count = 0;
-						if (Date.now() > this.time_limit) {
+						if (performance.now() > this.time_limit) {
 							restore_op_index = op_index;
 							op_index = length; // stop the loop without adding a condition statement
 						}
@@ -1143,6 +1143,35 @@ export class Processor {
 								stack[stack_index - 1] = v != null ? v : 0;
 								stack_index -= 1;
 								break;
+							case 2:
+								try {
+									v = f(
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+									);
+								} catch (error) {
+									err = error;
+									this.reportNativeError(err);
+									v = 0;
+								}
+								stack[stack_index - 2] = v != null ? v : 0;
+								stack_index -= 2;
+								break;
+							case 3:
+								try {
+									v = f(
+										this.argToNative(stack[stack_index - 3], context),
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+									);
+								} catch (error) {
+									err = error;
+									this.reportNativeError(err);
+									v = 0;
+								}
+								stack[stack_index - 3] = v != null ? v : 0;
+								stack_index -= 3;
+								break;
 							default:
 								argv = this._argv; argv.length = 0;
 								stack_index -= args;
@@ -1250,6 +1279,37 @@ export class Processor {
 									v = 0;
 								}
 								stack[--stack_index] = v != null ? v : 0;
+								break;
+							case 2:
+								try {
+									v = f.call(
+										obj,
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+									);
+								} catch (error) {
+									err = error;
+									this.reportNativeError(err);
+									v = 0;
+								}
+								stack[stack_index - 2] = v != null ? v : 0;
+								stack_index -= 2;
+								break;
+							case 3:
+								try {
+									v = f.call(
+										obj,
+										this.argToNative(stack[stack_index - 3], context),
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+									);
+								} catch (error) {
+									err = error;
+									this.reportNativeError(err);
+									v = 0;
+								}
+								stack[stack_index - 3] = v != null ? v : 0;
+								stack_index -= 3;
 								break;
 							default:
 								argv = this._argv; argv.length = 0;
@@ -1363,6 +1423,37 @@ export class Processor {
 								}
 								stack[stack_index - 2] = v != null ? v : 0;
 								stack_index -= 2;
+								break;
+							case 2:
+								try {
+									v = f.call(
+										obj,
+										this.argToNative(stack[stack_index - 3], context),
+										this.argToNative(stack[stack_index - 2], context),
+									);
+								} catch (error) {
+									err = error;
+									this.reportNativeError(err);
+									v = 0;
+								}
+								stack[stack_index - 3] = v != null ? v : 0;
+								stack_index -= 3;
+								break;
+							case 3:
+								try {
+									v = f.call(
+										obj,
+										this.argToNative(stack[stack_index - 4], context),
+										this.argToNative(stack[stack_index - 3], context),
+										this.argToNative(stack[stack_index - 2], context),
+									);
+								} catch (error) {
+									err = error;
+									this.reportNativeError(err);
+									v = 0;
+								}
+								stack[stack_index - 4] = v != null ? v : 0;
+								stack_index -= 4;
 								break;
 							default:
 								argv = this._argv; argv.length = 0;
@@ -1604,6 +1695,32 @@ export class Processor {
 								}
 								stack[stack_index] = v != null ? v : 0;
 								break;
+							case 2:
+								try {
+									v = f(
+										this.argToNative(stack[stack_index - 1], context),
+										this.argToNative(stack[stack_index], context),
+									);
+								} catch (e) {
+									this.reportNativeError(e);
+									v = 0;
+								}
+								stack[--stack_index] = v != null ? v : 0;
+								break;
+							case 3:
+								try {
+									v = f(
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+										this.argToNative(stack[stack_index], context),
+									);
+								} catch (e) {
+									this.reportNativeError(e);
+									v = 0;
+								}
+								stack[stack_index - 2] = v != null ? v : 0;
+								stack_index -= 2;
+								break;
 							default:
 								argv = this._argv; argv.length = 0;
 								stack_index -= args - 1; // Point to first arg
@@ -1728,6 +1845,33 @@ export class Processor {
 								stack[stack_index - 1] = v != null ? v : 0;
 								stack_index--;
 								break;
+							case 2:
+								try {
+									v = f(
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+									);
+								} catch (e) {
+									this.reportNativeError(e);
+									v = 0;
+								}
+								stack[stack_index - 2] = v != null ? v : 0;
+								stack_index -= 2;
+								break;
+							case 3:
+								try {
+									v = f(
+										this.argToNative(stack[stack_index - 3], context),
+										this.argToNative(stack[stack_index - 2], context),
+										this.argToNative(stack[stack_index - 1], context),
+									);
+								} catch (e) {
+									this.reportNativeError(e);
+									v = 0;
+								}
+								stack[stack_index - 3] = v != null ? v : 0;
+								stack_index -= 3;
+								break;
 							default:
 								argv = this._argv; argv.length = 0;
 								stack_index -= args;
@@ -1814,6 +1958,50 @@ export class Processor {
 					} else {
 						stack[stack_index] = operatorSub(this.runner, context, b, a, 0);
 					}
+					op_index++;
+					break;
+
+				case 127: // LOAD_LOCAL_MUL
+					a = locals[locals_offset + arg1[op_index]];
+					b = stack[stack_index];
+
+					if (typeof b === "number" && typeof a === "number") {
+						b *= a;
+						stack[stack_index] = isFinite(b) ? b : 0;
+					} else {
+						stack[stack_index] = operatorMul(this.runner, context, b, a, 0);
+					}
+					op_index++;
+					break;
+
+				case 128: // LOAD_CONST_DIV
+					a = arg1[op_index];
+					b = stack[stack_index];
+
+					if (typeof b === "number") {
+						b /= a;
+						stack[stack_index] = isFinite(b) ? b : 0;
+					} else {
+						stack[stack_index] = operatorDiv(this.runner, context, b, a, 0);
+					}
+					op_index++;
+					break;
+
+				case 129: // LOAD_LOCAL_LT
+					a = locals[locals_offset + arg1[op_index]];
+					stack[stack_index] = stack[stack_index] < a ? 1 : 0;
+					op_index++;
+					break;
+
+				case 130: // LOAD_LOCAL_GT
+					a = locals[locals_offset + arg1[op_index]];
+					stack[stack_index] = stack[stack_index] > a ? 1 : 0;
+					op_index++;
+					break;
+
+				case 131: // LOAD_LOCAL_EQ
+					a = locals[locals_offset + arg1[op_index]];
+					stack[stack_index] = stack[stack_index] === a ? 1 : 0;
 					op_index++;
 					break;
 

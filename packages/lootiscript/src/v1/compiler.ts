@@ -230,6 +230,81 @@ export class Compiler {
 				continue;
 			}
 
+			// Fusion: LOAD_LOCAL + MUL -> LOAD_LOCAL_MUL
+			if (ops[i] === OPCODES.LOAD_LOCAL && ops[i + 1] === OPCODES.MUL) {
+				const localIdx = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_LOCAL_MUL;
+				args[i] = localIdx;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_VALUE (number) + DIV -> LOAD_CONST_DIV
+			if (ops[i] === OPCODES.LOAD_VALUE && typeof args[i] === "number" && ops[i + 1] === OPCODES.DIV) {
+				const val = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_CONST_DIV;
+				args[i] = val;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_LOCAL + LT -> LOAD_LOCAL_LT
+			if (ops[i] === OPCODES.LOAD_LOCAL && ops[i + 1] === OPCODES.LT) {
+				const localIdx = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_LOCAL_LT;
+				args[i] = localIdx;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_LOCAL + GT -> LOAD_LOCAL_GT
+			if (ops[i] === OPCODES.LOAD_LOCAL && ops[i + 1] === OPCODES.GT) {
+				const localIdx = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_LOCAL_GT;
+				args[i] = localIdx;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
+			// Fusion: LOAD_LOCAL + EQ -> LOAD_LOCAL_EQ
+			if (ops[i] === OPCODES.LOAD_LOCAL && ops[i + 1] === OPCODES.EQ) {
+				const localIdx = args[i];
+				const ref = refs[i + 1];
+
+				ops[i] = OPCODES.LOAD_LOCAL_EQ;
+				args[i] = localIdx;
+				refs[i] = ref;
+
+				ops.splice(i + 1, 1);
+				args.splice(i + 1, 1);
+				refs.splice(i + 1, 1);
+				continue;
+			}
+
 			i++;
 		}
 	}
@@ -556,6 +631,41 @@ export class Compiler {
 			ref1 === "<=" ||
 			ref1 === ">="
 		) {
+			// OPTIMIZATION: Constant Folding for comparisons
+			if (
+				op.term1 instanceof Value &&
+				op.term1.type === Value.TYPE_NUMBER &&
+				op.term2 instanceof Value &&
+				op.term2.type === Value.TYPE_NUMBER
+			) {
+				const v1 = op.term1.value as number;
+				const v2 = op.term2.value as number;
+				let result: number;
+				switch (op.operation) {
+					case "==":
+						result = v1 === v2 ? 1 : 0;
+						break;
+					case "!=":
+						result = v1 !== v2 ? 1 : 0;
+						break;
+					case "<":
+						result = v1 < v2 ? 1 : 0;
+						break;
+					case ">":
+						result = v1 > v2 ? 1 : 0;
+						break;
+					case "<=":
+						result = v1 <= v2 ? 1 : 0;
+						break;
+					case ">=":
+						result = v1 >= v2 ? 1 : 0;
+						break;
+					default:
+						result = 0;
+				}
+				this.routine.LOAD_VALUE(result, op);
+				return;
+			}
 			this.compile(op.term1);
 			this.compile(op.term2);
 			switch (op.operation) {
@@ -616,6 +726,11 @@ export class Compiler {
 	}
 
 	compileNot(expression: Not): void {
+		// OPTIMIZATION: Constant Folding for NOT
+		if (expression.expression instanceof Value && expression.expression.type === Value.TYPE_NUMBER) {
+			this.routine.LOAD_VALUE(expression.expression.value ? 0 : 1, expression);
+			return;
+		}
 		expression.expression.nowarning = true;
 		this.compile(expression.expression);
 		this.routine.NOT(expression);

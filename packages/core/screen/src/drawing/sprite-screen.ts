@@ -117,6 +117,23 @@ export class SpriteScreen extends PrimitiveScreen {
 			h = (w / canvas.width) * canvas.height;
 		}
 
+		// Viewport culling: skip sprites entirely outside visible area
+		// Only when no screen/object transforms are active (simple AABB check)
+		if (
+			!this.screen_transform &&
+			this.object_rotation === 0 &&
+			this.object_scale_x === 1 &&
+			this.object_scale_y === 1
+		) {
+			const drawX = x - w / 2 - (this.anchor_x * w) / 2;
+			const drawY = -y - h / 2 + (this.anchor_y * h) / 2;
+			const halfW = this.width / 2;
+			const halfH = this.height / 2;
+			if (drawX > halfW || drawX + w < -halfW || drawY > halfH || drawY + h < -halfH) {
+				return;
+			}
+		}
+
 		this.context.globalAlpha = this.alpha;
 		this.setImageSmoothing();
 		if (this.initDrawOp(x, -y)) {
@@ -150,6 +167,22 @@ export class SpriteScreen extends PrimitiveScreen {
 
 		if (!h) {
 			h = (w / sw) * sh;
+		}
+
+		// Viewport culling: skip sprites entirely outside visible area
+		if (
+			!this.screen_transform &&
+			this.object_rotation === 0 &&
+			this.object_scale_x === 1 &&
+			this.object_scale_y === 1
+		) {
+			const drawX = x - w / 2 - (this.anchor_x * w) / 2;
+			const drawY = -y - h / 2 + (this.anchor_y * h) / 2;
+			const halfW = this.width / 2;
+			const halfH = this.height / 2;
+			if (drawX > halfW || drawX + w < -halfW || drawY > halfH || drawY + h < -halfH) {
+				return;
+			}
 		}
 
 		this.context.globalAlpha = this.alpha;

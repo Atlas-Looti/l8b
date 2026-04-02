@@ -487,16 +487,24 @@ export class Runner {
 				break;
 			}
 		}
-		for (i = this.threads.length - 1; i >= 1; i--) {
+		// Compact terminated threads using swap-and-pop (O(n) vs O(n^2) with splice)
+		let writeIdx = 1; // Preserve main thread at index 0
+		for (i = 1; i < this.threads.length; i++) {
 			t = this.threads[i];
 			if (t.terminated) {
-				this.threads.splice(i, 1);
 				index = this.system.threads.indexOf(t.interface);
 				if (index >= 0) {
-					this.system.threads.splice(index, 1);
+					const last = this.system.threads.length - 1;
+					if (index !== last) {
+						this.system.threads[index] = this.system.threads[last];
+					}
+					this.system.threads.length--;
 				}
+			} else {
+				this.threads[writeIdx++] = this.threads[i];
 			}
 		}
+		this.threads.length = writeIdx;
 		// Reuse variable for main thread reference to avoid allocation
 		t = this.threads[0];
 		dt = performance.now() - time;

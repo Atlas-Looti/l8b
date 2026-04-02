@@ -4,9 +4,31 @@
 
 import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
 import type { Sprite } from "@l8b/sprites";
-import type { MapData, SpriteDictionary } from "../data/types";
+import type { MapData, ParsedTile, SpriteDictionary } from "../data/types";
 import { drawTile, ensureCanvas, queueAnimatedTile, type RenderState, renderAnimatedTiles } from "../drawing/renderer";
 import { normalizeRefForStorage, normalizeRefForUsage } from "../shared/references";
+
+/**
+ * Parse a tile reference string into a cached ParsedTile object.
+ * Input format: "spriteName" or "spriteName:subX,subY"
+ */
+function parseTileRef(entry: string): ParsedTile {
+	const colonIdx = entry.indexOf(":");
+	if (colonIdx === -1) {
+		return { spriteName: entry };
+	}
+	const spriteName = entry.substring(0, colonIdx);
+	const coords = entry.substring(colonIdx + 1);
+	const commaIdx = coords.indexOf(",");
+	if (commaIdx === -1) {
+		return { spriteName, subX: Number.parseInt(coords, 10) };
+	}
+	return {
+		spriteName,
+		subX: Number.parseInt(coords.substring(0, commaIdx), 10),
+		subY: Number.parseInt(coords.substring(commaIdx + 1), 10),
+	};
+}
 
 export class TileMap {
 	public width: number;
@@ -18,6 +40,7 @@ export class TileMap {
 	public ready = true;
 	public needs_update = false;
 	public name = "";
+	private parsedMap: (ParsedTile | null)[] = [];
 	private readonly renderState: RenderState = {
 		canvas: null,
 		buffer: null,
@@ -54,7 +77,9 @@ export class TileMap {
 	clear(): void {
 		for (let j = 0; j < this.height; j++) {
 			for (let i = 0; i < this.width; i++) {
-				this.map[i + j * this.width] = null;
+				const idx = i + j * this.width;
+				this.map[idx] = null;
+				this.parsedMap[idx] = null;
 			}
 		}
 	}
@@ -71,7 +96,9 @@ export class TileMap {
 		if (typeof normalized === "string") {
 			normalized = normalizeRefForStorage(normalized);
 		}
-		this.map[x + y * this.width] = normalized;
+		const idx = x + y * this.width;
+		this.map[idx] = normalized;
+		this.parsedMap[idx] = normalized ? parseTileRef(normalized) : null;
 		this.needs_update = true;
 	}
 
@@ -112,17 +139,17 @@ export class TileMap {
 		for (let j = 0; j < this.height; j++) {
 			for (let i = 0; i < this.width; i++) {
 				const index = i + (this.height - 1 - j) * this.width;
-				const entry = this.map[index];
-				if (!entry || entry.length === 0) continue;
+				const parsed = this.parsedMap[index];
+				if (!parsed) continue;
 
-				const parts = entry.split(":");
-				const sprite = this.sprites[parts[0]] || this.sprites[normalizeRefForUsage(parts[0])];
+				const sprite =
+					this.sprites[parsed.spriteName] || this.sprites[normalizeRefForUsage(parsed.spriteName)];
 				if (!sprite || !sprite.frames[0]) continue;
 
 				if (sprite.frames.length > 1) {
-					queueAnimatedTile(this.renderState, sprite, this.block_width, this.block_height, i, j, parts);
+					queueAnimatedTile(this.renderState, sprite, this.block_width, this.block_height, i, j, parsed);
 				} else {
-					drawTile(context, sprite, this.block_width, this.block_height, i, j, parts);
+					drawTile(context, sprite, this.block_width, this.block_height, i, j, parsed);
 				}
 			}
 		}
@@ -151,11 +178,15 @@ export class TileMap {
 
 		for (let j = 0; j < parsed.height; j++) {
 			for (let i = 0; i < parsed.width; i++) {
-				const value = parsed.data[i + j * parsed.width];
+				const idx = i + j * parsed.width;
+				const value = parsed.data[idx];
 				if (value > 0) {
-					this.map[i + j * parsed.width] = parsed.sprites[value] as string;
+					const ref = parsed.sprites[value] as string;
+					this.map[idx] = ref;
+					this.parsedMap[idx] = parseTileRef(ref);
 				} else {
-					this.map[i + j * parsed.width] = null;
+					this.map[idx] = null;
+					this.parsedMap[idx] = null;
 				}
 			}
 		}
@@ -166,7 +197,9 @@ export class TileMap {
 		const duplicate = new TileMap(this.width, this.height, this.block_width, this.block_height, this.sprites);
 		for (let j = 0; j < this.height; j++) {
 			for (let i = 0; i < this.width; i++) {
-				duplicate.map[i + j * this.width] = this.map[i + j * this.width];
+				const idx = i + j * this.width;
+				duplicate.map[idx] = this.map[idx];
+				duplicate.parsedMap[idx] = this.parsedMap[idx];
 			}
 		}
 		duplicate.needs_update = true;
@@ -180,7 +213,9 @@ export class TileMap {
 		this.block_height = map.block_height;
 		for (let j = 0; j < this.height; j++) {
 			for (let i = 0; i < this.width; i++) {
-				this.map[i + j * this.width] = map.map[i + j * this.width];
+				const idx = i + j * this.width;
+				this.map[idx] = map.map[idx];
+				this.parsedMap[idx] = map.parsedMap[idx];
 			}
 		}
 		this.update();
@@ -209,24 +244,7 @@ export function LoadMap(url: string, sprites?: Record<string, Sprite>, loaded?: 
 }
 
 export function UpdateMap(map: TileMap, data: string, sprites?: Record<string, Sprite>): TileMap {
-	const parsed: MapData = JSON.parse(data);
-	map.width = parsed.width;
-	map.height = parsed.height;
-	map.block_width = parsed.block_width;
-	map.block_height = parsed.block_height;
-	map.sprites = sprites ?? map.sprites;
-
-	for (let j = 0; j < parsed.height; j++) {
-		for (let i = 0; i < parsed.width; i++) {
-			const value = parsed.data[i + j * parsed.width];
-			if (value > 0) {
-				map.map[i + j * parsed.width] = parsed.sprites[value] as string;
-			} else {
-				map.map[i + j * parsed.width] = null;
-			}
-		}
-	}
-	map.needs_update = true;
+	map.load(data, sprites ?? map.sprites);
 	return map;
 }
 
@@ -264,4 +282,3 @@ export function SaveMap(map: TileMap): string {
 
 	return JSON.stringify(payload);
 }
-

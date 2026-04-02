@@ -1,6 +1,6 @@
 import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
 import type { Sprite } from "@l8b/sprites";
-import type { AnimatedTile } from "../data/types";
+import type { AnimatedTile, ParsedTile } from "../data/types";
 
 export interface RenderState {
 	canvas: HTMLCanvasElement | null;
@@ -42,16 +42,15 @@ export const drawTile = (
 	blockHeight: number,
 	gridX: number,
 	gridY: number,
-	parts: string[],
+	parsed: ParsedTile,
 ): boolean => {
 	const canvas = sprite.frames[0].canvas;
 	if (!canvas || canvas.width === 0 || canvas.height === 0) {
 		return false;
 	}
-	if (parts[1]) {
-		const [sx, sy] = parts[1].split(",");
-		const tx = Number.parseInt(sx, 10) * blockWidth;
-		const ty = Number.parseInt(sy, 10) * blockHeight;
+	if (parsed.subX != null) {
+		const tx = parsed.subX * blockWidth;
+		const ty = (parsed.subY ?? 0) * blockHeight;
 		ctx.drawImage(
 			canvas,
 			tx,
@@ -76,7 +75,7 @@ export const queueAnimatedTile = (
 	blockHeight: number,
 	gridX: number,
 	gridY: number,
-	parts: string[],
+	parsed: ParsedTile,
 ): void => {
 	const tile: AnimatedTile = {
 		x: blockWidth * gridX,
@@ -85,16 +84,15 @@ export const queueAnimatedTile = (
 		h: blockHeight,
 		sprite,
 	};
-	if (parts[1]) {
-		const [sx, sy] = parts[1].split(",");
-		tile.tx = Number.parseInt(sx, 10) * blockWidth;
-		tile.ty = Number.parseInt(sy, 10) * blockHeight;
+	if (parsed.subX != null) {
+		tile.tx = parsed.subX * blockWidth;
+		tile.ty = (parsed.subY ?? 0) * blockHeight;
 	}
 	state.animated.push(tile);
 };
 
 export const renderAnimatedTiles = (state: RenderState, blockWidth: number, blockHeight: number): HTMLCanvasElement => {
-	const time = Date.now();
+	const time = performance.now();
 	if (
 		!state.buffer ||
 		state.buffer.width !== blockWidth * (state.canvas!.width / blockWidth) ||

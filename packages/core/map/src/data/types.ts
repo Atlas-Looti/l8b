@@ -19,6 +19,12 @@ export interface AnimatedTile {
 	ty?: number;
 }
 
+export interface ParsedTile {
+	spriteName: string;
+	subX?: number;
+	subY?: number;
+}
+
 export interface SpriteDictionary {
 	[key: string]: Sprite;
 }
