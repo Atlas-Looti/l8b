@@ -221,9 +221,9 @@ draw = function()
 		// Decorative snake
 		for i = 0 to 5
 			local bx = -sw * 0.2 + i * cellSz * 1.3
-			local by = sh * 0.04 + sin((menuPulse + i * 20) * 0.06) * 8
+			local bly = sh * 0.04 + sin((menuPulse + i * 20) * 0.06) * 8
 			local ci = i % colors.length
-			drawBlock(bx, by, cellSz, colors[ci], colorsDark[ci], colorsLight[ci])
+			drawBlock(bx, bly, cellSz, colors[ci], colorsDark[ci], colorsLight[ci])
 		end
 
 		local alpha = 0.4 + abs(sin(menuPulse * 0.04)) * 0.6

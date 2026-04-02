@@ -190,9 +190,9 @@ draw = function()
 		local gap = psz * 1.3
 		for i = 0 to 7
 			local bx = -3.5 * gap / 2 + (i % 4) * gap
-			local by = sh * 0.02 - floor(i / 4) * gap
-			by += sin((menuPulse + i * 15) * 0.05) * 4
-			screen.fillRoundRect(bx, by, psz, psz, 4, cardColors[i])
+			local py2 = sh * 0.02 - floor(i / 4) * gap
+			py2 += sin((menuPulse + i * 15) * 0.05) * 4
+			screen.fillRoundRect(bx, py2, psz, psz, 4, cardColors[i])
 		end
 
 		local alpha = 0.4 + abs(sin(menuPulse * 0.04)) * 0.6

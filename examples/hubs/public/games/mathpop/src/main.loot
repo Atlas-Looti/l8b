@@ -143,9 +143,9 @@ update = function()
 				local col = i % 2
 				local row = floor(i / 2)
 				local bx = (col - 0.5) * (btnW + gap)
-				local by = -sw * 0.12 - row * (btnH + gap)
+				local btnY= -sw * 0.12 - row * (btnH + gap)
 
-				if abs(px - bx) < btnW / 2 and abs(py - by) < btnH / 2 then
+				if abs(px - bx) < btnW / 2 and abs(py - btnY) < btnH / 2 then
 					if choices[i] == answer then
 						score += 1
 						questionsAnswered += 1
@@ -225,7 +225,7 @@ draw = function()
 		end
 
 		// Level
-		screen.drawText("LV " + level, sw / 2 - 12, sh / 2 - 12, floor(sw * 0.03), "rgba(0,0,0,0.3)")
+		screen.drawText("LV " + level, -sw / 2 + 12, sh / 2 - 40, floor(sw * 0.03), "rgba(0,0,0,0.3)")
 
 		// Question
 		local qSz = floor(sw * 0.12)
@@ -242,24 +242,24 @@ draw = function()
 			local col = i % 2
 			local row = floor(i / 2)
 			local bx = (col - 0.5) * (btnW + gap)
-			local by = -sw * 0.12 - row * (btnH + gap)
+			local btnY= -sw * 0.12 - row * (btnH + gap)
 			local ci = i
 
 			if feedbackTimer > 0 then
 				if choices[i] == answer then
-					screen.fillRoundRect(bx, by, btnW, btnH, btnRd, "rgb(50,200,80)")
-					screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "#FFF")
+					screen.fillRoundRect(bx, btnY, btnW, btnH, btnRd, "rgb(50,200,80)")
+					screen.drawText("" + choices[i], bx, btnY, floor(btnH * 0.45), "#FFF")
 				elsif not feedbackCorrect then
-					screen.fillRoundRect(bx, by, btnW, btnH, btnRd, "rgb(230,230,235)")
-					screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "rgba(60,60,80,0.4)")
+					screen.fillRoundRect(bx, btnY, btnW, btnH, btnRd, "rgb(230,230,235)")
+					screen.drawText("" + choices[i], bx, btnY, floor(btnH * 0.45), "rgba(60,60,80,0.4)")
 				else
-					screen.fillRoundRect(bx, by, btnW, btnH, btnRd, "rgb(230,230,235)")
-					screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "rgba(60,60,80,0.4)")
+					screen.fillRoundRect(bx, btnY, btnW, btnH, btnRd, "rgb(230,230,235)")
+					screen.drawText("" + choices[i], bx, btnY, floor(btnH * 0.45), "rgba(60,60,80,0.4)")
 				end
 			else
-				screen.fillRoundRect(bx, by, btnW, btnH, btnRd, colors[ci])
-				screen.drawRoundRect(bx, by, btnW, btnH, btnRd, colorsDark[ci])
-				screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "#FFF")
+				screen.fillRoundRect(bx, btnY, btnW, btnH, btnRd, colors[ci])
+				screen.drawRoundRect(bx, btnY, btnW, btnH, btnRd, colorsDark[ci])
+				screen.drawText("" + choices[i], bx, btnY, floor(btnH * 0.45), "#FFF")
 			end
 		end
 

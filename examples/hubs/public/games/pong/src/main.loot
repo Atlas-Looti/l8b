@@ -196,8 +196,8 @@ draw = function()
 		screen.drawRoundRect(0, -sh * 0.02, dw, dh, 4, "rgba(0,0,0,0.08)")
 		// Demo ball
 		local bx = sin(menuPulse * 0.06) * dw * 0.3
-		local by = cos(menuPulse * 0.08) * dh * 0.3 - sh * 0.02
-		screen.fillRound(bx, by, ballSize * 3, ballSize * 3, "rgb(140,70,220)")
+		local dby = cos(menuPulse * 0.08) * dh * 0.3 - sh * 0.02
+		screen.fillRound(bx, dby, ballSize * 3, ballSize * 3, "rgb(140,70,220)")
 
 		local alpha = 0.4 + abs(sin(menuPulse * 0.04)) * 0.6
 		screen.drawText("TAP TO START", 0, -sh * 0.14, floor(sw * 0.05), "rgba(60,60,80," + alpha + ")")

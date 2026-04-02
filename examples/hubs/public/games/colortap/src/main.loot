@@ -226,9 +226,9 @@ draw = function()
 		end
 
 		// Level & streak
-		screen.drawText("LV " + level, -sw / 2 + 8, sh / 2 - 8, floor(sw * 0.03), "rgba(0,0,0,0.3)")
+		screen.drawText("LV " + level, -sw / 2 + 8, sh / 2 - 40, floor(sw * 0.03), "rgba(0,0,0,0.3)")
 		if streak > 2 then
-			screen.drawText(streak + "x STREAK", sw / 2 - 8, sh / 2 - 8, floor(sw * 0.03), "rgb(255,160,30)")
+			screen.drawText(streak + "x STREAK", sw / 2 - 8, sh / 2 - 40, floor(sw * 0.03), "rgb(255,160,30)")
 		end
 	end
 
