@@ -1,0 +1,292 @@
+// Math Pop — Answer simple math questions, tap the correct answer
+
+numA = 0
+numB = 0
+op = "+"
+answer = 0
+choices = []
+score = 0
+highScore = 0
+level = 1
+lives = 3
+state = "menu"
+menuPulse = 0
+gameoverTimer = 0
+feedbackTimer = 0
+feedbackCorrect = false
+questionsAnswered = 0
+
+colors = ["rgb(40,200,255)", "rgb(140,70,220)", "rgb(255,160,30)", "rgb(50,200,80)"]
+colorsDark = ["rgb(20,140,200)", "rgb(90,40,160)", "rgb(200,120,10)", "rgb(30,150,55)"]
+
+generateQuestion = function()
+	local maxNum = 5 + level * 2
+	if maxNum > 20 then maxNum = 20 end
+
+	if level <= 3 then
+		// Addition only
+		op = "+"
+		numA = 1 + floor(random.next() * maxNum)
+		numB = 1 + floor(random.next() * maxNum)
+		answer = numA + numB
+	elsif level <= 6 then
+		// Addition or subtraction
+		if random.next() > 0.5 then
+			op = "+"
+			numA = 1 + floor(random.next() * maxNum)
+			numB = 1 + floor(random.next() * maxNum)
+			answer = numA + numB
+		else
+			op = "-"
+			numA = 2 + floor(random.next() * maxNum)
+			numB = 1 + floor(random.next() * (numA - 1))
+			answer = numA - numB
+		end
+	else
+		// Add, subtract, simple multiply
+		local r = random.next()
+		if r < 0.35 then
+			op = "+"
+			numA = 1 + floor(random.next() * maxNum)
+			numB = 1 + floor(random.next() * maxNum)
+			answer = numA + numB
+		elsif r < 0.7 then
+			op = "-"
+			numA = 2 + floor(random.next() * maxNum)
+			numB = 1 + floor(random.next() * (numA - 1))
+			answer = numA - numB
+		else
+			op = "×"
+			numA = 1 + floor(random.next() * min(10, maxNum))
+			numB = 1 + floor(random.next() * 5)
+			answer = numA * numB
+		end
+	end
+
+	// Generate 4 choices with correct answer at random position
+	choices = []
+	local correctSlot = floor(random.next() * 4)
+	for i = 0 to 3
+		if i == correctSlot then
+			choices.push(answer)
+		else
+			local wrong = answer + floor(random.next() * 6) - 3
+			while wrong == answer or wrong < 0
+				wrong = answer + floor(random.next() * 8) - 2
+			end
+			// Ensure no duplicates
+			local dup = false
+			for j = 0 to choices.length - 1
+				if choices[j] == wrong then dup = true end
+			end
+			if dup then wrong = answer + i + 1 end
+			choices.push(wrong)
+		end
+	end
+end
+
+init = function()
+	local saved = storage.get("mathpop_highscore")
+	if saved then highScore = saved end
+end
+
+startGame = function()
+	score = 0
+	level = 1
+	lives = 3
+	questionsAnswered = 0
+	feedbackTimer = 0
+	state = "play"
+	generateQuestion()
+	playMenuTap()
+end
+
+drawTextOutline = function(text, x, y, size, color, outColor)
+	screen.drawText(text, x + 1, y + 1, size, outColor)
+	screen.drawText(text, x - 1, y + 1, size, outColor)
+	screen.drawText(text, x + 1, y - 1, size, outColor)
+	screen.drawText(text, x - 1, y - 1, size, outColor)
+	screen.drawText(text, x, y, size, color)
+end
+
+update = function()
+	hud_visible = (state == "play")
+	hudUpdate()
+	if hud_open then return end
+
+	menuPulse += 1
+
+	if state == "menu" then
+		if touch.press or mouse.press then startGame() end
+	elsif state == "play" then
+		if feedbackTimer > 0 then
+			feedbackTimer -= 1
+			if feedbackTimer == 0 then
+				generateQuestion()
+			end
+			return
+		end
+
+		if touch.press or mouse.press then
+			local px = mouse.x
+			local py = mouse.y
+			if touch.press then
+				px = touch.x
+				py = touch.y
+			end
+			local sw = screen.width
+			local btnW = sw * 0.35
+			local btnH = sw * 0.14
+			local gap = 12
+
+			for i = 0 to 3
+				local col = i % 2
+				local row = floor(i / 2)
+				local bx = (col - 0.5) * (btnW + gap)
+				local by = -sw * 0.12 - row * (btnH + gap)
+
+				if abs(px - bx) < btnW / 2 and abs(py - by) < btnH / 2 then
+					if choices[i] == answer then
+						score += 1
+						questionsAnswered += 1
+						feedbackCorrect = true
+						playCorrect()
+						if questionsAnswered % 5 == 0 then
+							level += 1
+							playLevelUp()
+						end
+					else
+						lives -= 1
+						feedbackCorrect = false
+						playWrong()
+						if lives <= 0 then
+							state = "gameover"
+							gameoverTimer = 0
+							playGameOver()
+							if score > highScore then
+								highScore = score
+								storage.set("mathpop_highscore", highScore)
+							end
+							return
+						end
+					end
+					feedbackTimer = 20
+					break
+				end
+			end
+		end
+	elsif state == "gameover" then
+		gameoverTimer += 1
+		if gameoverTimer > 90 then
+			if touch.press or mouse.press then state = "menu" end
+		end
+	end
+end
+
+draw = function()
+	local sw = screen.width
+	local sh = screen.height
+	screen.fillRect(0, 0, sw, sh, "#FFFFFF")
+
+	if state == "menu" then
+		local pulse = sin(menuPulse * 0.05) * 3
+		local tsz = floor(sw * 0.1)
+		drawTextOutline("MATH", 0, sh * 0.2 + pulse, tsz, "rgb(40,200,255)", "rgb(20,140,200)")
+		drawTextOutline("POP", 0, sh * 0.2 - tsz - 4 + pulse, tsz, "rgb(50,200,80)", "rgb(30,150,55)")
+
+		// Preview equation
+		local eqSz = floor(sw * 0.08)
+		local eqY = sh * 0.02
+		screen.drawText("3 + 5 = ?", 0, eqY, eqSz, "rgba(60,60,80,0.4)")
+
+		local alpha = 0.4 + abs(sin(menuPulse * 0.04)) * 0.6
+		screen.drawText("TAP TO START", 0, -sh * 0.1, floor(sw * 0.05), "rgba(60,60,80," + alpha + ")")
+		screen.drawText("SOLVE MATH PROBLEMS", 0, -sh * 0.16, floor(sw * 0.025), "rgba(80,80,100,0.5)")
+
+		if highScore > 0 then
+			drawTextOutline("BEST: " + highScore, 0, -sh * 0.24, floor(sw * 0.04), "rgb(255,230,100)", "rgb(150,100,0)")
+		end
+
+	elsif state == "play" or state == "gameover" then
+		// Score & lives
+		local scoreSz = floor(sw * 0.08)
+		drawTextOutline("" + score, 0, sh / 2 - sh * 0.04, scoreSz, "#333", "#DDD")
+
+		// Hearts
+		local heartSz = floor(sw * 0.04)
+		for i = 0 to 2
+			local hx = -sw / 2 + 12 + i * (heartSz + 6)
+			local hy = sh / 2 - 12
+			if i < lives then
+				screen.drawText("♥", hx, hy, heartSz, "rgb(230,50,60)")
+			else
+				screen.drawText("♥", hx, hy, heartSz, "rgba(0,0,0,0.1)")
+			end
+		end
+
+		// Level
+		screen.drawText("LV " + level, sw / 2 - 12, sh / 2 - 12, floor(sw * 0.03), "rgba(0,0,0,0.3)")
+
+		// Question
+		local qSz = floor(sw * 0.12)
+		local question = numA + " " + op + " " + numB + " = ?"
+		drawTextOutline(question, 0, sh * 0.15, qSz, "rgb(60,60,80)", "rgb(220,220,230)")
+
+		// Answer buttons (2x2 grid)
+		local btnW = sw * 0.35
+		local btnH = sw * 0.14
+		local gap = 12
+		local btnRd = 6
+
+		for i = 0 to 3
+			local col = i % 2
+			local row = floor(i / 2)
+			local bx = (col - 0.5) * (btnW + gap)
+			local by = -sw * 0.12 - row * (btnH + gap)
+			local ci = i
+
+			if feedbackTimer > 0 then
+				if choices[i] == answer then
+					screen.fillRoundRect(bx, by, btnW, btnH, btnRd, "rgb(50,200,80)")
+					screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "#FFF")
+				elsif not feedbackCorrect then
+					screen.fillRoundRect(bx, by, btnW, btnH, btnRd, "rgb(230,230,235)")
+					screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "rgba(60,60,80,0.4)")
+				else
+					screen.fillRoundRect(bx, by, btnW, btnH, btnRd, "rgb(230,230,235)")
+					screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "rgba(60,60,80,0.4)")
+				end
+			else
+				screen.fillRoundRect(bx, by, btnW, btnH, btnRd, colors[ci])
+				screen.drawRoundRect(bx, by, btnW, btnH, btnRd, colorsDark[ci])
+				screen.drawText("" + choices[i], bx, by, floor(btnH * 0.45), "#FFF")
+			end
+		end
+
+		if highScore > 0 then
+			screen.drawText("BEST " + highScore, -sw / 2 + 8, sh / 2 - 8, floor(sw * 0.025), "rgba(0,0,0,0.2)")
+		end
+	end
+
+	if state == "gameover" then
+		local alpha = min(gameoverTimer / 60, 0.8)
+		screen.fillRect(0, 0, sw, sh, "rgba(255,255,255," + alpha + ")")
+
+		if gameoverTimer > 20 then
+			local tsz = floor(sw * 0.1)
+			drawTextOutline("GAME OVER", 0, sh * 0.08, tsz, "#FFF", "rgb(230,50,60)")
+			drawTextOutline("" + score, 0, -sh * 0.02, floor(sw * 0.09), "#FFF", "rgb(20,60,140)")
+
+			if score >= highScore and score > 0 then
+				local pulse = 0.5 + abs(sin(menuPulse * 0.06)) * 0.5
+				screen.drawText("NEW BEST!", 0, -sh * 0.1, floor(sw * 0.05), "rgba(255,230,80," + pulse + ")")
+			end
+		end
+		if gameoverTimer > 90 then
+			local blink = 0.3 + abs(sin(menuPulse * 0.04)) * 0.7
+			screen.drawText("TAP TO CONTINUE", 0, -sh * 0.2, floor(sw * 0.04), "rgba(0,0,0," + blink + ")")
+		end
+	end
+
+	hudDraw()
+end

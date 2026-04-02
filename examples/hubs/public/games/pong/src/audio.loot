@@ -1,0 +1,25 @@
+// Pong — Sound effects
+
+playHit = function()
+	audio.beep("sine tempo 20000 volume 15 span 40 E5")
+end
+
+playWall = function()
+	audio.beep("sine tempo 20000 volume 10 span 30 C5")
+end
+
+playScore = function()
+	audio.beep("sine tempo 8000 volume 18 span 80 C5 E5 G5")
+end
+
+playLose = function()
+	audio.beep("sine tempo 6000 volume 14 span 100 E4 C4")
+end
+
+playWin = function()
+	audio.beep("sine tempo 5000 volume 22 span 150 C5 E5 G5 C6 E6")
+end
+
+playMenuTap = function()
+	audio.beep("sine tempo 20000 volume 12 span 30 C6")
+end

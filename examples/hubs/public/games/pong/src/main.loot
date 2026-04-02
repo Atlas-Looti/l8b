@@ -1,0 +1,268 @@
+// Pong — Classic paddle ball game vs AI
+
+ballX = 0
+ballY = 0
+ballVX = 0
+ballVY = 0
+ballSpeed = 3
+ballSize = 0
+
+playerX = 0
+aiX = 0
+paddleW = 0
+paddleH = 0
+
+playerScore = 0
+aiScore = 0
+maxScore = 5
+
+state = "menu"
+menuPulse = 0
+gameoverTimer = 0
+serveTimer = 0
+courtTop = 0
+courtBot = 0
+courtW = 0
+
+resetBall = function(toPlayer)
+	ballX = 0
+	ballY = 0
+	local angle = (random.next() - 0.5) * 1.2
+	ballVX = cos(angle) * ballSpeed
+	ballVY = sin(angle) * ballSpeed
+	if toPlayer then ballVY = -abs(ballVY) end
+	if not toPlayer then ballVY = abs(ballVY) end
+	serveTimer = 40
+end
+
+init = function()
+end
+
+startGame = function()
+	playerScore = 0
+	aiScore = 0
+	ballSpeed = 3
+	state = "play"
+	resetBall(true)
+	playMenuTap()
+end
+
+update = function()
+	hud_visible = (state == "play")
+	hudUpdate()
+	if hud_open then return end
+
+	local sw = screen.width
+	local sh = screen.height
+	courtW = sw * 0.85
+	paddleW = courtW * 0.22
+	paddleH = sh * 0.015
+	ballSize = min(sw, sh) * 0.025
+	courtTop = sh * 0.28
+	courtBot = -sh * 0.32
+
+	menuPulse += 1
+
+	if state == "menu" then
+		// Animate demo ball
+		ballX += 2
+		ballY += 1.5
+		if abs(ballX) > courtW / 2 then ballX = -ballX * 0.9 end
+		if abs(ballY) > sh * 0.2 then ballY = -ballY * 0.9 end
+		if touch.press or mouse.press then startGame() end
+
+	elsif state == "play" then
+		if serveTimer > 0 then
+			serveTimer -= 1
+			return
+		end
+
+		// Player input — touch/mouse drag
+		if touch.touching then
+			playerX = touch.x
+		elsif mouse.left then
+			playerX = mouse.x
+		end
+
+		// Keyboard
+		if keyboard.LEFT then playerX -= 6 end
+		if keyboard.RIGHT then playerX += 6 end
+
+		// Clamp player paddle
+		local halfPW = paddleW / 2
+		if playerX < -courtW / 2 + halfPW then playerX = -courtW / 2 + halfPW end
+		if playerX > courtW / 2 - halfPW then playerX = courtW / 2 - halfPW end
+
+		// AI — follow ball with some lag
+		local aiSpeed = 3 + ballSpeed * 0.3
+		if aiX < ballX - 5 then aiX += aiSpeed end
+		if aiX > ballX + 5 then aiX -= aiSpeed end
+		if aiX < -courtW / 2 + halfPW then aiX = -courtW / 2 + halfPW end
+		if aiX > courtW / 2 - halfPW then aiX = courtW / 2 - halfPW end
+
+		// Ball movement
+		ballX += ballVX
+		ballY += ballVY
+
+		// Wall bounce
+		if ballX < -courtW / 2 + ballSize then
+			ballX = -courtW / 2 + ballSize
+			ballVX = abs(ballVX)
+			playWall()
+		end
+		if ballX > courtW / 2 - ballSize then
+			ballX = courtW / 2 - ballSize
+			ballVX = -abs(ballVX)
+			playWall()
+		end
+
+		// Player paddle collision (bottom)
+		local playerPaddleY = courtBot + paddleH
+		if ballVY < 0 and ballY < playerPaddleY + ballSize and ballY > playerPaddleY - paddleH then
+			if abs(ballX - playerX) < halfPW + ballSize then
+				ballVY = abs(ballVY)
+				// Add angle based on where ball hits paddle
+				local offset = (ballX - playerX) / halfPW
+				ballVX = offset * ballSpeed * 1.2
+				ballSpeed += 0.1
+				playHit()
+			end
+		end
+
+		// AI paddle collision (top)
+		local aiPaddleY = courtTop - paddleH
+		if ballVY > 0 and ballY > aiPaddleY - ballSize and ballY < aiPaddleY + paddleH then
+			if abs(ballX - aiX) < halfPW + ballSize then
+				ballVY = -abs(ballVY)
+				local offset = (ballX - aiX) / halfPW
+				ballVX = offset * ballSpeed * 1.2
+				ballSpeed += 0.1
+				playHit()
+			end
+		end
+
+		// Score — ball past paddles
+		if ballY < courtBot - ballSize * 2 then
+			aiScore += 1
+			playLose()
+			if aiScore >= maxScore then
+				state = "gameover"
+				gameoverTimer = 0
+			else
+				resetBall(true)
+			end
+		end
+		if ballY > courtTop + ballSize * 2 then
+			playerScore += 1
+			playScore()
+			if playerScore >= maxScore then
+				state = "gameover"
+				gameoverTimer = 0
+				playWin()
+			else
+				resetBall(false)
+			end
+		end
+
+	elsif state == "gameover" then
+		gameoverTimer += 1
+		if gameoverTimer > 90 then
+			if touch.press or mouse.press then state = "menu" end
+		end
+	end
+end
+
+drawTextOutline = function(text, x, y, size, color, outColor)
+	screen.drawText(text, x + 1, y + 1, size, outColor)
+	screen.drawText(text, x - 1, y + 1, size, outColor)
+	screen.drawText(text, x + 1, y - 1, size, outColor)
+	screen.drawText(text, x - 1, y - 1, size, outColor)
+	screen.drawText(text, x, y, size, color)
+end
+
+draw = function()
+	local sw = screen.width
+	local sh = screen.height
+	screen.fillRect(0, 0, sw, sh, "#FFFFFF")
+
+	if state == "menu" then
+		local pulse = sin(menuPulse * 0.05) * 3
+		local tsz = floor(sw * 0.14)
+		drawTextOutline("PONG", 0, sh * 0.2 + pulse, tsz, "rgb(140,70,220)", "rgb(90,40,160)")
+
+		// Demo court
+		local dw = sw * 0.5
+		local dh = sh * 0.15
+		screen.drawRoundRect(0, -sh * 0.02, dw, dh, 4, "rgba(0,0,0,0.08)")
+		// Demo ball
+		local bx = sin(menuPulse * 0.06) * dw * 0.3
+		local by = cos(menuPulse * 0.08) * dh * 0.3 - sh * 0.02
+		screen.fillRound(bx, by, ballSize * 3, ballSize * 3, "rgb(140,70,220)")
+
+		local alpha = 0.4 + abs(sin(menuPulse * 0.04)) * 0.6
+		screen.drawText("TAP TO START", 0, -sh * 0.14, floor(sw * 0.05), "rgba(60,60,80," + alpha + ")")
+		screen.drawText("DRAG TO MOVE PADDLE", 0, -sh * 0.2, floor(sw * 0.025), "rgba(80,80,100,0.5)")
+		screen.drawText("FIRST TO " + maxScore + " WINS", 0, -sh * 0.24, floor(sw * 0.025), "rgba(80,80,100,0.5)")
+
+	elsif state == "play" or state == "gameover" then
+		// Court
+		screen.drawRoundRect(0, (courtTop + courtBot) / 2, courtW, courtTop - courtBot, 4, "rgba(0,0,0,0.06)")
+		// Center line
+		local dashW = 12
+		local dashH = 3
+		local centerY = (courtTop + courtBot) / 2
+		for i = 0 to 15
+			local dx = -courtW / 2 + i * (courtW / 15) + courtW / 30
+			screen.fillRect(dx, centerY, dashW, dashH, "rgba(0,0,0,0.06)")
+		end
+
+		// Scores
+		local scoreSz = floor(sw * 0.07)
+		// AI score (top)
+		drawTextOutline("" + aiScore, 0, courtTop + sh * 0.04, scoreSz, "rgb(230,50,60)", "rgb(255,200,200)")
+		// Player score (bottom)
+		drawTextOutline("" + playerScore, 0, courtBot - sh * 0.04, scoreSz, "rgb(40,200,255)", "rgb(200,230,255)")
+
+		// Labels
+		local labelSz = floor(sw * 0.025)
+		screen.drawText("AI", 0, courtTop + sh * 0.08, labelSz, "rgba(0,0,0,0.2)")
+		screen.drawText("YOU", 0, courtBot - sh * 0.08, labelSz, "rgba(0,0,0,0.2)")
+
+		// AI paddle (top)
+		screen.fillRoundRect(aiX, courtTop - paddleH, paddleW, paddleH * 2, paddleH, "rgb(230,50,60)")
+
+		// Player paddle (bottom)
+		screen.fillRoundRect(playerX, courtBot + paddleH, paddleW, paddleH * 2, paddleH, "rgb(40,200,255)")
+
+		// Ball
+		if serveTimer <= 0 or serveTimer % 6 < 3 then
+			screen.fillRound(ballX, ballY, ballSize * 2, ballSize * 2, "rgb(140,70,220)")
+			// Ball shine
+			screen.setAlpha(0.3)
+			screen.fillRound(ballX - ballSize * 0.3, ballY + ballSize * 0.3, ballSize, ballSize * 0.6, "#FFF")
+			screen.setAlpha(1)
+		end
+	end
+
+	if state == "gameover" then
+		local alpha = min(gameoverTimer / 60, 0.8)
+		screen.fillRect(0, 0, sw, sh, "rgba(255,255,255," + alpha + ")")
+
+		if gameoverTimer > 20 then
+			local tsz = floor(sw * 0.1)
+			local won = playerScore >= maxScore
+			if won then
+				drawTextOutline("YOU WIN!", 0, sh * 0.08, tsz, "rgb(50,200,80)", "rgb(30,150,55)")
+			else
+				drawTextOutline("YOU LOSE", 0, sh * 0.08, tsz, "rgb(230,50,60)", "rgb(170,30,40)")
+			end
+			drawTextOutline(playerScore + " - " + aiScore, 0, -sh * 0.02, floor(sw * 0.08), "#FFF", "rgb(140,70,220)")
+		end
+		if gameoverTimer > 90 then
+			local blink = 0.3 + abs(sin(menuPulse * 0.04)) * 0.7
+			screen.drawText("TAP TO CONTINUE", 0, -sh * 0.16, floor(sw * 0.04), "rgba(0,0,0," + blink + ")")
+		end
+	end
+
+	hudDraw()
+end

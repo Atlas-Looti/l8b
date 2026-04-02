@@ -1,0 +1,21 @@
+// Math Pop — Sound effects
+
+playCorrect = function()
+	audio.beep("sine tempo 10000 volume 18 span 70 C5 E5 G5")
+end
+
+playWrong = function()
+	audio.beep("sine tempo 5000 volume 14 span 100 E4 C4")
+end
+
+playLevelUp = function()
+	audio.beep("sine tempo 5000 volume 20 span 120 C5 E5 G5 C6")
+end
+
+playGameOver = function()
+	audio.beep("sine tempo 4000 volume 18 span 180 E5 C5 A4 E4")
+end
+
+playMenuTap = function()
+	audio.beep("sine tempo 20000 volume 12 span 30 C6")
+end
