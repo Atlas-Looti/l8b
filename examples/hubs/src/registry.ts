@@ -234,17 +234,6 @@ export const games: GameDefinition[] = [
 		color: "#e040fb",
 	},
 	{
-		id: "snake",
-		name: "Snake",
-		description: "Eat fruit, grow longer, don't hit the walls!",
-		category: "arcade",
-		orientation: "portrait",
-		width: 1080,
-		height: 1920,
-		sources: ["audio.loot", "main.loot"],
-		color: "#4CAF50",
-	},
-	{
 		id: "memory",
 		name: "Memory Match",
 		description: "Flip cards and find all matching color pairs.",
