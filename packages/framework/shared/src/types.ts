@@ -157,9 +157,27 @@ export interface CompilationResult {
 	success: boolean;
 	file: string;
 	name: string;
-	bytecode?: Uint8Array;
+	artifact?: CompiledModuleArtifact;
 	errors?: CompilationError[];
 	warnings?: CompilationWarning[];
+}
+
+export interface SerializedRoutineData {
+	num_args: number;
+	ops: number[];
+	args: unknown[];
+	import_refs: unknown[];
+	import_values: unknown[];
+	import_self: number;
+	locals_size?: number;
+}
+
+export interface CompiledModuleArtifact {
+	format: "l8b-compiled-routine";
+	version: 1;
+	module: string;
+	file: string;
+	routine: SerializedRoutineData;
 }
 
 /**

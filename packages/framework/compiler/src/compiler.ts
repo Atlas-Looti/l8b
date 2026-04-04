@@ -4,13 +4,14 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import {
+	type CompiledModuleArtifact,
 	type CompilationError,
 	type CompilationResult,
 	type CompilationWarning,
 	createLogger,
 	getModuleName,
 } from "@al8b/framework-shared";
-import { Compiler, Parser } from "@al8b/lootiscript";
+import { Compiler, Parser, type Routine } from "@al8b/lootiscript";
 
 const logger = createLogger("compiler");
 
@@ -97,7 +98,7 @@ export function compileSource(source: string, options: CompileOptions = {}): Com
 			success: true,
 			file: filePath,
 			name,
-			bytecode: serializeRoutine(routine),
+			artifact: createCompiledModuleArtifact(name, filePath, routine),
 			warnings,
 		};
 	} catch (error) {
@@ -168,13 +169,14 @@ export function compileFile(filePath: string, options: Omit<CompileOptions, "fil
 	}
 }
 
-/**
- * Serialize routine to bytes
- */
-function serializeRoutine(routine: unknown): Uint8Array {
-	// Convert routine to JSON and then to bytes
-	const json = JSON.stringify(routine);
-	return new TextEncoder().encode(json);
+function createCompiledModuleArtifact(name: string, file: string, routine: Routine): CompiledModuleArtifact {
+	return {
+		format: "l8b-compiled-routine",
+		version: 1,
+		module: name,
+		file,
+		routine: routine.export(),
+	};
 }
 
 /**

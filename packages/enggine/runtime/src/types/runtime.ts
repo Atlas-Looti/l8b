@@ -2,6 +2,7 @@
  * Runtime type definitions
  */
 
+import type { CompiledModuleArtifact, SerializedRoutineData } from "@al8b/framework-shared";
 import type { ErrorInfo } from "@al8b/vm";
 import type { Resources } from "./assets";
 
@@ -33,8 +34,8 @@ export interface RuntimeOptions {
 	url?: string;
 	/** Source code files (for development) */
 	sources?: Record<string, string>;
-	/** Pre-compiled routines (for production) - Record of module name to Routine instance */
-	compiledRoutines?: Record<string, any>;
+	/** Pre-compiled routines (for production) */
+	compiledRoutines?: Record<string, CompiledModuleArtifact | SerializedRoutineData>;
 	/** Resources metadata */
 	resources?: Resources;
 	/** Environment variables (key-value pairs) */

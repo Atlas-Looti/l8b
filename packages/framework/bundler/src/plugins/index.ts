@@ -4,7 +4,7 @@
  */
 
 import type { ResolvedConfig } from "@al8b/framework-config";
-import type { ProjectResources } from "@al8b/framework-shared";
+import type { CompiledModuleArtifact, ProjectResources } from "@al8b/framework-shared";
 
 /**
  * Build context available to plugins
@@ -14,7 +14,7 @@ export interface BuildContext {
 	resources: ProjectResources;
 	mode: "development" | "production";
 	/** Compiled routines map */
-	routines: Map<string, Uint8Array>;
+	routines: Map<string, CompiledModuleArtifact>;
 	/** Output files */
 	files: Map<string, string | Uint8Array>;
 	/** Emitted errors */
@@ -72,7 +72,7 @@ export interface L8BPlugin {
 	 * Called after compilation but before bundling
 	 * Can modify compiled routines
 	 */
-	afterCompile?: (routines: Map<string, Uint8Array>, ctx: BuildContext) => HookResult;
+	afterCompile?: (routines: Map<string, CompiledModuleArtifact>, ctx: BuildContext) => HookResult;
 
 	/**
 	 * Generate additional files or modify bundle
@@ -143,7 +143,7 @@ export class PluginContainer {
 	/**
 	 * Run afterCompile hook for all plugins
 	 */
-	async afterCompile(routines: Map<string, Uint8Array>, ctx: BuildContext): Promise<void> {
+	async afterCompile(routines: Map<string, CompiledModuleArtifact>, ctx: BuildContext): Promise<void> {
 		for (const plugin of this.plugins) {
 			if (plugin.afterCompile) {
 				await plugin.afterCompile(routines, ctx);

@@ -8,7 +8,7 @@
  */
 
 import type { L8BPlugin } from "./index";
-import { createLogger } from "@al8b/framework-shared";
+import { type CompiledModuleArtifact, createLogger } from "@al8b/framework-shared";
 import { PLAYER_TEMPLATE } from "../templates/player";
 import { INIT_TEMPLATE } from "../templates/init";
 import { dirname, join } from "node:path";
@@ -154,6 +154,7 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 
 			try {
 				let sourcesCode = "";
+				const compiledRoutinesCode = generateCompiledRoutinesCode(ctx.routines);
 				if (externalSources) {
 					const sourcesData = generateSourcesData(ctx.resources.sources);
 					files.set("sources.json", JSON.stringify(sourcesData));
@@ -166,6 +167,7 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 				const virtualEntry = [
 					`import { RuntimeOrchestrator } from "@al8b/runtime";`,
 					`window.Runtime = RuntimeOrchestrator;`,
+					compiledRoutinesCode,
 					sourcesCode,
 					PLAYER_TEMPLATE,
 					INIT_TEMPLATE,
@@ -270,4 +272,9 @@ function generateSourcesData(sources: Array<{ name: string; content?: string }>)
 	}
 
 	return embedded;
+}
+
+function generateCompiledRoutinesCode(routines: Map<string, CompiledModuleArtifact>): string {
+	const serialized = Object.fromEntries(routines.entries());
+	return `window.__L8B_COMPILED_ROUTINES__ = ${JSON.stringify(serialized)};`;
 }

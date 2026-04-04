@@ -14,6 +14,7 @@
  * @module vm
  */
 
+import type { CompiledModuleArtifact, SerializedRoutineData } from "@al8b/framework-shared";
 import { StorageService } from "@al8b/io";
 import { Routine, Runner } from "@al8b/lootiscript";
 import { createVMContext } from "./context";
@@ -155,8 +156,7 @@ export class L8BVM {
 			if (routineData instanceof Routine) {
 				routine = routineData;
 			} else {
-				// Deserialize routine from JSON format
-				routine = new Routine(0).import(routineData);
+				routine = new Routine(0).import(normalizeSerializedRoutine(routineData));
 			}
 
 			// Add to main thread for execution
@@ -194,4 +194,22 @@ export class L8BVM {
 	toString(value: any): string {
 		return this.runner.toString(value);
 	}
+}
+
+function normalizeSerializedRoutine(routineData: CompiledModuleArtifact | SerializedRoutineData): SerializedRoutineData {
+	if (isCompiledModuleArtifact(routineData)) {
+		return routineData.routine;
+	}
+
+	return routineData;
+}
+
+function isCompiledModuleArtifact(value: unknown): value is CompiledModuleArtifact {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		"format" in value &&
+		(value as { format?: unknown }).format === "l8b-compiled-routine" &&
+		"routine" in value
+	);
 }

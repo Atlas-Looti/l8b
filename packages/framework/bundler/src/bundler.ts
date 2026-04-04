@@ -8,7 +8,7 @@
  */
 import { copyFileSync, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { type BuildOptions, createLogger } from "@al8b/framework-shared";
+import { type BuildOptions, type CompiledModuleArtifact, createLogger } from "@al8b/framework-shared";
 import { compileSource } from "@al8b/compiler";
 import { type ResolvedConfig, discoverResources } from "@al8b/framework-config";
 import { type L8BPlugin, type BuildContext, PluginContainer } from "./plugins/index";
@@ -162,7 +162,7 @@ export class L8BBundler {
 		);
 
 		// Create build context
-		const compiledRoutines = new Map<string, Uint8Array>();
+		const compiledRoutines = new Map<string, CompiledModuleArtifact>();
 		// Support string, Uint8Array, or { copyFrom: string } for large files
 		const files = new Map<string, string | Uint8Array | { copyFrom: string }>();
 		const ctx: BuildContext = {
@@ -204,8 +204,8 @@ export class L8BBundler {
 						return;
 					}
 
-					if (result.bytecode) {
-						compiledRoutines.set(source.name, result.bytecode);
+					if (result.artifact) {
+						compiledRoutines.set(source.name, result.artifact);
 						logger.debug(`Compiled: ${source.name}`);
 					}
 
