@@ -165,8 +165,8 @@ export function runtimePlugin(options: RuntimePluginOptions = {}): L8BPlugin {
 				}
 
 				const virtualEntry = [
-					`import { RuntimeOrchestrator } from "@al8b/runtime";`,
-					`window.Runtime = RuntimeOrchestrator;`,
+					`import { createRuntime } from "@al8b/runtime";`,
+					`window.createRuntime = createRuntime;`,
 					compiledRoutinesCode,
 					sourcesCode,
 					PLAYER_TEMPLATE,

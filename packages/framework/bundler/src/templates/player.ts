@@ -117,10 +117,10 @@ class Player {
 		};
 		
 		try {
-			if (typeof window.Runtime === 'undefined') {
-				throw new Error('Runtime is not defined. Make sure @al8b/runtime is properly bundled.');
+			if (typeof window.createRuntime === 'undefined') {
+				throw new Error('createRuntime is not defined. Make sure @al8b/runtime is properly bundled.');
 			}
-			this.runtime = new window.Runtime(runtimeConfig);
+			this.runtime = window.createRuntime(runtimeConfig);
 			wrapper.appendChild(this.runtime.screen.canvas);
 			
 			// Handle window resize

@@ -1,18 +1,7 @@
 /**
- * @al8b/runtime - Game runtime orchestrator
+ * @al8b/runtime
  *
- * Modular runtime that combines all l8b packages into a complete game engine.
- *
- * Architecture:
- * - core/: Main coordinator
- * - vm/: Virtual machine for script execution
- * - assets/: Asset loading and management
- * - loop/: Game loop (update/draw cycle)
- * - input/: Input management (keyboard, mouse, touch, gamepad)
- * - system/: System API for game code
- * - storage/: Persistent storage (localStorage)
- * - hot-reload/: Hot reload system
- * - types/: Type definitions
+ * Browser runtime facade and supporting subsystems for AL8B games.
  */
 
 export * from "./assets";
@@ -20,7 +9,6 @@ export * from "./assets";
 export * from "./core";
 // Main runtime
 export { createRuntime } from "./core";
-export { RuntimeOrchestrator } from "./core";
 export * from "./hot-reload";
 export * from "./input";
 export * from "./loop";
