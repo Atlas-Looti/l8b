@@ -1,4 +1,4 @@
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { BaseScreen } from "../core/base-screen";
 
 /**

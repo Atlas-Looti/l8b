@@ -2,7 +2,7 @@
  * Palette - Color palette management
  */
 
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import type { ColorHex, ColorRGB, PaletteData } from "../types";
 
 /** Matches a valid 6-digit hex color string, e.g. "#1A2B3C" */

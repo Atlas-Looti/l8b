@@ -6,6 +6,7 @@
 		"checkJs": false,
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
+		"types": [],
 		"ignoreDeprecations": "5.0"
 	},
 	"include": [

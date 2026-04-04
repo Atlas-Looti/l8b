@@ -2,8 +2,8 @@
  * TileMap - Tile-based map implementation with sprite rendering support.
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
-import type { Sprite } from "@l8b/sprites";
+import { APIErrorCode, createDiagnostic, formatForBrowser } from "@al8b/diagnostics";
+import type { Sprite } from "@al8b/sprites";
 import type { MapData, ParsedTile, SpriteDictionary } from "../data/types";
 import { drawTile, ensureCanvas, queueAnimatedTile, type RenderState, renderAnimatedTiles } from "../drawing/renderer";
 import { normalizeRefForStorage, normalizeRefForUsage } from "../shared/references";

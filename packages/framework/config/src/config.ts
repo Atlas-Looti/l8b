@@ -4,7 +4,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { CONFIG_FILES, DEFAULT_CONFIG, type L8BConfig, createLogger } from "@l8b/framework-shared";
+import { CONFIG_FILES, DEFAULT_CONFIG, type L8BConfig, createLogger } from "@al8b/framework-shared";
 
 const logger = createLogger("config");
 

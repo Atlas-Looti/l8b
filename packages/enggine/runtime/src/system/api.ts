@@ -2,7 +2,7 @@
  * System API - System information and control
  */
 
-import type { SystemAPI } from "@l8b/vm";
+import type { SystemAPI } from "@al8b/vm";
 import { DEFAULT_FPS, DEFAULT_UPDATE_RATE } from "../constants";
 
 export class System {

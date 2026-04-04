@@ -10,13 +10,13 @@
  * @module runtime
  */
 
-import { AudioCore } from "@l8b/audio";
-import { Palette } from "@l8b/palette";
-import { PlayerService } from "@l8b/player";
-import { SceneManager } from "@l8b/scene";
-import { Screen } from "@l8b/screen";
-import { TimeMachine } from "@l8b/time";
-import { type GlobalAPI, L8BVM, type MetaFunctions, Random, Routine } from "@l8b/vm";
+import { AudioCore } from "@al8b/audio";
+import { Palette } from "@al8b/palette";
+import { PlayerService } from "@al8b/player";
+import { SceneManager } from "@al8b/scene";
+import { Screen } from "@al8b/screen";
+import { TimeMachine } from "@al8b/time";
+import { type GlobalAPI, L8BVM, type MetaFunctions, Random, Routine } from "@al8b/vm";
 import { AssetLoader, Sound, Image, TileMap, Sprite } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
@@ -540,7 +540,7 @@ export class RuntimeOrchestrator {
 	private logStep(message: string, payload?: unknown): void {
 		if (!this.options.debug?.lifecycle) return;
 
-		const prefix = "[@l8b/runtime][lifecycle]";
+		const prefix = "[@al8b/runtime][lifecycle]";
 		if (payload !== undefined) {
 			console.info(`${prefix} ${message}`, payload);
 		} else {

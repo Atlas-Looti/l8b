@@ -1,5 +1,5 @@
 /**
- * @l8b/framework-shared - Shared utilities and types for L8B framework
+ * @al8b/framework-shared - Shared utilities and types for L8B framework
  */
 
 export * from "./types";

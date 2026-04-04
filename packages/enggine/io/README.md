@@ -1,4 +1,4 @@
-# @l8b/io
+# @al8b/io
 
 IO and Storage utilities for the L8B Engine.
 
@@ -110,13 +110,13 @@ end
 ### Installation
 
 ```bash
-bun add @l8b/io
+bun add @al8b/io
 ```
 
 ### Usage
 
 ```typescript
-import { StorageService } from '@l8b/io';
+import { StorageService } from '@al8b/io';
 
 // Create a storage service with a namespace
 const storage = new StorageService('/my-app');

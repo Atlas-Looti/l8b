@@ -119,7 +119,7 @@ interface Diagnostic {
 ### Creating Diagnostics
 
 ```typescript
-import { createDiagnostic, CompilationErrorCode } from "@l8b/diagnostics";
+import { createDiagnostic, CompilationErrorCode } from "@al8b/diagnostics";
 
 const diagnostic = createDiagnostic(CompilationErrorCode.E1001, {
   file: "game.loot",

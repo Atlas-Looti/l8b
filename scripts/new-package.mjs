@@ -34,7 +34,7 @@ if (existsSync(packageDir)) {
 	process.exit(1);
 }
 
-console.log(`📦 Creating new package: @l8b/${packageName}`);
+console.log(`📦 Creating new package: @al8b/${packageName}`);
 
 // Create directories
 mkdirSync(packageDir, {
@@ -46,7 +46,7 @@ mkdirSync(srcDir, {
 
 // Create package.json
 const packageJson = {
-	name: `@l8b/${packageName}`,
+	name: `@al8b/${packageName}`,
 	version: "0.0.1",
 	sideEffects: false,
 	files: ["dist/**/*", "README.md", "package.json"],
@@ -90,30 +90,30 @@ export default defineConfig({
 writeFileSync(join(packageDir, "tsup.config.ts"), tsupConfig);
 
 // Create src/index.ts
-const indexContent = `// Entry point for @l8b/${packageName}
+const indexContent = `// Entry point for @al8b/${packageName}
 
 export const hello = () => {
-  return "Hello from @l8b/${packageName}";
+  return "Hello from @al8b/${packageName}";
 };
 `;
 
 writeFileSync(join(srcDir, "index.ts"), indexContent);
 
 // Create README.md
-const readme = `# @l8b/${packageName}
+const readme = `# @al8b/${packageName}
 
 > Package description here
 
 ## Installation
 
 \`\`\`bash
-bun add @l8b/${packageName}
+bun add @al8b/${packageName}
 \`\`\`
 
 ## Usage
 
 \`\`\`typescript
-import { hello } from "@l8b/${packageName}";
+import { hello } from "@al8b/${packageName}";
 
 console.log(hello());
 \`\`\`

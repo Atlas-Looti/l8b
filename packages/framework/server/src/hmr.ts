@@ -4,7 +4,7 @@
  */
 import { type Server as HTTPServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
-import { type HMRMessage, createLogger } from "@l8b/framework-shared";
+import { type HMRMessage, createLogger } from "@al8b/framework-shared";
 
 const logger = createLogger("hmr");
 

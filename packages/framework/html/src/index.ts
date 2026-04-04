@@ -1,5 +1,5 @@
 /**
- * @l8b/framework-html - HTML template generation for L8B
+ * @al8b/framework-html - HTML template generation for L8B
  */
 
 export * from "./templates";

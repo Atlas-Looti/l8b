@@ -1,5 +1,5 @@
 /**
- * @l8b/runtime - Game runtime orchestrator
+ * @al8b/runtime - Game runtime orchestrator
  *
  * Modular runtime that combines all l8b packages into a complete game engine.
  *

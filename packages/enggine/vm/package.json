@@ -1,6 +1,6 @@
 {
-	"name": "@l8b/vm",
-	"version": "1.0.11",
+	"name": "@al8b/vm",
+	"version": "0.1.0",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"clean": "rm -rf dist",
+		"clean": "bun --bun ../../../scripts/clean-package.mjs dist",
 		"test": "vitest run --passWithNoTests"
 	},
 	"main": "./dist/index.js",
@@ -23,8 +23,8 @@
 		}
 	},
 	"dependencies": {
-		"@l8b/lootiscript": "workspace:*",
-		"@l8b/io": "workspace:*"
+		"@al8b/lootiscript": "workspace:*",
+		"@al8b/io": "workspace:*"
 	},
 	"keywords": [
 		"vm",

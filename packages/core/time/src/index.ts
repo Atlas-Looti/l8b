@@ -1,5 +1,5 @@
 /**
- * @l8b/time - Time Machine Debugging
+ * @al8b/time - Time Machine Debugging
  *
  * Record, replay, and loop game state for debugging.
  */

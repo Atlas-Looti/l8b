@@ -1,5 +1,5 @@
-import type { TileMap as Map } from "@l8b/map";
-import type { Sprite } from "@l8b/sprites";
+import type { TileMap as Map } from "@al8b/map";
+import type { Sprite } from "@al8b/sprites";
 
 import { TextScreen } from "../drawing/text-screen";
 import { drawTexturedTriangle, drawTriangle, drawTriangleOutline, type TextureSource, type TriangleData } from "./ttri";

@@ -4,7 +4,7 @@
  * Transforms tokens into an Abstract Syntax Tree (AST).
  */
 
-import { SyntaxErrorCode as ErrorCode } from "@l8b/diagnostics";
+import { SyntaxErrorCode as ErrorCode } from "@al8b/diagnostics";
 import {
 	After,
 	Assignment,

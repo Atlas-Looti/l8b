@@ -1,5 +1,5 @@
 /**
- * Type definitions for @l8b/runtime
+ * Type definitions for @al8b/runtime
  */
 
 export type {

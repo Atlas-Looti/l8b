@@ -1,5 +1,5 @@
 /**
- * @l8b/scene - Scene Management and Routing System
+ * @al8b/scene - Scene Management and Routing System
  *
  * Provides scene lifecycle management, routing, and shallow navigation.
  *

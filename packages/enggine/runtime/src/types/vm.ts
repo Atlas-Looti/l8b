@@ -1,4 +1,4 @@
-// VM types are re-exported from ../vm/index.ts — import from there or directly from "@l8b/vm".
+// VM types are re-exported from ../vm/index.ts — import from there or directly from "@al8b/vm".
 export type {
 	ErrorInfo,
 	GlobalAPI,
@@ -7,4 +7,4 @@ export type {
 	VMContext,
 	VMWarnings,
 	WarningInfo,
-} from "@l8b/vm";
+} from "@al8b/vm";

@@ -4,9 +4,9 @@
 import { existsSync, readFileSync, createReadStream } from "node:fs";
 import { extname, join, dirname } from "node:path";
 import type { ServerResponse } from "node:http";
-import { type DevServerOptions, type ProjectResources, MIME_TYPES, createLogger } from "@l8b/framework-shared";
-import type { ResolvedConfig } from "@l8b/framework-config";
-import { generateDevHTML, generateHMRClient } from "@l8b/framework-html";
+import { type DevServerOptions, type ProjectResources, MIME_TYPES, createLogger } from "@al8b/framework-shared";
+import type { ResolvedConfig } from "@al8b/framework-config";
+import { generateDevHTML, generateHMRClient } from "@al8b/framework-html";
 
 const logger = createLogger("server");
 
@@ -23,7 +23,7 @@ function loadPrebuiltRuntime(): string {
 		return cachedRuntime;
 	}
 
-	const runtimePath = require.resolve("@l8b/runtime");
+	const runtimePath = require.resolve("@al8b/runtime");
 	const runtimeDir = dirname(runtimePath);
 	const browserBundlePath = join(runtimeDir, "browser", "index.js");
 

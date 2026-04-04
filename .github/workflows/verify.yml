@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build
+  verify:
+    name: Verify
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -24,8 +24,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
+      - name: Check Types
+        run: bun run check-types
+
       - name: Build
         run: bun run build
+
+      - name: Test (Unit)
+        run: bun run test
 
       - name: Cache build artifacts
         uses: actions/cache@v4

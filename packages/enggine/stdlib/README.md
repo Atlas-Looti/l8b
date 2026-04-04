@@ -1,4 +1,4 @@
-# @l8b/stdlib
+# @al8b/stdlib
 
 **Standard Library** - Built-in utility functions for LootiScript.
 
@@ -547,7 +547,7 @@ Console.log("Highest: " .. highest)
 This package exports TypeScript interfaces for integrating the standard library:
 
 ```typescript
-import { MathLib, StringLib, ListLib, JSONLib } from '@l8b/stdlib';
+import { MathLib, StringLib, ListLib, JSONLib } from '@al8b/stdlib';
 
 // Use in VM global context
 const globals = {

@@ -8,9 +8,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type readline from "node:readline";
-import { type DevServerOptions, type ProjectResources, createLogger } from "@l8b/framework-shared";
-import { type ResolvedConfig, discoverResources, loadConfig } from "@l8b/framework-config";
-import { createWatcher, type L8BWatcher } from "@l8b/framework-watcher";
+import { type DevServerOptions, type ProjectResources, createLogger } from "@al8b/framework-shared";
+import { type ResolvedConfig, discoverResources, loadConfig } from "@al8b/framework-config";
+import { createWatcher, type L8BWatcher } from "@al8b/framework-watcher";
 import { HMRServer } from "./hmr";
 import { bindCLIShortcuts as _bindCLIShortcuts, type BindCLIShortcutsOptions } from "./shortcuts";
 import {

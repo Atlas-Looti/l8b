@@ -15,7 +15,7 @@
  * @module lootiscript/processor
  */
 
-import type { CallFrame } from "@l8b/diagnostics";
+import type { CallFrame } from "@al8b/diagnostics";
 import {
 	routineAsFunction as _routineAsFunction,
 	routineAsApplicableFunction as _routineAsApplicableFunction,

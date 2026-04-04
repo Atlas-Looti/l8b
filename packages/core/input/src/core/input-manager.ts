@@ -1,4 +1,4 @@
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { GamepadInput } from "../devices/gamepad";
 import { KeyboardInput } from "../devices/keyboard";
 import { MouseInput } from "../devices/mouse";

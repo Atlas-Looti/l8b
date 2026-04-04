@@ -4,7 +4,7 @@
  * Provides sprite animation support with multiple frames.
  */
 
-import { Image } from "@l8b/image";
+import { Image } from "@al8b/image";
 
 export interface SpriteProperties {
 	frames?: number;

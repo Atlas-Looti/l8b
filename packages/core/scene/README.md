@@ -1,4 +1,4 @@
-# @l8b/scene
+# @al8b/scene
 
 **LootiScript API Binding** - Scene management and routing system for organizing game states.
 

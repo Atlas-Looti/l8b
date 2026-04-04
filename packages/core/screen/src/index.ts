@@ -1,7 +1,7 @@
 /**
- * @l8b/screen - Modular screen rendering system
+ * @al8b/screen - Modular screen rendering system
  *
- * Architecture (mirrors @l8b/runtime style):
+ * Architecture (mirrors @al8b/runtime style):
  * - core/: Canvas + orchestration (`Screen`)
  * - drawing/: Primitive, sprite, and text rendering layers
  * - tri/: Software triangle rasterizer (TTRI)

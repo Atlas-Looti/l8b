@@ -2,9 +2,9 @@
  * Sprite rendering for Screen class
  */
 
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
-import type { TileMap as Map } from "@l8b/map";
-import type { Sprite } from "@l8b/sprites";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
+import type { TileMap as Map } from "@al8b/map";
+import type { Sprite } from "@al8b/sprites";
 
 import { PrimitiveScreen } from "./primitives-screen";
 

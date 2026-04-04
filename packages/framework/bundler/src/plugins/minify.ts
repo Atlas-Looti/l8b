@@ -5,7 +5,7 @@
  */
 
 import type { L8BPlugin } from "./index";
-import { createLogger } from "@l8b/framework-shared";
+import { createLogger } from "@al8b/framework-shared";
 
 const logger = createLogger("minify-plugin");
 

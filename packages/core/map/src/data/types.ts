@@ -1,4 +1,4 @@
-import type { Sprite } from "@l8b/sprites";
+import type { Sprite } from "@al8b/sprites";
 
 export interface MapData {
 	width: number;

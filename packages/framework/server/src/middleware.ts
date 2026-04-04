@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { MIME_TYPES } from "@l8b/framework-shared";
+import { MIME_TYPES } from "@al8b/framework-shared";
 
 /**
  * Middleware handler type

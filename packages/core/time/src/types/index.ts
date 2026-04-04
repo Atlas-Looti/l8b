@@ -1,5 +1,5 @@
 /**
- * Type definitions for @l8b/time
+ * Type definitions for @al8b/time
  */
 
 export type {

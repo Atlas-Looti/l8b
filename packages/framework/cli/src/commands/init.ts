@@ -3,8 +3,8 @@
  */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { createLogger } from "@l8b/framework-shared";
-import { createDefaultConfig, writeConfig } from "@l8b/framework-config";
+import { createLogger } from "@al8b/framework-shared";
+import { createDefaultConfig, writeConfig } from "@al8b/framework-config";
 
 const logger = createLogger("init");
 

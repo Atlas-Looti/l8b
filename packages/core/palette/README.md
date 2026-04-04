@@ -1,4 +1,4 @@
-# @l8b/palette
+# @al8b/palette
 
 **LootiScript API Binding** - Color palette management and manipulation.
 

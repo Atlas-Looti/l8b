@@ -1,5 +1,5 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
-import type { Sprite } from "@l8b/sprites";
+import { APIErrorCode, createDiagnostic, formatForBrowser } from "@al8b/diagnostics";
+import type { Sprite } from "@al8b/sprites";
 import type { AnimatedTile, ParsedTile } from "../data/types";
 
 export interface RenderState {

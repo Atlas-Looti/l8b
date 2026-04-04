@@ -2,7 +2,7 @@
  * Storage service - localStorage wrapper with automatic serialization
  */
 
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 
 export class StorageService {
 	private namespace: string;

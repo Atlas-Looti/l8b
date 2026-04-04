@@ -1,4 +1,4 @@
-# @l8b/input
+# @al8b/input
 
 **LootiScript API Binding** - Input handling for keyboard, mouse, touch, and gamepad.
 

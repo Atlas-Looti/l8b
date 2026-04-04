@@ -3,10 +3,10 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { ProjectResources } from "@l8b/framework-shared";
-import { createLogger } from "@l8b/framework-shared";
-import type { ResolvedConfig } from "@l8b/framework-config";
-import { compileSource } from "@l8b/compiler";
+import type { ProjectResources } from "@al8b/framework-shared";
+import { createLogger } from "@al8b/framework-shared";
+import type { ResolvedConfig } from "@al8b/framework-config";
+import { compileSource } from "@al8b/compiler";
 import type { HMRServer } from "./hmr";
 
 const logger = createLogger("server");

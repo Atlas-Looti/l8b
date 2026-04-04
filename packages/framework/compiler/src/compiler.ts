@@ -9,8 +9,8 @@ import {
 	type CompilationWarning,
 	createLogger,
 	getModuleName,
-} from "@l8b/framework-shared";
-import { Compiler, Parser } from "@l8b/lootiscript";
+} from "@al8b/framework-shared";
+import { Compiler, Parser } from "@al8b/lootiscript";
 
 const logger = createLogger("compiler");
 

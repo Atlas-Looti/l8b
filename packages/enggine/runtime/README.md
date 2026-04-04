@@ -1,4 +1,4 @@
-# @l8b/runtime
+# @al8b/runtime
 
 **Runtime Orchestrator** - Core runtime system for the l8b game engine.
 
@@ -20,13 +20,13 @@ The runtime package provides `RuntimeOrchestrator`, which coordinates all engine
 ## Installation
 
 ```bash
-bun add @l8b/runtime
+bun add @al8b/runtime
 ```
 
 ## Basic Usage
 
 ```typescript
-import { RuntimeOrchestrator } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@al8b/runtime";
 
 // Create runtime instance
 const runtime = new RuntimeOrchestrator({
@@ -141,22 +141,22 @@ const canvas = runtime.getCanvas(): HTMLCanvasElement
 
 The `RuntimeOrchestrator` initializes and coordinates:
 
-1. **Screen** (`@l8b/screen`) - 2D/3D rendering
-2. **Audio** (`@l8b/audio`) - Sound and music playback
-3. **Input** (`@l8b/input`) - Keyboard, mouse, touch, gamepad
+1. **Screen** (`@al8b/screen`) - 2D/3D rendering
+2. **Audio** (`@al8b/audio`) - Sound and music playback
+3. **Input** (`@al8b/input`) - Keyboard, mouse, touch, gamepad
 4. **Assets** - Asset loading and management
-5. **Storage** (`@l8b/io`) - Persistent data storage
+5. **Storage** (`@al8b/io`) - Persistent data storage
 6. **System** - System information and utilities
-7. **Scene** (`@l8b/scene`) - Scene and routing management
-8. **VM** (`@l8b/vm`) - LootiScript execution
-9. **Stdlib** (`@l8b/stdlib`) - Standard library functions
+7. **Scene** (`@al8b/scene`) - Scene and routing management
+8. **VM** (`@al8b/vm`) - LootiScript execution
+9. **Stdlib** (`@al8b/stdlib`) - Standard library functions
 
 All subsystems are exposed to LootiScript via global objects.
 
 ## Integration Example
 
 ```typescript
-import { RuntimeOrchestrator } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@al8b/runtime";
 
 class GameEngine {
   private runtime: RuntimeOrchestrator;
@@ -230,10 +230,10 @@ runtime/
 
 ## See Also
 
-- **@l8b/vm** - LootiScript virtual machine
-- **@l8b/screen** - Rendering system
-- **@l8b/audio** - Audio system
-- **@l8b/input** - Input system
-- **@l8b/scene** - Scene management
-- **@l8b/io** - Storage and IO
-- **@l8b/stdlib** - Standard library
+- **@al8b/vm** - LootiScript virtual machine
+- **@al8b/screen** - Rendering system
+- **@al8b/audio** - Audio system
+- **@al8b/input** - Input system
+- **@al8b/scene** - Scene management
+- **@al8b/io** - Storage and IO
+- **@al8b/stdlib** - Standard library

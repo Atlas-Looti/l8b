@@ -3,7 +3,7 @@
  * Matches runtime behavior for source updates
  */
 
-import type { L8BVM } from "@l8b/vm";
+import type { L8BVM } from "@al8b/vm";
 import type { RuntimeListener } from "../types";
 
 export class SourceUpdater {

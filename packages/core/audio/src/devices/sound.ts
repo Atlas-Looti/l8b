@@ -2,7 +2,7 @@
  * Sound - Sound effect playback
  * Handles loading and playing audio buffers
  */
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 
 export class Sound {
 	public ready: number = 0;

@@ -1,4 +1,4 @@
-import { RuntimeOrchestrator } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@al8b/runtime";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getGame } from "../registry";
 

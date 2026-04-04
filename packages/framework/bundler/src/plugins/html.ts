@@ -9,8 +9,8 @@
  */
 
 import type { L8BPlugin } from "./index";
-import type { ProjectResources } from "@l8b/framework-shared";
-import { createLogger } from "@l8b/framework-shared";
+import type { ProjectResources } from "@al8b/framework-shared";
+import { createLogger } from "@al8b/framework-shared";
 
 const logger = createLogger("html-plugin");
 

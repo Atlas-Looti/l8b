@@ -1,6 +1,6 @@
 {
-	"name": "@l8b/cli",
-	"version": "1.0.11",
+	"name": "@al8b/cli",
+	"version": "0.1.0",
 	"description": "L8B Game Engine CLI",
 	"bin": {
 		"l8b": "./dist/bin.js"
@@ -12,7 +12,7 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"clean": "rm -rf dist",
+		"clean": "bun --bun ../../../scripts/clean-package.mjs dist",
 		"test": "vitest run --passWithNoTests"
 	},
 	"main": "./dist/index.js",
@@ -26,11 +26,11 @@
 		}
 	},
 	"dependencies": {
-		"@l8b/framework-shared": "workspace:*",
-		"@l8b/framework-config": "workspace:*",
-		"@l8b/framework-server": "workspace:*",
-		"@l8b/framework-bundler": "workspace:*",
-		"@l8b/compiler": "workspace:*",
+		"@al8b/framework-shared": "workspace:*",
+		"@al8b/framework-config": "workspace:*",
+		"@al8b/framework-server": "workspace:*",
+		"@al8b/framework-bundler": "workspace:*",
+		"@al8b/compiler": "workspace:*",
 		"cac": "^6.7.14"
 	},
 	"devDependencies": {

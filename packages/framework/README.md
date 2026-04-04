@@ -6,20 +6,20 @@ Custom build framework for L8B Game Engine. **Does not use Vite** - implements a
 
 | Package                   | Description                 |
 | ------------------------- | --------------------------- |
-| `@l8b/cli`                | Command line interface      |
-| `@l8b/framework-server`   | Development server with HMR |
-| `@l8b/framework-bundler`  | Production bundler          |
-| `@l8b/compiler`            | LootiScript compilation     |
-| `@l8b/framework-watcher`  | File watching system        |
-| `@l8b/framework-html`     | HTML template generation    |
-| `@l8b/framework-config`   | Configuration management    |
-| `@l8b/framework-shared`   | Shared utilities            |
+| `@al8b/cli`                | Command line interface      |
+| `@al8b/framework-server`   | Development server with HMR |
+| `@al8b/framework-bundler`  | Production bundler          |
+| `@al8b/compiler`            | LootiScript compilation     |
+| `@al8b/framework-watcher`  | File watching system        |
+| `@al8b/framework-html`     | HTML template generation    |
+| `@al8b/framework-config`   | Configuration management    |
+| `@al8b/framework-shared`   | Shared utilities            |
 
 ## Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                         @l8b/cli                            │
+│                         @al8b/cli                            │
 │  ┌─────────┐  ┌─────────┐  ┌─────────┐                     │
 │  │   dev   │  │  build  │  │  init   │                     │
 │  └────┬────┘  └────┬────┘  └─────────┘                     │
@@ -27,7 +27,7 @@ Custom build framework for L8B Game Engine. **Does not use Vite** - implements a
         │            │
         ▼            ▼
 ┌───────────────┐ ┌────────────────┐
-│  @l8b/server  │ │ @l8b/bundler   │
+│  @al8b/server  │ │ @al8b/bundler   │
 │  ┌──────────┐ │ │ ┌────────────┐ │
 │  │   HTTP   │ │ │ │   Assets   │ │
 │  │  Server  │ │ │ │  Processor │ │
@@ -40,17 +40,17 @@ Custom build framework for L8B Game Engine. **Does not use Vite** - implements a
         │                 │
         ▼                 ▼
 ┌─────────────────────────────────────┐
-│        @l8b/compiler               │
+│        @al8b/compiler               │
 │  ┌──────────┐  ┌─────────────────┐  │
 │  │  Parser  │→ │    Compiler     │  │
 │  │(tokenize)│  │  (bytecode)     │  │
 │  └──────────┘  └─────────────────┘  │
-│        Uses @l8b/lootiscript        │
+│        Uses @al8b/lootiscript        │
 └─────────────────────────────────────┘
         │
         ▼
 ┌─────────────────────────────────────┐
-│        @l8b/framework-shared        │
+│        @al8b/framework-shared        │
 │  Types, Constants, Utilities        │
 └─────────────────────────────────────┘
 ```

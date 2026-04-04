@@ -3,7 +3,7 @@
  * Manages audio context, beeper, and sound/music playback
  */
 
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { Beeper } from "../devices/beeper";
 import { AUDIO_WORKLET_CODE } from "./audio-worklet";
 

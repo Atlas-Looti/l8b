@@ -1,5 +1,5 @@
 /**
- * @l8b/sprites - Sprite class for animated graphics
+ * @al8b/sprites - Sprite class for animated graphics
  *
  * Provides utilities for creating and manipulating sprites:
  * - Sprite class for animated sprite support

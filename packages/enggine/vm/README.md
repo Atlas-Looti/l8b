@@ -1,4 +1,4 @@
-# @l8b/vm
+# @al8b/vm
 
 **Virtual Machine** - LootiScript bytecode execution engine.
 
@@ -16,13 +16,13 @@ The VM package provides the execution environment for LootiScript:
 ## Installation
 
 ```bash
-bun add @l8b/vm
+bun add @al8b/vm
 ```
 
 ## Basic Usage
 
 ```typescript
-import { VM } from '@l8b/vm';
+import { VM } from '@al8b/vm';
 
 // Create VM instance
 const vm = new VM({
@@ -201,10 +201,10 @@ vm.on('error', (error) => {
 
 ## Integration with Runtime
 
-The VM is typically used via `@l8b/runtime`:
+The VM is typically used via `@al8b/runtime`:
 
 ```typescript
-import { RuntimeOrchestrator } from '@l8b/runtime';
+import { RuntimeOrchestrator } from '@al8b/runtime';
 
 const runtime = new RuntimeOrchestrator({
   canvas: myCanvas,
@@ -231,6 +231,6 @@ vm/
 
 ## See Also
 
-- **@l8b/lootiscript** - LootiScript language (Parser, Tokenizer)
-- **@l8b/runtime** - Runtime orchestrator
-- **@l8b/stdlib** - Standard library functions
+- **@al8b/lootiscript** - LootiScript language (Parser, Tokenizer)
+- **@al8b/runtime** - Runtime orchestrator
+- **@al8b/stdlib** - Standard library functions

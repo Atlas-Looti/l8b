@@ -6,6 +6,14 @@
 
 import { OPCODES, type Routine } from "./routine";
 
+function isDevelopmentMode(): boolean {
+	const runtime = globalThis as {
+		process?: { env?: Record<string, string | undefined> };
+		Bun?: { env?: Record<string, string | undefined> };
+	};
+	return runtime.process?.env?.NODE_ENV === "development" || runtime.Bun?.env?.NODE_ENV === "development";
+}
+
 /**
  * Stack - Internal stack tracking for transpiler
  */
@@ -151,7 +159,7 @@ export class Transpiler {
 		}
 		s += "return stack_index ;\n";
 
-		if (process.env.NODE_ENV === "development") {
+		if (isDevelopmentMode()) {
 			console.info("Transpiled body:\n" + s);
 		}
 

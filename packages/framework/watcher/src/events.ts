@@ -1,7 +1,7 @@
 /**
  * File watcher event types
  */
-import type { ResourceType } from "@l8b/framework-shared";
+import type { ResourceType } from "@al8b/framework-shared";
 
 /**
  * File change event types

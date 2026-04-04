@@ -118,7 +118,7 @@ class Player {
 		
 		try {
 			if (typeof window.Runtime === 'undefined') {
-				throw new Error('Runtime is not defined. Make sure @l8b/runtime is properly bundled.');
+				throw new Error('Runtime is not defined. Make sure @al8b/runtime is properly bundled.');
 			}
 			this.runtime = new window.Runtime(runtimeConfig);
 			wrapper.appendChild(this.runtime.screen.canvas);

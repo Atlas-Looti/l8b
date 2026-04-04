@@ -8,10 +8,10 @@
  * - HTML generation
  * - Minification
  */
-import { createLogger } from "@l8b/framework-shared";
-import { loadConfig } from "@l8b/framework-config";
-import { build } from "@l8b/framework-bundler";
-import type { L8BPlugin } from "@l8b/framework-bundler";
+import { createLogger } from "@al8b/framework-shared";
+import { loadConfig } from "@al8b/framework-config";
+import { build } from "@al8b/framework-bundler";
+import type { L8BPlugin } from "@al8b/framework-bundler";
 
 const logger = createLogger("build");
 

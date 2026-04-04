@@ -1,5 +1,5 @@
 /**
- * @l8b/cli - L8B Game Engine CLI
+ * @al8b/cli - L8B Game Engine CLI
  */
 
 export * from "./cli";

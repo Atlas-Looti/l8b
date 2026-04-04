@@ -2,7 +2,7 @@
  * L8B CLI Implementation
  */
 import { resolve } from "node:path";
-import { VERSION, createLogger } from "@l8b/framework-shared";
+import { VERSION, createLogger } from "@al8b/framework-shared";
 import { cac } from "cac";
 import { devCommand } from "./commands/dev";
 import { buildCommand } from "./commands/build";

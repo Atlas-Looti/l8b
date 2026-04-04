@@ -1,4 +1,4 @@
-# @l8b/audio
+# @al8b/audio
 
 **LootiScript API Binding** - Audio playback for sound effects, music, and synthesized beeps.
 

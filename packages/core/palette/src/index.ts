@@ -1,5 +1,5 @@
 /**
- * @l8b/palette - Color palette management system
+ * @al8b/palette - Color palette management system
  *
  * Architecture:
  * - core/: Palette class + helpers

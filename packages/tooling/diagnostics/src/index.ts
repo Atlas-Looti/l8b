@@ -1,5 +1,5 @@
 /**
- * @l8b/diagnostics - Centralized diagnostics system for L8B ecosystem
+ * @al8b/diagnostics - Centralized diagnostics system for L8B ecosystem
  *
  * Provides error codes, message templates, and formatters for consistent
  * error and warning messages across all L8B tools.

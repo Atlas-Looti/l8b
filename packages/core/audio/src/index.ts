@@ -1,5 +1,5 @@
 /**
- * @l8b/audio - Audio subsystem
+ * @al8b/audio - Audio subsystem
  *
  * Architecture:
  * - core/: Audio orchestrator (context + VM interface)

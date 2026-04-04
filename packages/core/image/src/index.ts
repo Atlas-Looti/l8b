@@ -1,5 +1,5 @@
 /**
- * @l8b/image - Image class for canvas-based graphics manipulation
+ * @al8b/image - Image class for canvas-based graphics manipulation
  *
  * Provides utilities for creating and manipulating images:
  * - Image class for canvas-based image manipulation

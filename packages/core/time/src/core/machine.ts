@@ -7,7 +7,7 @@
  * - Manage state
  */
 
-import { APIErrorCode, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { DEFAULT_LOOP_BUFFER_FRAMES, DEFAULT_RECORD_BUFFER_FRAMES } from "../constants";
 import { StatePlayer } from "../playback";
 import { StateRecorder } from "../recording";

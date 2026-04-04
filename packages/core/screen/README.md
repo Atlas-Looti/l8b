@@ -1,4 +1,4 @@
-# @l8b/screen
+# @al8b/screen
 
 **LootiScript API Binding** - 2D rendering system with primitives, sprites, text, and 3D triangle support.
 

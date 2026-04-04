@@ -2,7 +2,7 @@
  * VM Context creation utilities
  */
 
-import { Random } from "@l8b/lootiscript";
+import { Random } from "@al8b/lootiscript";
 import type { GlobalAPI, MetaFunctions, VMContext } from "./types";
 
 // Shared math lambdas — allocated once, reused across all VM instances

@@ -1,4 +1,4 @@
-# @l8b/sprites
+# @al8b/sprites
 
 **LootiScript API Binding** - Sprite and Image classes for creating and manipulating graphics.
 
@@ -89,16 +89,16 @@ local canvas = mySprite.getCurrentFrameCanvas()
 
 ## Image Class
 
-> **Note**: The Image class has been moved to `@l8b/image` package but is still exported from this package for backward compatibility. See [@l8b/image README](../../image/README.md) for full Image API documentation.
+> **Note**: The Image class has been moved to `@al8b/image` package but is still exported from this package for backward compatibility. See [@al8b/image README](../../image/README.md) for full Image API documentation.
 
-The Image class is re-exported from `@l8b/image` for convenience:
+The Image class is re-exported from `@al8b/image` for convenience:
 
 ```lua
-// Image is available from @l8b/sprites (backward compatibility)
+// Image is available from @al8b/sprites (backward compatibility)
 local img = Image(100, 100)
 
-// Or import directly from @l8b/image
-// import { Image } from "@l8b/image"
+// Or import directly from @al8b/image
+// import { Image } from "@al8b/image"
 ```
 
 ### Pixel Operations

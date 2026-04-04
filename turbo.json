@@ -24,12 +24,16 @@
 			"inputs": ["$TURBO_DEFAULT$"]
 		},
 		"check-types": {
-			"dependsOn": ["^check-types"],
+			"dependsOn": ["^build", "^check-types"],
 			"inputs": ["$TURBO_DEFAULT$", "tsconfig.json", "tsconfig.*.json"]
 		},
 		"test": {
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+		},
+		"test:e2e": {
+			"dependsOn": ["^build"],
+			"cache": false
 		},
 		"dev": {
 			"cache": false,

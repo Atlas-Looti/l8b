@@ -1,10 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "../../../tsconfig.base.json",
-	"compilerOptions": {
-		"types": ["node"],
-		"ignoreDeprecations": "6.0"
-	},
 	"include": ["src/**/*"],
 	"exclude": ["node_modules", "dist"]
 }

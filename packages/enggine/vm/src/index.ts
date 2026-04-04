@@ -1,5 +1,5 @@
 // VM public surface — StorageService is intentionally NOT re-exported here.
-// Import it directly from "@l8b/io" if you need it.
+// Import it directly from "@al8b/io" if you need it.
 export { createMetaFunctions, createVMContext } from "./context";
 export { setupArrayExtensions } from "./extensions";
 export { L8BVM } from "./l8bvm";
@@ -16,4 +16,4 @@ export type {
 
 // Re-export language primitives that runtime and host code legitimately need.
 // This keeps runtime from bypassing the vm layer and importing lootiscript directly.
-export { Random, Routine } from "@l8b/lootiscript";
+export { Random, Routine } from "@al8b/lootiscript";

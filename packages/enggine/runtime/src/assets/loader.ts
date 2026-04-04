@@ -7,10 +7,10 @@
  * - Show loading bar
  */
 
-import { AudioCore, Sound, Music } from "@l8b/audio";
+import { AudioCore, Sound, Music } from "@al8b/audio";
 import { ASSET_LOAD_TIMEOUT_MS, DEFAULT_BLOCK_SIZE, LOADING_BAR_THROTTLE_MS } from "../constants";
-import { LoadMap } from "@l8b/map";
-import { LoadSprite } from "@l8b/sprites";
+import { LoadMap } from "@al8b/map";
+import { LoadSprite } from "@al8b/sprites";
 import type { AssetCollections, ResourceFile, Resources } from "../types";
 import type { RuntimeListener } from "../types";
 

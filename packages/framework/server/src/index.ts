@@ -1,5 +1,5 @@
 /**
- * @l8b/framework-server - Development server for L8B
+ * @al8b/framework-server - Development server for L8B
  */
 
 export * from "./server";

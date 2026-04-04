@@ -2,7 +2,7 @@
 
  */
 
-import { RuntimeOrchestrator } from "@l8b/runtime";
+import { RuntimeOrchestrator } from "@al8b/runtime";
 import mainLootiScript from "./scripts/main.loot?raw";
 
 // Debug: log the game code

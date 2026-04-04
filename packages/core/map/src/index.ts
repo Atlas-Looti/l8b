@@ -1,5 +1,5 @@
 /**
- * @l8b/map - Tile map management system
+ * @al8b/map - Tile map management system
  *
  * Architecture:
  * - core/: TileMap runtime with load/update/save helpers

@@ -6,7 +6,7 @@
  */
 
 import type { InputManager } from "../input";
-import type { Screen } from "@l8b/screen";
+import type { Screen } from "@al8b/screen";
 import type { RuntimeDebugOptions } from "../types";
 
 export class DebugLogger {
@@ -30,7 +30,7 @@ export class DebugLogger {
 		if (this.lastInputDebug && shallowEqual(snapshot, this.lastInputDebug)) return;
 
 		this.lastInputDebug = snapshot;
-		console.debug("[@l8b/runtime][input]", snapshot);
+		console.debug("[@al8b/runtime][input]", snapshot);
 	}
 
 	/**
@@ -57,7 +57,7 @@ export class DebugLogger {
 			return;
 		}
 		this.lastScreenDebug = current;
-		console.debug("[@l8b/runtime][screen]", {
+		console.debug("[@al8b/runtime][screen]", {
 			screen: { width: screen.width, height: screen.height },
 			canvas: {
 				width: canvas.width,

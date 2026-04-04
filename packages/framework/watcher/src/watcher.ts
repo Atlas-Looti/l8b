@@ -3,7 +3,7 @@
  */
 import { watch, type FSWatcher } from "chokidar";
 import type { EventEmitter } from "node:events";
-import { createLogger, debounce, getResourceType, normalizePath } from "@l8b/framework-shared";
+import { createLogger, debounce, getResourceType, normalizePath } from "@al8b/framework-shared";
 import {
 	DEFAULT_WATCHER_OPTIONS,
 	type FileEvent,

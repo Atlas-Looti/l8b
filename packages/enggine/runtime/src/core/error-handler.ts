@@ -2,9 +2,9 @@
  * Error Handler - Error formatting and reporting for the runtime
  */
 
-import { createDiagnostic, formatForBrowser } from "@l8b/diagnostics";
+import { createDiagnostic, formatForBrowser } from "@al8b/diagnostics";
 import type { RuntimeListener } from "../types";
-import type { L8BVM } from "@l8b/vm";
+import type { L8BVM } from "@al8b/vm";
 
 /**
  * Format error message with diagnostic information

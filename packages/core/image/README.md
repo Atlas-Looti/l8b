@@ -1,4 +1,4 @@
-# @l8b/image
+# @al8b/image
 
 **LootiScript API Binding** - Image class for canvas-based graphics manipulation.
 

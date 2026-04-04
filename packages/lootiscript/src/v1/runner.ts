@@ -4,7 +4,7 @@
  * Handles multiple threads, scheduling, and global environment setup.
  */
 
-import { JSONLib, ListLib, MathLib, StringLib } from "@l8b/stdlib";
+import { JSONLib, ListLib, MathLib, StringLib } from "@al8b/stdlib";
 
 import { Random } from "../random";
 

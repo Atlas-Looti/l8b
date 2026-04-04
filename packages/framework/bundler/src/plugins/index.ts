@@ -3,8 +3,8 @@
  * Inspired by Vite's plugin architecture
  */
 
-import type { ResolvedConfig } from "@l8b/framework-config";
-import type { ProjectResources } from "@l8b/framework-shared";
+import type { ResolvedConfig } from "@al8b/framework-config";
+import type { ProjectResources } from "@al8b/framework-shared";
 
 /**
  * Build context available to plugins

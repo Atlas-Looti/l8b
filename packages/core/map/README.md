@@ -1,4 +1,4 @@
-# @l8b/map
+# @al8b/map
 
 **LootiScript API Binding** - Tile-based map creation and rendering.
 

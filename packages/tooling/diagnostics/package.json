@@ -1,6 +1,6 @@
 {
-	"name": "@l8b/diagnostics",
-	"version": "1.0.11",
+	"name": "@al8b/diagnostics",
+	"version": "0.1.0",
 	"description": "Centralized diagnostics system for error and warning messages",
 	"type": "module",
 	"sideEffects": false,
@@ -10,14 +10,18 @@
 		"README.md"
 	],
 	"exports": {
-		".": "./dist/index.js"
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
 	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"scripts": {
 		"build": "tsup",
-		"clean": "rm -rf dist",
+		"clean": "bun --bun ../../../scripts/clean-package.mjs dist",
 		"test": "vitest run --passWithNoTests",
 		"typecheck": "tsc --noEmit"
 	},

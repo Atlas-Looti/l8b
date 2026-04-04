@@ -1,5 +1,5 @@
 /**
- * @l8b/stdlib - Standard Library for LootiScript
+ * @al8b/stdlib - Standard Library for LootiScript
  *
  * Provides built-in utility functions for Math, String, List, and JSON operations.
  */

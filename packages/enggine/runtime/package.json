@@ -1,6 +1,6 @@
 {
-	"name": "@l8b/runtime",
-	"version": "1.0.11",
+	"name": "@al8b/runtime",
+	"version": "0.1.0",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
@@ -9,7 +9,7 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"clean": "rm -rf dist",
+		"clean": "bun --bun ../../../scripts/clean-package.mjs dist",
 		"test": "vitest run --passWithNoTests"
 	},
 	"main": "./dist/index.js",
@@ -24,20 +24,20 @@
 		"./package.json": "./package.json"
 	},
 	"dependencies": {
-		"@l8b/vm": "workspace:*",
-		"@l8b/io": "workspace:*",
-		"@l8b/lootiscript": "workspace:*",
-		"@l8b/screen": "workspace:*",
-		"@l8b/audio": "workspace:*",
-		"@l8b/input": "workspace:*",
-		"@l8b/time": "workspace:*",
-		"@l8b/sprites": "workspace:*",
-		"@l8b/image": "workspace:*",
-		"@l8b/map": "workspace:*",
-		"@l8b/player": "workspace:*",
-		"@l8b/scene": "workspace:*",
-		"@l8b/diagnostics": "workspace:*",
-		"@l8b/palette": "workspace:*"
+		"@al8b/vm": "workspace:*",
+		"@al8b/io": "workspace:*",
+		"@al8b/lootiscript": "workspace:*",
+		"@al8b/screen": "workspace:*",
+		"@al8b/audio": "workspace:*",
+		"@al8b/input": "workspace:*",
+		"@al8b/time": "workspace:*",
+		"@al8b/sprites": "workspace:*",
+		"@al8b/image": "workspace:*",
+		"@al8b/map": "workspace:*",
+		"@al8b/player": "workspace:*",
+		"@al8b/scene": "workspace:*",
+		"@al8b/diagnostics": "workspace:*",
+		"@al8b/palette": "workspace:*"
 	},
 	"keywords": [
 		"runtime",

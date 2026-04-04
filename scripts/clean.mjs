@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readdirSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 
 const args = process.argv.slice(2);
@@ -10,10 +11,11 @@ const cleanModules = args.includes("--modules") || args.includes("--all");
 const rootDir = process.cwd();
 
 /**
- * Recursively find and remove directories with a specific name
+ * Recursively find directories with a specific name.
  */
 function cleanDirs(startPath, dirName) {
 	const results = [];
+	const skipDirs = new Set([".git", ".turbo", ".next", ".vscode-test", ".idea"]);
 
 	function search(currentPath) {
 		try {
@@ -22,28 +24,26 @@ function cleanDirs(startPath, dirName) {
 			for (const item of items) {
 				const itemPath = join(currentPath, item);
 
-				// Skip if already deleted or doesn't exist
 				if (!existsSync(itemPath)) continue;
 
 				try {
-					const stat = statSync(itemPath);
+					const stat = lstatSync(itemPath);
 
 					if (stat.isDirectory()) {
 						if (item === dirName) {
 							results.push(itemPath);
-						} else if (item !== ".git" && item !== ".turbo") {
-							// Don't recurse into node_modules we're about to delete
-							if (!(item === "node_modules" && dirName === "node_modules")) {
-								search(itemPath);
-							}
+						} else if (!skipDirs.has(item)) {
+							// Never recurse into node_modules unless explicitly searching for it.
+							if (item === "node_modules" && dirName !== "node_modules") continue;
+							search(itemPath);
 						}
 					}
-				} catch (_err) {
-					// Skip items we can't access
+				} catch {
+					// Ignore unreadable entries.
 				}
 			}
-		} catch (_err) {
-			// Skip directories we can't read
+		} catch {
+			// Ignore unreadable directories.
 		}
 	}
 
@@ -51,23 +51,56 @@ function cleanDirs(startPath, dirName) {
 	return results;
 }
 
+/**
+ * Remove directory robustly on Windows/Bun with retry and cmd fallback.
+ */
+function removeDirSafe(dirPath, displayPath) {
+	let lastErr;
+
+	for (let attempt = 1; attempt <= 3; attempt++) {
+		try {
+			rmSync(dirPath, {
+				recursive: true,
+				force: true,
+			});
+			console.log(`   ✓ Removed ${displayPath}`);
+			return true;
+		} catch (err) {
+			lastErr = err;
+		}
+	}
+
+	if (process.platform === "win32") {
+		try {
+			const result = spawnSync("cmd.exe", ["/d", "/s", "/c", "rmdir", "/s", "/q", dirPath], {
+				stdio: "pipe",
+			});
+
+			if (result.status === 0 || !existsSync(dirPath)) {
+				console.log(`   ✓ Removed ${displayPath} (fallback)`);
+				return true;
+			}
+
+			const stderr = result.stderr?.toString()?.trim();
+			lastErr = new Error(stderr || `rmdir exited with code ${result.status}`);
+		} catch (err) {
+			lastErr = err;
+		}
+	}
+
+	const message = lastErr instanceof Error ? lastErr.message : String(lastErr);
+	console.log(`   ✗ Failed to remove ${displayPath}: ${message}`);
+	return false;
+}
+
 console.log("🧹 Cleaning workspace...\n");
 
-// Clean dist folders
 if (cleanDist) {
 	console.log("📦 Removing dist folders...");
 	const distDirs = cleanDirs(rootDir, "dist");
 
 	for (const dir of distDirs) {
-		try {
-			rmSync(dir, {
-				recursive: true,
-				force: true,
-			});
-			console.log(`   ✓ Removed ${dir.replace(rootDir, ".")}`);
-		} catch (err) {
-			console.log(`   ✗ Failed to remove ${dir.replace(rootDir, ".")}: ${err.message}`);
-		}
+		removeDirSafe(dir, dir.replace(rootDir, "."));
 	}
 
 	if (distDirs.length === 0) {
@@ -75,37 +108,17 @@ if (cleanDist) {
 	}
 }
 
-// Clean node_modules folders
 if (cleanModules) {
 	console.log("\n📦 Removing node_modules folders...");
 
-	// Remove root node_modules first
 	const rootNodeModules = join(rootDir, "node_modules");
 	if (existsSync(rootNodeModules)) {
-		try {
-			rmSync(rootNodeModules, {
-				recursive: true,
-				force: true,
-			});
-			console.log(`   ✓ Removed ./node_modules`);
-		} catch (err) {
-			console.log(`   ✗ Failed to remove ./node_modules: ${err.message}`);
-		}
+		removeDirSafe(rootNodeModules, "./node_modules");
 	}
 
-	// Find and remove nested node_modules
 	const nodeModulesDirs = cleanDirs(rootDir, "node_modules");
-
 	for (const dir of nodeModulesDirs) {
-		try {
-			rmSync(dir, {
-				recursive: true,
-				force: true,
-			});
-			console.log(`   ✓ Removed ${dir.replace(rootDir, ".")}`);
-		} catch (err) {
-			console.log(`   ✗ Failed to remove ${dir.replace(rootDir, ".")}: ${err.message}`);
-		}
+		removeDirSafe(dir, dir.replace(rootDir, "."));
 	}
 
 	if (nodeModulesDirs.length === 0 && !existsSync(rootNodeModules)) {

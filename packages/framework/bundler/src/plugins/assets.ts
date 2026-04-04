@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import type { L8BPlugin, BuildContext } from "./index";
-import { MIME_TYPES, createLogger, hashFile } from "@l8b/framework-shared";
+import { MIME_TYPES, createLogger, hashFile } from "@al8b/framework-shared";
 
 const logger = createLogger("assets-plugin");
 

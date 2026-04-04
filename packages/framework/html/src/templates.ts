@@ -2,7 +2,7 @@
  * HTML templates for L8B
  * HTML templates for L8B
  */
-import type { L8BConfig, ProjectResources } from "@l8b/framework-shared";
+import type { L8BConfig, ProjectResources } from "@al8b/framework-shared";
 import { generateDevBadge } from "./dev-badge";
 import { generateOverlayScript } from "./overlay";
 import { generatePlayerScript } from "./player";

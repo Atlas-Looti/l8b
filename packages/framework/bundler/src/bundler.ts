@@ -8,9 +8,9 @@
  */
 import { copyFileSync, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { type BuildOptions, createLogger } from "@l8b/framework-shared";
-import { compileSource } from "@l8b/compiler";
-import { type ResolvedConfig, discoverResources } from "@l8b/framework-config";
+import { type BuildOptions, createLogger } from "@al8b/framework-shared";
+import { compileSource } from "@al8b/compiler";
+import { type ResolvedConfig, discoverResources } from "@al8b/framework-config";
 import { type L8BPlugin, type BuildContext, PluginContainer } from "./plugins/index";
 import { runtimePlugin } from "./plugins/runtime";
 import { assetsPlugin } from "./plugins/assets";
@@ -230,6 +230,9 @@ export class L8BBundler {
 			// Run generateBundle hooks (this generates all output files)
 			logger.info("Generating bundle...");
 			await this.pluginContainer.generateBundle(files as any, ctx);
+			if (errors.length > 0) {
+				throw new Error(`Bundle generation failed with ${errors.length} error(s)`);
+			}
 
 			// Write all files to output directory
 			logger.info("Writing output files...");
@@ -257,6 +260,9 @@ export class L8BBundler {
 
 			// Run buildEnd hooks
 			await this.pluginContainer.buildEnd(ctx);
+			if (errors.length > 0) {
+				throw new Error(`Build completed with ${errors.length} error(s)`);
+			}
 
 			// Calculate total size
 			let totalSize = 0;

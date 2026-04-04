@@ -1,14 +1,15 @@
 {
 	"name": "fish",
 	"private": true,
-	"version": "1.0.7",
+	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
-		"dev": "l8b dev",
-		"preview": "l8b preview",
-		"build": "l8b build"
+		"dev": "bun ../../packages/framework/cli/src/bin.ts dev",
+		"preview": "bun ../../packages/framework/cli/src/bin.ts preview",
+		"build": "bun ../../packages/framework/cli/src/bin.ts build"
 	},
 	"devDependencies": {
-		"@l8b/cli": "workspace:*"
+		"@al8b/cli": "workspace:*",
+		"@al8b/runtime": "workspace:*"
 	}
 }

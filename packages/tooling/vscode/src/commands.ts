@@ -46,7 +46,7 @@ export function registerCommands(
 				const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
 				if (workspaceFolder) {
 					terminal.sendText(`cd "${workspaceFolder.uri.fsPath}"`);
-					terminal.sendText("npx l8b dev");
+					terminal.sendText("bunx l8b dev");
 				} else {
 					vscode.window.showWarningMessage("No workspace folder found. Please open a L8B project.");
 				}

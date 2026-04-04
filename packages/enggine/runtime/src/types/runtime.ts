@@ -2,7 +2,7 @@
  * Runtime type definitions
  */
 
-import type { ErrorInfo } from "@l8b/vm";
+import type { ErrorInfo } from "@al8b/vm";
 import type { Resources } from "./assets";
 
 export type { ErrorInfo, Resources };

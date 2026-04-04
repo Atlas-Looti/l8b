@@ -24,7 +24,7 @@ bun run ci                      # Full CI: lint:check, format:check, check-types
 
 # Single package
 cd packages/core/sprites && bun run test             # Test one package
-turbo build --filter=@l8b/core/sprites               # Build one package
+turbo build --filter=@al8b/core/sprites               # Build one package
 turbo build --filter="./packages/framework/**"        # Build a group
 
 # Docs (VitePress)

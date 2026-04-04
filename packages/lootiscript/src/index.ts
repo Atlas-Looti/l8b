@@ -1,5 +1,5 @@
 /**
- * @l8b/lootiscript - Scripting language for game development
+ * @al8b/lootiscript - Scripting language for game development
  *
  * A dynamic, easy-to-learn scripting language designed for games.
  *

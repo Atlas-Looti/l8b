@@ -3,8 +3,8 @@
  */
 import { resolve } from "node:path";
 import { existsSync } from "node:fs";
-import { createLogger } from "@l8b/framework-shared";
-import { loadConfig } from "@l8b/framework-config";
+import { createLogger } from "@al8b/framework-shared";
+import { loadConfig } from "@al8b/framework-config";
 import sirv from "sirv";
 import http from "node:http";
 

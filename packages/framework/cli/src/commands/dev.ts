@@ -1,8 +1,8 @@
 /**
  * Dev command - Start development server with interactive CLI
  */
-import { createLogger } from "@l8b/framework-shared";
-import { createDevServer } from "@l8b/framework-server";
+import { createLogger } from "@al8b/framework-shared";
+import { createDevServer } from "@al8b/framework-server";
 
 const logger = createLogger("dev");
 

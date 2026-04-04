@@ -1,4 +1,4 @@
-# @l8b/time
+# @al8b/time
 
 **LootiScript API Binding** - System information and timing utilities.
 

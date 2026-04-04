@@ -1,5 +1,5 @@
 /**
- * @l8b/input - Modular input subsystem
+ * @al8b/input - Modular input subsystem
  *
  * Architecture:
  * - core/: Input orchestrator

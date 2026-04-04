@@ -1,4 +1,4 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser, reportRuntimeError } from "@l8b/diagnostics";
+import { APIErrorCode, createDiagnostic, formatForBrowser, reportRuntimeError } from "@al8b/diagnostics";
 import { ZBuffer } from "../tri";
 import type { ScreenInterface, ScreenOptions } from "../types";
 

@@ -14,8 +14,8 @@
  * @module vm
  */
 
-import { StorageService } from "@l8b/io";
-import { Routine, Runner } from "@l8b/lootiscript";
+import { StorageService } from "@al8b/io";
+import { Routine, Runner } from "@al8b/lootiscript";
 import { createVMContext } from "./context";
 import { setupArrayExtensions } from "./extensions";
 import type { ErrorInfo, GlobalAPI, MetaFunctions, VMContext } from "./types";

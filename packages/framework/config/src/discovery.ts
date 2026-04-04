@@ -22,7 +22,7 @@ import {
 	isMapFile,
 	isSourceFile,
 	normalizePath,
-} from "@l8b/framework-shared";
+} from "@al8b/framework-shared";
 import type { ResolvedConfig } from "./config";
 
 /**
