@@ -15,4 +15,13 @@ export type {
 	RuntimeOptions,
 	RuntimeState,
 } from "./runtime";
+export type {
+	HostEvent,
+	HostEventSource,
+	RuntimeBridge,
+	RuntimeResetOptions,
+	RuntimeSessionSnapshot,
+	RuntimeSnapshot,
+	RuntimeSnapshotMeta,
+} from "./bridge";
 export type { GlobalAPI, MetaFunctions, SystemAPI, VMContext, VMWarnings, WarningInfo } from "./vm";

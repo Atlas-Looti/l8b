@@ -104,6 +104,20 @@ class Player {
 			sources: this.sources,
 			resources: this.resources,
 			compiledRoutines: window.__L8B_COMPILED_ROUTINES__ || {},
+			bridge: {
+				emit: (name, payload) => this.postMessage({ name, data: payload }),
+				request: (name, payload) => new Promise((resolve) => {
+					this.postRequest({ name: 'host_request', data: { name, payload } }, resolve);
+				}),
+				subscribe: (handler) => {
+					this.hostEventHandler = handler;
+					return () => {
+						if (this.hostEventHandler === handler) {
+							this.hostEventHandler = null;
+						}
+					};
+				}
+			},
 			listener: {
 				log: (text) => this.log(text),
 				reportError: (err) => this.reportError(err),
@@ -402,6 +416,13 @@ class Player {
 					if (data.request_id && this.pendingRequests[data.request_id]) {
 						this.pendingRequests[data.request_id](data);
 						delete this.pendingRequests[data.request_id];
+					} else if (this.runtime && this.hostEventHandler && data && data.name) {
+						this.hostEventHandler({
+							type: data.name,
+							payload: data.data,
+							requestId: data.request_id,
+							source: 'host'
+						});
 					}
 			}
 		} catch (err) {

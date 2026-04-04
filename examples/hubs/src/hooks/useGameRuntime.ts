@@ -88,6 +88,11 @@ export function useGameRuntime(
 					url: baseUrl,
 					sources,
 					resources: game!.resources,
+					bridge: {
+						emit: (_name: string, payload: unknown) => {
+							callbacksRef.current.onMessage?.(payload);
+						},
+					},
 					listener: {
 						log: (message: string) => console.log(`[${gameId}]`, message),
 						reportError: (err: unknown) => console.error(`[${gameId} ERROR]`, err),

@@ -121,6 +121,9 @@ export class StatePlayer {
 			"sounds",
 			"music",
 			"assets",
+			"host",
+			"session",
+			"memory",
 		];
 		return protected_keys.includes(key);
 	}

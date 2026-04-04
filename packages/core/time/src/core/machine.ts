@@ -59,6 +59,9 @@ export class TimeMachine {
 			if (global.gamepad) excluded.push(global.gamepad);
 			if (global.system) excluded.push(global.system);
 			if (global.storage) excluded.push(global.storage);
+			if (global.host) excluded.push(global.host);
+			if (global.session) excluded.push(global.session);
+			if (global.memory) excluded.push(global.memory);
 		}
 
 		this.recorder.setExcluded(excluded);

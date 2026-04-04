@@ -54,10 +54,10 @@ export function generatePlayerScript(): string {
 	
 	Player.prototype.start = function() {
 		var self = this;
-		var Runtime = L8BRuntime.Runtime;
+		var createRuntime = L8BRuntime.createRuntime;
 		
 		// Create runtime
-		this.runtime = new Runtime({
+		this.runtime = createRuntime({
 			sources: this.sources,
 			resources: this.resources,
 			url: ''

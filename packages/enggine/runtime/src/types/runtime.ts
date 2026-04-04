@@ -5,6 +5,7 @@
 import type { CompiledModuleArtifact, SerializedRoutineData } from "@al8b/framework-shared";
 import type { ErrorInfo } from "@al8b/vm";
 import type { Resources } from "./assets";
+import type { RuntimeBridge, RuntimeSessionSnapshot } from "./bridge";
 
 export type { ErrorInfo, Resources };
 
@@ -42,6 +43,10 @@ export interface RuntimeOptions {
 	env?: Record<string, string>;
 	/** Listener for events (logging, errors) */
 	listener?: RuntimeListener;
+	/** Host bridge for platform and backend integrations */
+	bridge?: RuntimeBridge;
+	/** Initial session context supplied by the host */
+	initialSession?: RuntimeSessionSnapshot | null;
 	/** Canvas element to use */
 	canvas?: HTMLCanvasElement;
 	/** Screen width */

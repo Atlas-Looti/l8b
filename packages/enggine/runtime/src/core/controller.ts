@@ -2,14 +2,22 @@ import { AudioCore } from "@al8b/audio";
 import { PlayerService } from "@al8b/player";
 import { SceneManager } from "@al8b/scene";
 import { Screen } from "@al8b/screen";
-import { TimeMachine } from "@al8b/time";
+import { StatePlayer, TimeMachine, type StateSnapshot, type TimeMachineCommand } from "@al8b/time";
 import { L8BVM } from "@al8b/vm";
 import { AssetLoader } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
 import { GameLoop } from "../loop";
 import { System } from "../system";
-import type { RuntimeListener, RuntimeOptions } from "../types";
+import type {
+	HostEvent,
+	RuntimeListener,
+	RuntimeOptions,
+	RuntimeResetOptions,
+	RuntimeSessionSnapshot,
+	RuntimeSnapshot,
+	RuntimeSnapshotMeta,
+} from "../types";
 import { DebugLogger } from "./debug-logger";
 import { reportError, reportWarnings } from "./error-handler";
 import { RuntimeAssetsRegistry } from "./assets-registry";
@@ -34,8 +42,12 @@ export interface RuntimeController {
 	start(): Promise<void>;
 	stop(): void;
 	resume(): void;
+	reset(options?: RuntimeResetOptions): Promise<void>;
+	exportSnapshot(): RuntimeSnapshot;
+	importSnapshot(snapshot: RuntimeSnapshot): Promise<void>;
 	updateSource(file: string, src: string, reinit?: boolean): boolean;
 	handleMessage(message: any): void;
+	sendHostEvent(event: HostEvent): void;
 	runCommand(command: string, callback?: (result: any) => void): void;
 	getCanvas(): HTMLCanvasElement;
 	updateCall(): void;
@@ -45,6 +57,7 @@ export interface RuntimeController {
 	stopWatching(): void;
 	updateSprite(name: string, version: number, data: unknown, properties?: unknown): boolean;
 	updateMap(name: string, version: number, data: unknown): boolean;
+	getSession(): RuntimeSessionSnapshot | null;
 }
 
 export function createRuntime(options: RuntimeOptions = {}): RuntimeController {
@@ -58,12 +71,16 @@ export class RuntimeControllerImpl implements RuntimeController {
 	private readonly assetLoader: AssetLoader;
 	private readonly debugLogger = new DebugLogger();
 	private readonly DEBUG_UPDATE_FREQUENCY = 10;
+	private readonly snapshotRestorer = new StatePlayer();
 
+	private bridgeUnsubscribe: (() => void) | null = null;
 	private sourceUpdater: SourceUpdater | null = null;
 	private gameLoop: GameLoop | null = null;
 	private frameCount = 0;
 	private lastUpdateRate = -1;
 	private isStopped = false;
+	private preserveStorageOnNextBoot: boolean;
+	private sessionSnapshot: RuntimeSessionSnapshot | null;
 
 	public readonly screen: Screen;
 	public readonly audio: AudioCore;
@@ -77,6 +94,8 @@ export class RuntimeControllerImpl implements RuntimeController {
 	constructor(options: RuntimeOptions = {}) {
 		this.options = options;
 		this.listener = options.listener || {};
+		this.preserveStorageOnNextBoot = options.preserveStorage || false;
+		this.sessionSnapshot = options.initialSession || null;
 
 		this.screen = new Screen({
 			runtime: this,
@@ -91,7 +110,7 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.playerService = new PlayerService({
 			pause: () => this.stop(),
 			resume: () => this.resume(),
-			postMessage: (message: any) => this.listener.postMessage?.(message),
+			postMessage: (message: any) => this.emitPlayerMessage(message),
 			getFps: () => this.system.getAPI().fps,
 			getUpdateRate: () => this.system.getAPI().update_rate,
 			setUpdateRate: (rate: number) => {
@@ -140,8 +159,15 @@ export class RuntimeControllerImpl implements RuntimeController {
 		return this.isStopped;
 	}
 
+	getSession(): RuntimeSessionSnapshot | null {
+		return this.sessionSnapshot ? cloneSnapshot(this.sessionSnapshot) : null;
+	}
+
 	async start(): Promise<void> {
 		this.logStep("startup: begin");
+
+		await this.hydrateSession();
+		this.ensureBridgeSubscription();
 
 		this.logStep("startup: loading assets");
 		await this.loadAssets();
@@ -182,15 +208,88 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.gameLoop?.resume();
 	}
 
+	async reset(options: RuntimeResetOptions = {}): Promise<void> {
+		this.logStep("lifecycle: reset requested", options);
+		const preservedSnapshot = options.preserveSnapshot ? this.exportSnapshot() : null;
+		const preserveSession = options.preserveSession ?? true;
+		const preserveStorage = options.preserveStorage ?? this.options.preserveStorage ?? false;
+
+		this.stop();
+		this.teardownRuntimeState();
+
+		if (!preserveSession) {
+			this.sessionSnapshot = null;
+		}
+		this.preserveStorageOnNextBoot = preserveStorage;
+
+		await this.start();
+
+		if (preservedSnapshot) {
+			await this.importSnapshot(preservedSnapshot);
+		}
+	}
+
+	exportSnapshot(): RuntimeSnapshot {
+		const global = this.vm?.context?.global;
+		const routerState = this.sceneManager.router.getState();
+		return {
+			version: 1,
+			global: global ? serializeGlobalSnapshot(global) : {},
+			session: this.getSession(),
+			router: {
+				path: routerState.path,
+				sceneName: this.sceneManager.getCurrentSceneName(),
+			},
+			system: {
+				updateRate: this.system.getAPI().update_rate,
+			},
+		};
+	}
+
+	async importSnapshot(snapshot: RuntimeSnapshot): Promise<void> {
+		if (!this.vm?.context?.global) {
+			return;
+		}
+
+		this.snapshotRestorer.restoreState(this.vm.context.global as unknown as Record<string, unknown>, snapshot.global);
+		this.system.getAPI().update_rate = snapshot.system.updateRate;
+		this.updateGameLoopUpdateRate();
+
+		if (snapshot.session) {
+			this.sessionSnapshot = cloneSnapshot(snapshot.session);
+		}
+
+		if (snapshot.router.path) {
+			this.sceneManager.router.replace(snapshot.router.path);
+		} else if (snapshot.router.sceneName) {
+			this.sceneManager.setActiveScene(snapshot.router.sceneName);
+		}
+
+		this.drawCall();
+	}
+
 	updateSource(file: string, src: string, reinit = false): boolean {
 		if (!this.sourceUpdater) return false;
 		return this.sourceUpdater.updateSource(file, src, reinit);
 	}
 
 	handleMessage(message: any): void {
+		if (!message) {
+			return;
+		}
+
+		if (typeof message === "object" && "type" in message && typeof message.type === "string") {
+			this.sendHostEvent(message as HostEvent);
+			return;
+		}
+
 		if (message.name === "time_machine" && this.timeMachine) {
 			this.timeMachine.messageReceived(message);
 		}
+	}
+
+	sendHostEvent(event: HostEvent): void {
+		this.handleHostEvent(event);
 	}
 
 	runCommand(command: string, callback?: (result: any) => void): void {
@@ -217,7 +316,7 @@ export class RuntimeControllerImpl implements RuntimeController {
 	}
 
 	stepForward(): void {
-		this.timeMachine?.messageReceived({ command: "step_forward" } as any);
+		this.timeMachine?.messageReceived({ name: "time_machine", command: "step_forward" });
 	}
 
 	watch(_list: unknown[]): void {}
@@ -269,12 +368,24 @@ export class RuntimeControllerImpl implements RuntimeController {
 			playerService: this.playerService,
 			sceneManager: this.sceneManager,
 			assets: this.assetRegistry,
+			bridge: this.options.bridge,
 			getVM: () => this.vm,
+			getSessionSnapshot: () => this.getSession(),
+			sendHostEvent: (event: HostEvent) => this.emitBridgeEvent(event.type, event.payload),
+			sendHostRequest: (name: string, payload?: unknown, callback?: (result: unknown) => void) =>
+				this.sendBridgeRequest(name, payload, callback),
+			exportSnapshot: () => this.exportSnapshot(),
+			importSnapshot: (snapshot: RuntimeSnapshot) => this.importSnapshot(snapshot),
+			resetRuntime: (options?: RuntimeResetOptions) => this.reset(options),
+			saveSnapshot: (meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void) =>
+				this.saveSnapshot(meta, callback),
+			loadSnapshot: (meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void) =>
+				this.loadSnapshot(meta, callback),
 		};
 
 		const meta = createRuntimeMeta(apiContext);
 		const global = createRuntimeGlobalApi(apiContext);
-		this.vm = new L8BVM(meta, global, this.options.namespace || "/l8b", this.options.preserveStorage || false);
+		this.vm = new L8BVM(meta, global, this.options.namespace || "/l8b", this.preserveStorageOnNextBoot);
 		this.sourceUpdater = new SourceUpdater(this.vm, this.listener, this.audio, this.screen, () =>
 			reportWarnings(this.vm!, this.listener),
 		);
@@ -478,6 +589,198 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.timeMachine?.loopStep();
 	}
 
+	private ensureBridgeSubscription(): void {
+		if (this.bridgeUnsubscribe || !this.options.bridge?.subscribe) {
+			return;
+		}
+
+		const maybeUnsubscribe = this.options.bridge.subscribe((event) => this.handleHostEvent(event));
+		this.bridgeUnsubscribe = typeof maybeUnsubscribe === "function" ? maybeUnsubscribe : null;
+	}
+
+	private handleHostEvent(event: HostEvent): void {
+		switch (event.type) {
+			case "session.update":
+				this.mergeSession(event.payload);
+				break;
+			case "runtime.reset":
+				void this.reset(asRecord(event.payload));
+				break;
+			case "runtime.import_snapshot":
+				if (isRuntimeSnapshot(event.payload)) {
+					void this.importSnapshot(event.payload);
+				}
+				break;
+			case "runtime.export_snapshot":
+				this.emitBridgeEvent("runtime.snapshot", this.exportSnapshot());
+				break;
+			case "runtime.stop":
+			case "runtime.pause":
+				this.stop();
+				break;
+			case "runtime.resume":
+				this.resume();
+				break;
+			case "time_machine":
+				if (this.timeMachine && isRecord(event.payload)) {
+					const command = event.payload.command;
+					if (typeof command === "string") {
+						this.timeMachine.messageReceived({
+							name: "time_machine",
+							command: command as TimeMachineCommand,
+							position:
+								typeof event.payload.position === "number" ? event.payload.position : undefined,
+						});
+					}
+				}
+				break;
+		}
+	}
+
+	private emitPlayerMessage(message: unknown): void {
+		if (isRecord(message) && typeof message.type === "string") {
+			this.emitBridgeEvent(message.type, message);
+		} else {
+			this.emitBridgeEvent("player.message", message);
+		}
+
+		this.listener.postMessage?.(message);
+	}
+
+	private emitBridgeEvent(name: string, payload?: unknown): void {
+		this.options.bridge?.emit?.(name, payload);
+	}
+
+	private sendBridgeRequest(name: string, payload?: unknown, callback?: (result: unknown) => void): string | null {
+		const request = this.options.bridge?.request;
+		if (!request) {
+			callback?.({
+				ok: false,
+				error: `No runtime bridge request handler registered for "${name}"`,
+			});
+			return null;
+		}
+
+		const requestId = createRequestId(name);
+		try {
+			const result = request(name, payload);
+			if (isPromiseLike(result)) {
+				void result
+					.then((value) => callback?.(value))
+					.catch((error) => callback?.({ ok: false, error: error instanceof Error ? error.message : String(error) }));
+			} else {
+				callback?.(result);
+			}
+			return requestId;
+		} catch (error) {
+			callback?.({ ok: false, error: error instanceof Error ? error.message : String(error) });
+			return requestId;
+		}
+	}
+
+	private saveSnapshot(meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void): unknown {
+		const snapshot = this.exportSnapshot();
+		const save = this.options.bridge?.saveSnapshot;
+		if (!save) {
+			const fallback = { ok: false, error: "No runtime bridge saveSnapshot handler registered", snapshot };
+			callback?.(fallback);
+			return fallback;
+		}
+
+		try {
+			const result = save(snapshot, meta);
+			if (isPromiseLike(result)) {
+				void result
+					.then(() => callback?.({ ok: true, snapshot }))
+					.catch((error) => callback?.({ ok: false, error: error instanceof Error ? error.message : String(error) }));
+				return null;
+			}
+			callback?.({ ok: true, snapshot });
+			return { ok: true, snapshot };
+		} catch (error) {
+			const failure = { ok: false, error: error instanceof Error ? error.message : String(error) };
+			callback?.(failure);
+			return failure;
+		}
+	}
+
+	private loadSnapshot(meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void): unknown {
+		const load = this.options.bridge?.loadSnapshot;
+		if (!load) {
+			const fallback = { ok: false, error: "No runtime bridge loadSnapshot handler registered" };
+			callback?.(fallback);
+			return fallback;
+		}
+
+		try {
+			const result = load(meta);
+			if (isPromiseLike(result)) {
+				void result
+					.then(async (snapshot) => {
+						if (snapshot) {
+							await this.importSnapshot(snapshot);
+						}
+						callback?.({ ok: true, snapshot });
+					})
+					.catch((error) => callback?.({ ok: false, error: error instanceof Error ? error.message : String(error) }));
+				return null;
+			}
+
+			if (result) {
+				void this.importSnapshot(result);
+			}
+			callback?.({ ok: true, snapshot: result });
+			return result;
+		} catch (error) {
+			const failure = { ok: false, error: error instanceof Error ? error.message : String(error) };
+			callback?.(failure);
+			return failure;
+		}
+	}
+
+	private async hydrateSession(): Promise<void> {
+		if (this.sessionSnapshot) {
+			return;
+		}
+
+		const getSession = this.options.bridge?.getSession;
+		if (!getSession) {
+			this.sessionSnapshot = this.options.initialSession || null;
+			return;
+		}
+
+		try {
+			const session = getSession();
+			this.sessionSnapshot = isPromiseLike(session) ? await session : session;
+		} catch {
+			this.sessionSnapshot = this.options.initialSession || null;
+		}
+	}
+
+	private mergeSession(payload: unknown): void {
+		if (!isRecord(payload)) {
+			return;
+		}
+
+		const current = this.sessionSnapshot || {};
+		this.sessionSnapshot = {
+			...current,
+			...payload,
+		} as RuntimeSessionSnapshot;
+	}
+
+	private teardownRuntimeState(): void {
+		this.gameLoop = null;
+		this.sourceUpdater = null;
+		this.vm = null;
+		this.timeMachine = null;
+		this.frameCount = 0;
+		this.lastUpdateRate = -1;
+		this.isStopped = false;
+		this.sceneManager.registry.clear();
+		this.sceneManager.routeManager.clear();
+	}
+
 	private logStep(message: string, payload?: unknown): void {
 		if (!this.options.debug?.lifecycle) return;
 
@@ -497,4 +800,76 @@ export class RuntimeControllerImpl implements RuntimeController {
 			}
 		}
 	}
+}
+
+function serializeGlobalSnapshot(global: object): StateSnapshot {
+	const globalRecord = global as Record<string, unknown>;
+	const excluded = [
+		globalRecord.random,
+		globalRecord.screen,
+		globalRecord.audio,
+		globalRecord.keyboard,
+		globalRecord.mouse,
+		globalRecord.touch,
+		globalRecord.gamepad,
+		globalRecord.system,
+		globalRecord.storage,
+		globalRecord.host,
+		globalRecord.session,
+		globalRecord.memory,
+	].filter((value) => value != null);
+
+	return deepCloneValue(globalRecord, excluded);
+}
+
+function deepCloneValue<T>(value: T, excluded: unknown[] = []): T {
+	if (value == null) {
+		return value;
+	}
+
+	if (excluded.includes(value)) {
+		return null as T;
+	}
+
+	if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+		return value;
+	}
+
+	if (Array.isArray(value)) {
+		return value.map((entry) => deepCloneValue(entry, excluded)) as T;
+	}
+
+	if (typeof value === "object") {
+		const clone: Record<string, unknown> = {};
+		for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+			clone[key] = deepCloneValue(entry, excluded);
+		}
+		return clone as T;
+	}
+
+	return null as T;
+}
+
+function cloneSnapshot<T>(value: T): T {
+	return deepCloneValue(value);
+}
+
+function createRequestId(name: string): string {
+	return `${name}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function isPromiseLike<T>(value: unknown): value is Promise<T> {
+	return typeof value === "object" && value !== null && "then" in value && typeof (value as Promise<T>).then === "function";
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function asRecord(value: unknown): RuntimeResetOptions | undefined {
+	return isRecord(value) ? (value as RuntimeResetOptions) : undefined;
+}
+
+function isRuntimeSnapshot(value: unknown): value is RuntimeSnapshot {
+	return isRecord(value) && value.version === 1 && isRecord(value.global);
 }
