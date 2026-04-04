@@ -6,15 +6,15 @@
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
 import type readline from "node:readline";
-import { type DevServerOptions, type ProjectResources, createLogger } from "@al8b/framework-shared";
+import { type DevServerOptions, type ProjectResources, type SourceInfo, AsyncQueue, createLogger } from "@al8b/framework-shared";
 import { type ResolvedConfig, discoverResources, loadConfig } from "@al8b/framework-config";
-import { createWatcher, type L8BWatcher } from "@al8b/framework-watcher";
+import { createWatcher, type FileEvent, type L8BWatcher } from "@al8b/framework-watcher";
 import { HMRServer } from "./hmr";
 import { bindCLIShortcuts as _bindCLIShortcuts, type BindCLIShortcutsOptions } from "./shortcuts";
 import {
 	type FileHandlerContext,
+	resolvePathWithinBase,
 	serve404,
 	serve500,
 	serveFile,
@@ -25,6 +25,8 @@ import {
 	serveStatic,
 } from "./file-handler";
 import { handleFileChange } from "./hmr-handler";
+import { listenOnAvailablePort } from "./port";
+import { applyResourceEvent, createEmptyProjectResources, createSourceMap } from "./resource-state";
 
 const logger = createLogger("server");
 
@@ -41,8 +43,9 @@ export class L8BDevServer {
 	private hmr: HMRServer | null = null;
 	private watcher: L8BWatcher | null = null;
 	private resources: ProjectResources;
-	private sourceMap: Map<string, any> = new Map();
+	private sourceMap: Map<string, SourceInfo> = new Map();
 	private watcherUnsubscribe: (() => void) | null = null;
+	private watcherQueue = new AsyncQueue();
 
 	/**
 	 * @internal - Readline interface for CLI shortcuts
@@ -61,25 +64,14 @@ export class L8BDevServer {
 			...options,
 		};
 		this.config = loadConfig(options.root);
-		this.resources = {
-			sources: [],
-			images: [],
-			maps: [],
-			sounds: [],
-			music: [],
-			assets: [],
-			fonts: [],
-		};
+		this.resources = createEmptyProjectResources();
 	}
 
 	/**
 	 * Update resource maps for O(1) lookup
 	 */
 	private updateResourceMaps(): void {
-		this.sourceMap.clear();
-		for (const source of this.resources.sources) {
-			this.sourceMap.set(source.file, source);
-		}
+		this.sourceMap = createSourceMap(this.resources);
 	}
 
 	/**
@@ -113,12 +105,8 @@ export class L8BDevServer {
 		this.watcher = createWatcher(this.config.srcPath, this.config.publicPath, { initialScan: false });
 
 		// Store unsubscribe function to properly clean up on server stop
-		this.watcherUnsubscribe = this.watcher.on(async (event) => {
-			// Refresh resources before handling event
-			this.resources = await discoverResources(this.config);
-			this.updateResourceMaps();
-
-			handleFileChange({ config: this.config, resources: this.resources, hmr: this.hmr }, event);
+		this.watcherUnsubscribe = this.watcher.on((event) => {
+			void this.handleWatcherEvent(event);
 		});
 
 		// Start services
@@ -127,7 +115,14 @@ export class L8BDevServer {
 		// Find available port
 		const startPort = this.options.port;
 		const maxPort = startPort + MAX_PORT_ATTEMPTS;
-		const port = await this.findAvailablePort(startPort, maxPort);
+		const port = await listenOnAvailablePort(this.server, {
+			host: this.options.host,
+			startPort,
+			maxPort,
+			onPortBusy: (busyPort) => {
+				logger.info(`Port ${busyPort} is in use, trying another one...`);
+			},
+		});
 		this.options.port = port;
 
 		// Create HMR WebSocket server AFTER port is found
@@ -149,42 +144,6 @@ export class L8BDevServer {
 		if (this.options.open) {
 			this.openBrowser(url);
 		}
-	}
-
-	/**
-	 * Find an available port using a temporary test server
-	 */
-	private async findAvailablePort(port: number, maxPort: number): Promise<number> {
-		if (port > maxPort) {
-			throw new Error(`Could not find available port between ${this.options.port} and ${maxPort}`);
-		}
-
-		return new Promise<number>((resolve, reject) => {
-			const testServer = createServer();
-
-			const onError = (err: NodeJS.ErrnoException) => {
-				testServer.removeListener("error", onError);
-				testServer.close();
-
-				if (err.code === "EADDRINUSE") {
-					logger.info(`Port ${port} is in use, trying another one...`);
-					resolve(this.findAvailablePort(port + 1, maxPort));
-				} else {
-					reject(err);
-				}
-			};
-
-			testServer.once("error", onError);
-
-			testServer.listen(port, this.options.host, () => {
-				testServer.removeListener("error", onError);
-				testServer.close(() => {
-					this.server!.listen(port, this.options.host, () => {
-						resolve(port);
-					});
-				});
-			});
-		});
 	}
 
 	/**
@@ -253,8 +212,8 @@ export class L8BDevServer {
 			) {
 				serveStatic(path, res, this.config.publicPath);
 			} else {
-				const publicPath = join(this.config.publicPath, path);
-				if (existsSync(publicPath)) {
+				const publicPath = resolvePathWithinBase(this.config.publicPath, path);
+				if (publicPath && existsSync(publicPath)) {
 					serveFile(publicPath, res);
 				} else {
 					serve404(res);
@@ -335,6 +294,18 @@ export class L8BDevServer {
 		});
 
 		child.unref();
+	}
+
+	private async handleWatcherEvent(event: FileEvent): Promise<void> {
+		await this.watcherQueue.add(async () => {
+			const incrementallyHandled = await applyResourceEvent(this.resources, this.config, event);
+			if (!incrementallyHandled) {
+				this.resources = await discoverResources(this.config);
+			}
+
+			this.updateResourceMaps();
+			handleFileChange({ config: this.config, resources: this.resources, hmr: this.hmr }, event);
+		});
 	}
 }
 

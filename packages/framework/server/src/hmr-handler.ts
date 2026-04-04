@@ -2,9 +2,9 @@
  * HMR Handler - Processes file change events for Hot Module Replacement
  */
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import type { ProjectResources } from "@al8b/framework-shared";
-import { createLogger } from "@al8b/framework-shared";
+import { createLogger, normalizePath } from "@al8b/framework-shared";
 import type { ResolvedConfig } from "@al8b/framework-config";
 import { compileSource } from "@al8b/compiler";
 import type { HMRServer } from "./hmr";
@@ -50,7 +50,8 @@ export function handleFileChange(
  * Handle source file change
  */
 function handleSourceChange(ctx: HMRHandlerContext, filePath: string): void {
-	const source = ctx.resources.sources.find((s) => filePath.endsWith(s.file));
+	const relativeFile = normalizePath(relative(ctx.config.srcPath, filePath));
+	const source = ctx.resources.sources.find((s) => s.file === relativeFile);
 
 	if (!source || !source.content) {
 		logger.warn(`Source not found: ${filePath}`);
@@ -91,7 +92,8 @@ function handleSourceChange(ctx: HMRHandlerContext, filePath: string): void {
  * Handle sprite file change
  */
 function handleSpriteChange(ctx: HMRHandlerContext, filePath: string): void {
-	const sprite = ctx.resources.images.find((s) => filePath.endsWith(s.file));
+	const relativeFile = normalizePath(relative(join(ctx.config.publicPath, "sprites"), filePath));
+	const sprite = ctx.resources.images.find((s) => s.file === relativeFile);
 
 	if (!sprite) {
 		logger.warn(`Sprite not found: ${filePath}`);
@@ -121,7 +123,8 @@ function handleSpriteChange(ctx: HMRHandlerContext, filePath: string): void {
  * Handle map file change
  */
 function handleMapChange(ctx: HMRHandlerContext, filePath: string): void {
-	const map = ctx.resources.maps.find((m) => filePath.endsWith(m.file));
+	const relativeFile = normalizePath(relative(join(ctx.config.publicPath, "maps"), filePath));
+	const map = ctx.resources.maps.find((m) => m.file === relativeFile);
 
 	if (!map) {
 		logger.warn(`Map not found: ${filePath}`);

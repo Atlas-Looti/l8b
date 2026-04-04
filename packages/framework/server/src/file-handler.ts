@@ -2,9 +2,9 @@
  * File Handler - Serves static files and generated content
  */
 import { existsSync, readFileSync, createReadStream } from "node:fs";
-import { extname, join, dirname } from "node:path";
+import { extname, join, dirname, resolve } from "node:path";
 import type { ServerResponse } from "node:http";
-import { type DevServerOptions, type ProjectResources, MIME_TYPES, createLogger } from "@al8b/framework-shared";
+import { type DevServerOptions, type ProjectResources, type SourceInfo, MIME_TYPES, createLogger } from "@al8b/framework-shared";
 import type { ResolvedConfig } from "@al8b/framework-config";
 import { generateDevHTML, generateHMRClient } from "@al8b/framework-html";
 
@@ -46,7 +46,7 @@ export interface FileHandlerContext {
 	config: ResolvedConfig;
 	options: DevServerOptions;
 	resources: ProjectResources;
-	sourceMap: Map<string, any>;
+	sourceMap: Map<string, SourceInfo>;
 }
 
 /**
@@ -125,13 +125,24 @@ export function serveSource(ctx: FileHandlerContext, path: string, res: ServerRe
  * Serve static file from directory
  */
 export function serveStatic(path: string, res: ServerResponse, baseDir: string): void {
-	const filePath = join(baseDir, path);
+	const filePath = resolvePathWithinBase(baseDir, path);
 
-	if (existsSync(filePath)) {
+	if (filePath && existsSync(filePath)) {
 		serveFile(filePath, res);
 	} else {
 		serve404(res);
 	}
+}
+
+export function resolvePathWithinBase(baseDir: string, requestPath: string): string | null {
+	const candidate = resolve(baseDir, `.${requestPath}`);
+	const normalizedBase = resolve(baseDir);
+
+	if (candidate === normalizedBase || candidate.startsWith(`${normalizedBase}\\`) || candidate.startsWith(`${normalizedBase}/`)) {
+		return candidate;
+	}
+
+	return null;
 }
 
 /**
