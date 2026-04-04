@@ -1,4 +1,4 @@
-import { RuntimeOrchestrator } from "@al8b/runtime";
+import { createRuntime, type RuntimeController } from "@al8b/runtime";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getGame } from "../registry";
 
@@ -14,7 +14,7 @@ export function useGameRuntime(
 ) {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const runtimeRef = useRef<InstanceType<typeof RuntimeOrchestrator> | null>(null);
+	const runtimeRef = useRef<RuntimeController | null>(null);
 	const callbacksRef = useRef(callbacks);
 	callbacksRef.current = callbacks;
 
@@ -81,7 +81,7 @@ export function useGameRuntime(
 				canvas!.width = game!.width;
 				canvas!.height = game!.height;
 
-				const runtime = new RuntimeOrchestrator({
+				const runtime = createRuntime({
 					canvas: canvas!,
 					width: game!.width,
 					height: game!.height,

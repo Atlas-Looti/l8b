@@ -27,6 +27,7 @@
 		"@al8b/vm": "workspace:*",
 		"@al8b/io": "workspace:*",
 		"@al8b/lootiscript": "workspace:*",
+		"@al8b/framework-shared": "workspace:*",
 		"@al8b/screen": "workspace:*",
 		"@al8b/audio": "workspace:*",
 		"@al8b/input": "workspace:*",

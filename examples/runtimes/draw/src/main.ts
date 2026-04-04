@@ -2,7 +2,7 @@
 
  */
 
-import { RuntimeOrchestrator } from "@al8b/runtime";
+import { createRuntime } from "@al8b/runtime";
 import mainLootiScript from "./scripts/main.loot?raw";
 
 // Debug: log the game code
@@ -16,7 +16,7 @@ canvas.width = 1920;
 canvas.height = 1080;
 
 // Create runtime
-const runtime = new RuntimeOrchestrator({
+const runtime = createRuntime({
 	canvas,
 	width: 1920,
 	height: 1080,

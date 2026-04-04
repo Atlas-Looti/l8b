@@ -24,7 +24,8 @@
 	},
 	"dependencies": {
 		"@al8b/lootiscript": "workspace:*",
-		"@al8b/io": "workspace:*"
+		"@al8b/io": "workspace:*",
+		"@al8b/framework-shared": "workspace:*"
 	},
 	"keywords": [
 		"vm",

@@ -46,7 +46,7 @@ export const DEFAULT_DIRS = {
 /**
  * Config file names
  */
-export const CONFIG_FILES = ["l8b.config.json", "l8b.config.js", "l8b.config.ts"] as const;
+export const CONFIG_FILES = ["l8b.config.ts", "l8b.config.js", "l8b.config.json"] as const;
 
 /**
  * HMR WebSocket path

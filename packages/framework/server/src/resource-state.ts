@@ -2,7 +2,6 @@ import { access, readFile } from "node:fs/promises";
 import { constants } from "node:fs";
 import { join, relative } from "node:path";
 import {
-	type FileEvent,
 	type MapInfo,
 	type ProjectResources,
 	type ResourceInfo,
@@ -20,6 +19,7 @@ import {
 	normalizePath,
 } from "@al8b/framework-shared";
 import type { ResolvedConfig } from "@al8b/framework-config";
+import type { FileEvent } from "@al8b/framework-watcher";
 
 export function createEmptyProjectResources(): ProjectResources {
 	return {
