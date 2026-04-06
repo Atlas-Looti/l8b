@@ -43,8 +43,10 @@ const runtime = createRuntime({
 		reportError: (error) => {
 			console.error("[GAME ERROR]", error);
 		},
-		postMessage: (msg) => {
-			console.log("[GAME MESSAGE]", msg);
+	},
+	bridge: {
+		emit: (name: string, payload: unknown) => {
+			console.log("[GAME MESSAGE]", { name, payload });
 		},
 	},
 });
