@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - "**.md"
       - "docs/**"
@@ -32,8 +31,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install dependencies
-        uses: ./.github/actions/install-dependencies
+        run: bun install --frozen-lockfile
 
       - name: Cache Turbo
         uses: actions/cache@v4
@@ -63,13 +65,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish GitHub Release
-        if: steps.changesets.outputs.published == 'true'
-        run: |
-          gh release create "v$(jq -r '.version' < package.json)" \
-            --title "Release v$(jq -r '.version' < package.json)" \
-            --notes "See CHANGELOG.md for full release notes." \
-            --latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

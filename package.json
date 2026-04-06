@@ -31,9 +31,16 @@
 		"clean:all": "bun scripts/clean.mjs --all",
 		"ci": "bun run lint:check && bun run format:check && bun run check-types && bun run build && bun run test",
 		"start:fish": "cd examples/fish && bun run preview",
-		"start:vscode:e2e": "bunx turbo run test:e2e --filter=@al8b/vscode"
+		"start:vscode:e2e": "bunx turbo run test:e2e --filter=@al8b/vscode",
+		"changeset": "changeset add",
+		"changeset-version": "changeset version",
+		"changeset-publish": "changeset publish",
+		"changeset-status": "changeset status",
+		"release": "bun run changeset-version && bun run changeset-publish"
 	},
 	"devDependencies": {
+		"@changesets/changelog-github": "0.5.2",
+		"@changesets/cli": "2.30.0",
 		"@types/bun": "1.3.11",
 		"@vitest/ui": "4.1.2",
 		"jsdom": "29.0.0",
@@ -47,12 +54,12 @@
 	},
 	"packageManager": "bun@1.3.9",
 	"dependencies": {
-		"@swc/core": "^1.15.21",
-		"biome": "^0.3.3",
-		"buffer": "^6.0.3",
-		"sirv": "^3.0.2",
-		"tsup": "^8.5.1",
-		"vitest": "^4.0.7"
+		"@swc/core": "1.15.24",
+		"biome": "0.3.3",
+		"buffer": "6.0.3",
+		"sirv": "3.0.2",
+		"tsup": "8.5.1",
+		"vitest": "4.1.2"
 	},
 	"publishConfig": {
 		"access": "public"
