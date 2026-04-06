@@ -34,7 +34,7 @@
 		"start:vscode:e2e": "bunx turbo run test:e2e --filter=@al8b/vscode",
 		"changeset": "changeset add",
 		"changeset-version": "changeset version",
-		"changeset-publish": "changeset publish",
+		"changeset-publish": "node scripts/publish.mjs",
 		"changeset-status": "changeset status",
 		"release": "bun run changeset-version && bun run changeset-publish"
 	},
