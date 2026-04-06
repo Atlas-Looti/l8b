@@ -12,4 +12,5 @@ export default defineConfig({
 	clean: true,
 	skipNodeModulesBundle: false,
 	noExternal: [/(.*)/],
+	banner: { js: "#!/usr/bin/env node" },
 });

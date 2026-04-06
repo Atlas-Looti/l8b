@@ -140,6 +140,13 @@ async function publishPackage(pkg) {
 		} catch (err) {
 			const output = [err.stderr, err.stdout].filter(Boolean).join("\n");
 
+			// Check if it actually published despite warnings (npm sometimes exits non-zero for warnings)
+			if (output.includes("+ " + pkg.name + "@") || (output.includes("npm notice") && !output.includes("npm error"))) {
+				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
+				console.log(`  OK   ${tag} (published with warnings)`);
+				return { status: "ok", pkg };
+			}
+
 			// Already published — skip, not error
 			if (output.includes("cannot publish over") || output.includes("You cannot publish over")) {
 				console.log(`  SKIP ${tag} (already published)`);
@@ -155,13 +162,11 @@ async function publishPackage(pkg) {
 				continue;
 			}
 
-			// Other error — show full error output
-			const errorLines = output
-				.split("\n")
-				.filter((l) => l.includes("error") || l.includes("E4") || l.includes("E5"))
-				.slice(0, 5)
-				.join("\n    ");
-			console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}):\n    ${errorLines || output.slice(0, 300)}`);
+			// Other error — show full output for debugging
+			console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}):`);
+			for (const line of output.split("\n").slice(0, 10)) {
+				if (line.trim()) console.error(`    ${line}`);
+			}
 
 			if (attempt === MAX_RETRIES) {
 				return { status: "fail", pkg, error: output };

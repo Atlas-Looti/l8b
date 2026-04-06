@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Atlas-Looti/l8b.git",
+		"url": "git+https://github.com/Atlas-Looti/l8b.git",
 		"directory": "packages/tooling/language-server"
 	},
 	"homepage": "https://github.com/Atlas-Looti/l8b#readme",
@@ -23,7 +23,7 @@
 		"node": ">=18"
 	},
 	"bin": {
-		"l8b-language-server": "./dist/server.js"
+		"l8b-language-server": "dist/server.js"
 	},
 	"files": [
 		"dist/**/*",
