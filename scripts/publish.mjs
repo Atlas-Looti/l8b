@@ -7,10 +7,11 @@
  * Usage: node scripts/publish.mjs
  *
  * Flow:
- * 1. Run `changeset publish` in dry-run mode to detect unpublished packages
+ * 1. Discover all publishable packages in the monorepo
  * 2. Publish each package sequentially with a delay between publishes
  * 3. Retry on 429 (rate limit) with exponential backoff
- * 4. Create git tags for successfully published packages
+ * 4. Skip already-published versions (no error)
+ * 5. Create and push git tags for published packages
  */
 
 import { execSync } from "node:child_process";
@@ -18,37 +19,21 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const DELAY_MS = 2000;
-const MAX_RETRIES = 3;
-const BACKOFF_BASE_MS = 10000;
+const DELAY_MS = 3000;
+const MAX_RETRIES = 5;
+const BACKOFF_BASE_MS = 15000;
 
 function sleep(ms) {
 	return new Promise((r) => setTimeout(r, ms));
 }
 
-function getWorkspacePackages() {
-	const output = execSync("bun pm ls --all", { cwd: ROOT, encoding: "utf-8" });
-	return output;
-}
-
-function getUnpublishedPackages() {
-	try {
-		const output = execSync("changeset status --output=/dev/stdout 2>&1", {
-			cwd: ROOT,
-			encoding: "utf-8",
-		});
-		return output;
-	} catch {
-		// No changesets pending is fine
-		return "";
-	}
-}
-
 function findPublishablePackages() {
 	const packages = [];
-	const pkgDirs = ["packages/core", "packages/enggine", "packages/framework", "packages/lootiscript", "packages/tooling"];
+	const pkgGroups = ["packages/core", "packages/enggine", "packages/framework", "packages/tooling"];
+	const pkgDirect = ["packages/lootiscript"];
 
-	for (const dir of pkgDirs) {
+	// Scan groups (directories containing multiple packages)
+	for (const dir of pkgGroups) {
 		const fullDir = join(ROOT, dir);
 		if (!existsSync(fullDir)) continue;
 
@@ -69,6 +54,22 @@ function findPublishablePackages() {
 		}
 	}
 
+	// Scan direct packages (single package at path)
+	for (const dir of pkgDirect) {
+		const fullDir = join(ROOT, dir);
+		const pkgJsonPath = join(fullDir, "package.json");
+		if (!existsSync(pkgJsonPath)) continue;
+
+		const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
+		if (pkg.private) continue;
+
+		packages.push({
+			name: pkg.name,
+			version: pkg.version,
+			path: fullDir,
+		});
+	}
+
 	return packages;
 }
 
@@ -86,11 +87,20 @@ function isPublishedOnNpm(name, version) {
 
 function hasGitTag(name, version) {
 	try {
-		execSync(`git tag -l "${name}@${version}"`, { cwd: ROOT, encoding: "utf-8" });
 		const output = execSync(`git tag -l "${name}@${version}"`, { cwd: ROOT, encoding: "utf-8" });
 		return output.trim() === `${name}@${version}`;
 	} catch {
 		return false;
+	}
+}
+
+function createGitTag(tag) {
+	try {
+		if (!hasGitTag(tag.split("@")[0] + "/" + tag.split("/")[1]?.split("@")[0], tag.split("@").pop())) {
+			execSync(`git tag "${tag}"`, { cwd: ROOT });
+		}
+	} catch {
+		// Tag might already exist
 	}
 }
 
@@ -106,9 +116,10 @@ async function publishPackage(pkg) {
 	// Skip if already on npm
 	if (isPublishedOnNpm(pkg.name, pkg.version)) {
 		console.log(`  SKIP ${tag} (already on npm)`);
-		// Create missing git tag
-		execSync(`git tag "${tag}"`, { cwd: ROOT });
-		console.log(`  TAG  ${tag}`);
+		try {
+			execSync(`git tag "${tag}"`, { cwd: ROOT });
+			console.log(`  TAG  ${tag}`);
+		} catch { /* tag exists */ }
 		return { status: "skip", pkg };
 	}
 
@@ -123,29 +134,37 @@ async function publishPackage(pkg) {
 				timeout: 60000,
 			});
 			// Create git tag on success
-			execSync(`git tag "${tag}"`, { cwd: ROOT });
+			try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
 			console.log(`  OK   ${tag}`);
 			return { status: "ok", pkg };
 		} catch (err) {
-			const stderr = err.stderr || err.stdout || "";
+			const output = [err.stderr, err.stdout].filter(Boolean).join("\n");
 
-			if (stderr.includes("cannot publish over") || stderr.includes("You cannot publish over")) {
+			// Already published — skip, not error
+			if (output.includes("cannot publish over") || output.includes("You cannot publish over")) {
 				console.log(`  SKIP ${tag} (already published)`);
-				execSync(`git tag "${tag}"`, { cwd: ROOT });
+				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
 				return { status: "skip", pkg };
 			}
 
-			if (stderr.includes("429") || stderr.includes("rate limit")) {
+			// Rate limited — wait and retry
+			if (output.includes("429") || output.includes("rate limit") || output.includes("Too Many Requests")) {
 				const backoff = BACKOFF_BASE_MS * attempt;
-				console.log(`  WAIT ${tag} (rate limited, waiting ${backoff / 1000}s)`);
+				console.log(`  WAIT ${tag} (rate limited, retrying in ${backoff / 1000}s...)`);
 				await sleep(backoff);
 				continue;
 			}
 
-			// Other error
-			console.error(`  FAIL ${tag}: ${stderr.split("\n")[0]}`);
+			// Other error — show full error output
+			const errorLines = output
+				.split("\n")
+				.filter((l) => l.includes("error") || l.includes("E4") || l.includes("E5"))
+				.slice(0, 5)
+				.join("\n    ");
+			console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}):\n    ${errorLines || output.slice(0, 300)}`);
+
 			if (attempt === MAX_RETRIES) {
-				return { status: "fail", pkg, error: stderr };
+				return { status: "fail", pkg, error: output };
 			}
 			await sleep(DELAY_MS * attempt);
 		}
@@ -157,16 +176,11 @@ async function publishPackage(pkg) {
 async function main() {
 	console.log("\n--- Sequential Publish (rate-limit safe) ---\n");
 
-	// Step 1: Run changeset version (applies pending changesets)
-	// This is handled by changesets/action before calling publish
-
-	// Step 2: Find packages that need publishing
 	const packages = findPublishablePackages();
 	console.log(`Found ${packages.length} publishable packages\n`);
 
 	const results = { ok: [], skip: [], fail: [] };
 
-	// Step 3: Publish sequentially
 	for (const pkg of packages) {
 		const result = await publishPackage(pkg);
 		results[result.status].push(result.pkg);
@@ -177,13 +191,13 @@ async function main() {
 		}
 	}
 
-	// Step 4: Push git tags
-	if (results.ok.length > 0 || results.skip.some((p) => hasGitTag(p.name, p.version))) {
+	// Push git tags if any were created
+	if (results.ok.length > 0) {
 		try {
 			console.log("\nPushing git tags...");
 			execSync("git push --tags", { cwd: ROOT, stdio: "inherit" });
 		} catch {
-			console.warn("Warning: failed to push git tags");
+			console.warn("Warning: failed to push git tags (may need manual push)");
 		}
 	}
 
