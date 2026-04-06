@@ -13,7 +13,6 @@ export type {
 	RuntimeDebugOptions,
 	RuntimeListener,
 	RuntimeOptions,
-	RuntimeState,
 } from "./runtime";
 export type {
 	HostEvent,

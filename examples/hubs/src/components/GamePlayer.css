@@ -1,11 +1,14 @@
 .player {
 	position: fixed;
 	inset: 0;
-	background: #fff;
+	background: #000;
+	z-index: 100;
+	overflow: hidden;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 100;
+	width: 100%;
+	height: 100%;
 }
 
 .player-canvas-wrap {
@@ -16,7 +19,7 @@
 .player-canvas {
 	width: 100%;
 	height: 100%;
-	object-fit: contain;
+	display: block;
 	image-rendering: pixelated;
 	image-rendering: crisp-edges;
 }

@@ -4,10 +4,6 @@ import type { GameCategory } from "../types";
 import { GameCard } from "./GameCard";
 import "./GameHub.css";
 
-interface GameHubProps {
-	onSelectGame: (id: string) => void;
-}
-
 const categories: { label: string; value: GameCategory | "all" }[] = [
 	{ label: "All", value: "all" },
 	{ label: "Arcade", value: "arcade" },
@@ -16,7 +12,7 @@ const categories: { label: string; value: GameCategory | "all" }[] = [
 	{ label: "Demo", value: "demo" },
 ];
 
-export function GameHub({ onSelectGame }: GameHubProps) {
+export function GameHub() {
 	const [filter, setFilter] = useState<GameCategory | "all">("all");
 
 	const filtered = filter === "all" ? games : games.filter((g) => g.category === filter);
@@ -44,7 +40,7 @@ export function GameHub({ onSelectGame }: GameHubProps) {
 
 			<div className="hub-grid">
 				{filtered.map((game) => (
-					<GameCard key={game.id} game={game} onSelect={onSelectGame} />
+					<GameCard key={game.id} game={game} />
 				))}
 			</div>
 

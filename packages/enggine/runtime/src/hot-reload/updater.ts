@@ -9,7 +9,6 @@ import type { RuntimeListener } from "../types";
 export class SourceUpdater {
 	private updateMemory: Record<string, string> = {};
 	private previousInit: string | null = null;
-	private reportErrors: boolean = true;
 
 	constructor(
 		private vm: L8BVM,
@@ -17,6 +16,7 @@ export class SourceUpdater {
 		private audio?: { cancelBeeps(): void },
 		private screen?: { clear(): void },
 		private reportWarnings?: () => void,
+		private emitBridgeEvent?: (name: string, payload?: unknown) => void,
 	) {}
 
 	/**
@@ -45,11 +45,8 @@ export class SourceUpdater {
 			this.vm.run(src, 3000, file);
 
 			// Notify parent process of successful compilation
-			if (this.listener.postMessage) {
-				this.listener.postMessage({
-					name: "compile_success",
-					file: file,
-				});
+			if (this.emitBridgeEvent) {
+				this.emitBridgeEvent("compile_success", { file });
 			}
 
 			// Report warnings after compilation
@@ -84,12 +81,8 @@ export class SourceUpdater {
 			return true;
 		} catch (err: any) {
 			// Handle exceptions during compilation or execution
-			// Only report errors if report_errors flag is true
-			if (this.reportErrors) {
-				err.file = file;
-				this.listener.reportError?.(err);
-				return false;
-			}
+			err.file = file;
+			this.listener.reportError?.(err);
 			return false;
 		}
 	}

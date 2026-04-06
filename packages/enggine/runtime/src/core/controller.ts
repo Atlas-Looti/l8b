@@ -32,7 +32,6 @@ export interface RuntimeController {
 	readonly sceneManager: SceneManager;
 	readonly vm: L8BVM | null;
 	readonly timeMachine: TimeMachine | null;
-	readonly time_machine: TimeMachine | null;
 	readonly sprites: Record<string, any>;
 	readonly maps: Record<string, any>;
 	readonly sounds: Record<string, any>;
@@ -48,15 +47,7 @@ export interface RuntimeController {
 	updateSource(file: string, src: string, reinit?: boolean): boolean;
 	handleMessage(message: any): void;
 	sendHostEvent(event: HostEvent): void;
-	runCommand(command: string, callback?: (result: any) => void): void;
 	getCanvas(): HTMLCanvasElement;
-	updateCall(): void;
-	drawCall(): void;
-	stepForward(): void;
-	watch(list: unknown[]): void;
-	stopWatching(): void;
-	updateSprite(name: string, version: number, data: unknown, properties?: unknown): boolean;
-	updateMap(name: string, version: number, data: unknown): boolean;
 	getSession(): RuntimeSessionSnapshot | null;
 }
 
@@ -149,10 +140,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 
 	get assets(): Record<string, any> {
 		return this.assetRegistry.assets;
-	}
-
-	get time_machine(): TimeMachine | null {
-		return this.timeMachine;
 	}
 
 	get stopped(): boolean {
@@ -264,8 +251,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 		} else if (snapshot.router.sceneName) {
 			this.sceneManager.setActiveScene(snapshot.router.sceneName);
 		}
-
-		this.drawCall();
 	}
 
 	updateSource(file: string, src: string, reinit = false): boolean {
@@ -292,43 +277,8 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.handleHostEvent(event);
 	}
 
-	runCommand(command: string, callback?: (result: any) => void): void {
-		if (!this.vm) return;
-
-		try {
-			const result = this.vm.run(command, 3000, "console");
-			callback?.(result);
-		} catch (err: any) {
-			callback?.(`Error: ${err.message || String(err)}`);
-		}
-	}
-
 	getCanvas(): HTMLCanvasElement {
 		return this.screen.getCanvas();
-	}
-
-	updateCall(): void {
-		this.handleUpdate();
-	}
-
-	drawCall(): void {
-		this.handleDraw();
-	}
-
-	stepForward(): void {
-		this.timeMachine?.messageReceived({ name: "time_machine", command: "step_forward" });
-	}
-
-	watch(_list: unknown[]): void {}
-
-	stopWatching(): void {}
-
-	updateSprite(_name: string, _version: number, _data: unknown, _properties?: unknown): boolean {
-		return false;
-	}
-
-	updateMap(_name: string, _version: number, _data: unknown): boolean {
-		return false;
 	}
 
 	private async loadAssets(): Promise<void> {
@@ -386,23 +336,24 @@ export class RuntimeControllerImpl implements RuntimeController {
 		const meta = createRuntimeMeta(apiContext);
 		const global = createRuntimeGlobalApi(apiContext);
 		this.vm = new L8BVM(meta, global, this.options.namespace || "/l8b", this.preserveStorageOnNextBoot);
-		this.sourceUpdater = new SourceUpdater(this.vm, this.listener, this.audio, this.screen, () =>
-			reportWarnings(this.vm!, this.listener),
+		this.sourceUpdater = new SourceUpdater(
+			this.vm,
+			this.listener,
+			this.audio,
+			this.screen,
+			() => reportWarnings(this.vm!, this.listener),
+			(name: string, payload?: unknown) => this.emitBridgeEvent(name, payload),
 		);
 		this.timeMachine = new TimeMachine(this as any);
 
-		if (this.listener.postMessage) {
-			this.timeMachine.onStatus((status: any) => {
-				this.listener.postMessage?.({ name: "time_machine_status", status });
-			});
-		}
+		this.timeMachine.onStatus((status: any) => {
+			this.emitBridgeEvent("time_machine_status", { status });
+		});
 
 		this.loadPrograms();
 		this.initializeScenesAndRouter();
 
-		if (this.listener.postMessage) {
-			this.listener.postMessage({ name: "started" });
-		}
+		this.emitBridgeEvent("runtime.started", {});
 	}
 
 	private loadPrograms(): void {
@@ -643,8 +594,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 		} else {
 			this.emitBridgeEvent("player.message", message);
 		}
-
-		this.listener.postMessage?.(message);
 	}
 
 	private emitBridgeEvent(name: string, payload?: unknown): void {
@@ -871,5 +820,11 @@ function asRecord(value: unknown): RuntimeResetOptions | undefined {
 }
 
 function isRuntimeSnapshot(value: unknown): value is RuntimeSnapshot {
-	return isRecord(value) && value.version === 1 && isRecord(value.global);
+	if (!isRecord(value)) return false;
+	if (value.version !== 1) return false;
+	if (!isRecord(value.global)) return false;
+	// Ensure router and session are present (can be null but not undefined)
+	if (!("router" in value)) return false;
+	if (!("session" in value)) return false;
+	return true;
 }

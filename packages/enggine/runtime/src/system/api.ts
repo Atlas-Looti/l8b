@@ -70,11 +70,8 @@ export class System {
 				dropped: 0,
 			},
 
-			// JavaScript interop (for calling JS from game code)
+			// JavaScript interop (placeholder for future use)
 			javascript: {},
-
-			// Thread management
-			threads: [],
 
 			// Additional flags
 			disable_autofullscreen: 0,

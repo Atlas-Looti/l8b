@@ -1,20 +1,28 @@
 import { useCallback, useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGameRuntime } from "../hooks/useGameRuntime";
+import { getGame } from "../registry";
 import "./GamePlayer.css";
 
-interface GamePlayerProps {
-	gameId: string;
-	onBack: () => void;
-}
-
-export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
+export function GamePlayer() {
+	const { gameId } = useParams<{ gameId: string }>();
+	const navigate = useNavigate();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const stopRef = useRef<() => void>(() => {});
 
 	const handleBack = useCallback(() => {
 		stopRef.current();
-		onBack();
-	}, [onBack]);
+		navigate("/");
+	}, [navigate]);
+
+	if (!gameId) {
+		return <div className="player-error">Game ID not found</div>;
+	}
+
+	const game = getGame(gameId);
+	if (!game) {
+		return <div className="player-error">Game not found in registry</div>;
+	}
 
 	const { loading, error, stop } = useGameRuntime(gameId, canvasRef, {
 		onMessage: useCallback(
@@ -34,6 +42,14 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 
 	stopRef.current = stop;
 
+	// Set canvas dimensions when it mounts
+	useEffect(() => {
+		if (canvasRef.current && game) {
+			canvasRef.current.width = game.width;
+			canvasRef.current.height = game.height;
+		}
+	}, [game]);
+
 	// ESC key as a fallback to leave the game
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
@@ -42,7 +58,6 @@ export function GamePlayer({ gameId, onBack }: GamePlayerProps) {
 		window.addEventListener("keydown", onKeyDown);
 		return () => window.removeEventListener("keydown", onKeyDown);
 	}, [handleBack]);
-
 	return (
 		<div className="player">
 			{loading && (

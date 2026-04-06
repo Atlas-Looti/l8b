@@ -76,5 +76,6 @@ export class Music {
 	public stop(): void {
 		this.playing = false;
 		this.tag.pause();
+		this.audio.removePlaying(this);
 	}
 }

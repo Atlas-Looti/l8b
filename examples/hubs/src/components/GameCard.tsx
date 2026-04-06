@@ -1,9 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import type { GameDefinition } from "../types";
 import "./GameCard.css";
 
 interface GameCardProps {
 	game: GameDefinition;
-	onSelect: (id: string) => void;
 }
 
 const categoryIcons: Record<string, string> = {
@@ -13,12 +13,13 @@ const categoryIcons: Record<string, string> = {
 	demo: "<>",
 };
 
-export function GameCard({ game, onSelect }: GameCardProps) {
+export function GameCard({ game }: GameCardProps) {
+	const navigate = useNavigate();
 	return (
 		<button
 			className="game-card"
 			style={{ "--card-color": game.color } as React.CSSProperties}
-			onClick={() => onSelect(game.id)}
+			onClick={() => navigate(`/${game.id}`)}
 		>
 			<div className="game-card-badge">{game.category}</div>
 			<div className="game-card-icon">{categoryIcons[game.category] ?? ">>"}</div>

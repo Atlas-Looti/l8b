@@ -71,26 +71,5 @@ export interface RuntimeListener {
 	reportError?: (error: ErrorInfo) => void;
 	/** Code paused (system.pause called) */
 	codePaused?: () => void;
-	/** Post message to parent (for iframe communication) */
-	postMessage?: (message: any) => void;
 }
 
-/**
- * Runtime state
- */
-export interface RuntimeState {
-	/** Is runtime started */
-	started: boolean;
-	/** Is runtime stopped */
-	stopped: boolean;
-	/** Current frame number */
-	current_frame: number;
-	/** Floating frame counter */
-	floating_frame: number;
-	/** Delta time (smoothed) */
-	dt: number;
-	/** Last frame timestamp */
-	last_time: number;
-	/** Report errors to listener */
-	report_errors: boolean;
-}

@@ -1,48 +1,56 @@
-import { createRuntime, type RuntimeController } from "@al8b/runtime";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRuntime, type UseRuntimeResult } from "./useRuntime";
+import { useEffect, useRef, useState, type RefObject } from "react";
+import type { RuntimeBridge } from "@al8b/runtime";
 import { getGame } from "../registry";
 
 export interface GameRuntimeCallbacks {
-	/** Called when the game sends a message via system.postMessage() */
+	/** Called when the game sends a message via host.emit() */
 	onMessage?: (message: unknown) => void;
 }
 
+export type GameRuntimeResult = UseRuntimeResult;
+
+/**
+ * React hook for managing game runtime in the hub application.
+ *
+ * This hook handles game-specific concerns like source fetching and registry lookup,
+ * then delegates to useRuntime for runtime lifecycle management.
+ *
+ * @param gameId - The game identifier for registry lookup
+ * @param canvasRef - React ref to the canvas element
+ * @param callbacks - Optional callbacks (e.g., onMessage for game events)
+ * @returns GameRuntimeResult with full runtime controls
+ */
 export function useGameRuntime(
 	gameId: string,
-	canvasRef: React.RefObject<HTMLCanvasElement | null>,
+	canvasRef: RefObject<HTMLCanvasElement | null>,
 	callbacks: GameRuntimeCallbacks = {},
-) {
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const runtimeRef = useRef<RuntimeController | null>(null);
+): GameRuntimeResult {
+	const [resolvedOptions, setResolvedOptions] = useState<Parameters<typeof useRuntime>[1]>(null);
+	const [fetchError, setFetchError] = useState<string | null>(null);
 	const callbacksRef = useRef(callbacks);
 	callbacksRef.current = callbacks;
 
-	const stop = useCallback(() => {
-		if (runtimeRef.current) {
-			runtimeRef.current.stop();
-			runtimeRef.current = null;
-		}
-	}, []);
+	// Stable bridge so runtime doesn't recreate when callbacks change
+	const bridgeRef = useRef<RuntimeBridge>({
+		emit: (_name: string, payload: unknown) => {
+			callbacksRef.current.onMessage?.(payload);
+		},
+	});
 
+	// Fetch sources for the game
 	useEffect(() => {
-		const canvas = canvasRef.current;
-		if (!canvas) return;
-
 		const game = getGame(gameId);
 		if (!game) {
-			setError(`Game "${gameId}" not found in registry`);
-			setLoading(false);
+			setFetchError(`Game "${gameId}" not found in registry`);
+			setResolvedOptions(null);
 			return;
 		}
 
 		let cancelled = false;
 
-		async function startGame() {
+		async function fetchSources() {
 			try {
-				setLoading(true);
-				setError(null);
-
 				const baseUrl = `/games/${gameId}/`;
 
 				// Fetch shared modules and game source files in parallel
@@ -78,56 +86,40 @@ export function useGameRuntime(
 					sources[name] = code;
 				}
 
-				canvas!.width = game!.width;
-				canvas!.height = game!.height;
-
-				const runtime = createRuntime({
-					canvas: canvas!,
+				setFetchError(null);
+				setResolvedOptions({
+					canvas: canvasRef.current ?? undefined,
 					width: game!.width,
 					height: game!.height,
 					url: baseUrl,
 					sources,
 					resources: game!.resources,
-					bridge: {
-						emit: (_name: string, payload: unknown) => {
-							callbacksRef.current.onMessage?.(payload);
-						},
-					},
+					bridge: bridgeRef.current,
 					listener: {
 						log: (message: string) => console.log(`[${gameId}]`, message),
 						reportError: (err: unknown) => console.error(`[${gameId} ERROR]`, err),
-						postMessage: (msg: unknown) => {
-							callbacksRef.current.onMessage?.(msg);
-						},
 					},
 				});
-
-				if (cancelled) return;
-
-				runtimeRef.current = runtime;
-				await runtime.start();
-
-				if (cancelled) {
-					runtime.stop();
-					return;
-				}
-
-				setLoading(false);
 			} catch (err) {
 				if (!cancelled) {
-					setError(err instanceof Error ? err.message : String(err));
-					setLoading(false);
+					setFetchError(err instanceof Error ? err.message : String(err));
+					setResolvedOptions(null);
 				}
 			}
 		}
 
-		startGame();
+		fetchSources();
 
 		return () => {
 			cancelled = true;
-			stop();
 		};
-	}, [gameId, canvasRef, stop]);
+	}, [gameId, canvasRef]);
 
-	return { loading, error, stop };
+	const runtimeResult = useRuntime(canvasRef, resolvedOptions);
+
+	return {
+		...runtimeResult,
+		loading: runtimeResult.loading || resolvedOptions === null,
+		error: fetchError ?? runtimeResult.error,
+	};
 }

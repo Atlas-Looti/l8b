@@ -1,6 +1,7 @@
 import { RouteManager } from "./route-manager";
 import { Router } from "./router";
 import { SceneRegistry } from "./scene-registry";
+import { SceneNotFoundError } from "./errors";
 import type { SceneDefinition } from "./types";
 import { isValidObject, isValidString, safeExecute } from "./utils";
 
@@ -11,10 +12,12 @@ export class SceneManager {
 
 	private activeSceneName: string | null = null;
 	private activeScene: SceneDefinition | null = null;
+	private onError: ((error: unknown) => void) | undefined;
 
-	constructor() {
+	constructor(onError?: (error: unknown) => void) {
 		this.registry = new SceneRegistry();
 		this.routeManager = new RouteManager();
+		this.onError = onError;
 		// Router needs reference to this manager, so we create it last
 		this.router = new Router(this.routeManager, this);
 	}
@@ -77,8 +80,14 @@ export class SceneManager {
 	/**
 	 * Handle scene not found error
 	 */
-	private handleSceneNotFound(_name: string): void {
-		// Scene not found - silently fail (validation should prevent this)
+	private handleSceneNotFound(name: string): void {
+		const availableScenes = this.registry.getNames();
+		const error = new SceneNotFoundError(name, availableScenes);
+		if (this.onError) {
+			this.onError(error);
+		} else {
+			console.error(error.message);
+		}
 	}
 
 	/**
@@ -95,8 +104,12 @@ export class SceneManager {
 		if (scene.onEnter) {
 			safeExecute(
 				() => scene.onEnter?.(params),
-				() => {
-					// Error handled silently - scene lifecycle errors should be handled by caller
+				(error) => {
+					if (this.onError) {
+						this.onError(error);
+					} else {
+						console.error("Scene onEnter error:", error);
+					}
 				},
 			);
 		}
@@ -120,8 +133,12 @@ export class SceneManager {
 
 		safeExecute(
 			() => this.activeScene?.onLeave?.(),
-			() => {
-				// Error handled silently - scene lifecycle errors should be handled by caller
+			(error) => {
+				if (this.onError) {
+					this.onError(error);
+				} else {
+					console.error("Scene onLeave error:", error);
+				}
 			},
 		);
 	}
@@ -150,8 +167,12 @@ export class SceneManager {
 				scene.init?.();
 				scene._initialized = true;
 			},
-			() => {
-				// Error handled silently - scene lifecycle errors should be handled by caller
+			(error) => {
+				if (this.onError) {
+					this.onError(error);
+				} else {
+					console.error("Scene init error:", error);
+				}
 			},
 		);
 	}
@@ -166,8 +187,12 @@ export class SceneManager {
 
 		safeExecute(
 			() => scene.onEnter?.(params),
-			() => {
-				// Error handled silently - scene lifecycle errors should be handled by caller
+			(error) => {
+				if (this.onError) {
+					this.onError(error);
+				} else {
+					console.error("Scene onEnter error:", error);
+				}
 			},
 		);
 	}
@@ -182,8 +207,12 @@ export class SceneManager {
 
 		safeExecute(
 			() => this.activeScene?.update?.(),
-			() => {
-				// Error handled silently - scene lifecycle errors should be handled by caller
+			(error) => {
+				if (this.onError) {
+					this.onError(error);
+				} else {
+					console.error("Scene update error:", error);
+				}
 			},
 		);
 	}
@@ -202,8 +231,12 @@ export class SceneManager {
 
 		safeExecute(
 			() => this.activeScene?.draw?.(),
-			() => {
-				// Error handled silently - scene lifecycle errors should be handled by caller
+			(error) => {
+				if (this.onError) {
+					this.onError(error);
+				} else {
+					console.error("Scene draw error:", error);
+				}
 			},
 		);
 	}
