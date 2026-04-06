@@ -12,6 +12,7 @@
  * 3. Retry on 429 (rate limit) with exponential backoff
  * 4. Skip already-published versions (no error)
  * 5. Create and push git tags for published packages
+ * 6. Create GitHub Releases for newly published packages
  */
 
 import { execSync } from "node:child_process";
@@ -91,16 +92,6 @@ function hasGitTag(name, version) {
 		return output.trim() === `${name}@${version}`;
 	} catch {
 		return false;
-	}
-}
-
-function createGitTag(tag) {
-	try {
-		if (!hasGitTag(tag.split("@")[0] + "/" + tag.split("/")[1]?.split("@")[0], tag.split("@").pop())) {
-			execSync(`git tag "${tag}"`, { cwd: ROOT });
-		}
-	} catch {
-		// Tag might already exist
 	}
 }
 
@@ -203,6 +194,33 @@ async function main() {
 			execSync("git push --tags", { cwd: ROOT, stdio: "inherit" });
 		} catch {
 			console.warn("Warning: failed to push git tags (may need manual push)");
+		}
+	}
+
+	// Create GitHub Releases for newly published packages
+	if (results.ok.length > 0) {
+		console.log("\nCreating GitHub Releases...");
+		for (const pkg of results.ok) {
+			const tag = `${pkg.name}@${pkg.version}`;
+			const shortName = pkg.name.replace("@al8b/", "");
+			const title = `${pkg.name} v${pkg.version}`;
+			const npmUrl = `https://www.npmjs.com/package/${pkg.name}/v/${pkg.version}`;
+			const body = `## ${title}\n\n**npm:** ${npmUrl}\n\n\`\`\`bash\nbun add ${pkg.name}@${pkg.version}\n\`\`\``;
+
+			try {
+				execSync(
+					`gh release create "${tag}" --title "${title}" --notes "${body.replace(/"/g, '\\"')}" --latest=false`,
+					{ cwd: ROOT, encoding: "utf-8", stdio: "pipe", timeout: 15000 },
+				);
+				console.log(`  REL  ${tag}`);
+			} catch (err) {
+				const output = (err.stderr || err.stdout || "").trim();
+				if (output.includes("already exists")) {
+					console.log(`  SKIP ${tag} (release exists)`);
+				} else {
+					console.warn(`  WARN ${tag}: failed to create release`);
+				}
+			}
 		}
 	}
 
