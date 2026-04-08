@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/sprites",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
