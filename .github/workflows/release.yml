@@ -1,8 +1,15 @@
 name: Release
 
 on:
-  # Only trigger manually. Push to main with changeset files will be handled
-  # by version-bump workflow (see below).
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".editorconfig"
+      - ".gitignore"
+
   workflow_dispatch:
 
 concurrency:
@@ -18,6 +25,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
+      pull-requests: write
 
     steps:
       - name: Clone repository
@@ -48,32 +56,16 @@ jobs:
       - name: Test (Unit)
         run: bun run test
 
-      - name: Bump versions
-        run: bun run changeset-version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Commit version bumps
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Version and Publish
+        uses: changesets/action@v1
         with:
-          commit_message: "[ci] release"
-          file_pattern: |
-            packages/*/package.json
-            .changeset/*.md
-            **/CHANGELOG.md
-
-      - name: Create .npmrc for publishing
-        run: |
-          printf "//registry.npmjs.org/:_authToken=%s\n" "$NPM_TOKEN" > .npmrc
-          printf "access=public\n" >> .npmrc
-          printf "registry=https://registry.npmjs.org/\n" >> .npmrc
+          version: bun run changeset-version
+          publish: bun run changeset-publish
+          commit: "[ci] release"
+          title: "[ci] release"
+          setupGitUser: true
+          createGithubReleases: true
         env:
+          # Use personal token instead of GITHUB_TOKEN to bypass org restrictions
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish to npm
-        run: bun run changeset-publish
-
-      - name: Push commits and tags
-        run: |
-          git push
-          git push --tags
