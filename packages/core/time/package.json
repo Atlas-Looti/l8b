@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/time",
-	"version": "0.1.10",
+	"version": "0.1.11",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",

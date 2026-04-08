@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/framework-config",
-	"version": "0.1.10",
+	"version": "0.1.11",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",

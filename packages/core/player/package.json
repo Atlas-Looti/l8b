@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/player",
-	"version": "0.1.10",
+	"version": "0.1.11",
 	"description": "Player control API for L8B - lifecycle, performance, and host communication",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
