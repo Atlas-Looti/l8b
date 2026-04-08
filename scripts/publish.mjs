@@ -8,15 +8,16 @@
  *
  * Flow:
  * 1. Discover all publishable packages in the monorepo
- * 2. Publish each package sequentially with a delay between publishes
- * 3. Retry on 429 (rate limit) with exponential backoff
- * 4. Skip already-published versions (no error)
- * 5. Create and push git tags for published packages
- * 6. Create GitHub Releases for newly published packages
+ * 2. Build a version map of all packages (for rewriting workspace:* deps)
+ * 3. Publish each package sequentially with workspace:* rewritten to actual versions
+ * 4. Retry on 429 (rate limit) with exponential backoff
+ * 5. Skip already-published versions (no error)
+ * 6. Create and push git tags for published packages
+ * 7. Create GitHub Releases for newly published packages
  */
 
 import { execSync } from "node:child_process";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, writeFileSync, rmSync, mkdirSync, cpSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -26,6 +27,79 @@ const BACKOFF_BASE_MS = 15000;
 
 function sleep(ms) {
 	return new Promise((r) => setTimeout(r, ms));
+}
+
+/**
+ * Build a map of all package names → their current versions.
+ * This is used to rewrite workspace:* dependencies to actual versions before publishing.
+ */
+function buildVersionMap() {
+	const versionMap = {};
+	const pkgGroups = ["packages/core", "packages/enggine", "packages/framework", "packages/tooling"];
+	const pkgDirect = ["packages/lootiscript"];
+
+	const scanDir = (dir) => {
+		if (!existsSync(dir)) return;
+		const entries = readdirSync(dir, { withFileTypes: true });
+		for (const entry of entries) {
+			if (!entry.isDirectory()) continue;
+			const pkgJsonPath = join(dir, entry.name, "package.json");
+			if (!existsSync(pkgJsonPath)) continue;
+			try {
+				const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
+				if (pkg.name && pkg.version) {
+					versionMap[pkg.name] = pkg.version;
+				}
+			} catch { /* skip */ }
+		}
+	};
+
+	for (const dir of [...pkgGroups, ...pkgDirect]) {
+		const fullDir = join(ROOT, dir);
+		if (existsSync(join(fullDir, "package.json"))) {
+			// Single package at path
+			try {
+				const pkg = JSON.parse(readFileSync(join(fullDir, "package.json"), "utf-8"));
+				if (pkg.name && pkg.version) {
+					versionMap[pkg.name] = pkg.version;
+				}
+			} catch { /* skip */ }
+		} else {
+			scanDir(fullDir);
+		}
+	}
+
+	return versionMap;
+}
+
+/**
+ * Rewrite workspace:* dependencies in a package.json to actual versions.
+ * Returns a new object (does not mutate original).
+ */
+function rewritePackageJson(pkgJson, versionMap) {
+	const rewritten = JSON.parse(JSON.stringify(pkgJson));
+
+	if (rewritten.dependencies) {
+		for (const [dep, version] of Object.entries(rewritten.dependencies)) {
+			if (version === "workspace:*" || version === "workspace:^") {
+				if (versionMap[dep]) {
+					rewritten.dependencies[dep] = "^" + versionMap[dep];
+				}
+			}
+		}
+	}
+
+	if (rewritten.peerDependencies) {
+		for (const [dep, version] of Object.entries(rewritten.peerDependencies)) {
+			if (version === "workspace:*" || version === "workspace:^") {
+				if (versionMap[dep]) {
+					rewritten.peerDependencies[dep] = "^" + versionMap[dep];
+				}
+			}
+		}
+	}
+
+	return rewritten;
 }
 
 function findPublishablePackages() {
@@ -95,90 +169,117 @@ function hasGitTag(name, version) {
 	}
 }
 
-async function publishPackage(pkg) {
+async function publishPackage(pkg, versionMap) {
 	const tag = `${pkg.name}@${pkg.version}`;
 
-	// Skip if already has git tag (already published in a previous run)
-	if (hasGitTag(pkg.name, pkg.version)) {
-		console.log(`  SKIP ${tag} (git tag exists)`);
-		return { status: "skip", pkg };
+	// Prepare a temp directory with rewritten package.json for publishing
+	const tmpDir = join(ROOT, ".publish-tmp", pkg.name.replace("/", "_"));
+	try {
+		mkdirSync(tmpDir, { recursive: true });
+	} catch { /* exists */ }
+
+	// Copy package.json and rewrite workspace:* deps
+	const pkgJsonPath = join(pkg.path, "package.json");
+	const pkgJson = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
+	const rewrittenPkgJson = rewritePackageJson(pkgJson, versionMap);
+	writeFileSync(join(tmpDir, "package.json"), JSON.stringify(rewrittenPkgJson, null, 2) + "\n");
+
+	// Copy dist/ if it exists (needed for published artifacts)
+	const srcDist = join(pkg.path, "dist");
+	if (existsSync(srcDist)) {
+		cpSync(srcDist, join(tmpDir, "dist"), { recursive: true });
 	}
 
-	// Skip if already on npm
-	if (isPublishedOnNpm(pkg.name, pkg.version)) {
-		console.log(`  SKIP ${tag} (already on npm)`);
-		try {
-			execSync(`git tag "${tag}"`, { cwd: ROOT });
-			console.log(`  TAG  ${tag}`);
-		} catch { /* tag exists */ }
-		return { status: "skip", pkg };
-	}
-
-	// Publish with retries
-	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-		try {
-			console.log(`  PUB  ${tag} (attempt ${attempt}/${MAX_RETRIES})`);
-			execSync("npm publish --access public", {
-				cwd: pkg.path,
-				encoding: "utf-8",
-				stdio: "pipe",
-				timeout: 60000,
-			});
-			// Create git tag on success
-			try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
-			console.log(`  OK   ${tag}`);
-			return { status: "ok", pkg };
-		} catch (err) {
-			const output = [err.stderr, err.stdout].filter(Boolean).join("\n");
-
-			// Check if it actually published despite warnings (npm sometimes exits non-zero for warnings)
-			if (output.includes("+ " + pkg.name + "@") || (output.includes("npm notice") && !output.includes("npm error"))) {
-				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
-				console.log(`  OK   ${tag} (published with warnings)`);
-				return { status: "ok", pkg };
-			}
-
-			// Already published — skip, not error
-			if (output.includes("cannot publish over") || output.includes("You cannot publish over")) {
-				console.log(`  SKIP ${tag} (already published)`);
-				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
-				return { status: "skip", pkg };
-			}
-
-			// Rate limited — wait and retry
-			if (output.includes("429") || output.includes("rate limit") || output.includes("Too Many Requests")) {
-				const backoff = BACKOFF_BASE_MS * attempt;
-				console.log(`  WAIT ${tag} (rate limited, retrying in ${backoff / 1000}s...)`);
-				await sleep(backoff);
-				continue;
-			}
-
-			// Other error — show full output for debugging
-			console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}):`);
-			for (const line of output.split("\n").slice(0, 10)) {
-				if (line.trim()) console.error(`    ${line}`);
-			}
-
-			if (attempt === MAX_RETRIES) {
-				return { status: "fail", pkg, error: output };
-			}
-			await sleep(DELAY_MS * attempt);
+	try {
+		// Skip if already has git tag (already published in a previous run)
+		if (hasGitTag(pkg.name, pkg.version)) {
+			console.log(`  SKIP ${tag} (git tag exists)`);
+			return { status: "skip", pkg };
 		}
-	}
 
-	return { status: "fail", pkg };
+		// Skip if already on npm
+		if (isPublishedOnNpm(pkg.name, pkg.version)) {
+			console.log(`  SKIP ${tag} (already on npm)`);
+			try {
+				execSync(`git tag "${tag}"`, { cwd: ROOT });
+				console.log(`  TAG  ${tag}`);
+			} catch { /* tag exists */ }
+			return { status: "skip", pkg };
+		}
+
+		// Publish with retries
+		for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+			try {
+				console.log(`  PUB  ${tag} (attempt ${attempt}/${MAX_RETRIES})`);
+				execSync("npm publish --access public", {
+					cwd: tmpDir,
+					encoding: "utf-8",
+					stdio: "pipe",
+					timeout: 60000,
+				});
+				// Create git tag on success
+				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
+				console.log(`  OK   ${tag}`);
+				return { status: "ok", pkg };
+			} catch (err) {
+				const output = [err.stderr, err.stdout].filter(Boolean).join("\n");
+
+				// Check if it actually published despite warnings (npm sometimes exits non-zero for warnings)
+				if (output.includes("+ " + pkg.name + "@") || (output.includes("npm notice") && !output.includes("npm error"))) {
+					try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
+					console.log(`  OK   ${tag} (published with warnings)`);
+					return { status: "ok", pkg };
+				}
+
+				// Already published — skip, not error
+				if (output.includes("cannot publish over") || output.includes("You cannot publish over")) {
+					console.log(`  SKIP ${tag} (already published)`);
+					try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
+					return { status: "skip", pkg };
+				}
+
+				// Rate limited — wait and retry
+				if (output.includes("429") || output.includes("rate limit") || output.includes("Too Many Requests")) {
+					const backoff = BACKOFF_BASE_MS * attempt;
+					console.log(`  WAIT ${tag} (rate limited, retrying in ${backoff / 1000}s...)`);
+					await sleep(backoff);
+					continue;
+				}
+
+				// Other error — show full output for debugging
+				console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}):`);
+				for (const line of output.split("\n").slice(0, 10)) {
+					if (line.trim()) console.error(`    ${line}`);
+				}
+
+				if (attempt === MAX_RETRIES) {
+					return { status: "fail", pkg, error: output };
+				}
+				await sleep(DELAY_MS * attempt);
+			}
+		}
+
+		return { status: "fail", pkg };
+	} finally {
+		// Cleanup temp directory after each package
+		try {
+			rmSync(tmpDir, { recursive: true, force: true });
+		} catch { /* ignore */ }
+	}
 }
 
 async function main() {
 	console.log("\n--- Sequential Publish (rate-limit safe) ---\n");
 
 	const packages = findPublishablePackages();
+	const versionMap = buildVersionMap();
 	console.log(`Found ${packages.length} publishable packages\n`);
+	console.log(`Version map built: ${Object.keys(versionMap).length} packages\n`);
 
 	const results = { ok: [], skip: [], fail: [] };
 
 	for (const pkg of packages) {
-		const result = await publishPackage(pkg);
+		const result = await publishPackage(pkg, versionMap);
 		results[result.status].push(result.pkg);
 
 		// Delay between publishes to avoid rate limits
@@ -186,6 +287,11 @@ async function main() {
 			await sleep(DELAY_MS);
 		}
 	}
+
+	// Cleanup temp directories
+	try {
+		rmSync(join(ROOT, ".publish-tmp"), { recursive: true, force: true });
+	} catch { /* ignore */ }
 
 	// Push git tags if any were created
 	if (results.ok.length > 0) {

@@ -13,6 +13,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Lint & Format Check
+    uses: ./.github/workflows/lint.yml
+    secrets: inherit
+
   verify:
     name: Verify
     uses: ./.github/workflows/verify.yml

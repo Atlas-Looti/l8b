@@ -6,7 +6,7 @@ docs/.vitepress/cache/deps/
 node_modules
 .pnp
 .pnp.js
-
+.claude
 # Local env files
 .env
 .env.local
@@ -20,6 +20,9 @@ coverage
 
 # Turbo
 .turbo
+
+# Publish temp dir
+.publish-tmp
 
 # Vercel
 .vercel
