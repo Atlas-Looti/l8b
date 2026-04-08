@@ -172,10 +172,6 @@ function hasGitTag(name, version) {
 async function publishPackage(pkg, versionMap) {
 	const tag = `${pkg.name}@${pkg.version}`;
 
-	// Debug: check token
-	const npmToken = process.env.NPM_TOKEN;
-	console.error(`  DEBUG token length: ${npmToken ? npmToken.length : 0}, set: ${!!npmToken}`);
-
 	// Prepare a temp directory with rewritten package.json for publishing
 	const tmpDir = join(ROOT, ".publish-tmp", pkg.name.replace("/", "_"));
 	try {
@@ -189,36 +185,11 @@ async function publishPackage(pkg, versionMap) {
 	writeFileSync(join(tmpDir, "package.json"), JSON.stringify(rewrittenPkgJson, null, 2) + "\n");
 
 	// Create .npmrc in tmpDir for authentication (if NPM_TOKEN is available)
+	const npmToken = process.env.NPM_TOKEN;
 	if (npmToken) {
 		writeFileSync(join(tmpDir, ".npmrc"),
 			`//registry.npmjs.org/:_authToken=${npmToken}\naccess=public\nregistry=https://registry.npmjs.org/\n`
 		);
-	}
-
-	// Debug: verify .npmrc exists and show first chars of token
-	const npmrcPath = join(tmpDir, ".npmrc");
-	const npmrcExists = existsSync(npmrcPath);
-	console.error(`  DEBUG .npmrc exists: ${npmrcExists}, token len: ${npmToken ? npmToken.length : 0}`);
-	if (npmrcExists) {
-		const npmrcContent = readFileSync(npmrcPath, "utf-8");
-		const tokenMatch = npmrcContent.match(/_authToken=(.+)/);
-		if (tokenMatch) {
-			console.error(`  DEBUG .npmrc token prefix: ${tokenMatch[1].substring(0, 4)}...`);
-		}
-	}
-
-	// Verify npm auth by checking who we can access
-	try {
-		const whoami = execSync("npm whoami --registry=https://registry.npmjs.org/", {
-			cwd: tmpDir,
-			encoding: "utf-8",
-			timeout: 15000,
-			env: { ...process.env, NPM_TOKEN: npmToken },
-		});
-		console.error(`  DEBUG npm whoami: ${whoami.trim()}`);
-	} catch (err) {
-		const out = [err.stderr, err.stdout].filter(Boolean).join("\n");
-		console.error(`  DEBUG npm whoami failed: ${out.substring(0, 200)}`);
 	}
 
 	// Copy dist/ if it exists (needed for published artifacts)
@@ -301,10 +272,8 @@ async function publishPackage(pkg, versionMap) {
 				}
 
 				// Other error — show full output for debugging
-				console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}), exit code: ${err.status}:`);
-				const lines = output.split("\n");
-				console.error(`    [${lines.length} lines of output]`);
-				for (const line of lines.slice(0, 20)) {
+				console.error(`  FAIL ${tag} (attempt ${attempt}/${MAX_RETRIES}):`);
+				for (const line of output.split("\n").slice(0, 10)) {
 					if (line.trim()) console.error(`    ${line}`);
 				}
 

@@ -79,6 +79,8 @@ jobs:
 
       - name: Publish to npm
         run: bun run changeset-publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Push commits and tags
         run: |
