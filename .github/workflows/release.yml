@@ -1,18 +1,8 @@
 name: Release
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "docs/**"
-      - "LICENSE"
-      - ".editorconfig"
-      - ".gitignore"
-      # Prevent loop: ignore commits that only bump versions
-      - "packages/*/package.json"
-      - ".changeset/**"
-
+  # Only trigger manually. Push to main with changeset files will be handled
+  # by version-bump workflow (see below).
   workflow_dispatch:
 
 concurrency:
@@ -66,7 +56,7 @@ jobs:
       - name: Commit version bumps
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "[ci] release version bump"
+          commit_message: "[ci] release"
           file_pattern: |
             packages/*/package.json
             .changeset/*.md
@@ -83,7 +73,7 @@ jobs:
       - name: Publish to npm
         run: bun run changeset-publish
 
-      - name: Push tags
+      - name: Push commits and tags
         run: |
-          git push --tags
           git push
+          git push --tags
