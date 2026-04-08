@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/diagnostics",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"description": "Centralized diagnostics system for error and warning messages",
 	"type": "module",
 	"sideEffects": false,

@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/runtime-realtime",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
