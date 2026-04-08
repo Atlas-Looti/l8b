@@ -239,6 +239,7 @@ async function publishPackage(pkg, versionMap) {
 					encoding: "utf-8",
 					stdio: "pipe",
 					timeout: 120000,
+					env: { ...process.env, NPM_TOKEN: process.env.NPM_TOKEN },
 				});
 				// Create git tag on success
 				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
