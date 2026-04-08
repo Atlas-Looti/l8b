@@ -21,9 +21,9 @@ import { readFileSync, readdirSync, existsSync, writeFileSync, rmSync, mkdirSync
 import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const DELAY_MS = 3000;
-const MAX_RETRIES = 5;
-const BACKOFF_BASE_MS = 15000;
+const DELAY_MS = 8000;
+const MAX_RETRIES = 3;
+const BACKOFF_BASE_MS = 30000;
 
 function sleep(ms) {
 	return new Promise((r) => setTimeout(r, ms));
@@ -224,11 +224,12 @@ async function publishPackage(pkg, versionMap) {
 			} catch (err) {
 				const output = [err.stderr, err.stdout].filter(Boolean).join("\n");
 
-				// Check if it actually published despite warnings (npm sometimes exits non-zero for warnings)
-				if (output.includes("+ " + pkg.name + "@") || (output.includes("npm notice") && !output.includes("npm error"))) {
-					try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
-					console.log(`  OK   ${tag} (published with warnings)`);
-					return { status: "ok", pkg };
+				// Rate limited — wait and retry FIRST (before other checks)
+				if (output.includes("429") || output.includes("rate limit") || output.includes("Too Many Requests")) {
+					const backoff = BACKOFF_BASE_MS * attempt;
+					console.log(`  WAIT ${tag} (rate limited, retrying in ${backoff / 1000}s...)`);
+					await sleep(backoff);
+					continue;
 				}
 
 				// Already published — skip, not error
@@ -238,12 +239,12 @@ async function publishPackage(pkg, versionMap) {
 					return { status: "skip", pkg };
 				}
 
-				// Rate limited — wait and retry
-				if (output.includes("429") || output.includes("rate limit") || output.includes("Too Many Requests")) {
-					const backoff = BACKOFF_BASE_MS * attempt;
-					console.log(`  WAIT ${tag} (rate limited, retrying in ${backoff / 1000}s...)`);
-					await sleep(backoff);
-					continue;
+				// Check if it actually published despite warnings (npm sometimes exits non-zero for warnings)
+				// Only count as success if we see "+ <name>@<version>" in output (added to registry)
+				if (output.includes("+ " + pkg.name + "@") || output.includes("+ " + pkg.name.split("/")[1] + "@")) {
+					try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
+					console.log(`  OK   ${tag} (published with warnings)`);
+					return { status: "ok", pkg };
 				}
 
 				// Other error — show full output for debugging
