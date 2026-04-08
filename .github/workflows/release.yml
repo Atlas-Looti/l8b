@@ -60,6 +60,8 @@ jobs:
 
       - name: Bump versions
         run: bun run changeset-version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit version bumps
         uses: stefanzweifel/git-auto-commit-action@v5
