@@ -190,6 +190,21 @@ async function publishPackage(pkg, versionMap) {
 		cpSync(srcDist, join(tmpDir, "dist"), { recursive: true });
 	}
 
+	// Copy other files listed in package.json "files" field
+	const pkgFiles = pkgJson.files || [];
+	for (const file of pkgFiles) {
+		// Skip dist/**/* - already copied
+		if (file.includes("**")) continue;
+		const srcFile = join(pkg.path, file);
+		if (existsSync(srcFile)) {
+			// Copy single file preserving directory structure
+			const destFile = join(tmpDir, file);
+			const destDir = destFile.substring(0, destFile.lastIndexOf("/"));
+			if (destDir) mkdirSync(destDir, { recursive: true });
+			cpSync(srcFile, destFile);
+		}
+	}
+
 	try {
 		// Skip if already has git tag (already published in a previous run)
 		if (hasGitTag(pkg.name, pkg.version)) {
@@ -211,11 +226,11 @@ async function publishPackage(pkg, versionMap) {
 		for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
 			try {
 				console.log(`  PUB  ${tag} (attempt ${attempt}/${MAX_RETRIES})`);
-				execSync("npm publish --access public", {
+				execSync("npm publish --access public --no-audit --fund false", {
 					cwd: tmpDir,
 					encoding: "utf-8",
 					stdio: "pipe",
-					timeout: 60000,
+					timeout: 120000,
 				});
 				// Create git tag on success
 				try { execSync(`git tag "${tag}"`, { cwd: ROOT }); } catch { /* tag exists */ }
