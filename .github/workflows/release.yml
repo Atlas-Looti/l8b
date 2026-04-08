@@ -23,7 +23,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     permissions:
       contents: write
@@ -72,10 +72,15 @@ jobs:
             .changeset/*.md
             **/CHANGELOG.md
 
-      - name: Publish to npm
-        run: bun run changeset-publish
+      - name: Create .npmrc for publishing
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          echo "access=public" >> .npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        run: bun run changeset-publish
 
       - name: Push tags
         run: |
