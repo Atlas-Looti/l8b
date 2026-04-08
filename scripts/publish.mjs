@@ -184,6 +184,14 @@ async function publishPackage(pkg, versionMap) {
 	const rewrittenPkgJson = rewritePackageJson(pkgJson, versionMap);
 	writeFileSync(join(tmpDir, "package.json"), JSON.stringify(rewrittenPkgJson, null, 2) + "\n");
 
+	// Create .npmrc in tmpDir for authentication (if NPM_TOKEN is available)
+	const npmToken = process.env.NPM_TOKEN;
+	if (npmToken) {
+		writeFileSync(join(tmpDir, ".npmrc"),
+			`//registry.npmjs.org/:_authToken=${npmToken}\naccess=public\nregistry=https://registry.npmjs.org/\n`
+		);
+	}
+
 	// Copy dist/ if it exists (needed for published artifacts)
 	const srcDist = join(pkg.path, "dist");
 	if (existsSync(srcDist)) {
