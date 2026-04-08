@@ -203,6 +203,8 @@ async function publishPackage(pkg, versionMap) {
 	for (const file of pkgFiles) {
 		// Skip dist/**/* - already copied
 		if (file.includes("**")) continue;
+		// Skip package.json - we already wrote the rewritten version
+		if (file === "package.json") continue;
 		const srcFile = join(pkg.path, file);
 		if (existsSync(srcFile)) {
 			// Copy single file preserving directory structure
