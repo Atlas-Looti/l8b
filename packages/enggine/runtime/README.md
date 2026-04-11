@@ -23,6 +23,10 @@ Browser runtime facade for AL8B games. It owns asset loading, VM bootstrap, the 
 
 Use `bridge` to connect the runtime to your app shell, backend, or realtime layer.
 
+**Recommended: `@al8b/http-bridge`** — provides a production-ready bridge with HTTP/REST support, endpoint mapping, and auth headers. See [@al8b/http-bridge](../http-bridge/README.md).
+
+**Manual implementation:**
+
 ```ts
 import { createRuntime, type RuntimeBridge } from "@al8b/runtime";
 

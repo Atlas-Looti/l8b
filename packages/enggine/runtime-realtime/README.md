@@ -95,6 +95,40 @@ export interface RealtimeBridge {
 }
 ```
 
+## Combining with `@al8b/http-bridge`
+
+For multiplayer games that also need REST API access (user profiles, leaderboards, inventory), compose `@al8b/http-bridge` with `@al8b/runtime-realtime`:
+
+```ts
+import { createRealtimeBridge } from "@al8b/runtime-realtime";
+import { createHttpBridge } from "@al8b/http-bridge";
+
+// Realtime bridge handles real-time player sync
+// HttpBridge handles REST API calls
+const bridge = {
+  ...createRealtimeBridge(myWebSocket),
+  ...createHttpBridge({ baseUrl: "https://api.mygame.com" }),
+  // Both getSession and saveSnapshot/loadSnapshot should come from
+  // your auth layer (server or secure storage), not just HTTP:
+  getSession: () => getSessionFromServer(),
+  saveSnapshot: async (snap) => cloudSave(snap),
+  loadSnapshot: async (meta) => cloudLoad(meta),
+};
+
+createRuntime({ bridge, sources: { main: "..." } });
+```
+
+In your LootiScript game:
+```lua
+-- Realtime: fire-and-forget player events
+host.emit("player.move", { x: 100, y: 50 });
+
+-- REST: fetch data with callback
+host.request("user.getProfile", { id: session.user().id }, function(response)
+    print("Hello " + response.name);
+end);
+```
+
 ## Example: WebSocket Transport
 
 ```ts

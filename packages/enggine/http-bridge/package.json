@@ -1,5 +1,5 @@
 {
-  "name": "@al8b/runtime",
+  "name": "@al8b/http-bridge",
   "version": "0.1.14",
   "sideEffects": false,
   "files": [
@@ -24,22 +24,17 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@al8b/vm": "workspace:*",
-    "@al8b/io": "workspace:*",
-    "@al8b/screen": "workspace:*",
-    "@al8b/audio": "workspace:*",
-    "@al8b/input": "workspace:*",
-    "@al8b/time": "workspace:*",
-    "@al8b/sprites": "workspace:*",
-    "@al8b/image": "workspace:*",
-    "@al8b/map": "workspace:*",
-    "@al8b/palette": "workspace:*"
+    "@al8b/runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
   },
   "keywords": [
     "runtime",
-    "game-engine",
-    "game-loop",
-    "vm"
+    "http",
+    "bridge",
+    "api",
+    "fetch"
   ],
   "publishConfig": {
     "access": "public"
