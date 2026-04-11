@@ -5,6 +5,7 @@
  */
 
 export * from "./assets";
+export * from "./bridge";
 // Component exports (for advanced usage)
 export * from "./core";
 export * from "./hot-reload";

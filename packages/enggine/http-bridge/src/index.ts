@@ -1,3 +1,5 @@
+export { BridgeBuilder } from "./bridge-builder";
+
 /**
  * @al8b/http-bridge
  *

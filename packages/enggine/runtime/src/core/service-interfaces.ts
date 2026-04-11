@@ -92,6 +92,47 @@ export interface IDebugLogger {
 	debugScreen(screen: IScreen, debug?: unknown): void;
 }
 
+// ─── Game Systems ─────────────────────────────────────────────────────────────
+
+export interface IEventBus {
+	flushDeferred(): void;
+	reset(): void;
+	getInterface(): Record<string, unknown>;
+}
+
+export interface ITweenManager {
+	update(dtMs: number): void;
+	reset(): void;
+	getInterface(): Record<string, unknown>;
+}
+
+export interface IFSMManager {
+	update(dtMs: number): void;
+	reset(): void;
+	getInterface(): Record<string, unknown>;
+}
+
+export interface IPhysicsWorld {
+	update(dtMs: number): void;
+	reset(): void;
+	getInterface(): Record<string, unknown>;
+}
+
+export interface ICameraManager {
+	update(dtMs: number): void;
+	reset(): void;
+	setContextProvider(fn: () => CanvasRenderingContext2D | null): void;
+	getInterface(): Record<string, unknown>;
+}
+
+export interface IParticleManager {
+	update(dtMs: number): void;
+	draw(): void;
+	setContext(ctx: CanvasRenderingContext2D): void;
+	reset(): void;
+	getInterface(): Record<string, unknown>;
+}
+
 // ─── Factory Interface ────────────────────────────────────────────────────────
 
 export interface RuntimeServiceFactory {
@@ -127,4 +168,11 @@ export interface RuntimeServiceFactory {
 	createAssetRegistry(): IAssetRegistry;
 
 	createDebugLogger(): IDebugLogger;
+
+	createEventBus(): IEventBus;
+	createTweenManager(): ITweenManager;
+	createFSMManager(): IFSMManager;
+	createPhysicsWorld(): IPhysicsWorld;
+	createCameraManager(screenW: number, screenH: number): ICameraManager;
+	createParticleManager(): IParticleManager;
 }

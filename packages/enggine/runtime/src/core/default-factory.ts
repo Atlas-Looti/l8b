@@ -10,6 +10,12 @@
 import { AudioCore } from "@al8b/audio";
 import { Screen } from "@al8b/screen";
 import { StatePlayer } from "@al8b/time";
+import { EventBus } from "@al8b/events";
+import { TweenManager } from "@al8b/tween";
+import { FSMManager } from "@al8b/fsm";
+import { PhysicsWorld } from "@al8b/physics";
+import { CameraManager } from "@al8b/camera";
+import { ParticleManager } from "@al8b/particles";
 import { AssetLoader } from "../assets";
 import { InputManager } from "../input";
 import { RuntimeAssetsRegistry } from "./assets-registry";
@@ -91,6 +97,19 @@ export const DefaultRuntimeServiceFactory: RuntimeServiceFactory = {
 	createDebugLogger: () => {
 		return new DebugLogger() as unknown as import("./service-interfaces").IDebugLogger;
 	},
+
+	createEventBus: () => new EventBus() as unknown as import("./service-interfaces").IEventBus,
+
+	createTweenManager: () => new TweenManager() as unknown as import("./service-interfaces").ITweenManager,
+
+	createFSMManager: () => new FSMManager() as unknown as import("./service-interfaces").IFSMManager,
+
+	createPhysicsWorld: () => new PhysicsWorld() as unknown as import("./service-interfaces").IPhysicsWorld,
+
+	createCameraManager: (screenW, screenH) =>
+		new CameraManager(screenW, screenH) as unknown as import("./service-interfaces").ICameraManager,
+
+	createParticleManager: () => new ParticleManager() as unknown as import("./service-interfaces").IParticleManager,
 };
 
 // ─── Re-exports for convenience ─────────────────────────────────────────────────

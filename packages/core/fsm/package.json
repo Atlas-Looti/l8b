@@ -1,0 +1,22 @@
+{
+    "name": "@al8b/fsm",
+    "version": "0.0.1",
+    "sideEffects": false,
+    "files": [
+        "dist/**/*",
+        "README.md",
+        "package.json"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "clean": "bun --bun ../../../scripts/clean-package.mjs dist",
+        "test": "vitest run --passWithNoTests"
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "dependencies": {},
+    "keywords": [
+        "fsm"
+    ]
+}

@@ -2,6 +2,12 @@ import { AudioCore } from "@al8b/audio";
 import { Screen } from "@al8b/screen";
 import { StatePlayer, TimeMachine, type StateSnapshot, type TimeMachineCommand } from "@al8b/time";
 import { L8BVM } from "@al8b/vm";
+import type { EventBus } from "@al8b/events";
+import type { TweenManager } from "@al8b/tween";
+import type { FSMManager } from "@al8b/fsm";
+import type { PhysicsWorld } from "@al8b/physics";
+import type { CameraManager } from "@al8b/camera";
+import type { ParticleManager } from "@al8b/particles";
 import { AssetLoader } from "../assets";
 import { SourceUpdater } from "../hot-reload";
 import { InputManager } from "../input";
@@ -22,6 +28,7 @@ import { RuntimeAssetsRegistry } from "./assets-registry";
 import { createRuntimeGlobalApi, createRuntimeMeta } from "./api-factory";
 import type { RuntimeServiceFactory, IPlayerService } from "./service-interfaces";
 import { DefaultRuntimeServiceFactory } from "./default-factory";
+import { FRAME_TIME_MS } from "../constants";
 
 export interface RuntimeController {
 	readonly screen: Screen;
@@ -77,6 +84,12 @@ export class RuntimeControllerImpl implements RuntimeController {
 	public readonly input: InputManager;
 	public readonly system: System;
 	public readonly playerService: IPlayerService;
+	public readonly events: EventBus;
+	public readonly tweens: TweenManager;
+	public readonly fsmManager: FSMManager;
+	public readonly physics: PhysicsWorld;
+	public readonly cameraManager: CameraManager;
+	public readonly particles: ParticleManager;
 	public vm: L8BVM | null = null;
 	public timeMachine: TimeMachine | null = null;
 
@@ -118,6 +131,16 @@ export class RuntimeControllerImpl implements RuntimeController {
 			this.audio,
 			this.listener,
 		) as unknown as AssetLoader;
+
+		this.events = this.factory.createEventBus() as unknown as EventBus;
+		this.tweens = this.factory.createTweenManager() as unknown as TweenManager;
+		this.fsmManager = this.factory.createFSMManager() as unknown as FSMManager;
+		this.physics = this.factory.createPhysicsWorld() as unknown as PhysicsWorld;
+		this.cameraManager = this.factory.createCameraManager(
+			options.width || 400,
+			options.height || 400,
+		) as unknown as CameraManager;
+		this.particles = this.factory.createParticleManager() as unknown as ParticleManager;
 
 		this.logStep("RuntimeController constructed", {
 			width: this.screen.width,
@@ -293,7 +316,9 @@ export class RuntimeControllerImpl implements RuntimeController {
 				}
 
 				const progress = this.assetLoader.getProgress();
-				this.system.setLoading(Math.floor(progress * 100));
+				const progressPct = Math.floor(progress * 100);
+				this.system.setLoading(progressPct);
+				this.listener.onAssetProgress?.(progressPct);
 				this.assetLoader.showLoadingBar(this.screen.getInterface());
 				requestAnimationFrame(checkReady);
 			};
@@ -315,6 +340,12 @@ export class RuntimeControllerImpl implements RuntimeController {
 			playerService: this.playerService,
 			assets: this.assetRegistry,
 			bridge: this.options.bridge,
+			events: this.events,
+			tweens: this.tweens,
+			fsmManager: this.fsmManager,
+			physics: this.physics,
+			cameraManager: this.cameraManager,
+			particles: this.particles,
 			getVM: () => this.vm,
 			getSessionSnapshot: () => this.getSession(),
 			sendHostEvent: (event: HostEvent) => this.emitBridgeEvent(event.type, event.payload),
@@ -387,6 +418,7 @@ export class RuntimeControllerImpl implements RuntimeController {
 			this.vm.call("init");
 			this.vm.runner.tick();
 			this.logStep("vm: init() executed");
+			this.listener.onReady?.();
 		} catch (err: any) {
 			reportError(this.listener, {
 				error: err.message || String(err),
@@ -443,6 +475,14 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.frameCount++;
 		this.input.update();
 
+		const dtMs = this.gameLoop ? this.gameLoop.getState().dt : FRAME_TIME_MS;
+
+		this.tweens.update(dtMs);
+		this.fsmManager.update(dtMs);
+		this.cameraManager.update(dtMs);
+		this.particles.update(dtMs);
+		this.physics.update(dtMs);
+
 		if (this.frameCount % this.DEBUG_UPDATE_FREQUENCY === 0) {
 			this.debugLogger.debugInputs(this.input, this.options.debug);
 			this.debugLogger.debugScreen(this.screen, this.options.debug);
@@ -456,6 +496,7 @@ export class RuntimeControllerImpl implements RuntimeController {
 		try {
 			this.vm.call("update");
 			this.vm.runner.tick();
+			this.events.flushDeferred();
 
 			if (this.vm.error_info) {
 				const err: any = Object.assign({}, this.vm.error_info);
@@ -480,6 +521,8 @@ export class RuntimeControllerImpl implements RuntimeController {
 
 			this.vm.call("draw");
 			this.vm.runner.tick();
+
+			this.particles.draw();
 
 			reportWarnings(this.vm, this.listener);
 
@@ -567,6 +610,10 @@ export class RuntimeControllerImpl implements RuntimeController {
 
 	private emitBridgeEvent(name: string, payload?: unknown): void {
 		this.options.bridge?.emit?.(name, payload);
+		// Also fire listener.onHostEmit so host apps can react without a custom bridge
+		if (name !== "runtime.started" && name !== "runtime.snapshot" && name !== "time_machine_status") {
+			this.listener.onHostEmit?.(name, payload);
+		}
 	}
 
 	private sendBridgeRequest(name: string, payload?: unknown, callback?: (result: unknown) => void): string | null {
@@ -695,6 +742,12 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.frameCount = 0;
 		this.lastUpdateRate = -1;
 		this.isStopped = false;
+		this.events.reset();
+		this.tweens.reset();
+		this.fsmManager.reset();
+		this.physics.reset();
+		this.cameraManager.reset();
+		this.particles.reset();
 	}
 
 	private logStep(message: string, payload?: unknown): void {
@@ -733,6 +786,12 @@ function serializeGlobalSnapshot(global: object): StateSnapshot {
 		globalRecord.host,
 		globalRecord.session,
 		globalRecord.memory,
+		globalRecord.events,
+		globalRecord.tween,
+		globalRecord.fsm,
+		globalRecord.camera,
+		globalRecord.particles,
+		globalRecord.physics,
 	].filter((value) => value != null);
 
 	return deepCloneValue(globalRecord, excluded);

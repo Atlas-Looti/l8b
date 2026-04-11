@@ -77,11 +77,26 @@ export interface RuntimeOptions {
  * Runtime listener for events
  */
 export interface RuntimeListener {
-	/** Log message */
+	/** Log message from game code (print()) */
 	log?: (message: string) => void;
-	/** Report error */
+	/** Runtime or game code error */
 	reportError?: (error: ErrorInfo) => void;
-	/** Code paused (system.pause called) */
+	/** Game called system.pause() */
 	codePaused?: () => void;
+	/**
+	 * Game finished init() and is now running.
+	 * Called once per runtime.start() after assets are loaded and init() completes.
+	 */
+	onReady?: () => void;
+	/**
+	 * Game called host.emit(name, payload).
+	 * Use this to react to game events from the host app without needing a custom bridge.
+	 */
+	onHostEmit?: (name: string, payload: unknown) => void;
+	/**
+	 * Asset loading progress (0–100).
+	 * Called repeatedly during startup until all assets are loaded.
+	 */
+	onAssetProgress?: (progress: number) => void;
 }
 

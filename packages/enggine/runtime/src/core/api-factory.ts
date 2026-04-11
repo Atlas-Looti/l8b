@@ -13,7 +13,7 @@ import type {
 	RuntimeSnapshotMeta,
 } from "../types";
 import { ObjectPool } from "../utils/object-pool";
-import type { IPlayerService } from "./service-interfaces";
+import type { IPlayerService, IEventBus, ITweenManager, IFSMManager, IPhysicsWorld, ICameraManager, IParticleManager } from "./service-interfaces";
 import type { RuntimeAssetsRegistry } from "./assets-registry";
 import type { Screen } from "@al8b/screen";
 import type { AudioCore } from "@al8b/audio";
@@ -29,6 +29,12 @@ export interface RuntimeApiFactoryContext {
 	playerService: IPlayerService;
 	assets: RuntimeAssetsRegistry;
 	bridge?: RuntimeBridge;
+	events: IEventBus;
+	tweens: ITweenManager;
+	fsmManager: IFSMManager;
+	physics: IPhysicsWorld;
+	cameraManager: ICameraManager;
+	particles: IParticleManager;
 	getVM: () => L8BVM | null;
 	getSessionSnapshot: () => RuntimeSessionSnapshot | null;
 	sendHostEvent: (event: HostEvent) => void;
@@ -76,6 +82,12 @@ export function createRuntimeGlobalApi(context: RuntimeApiFactoryContext): Parti
 		save: (meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void) => unknown;
 		load: (meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void) => unknown;
 	};
+	events: Record<string, unknown>;
+	tween: Record<string, unknown>;
+	fsm: Record<string, unknown>;
+	physics: Record<string, unknown>;
+	camera: Record<string, unknown>;
+	particles: Record<string, unknown>;
 } {
 	const inputStates = context.input.getStates();
 	const session = {
@@ -103,6 +115,20 @@ export function createRuntimeGlobalApi(context: RuntimeApiFactoryContext): Parti
 		load: (meta?: RuntimeSnapshotMeta, callback?: (result: unknown) => void) => context.loadSnapshot(meta, callback),
 	};
 
+	// Wire camera canvas context lazily (canvas is ready by the time API is created)
+	const getCtx = () => {
+		try {
+			return context.screen.getCanvas().getContext("2d") ?? null;
+		} catch {
+			return null;
+		}
+	};
+	context.cameraManager.setContextProvider(getCtx);
+
+	// Wire particle canvas context
+	const ctx2d = getCtx();
+	if (ctx2d) context.particles.setContext(ctx2d);
+
 	return {
 		screen: context.screen.getInterface(),
 		audio: context.audio.getInterface(),
@@ -120,6 +146,12 @@ export function createRuntimeGlobalApi(context: RuntimeApiFactoryContext): Parti
 		session,
 		memory,
 		system: context.system.getAPI(),
+		events: context.events.getInterface(),
+		tween: context.tweens.getInterface(),
+		fsm: context.fsmManager.getInterface(),
+		physics: context.physics.getInterface(),
+		camera: context.cameraManager.getInterface(),
+		particles: context.particles.getInterface(),
 		Image,
 		Sprite,
 		TileMap,
