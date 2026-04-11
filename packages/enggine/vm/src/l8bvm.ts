@@ -195,7 +195,7 @@ export class L8BVM {
 	}
 }
 
-// Inline types stub for @al8b/framework-shared
+// Compiled module artifact types - inlined to avoid external dependency
 interface CompiledModuleArtifact {
 	format: "l8b-compiled-routine";
 	routine: SerializedRoutineData;

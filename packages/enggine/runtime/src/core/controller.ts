@@ -21,6 +21,8 @@ import { DebugLogger } from "./debug-logger";
 import { reportError, reportWarnings } from "./error-handler";
 import { RuntimeAssetsRegistry } from "./assets-registry";
 import { createRuntimeGlobalApi, createRuntimeMeta } from "./api-factory";
+import type { RuntimeServiceFactory } from "./service-interfaces";
+import { DefaultRuntimeServiceFactory } from "./default-factory";
 
 export interface RuntimeController {
 	readonly screen: Screen;
@@ -79,23 +81,29 @@ export class RuntimeControllerImpl implements RuntimeController {
 	public vm: L8BVM | null = null;
 	public timeMachine: TimeMachine | null = null;
 
-	constructor(options: RuntimeOptions = {}) {
+	constructor(
+		options: RuntimeOptions = {},
+		private readonly factory: RuntimeServiceFactory = DefaultRuntimeServiceFactory,
+	) {
 		this.options = options;
 		this.listener = options.listener || {};
 		this.preserveStorageOnNextBoot = options.preserveStorage || false;
 		this.sessionSnapshot = options.initialSession || null;
 
-		this.screen = new Screen({
+		// Create services in dependency order using factory.
+		// Factory returns concrete instances; cast via 'as unknown as' to handle
+		// interface-to-concrete-type assignment (structural typing).
+		this.screen = this.factory.createScreen({
 			runtime: this,
 			canvas: options.canvas,
 			width: options.width || 400,
 			height: options.height || 400,
-		});
+		}) as unknown as Screen;
 
-		this.audio = new AudioCore(this);
-		this.input = new InputManager(this.screen.getCanvas());
-		this.system = new System();
-		this.playerService = new PlayerService({
+		this.audio = this.factory.createAudioCore(this) as unknown as AudioCore;
+		this.input = this.factory.createInputManager(this.screen.getCanvas()) as unknown as InputManager;
+		this.system = this.factory.createSystem() as unknown as System;
+		this.playerService = this.factory.createPlayerService({
 			pause: () => this.stop(),
 			resume: () => this.resume(),
 			postMessage: (message: any) => this.emitPlayerMessage(message),
@@ -104,8 +112,13 @@ export class RuntimeControllerImpl implements RuntimeController {
 			setUpdateRate: (rate: number) => {
 				this.system.getAPI().update_rate = rate;
 			},
-		});
-		this.assetLoader = new AssetLoader(options.url || "", options.resources || {}, this.audio, this.listener);
+		}) as unknown as PlayerService;
+		this.assetLoader = this.factory.createAssetLoader(
+			options.url || "",
+			options.resources || {},
+			this.audio,
+			this.listener,
+		) as unknown as AssetLoader;
 
 		this.logStep("RuntimeController constructed", {
 			width: this.screen.width,

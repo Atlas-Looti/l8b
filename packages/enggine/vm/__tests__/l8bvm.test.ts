@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { Compiler, Parser } from "@al8b/lootiscript";
-import type { CompiledModuleArtifact } from "@al8b/framework-shared";
 import { L8BVM } from "../src/l8bvm";
+
+// CompiledModuleArtifact type is inlined in l8bvm.ts
+type CompiledModuleArtifact = {
+	format: "l8b-compiled-routine";
+	routine: {
+		num_args: number;
+		ops: number[];
+		args: unknown[];
+		import_refs: unknown[];
+		import_values: unknown[];
+		import_self: number;
+		locals_size?: number;
+	};
+};
 
 describe("L8BVM.loadRoutine", () => {
 	it("accepts compiled module artifacts", () => {
@@ -18,10 +31,7 @@ describe("L8BVM.loadRoutine", () => {
 		const compiler = new Compiler(parser.program);
 		const artifact: CompiledModuleArtifact = {
 			format: "l8b-compiled-routine",
-			version: 1,
-			module: "main",
-			file: "src/main.loot",
-			routine: compiler.routine.export(),
+			routine: compiler.routine.export() as CompiledModuleArtifact["routine"],
 		};
 
 		expect(() => vm.loadRoutine(artifact, "main")).not.toThrow();

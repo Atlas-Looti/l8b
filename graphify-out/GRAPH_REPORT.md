@@ -1,7 +1,7 @@
 # Graph Report - .  (2026-04-11)
 
 ## Corpus Check
-- 175 files · ~72,790 words
+- 175 files · ~70,044 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -32,15 +32,6 @@
   packages\core\palette\src\core\palette.ts → packages/core/palette/README.md
 - `StorageService` --conceptually_related_to--> `@al8b/runtime`  [INFERRED]
   packages/enggine/io/src/storage/index.ts → CONTRIBUTING.md
-
-## Hyperedges (group relationships)
-- **Screen Layered Inheritance** — basescreen_basescreen, primitivescreen_primitivescreen, spritescreen_spritescreen [EXTRACTED 1.00]
-- **Input Device Handlers** — input_input, input_keyboardinput, input_mouseinput, input_touchinput, input_gamepadinput [EXTRACTED 1.00]
-- **TileMap Renderer Functions** — tilemap_tilemap, renderer_ensurecanvas, renderer_drawtile, renderer_queueanimatedtile, renderer_rendereranimatedtiles [EXTRACTED 1.00]
-- **LootiScript Compilation Pipeline Components** — lootiscript_tokenizer, lootiscript_parser, lootiscript_compiler, lootiscript_routine [EXTRACTED 1.00]
-- **LootiScript Runtime Execution Engine** — lootiscript_processor, lootiscript_runner, lootiscript_thread, lootiscript_opcodes [EXTRACTED 1.00]
-- **Runtime Host Integration Surface** — runtime_host_globals, runtime_session_globals, runtime_memory_globals, runtime_runtimebridge [EXTRACTED 1.00]
-- **Game Hub Tile Grid** — game_tiles, bird_game_tile, blockparty_game_tile [EXTRACTED 1.00]
 
 ## Communities
 

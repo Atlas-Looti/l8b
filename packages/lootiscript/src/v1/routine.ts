@@ -207,6 +207,23 @@ class OPCODES_CLASS {
 export const OPCODES = new OPCODES_CLASS();
 
 /**
+ * RefInfo - Token/reference metadata stored per-opcode for debugging and warnings.
+ * Each opcode in a routine has a corresponding ref entry with source location
+ * and expression information.
+ */
+export interface RefInfo {
+	token?: {
+		tokenizer: { filename: string };
+		line: number;
+		column: number;
+		start: number;
+		length: number;
+	};
+	expression?: { token: RefInfo["token"] };
+	nowarning?: boolean;
+}
+
+/**
  * Routine - VM bytecode routine representing compiled LootiScript code
  */
 export class Routine {
@@ -214,7 +231,7 @@ export class Routine {
 	ops: number[];
 	opcodes: number[];
 	arg1: any[];
-	ref: any[];
+	ref: (RefInfo | undefined)[];
 	label_count: number;
 	labels: Record<string, number>;
 	transpile: boolean;
