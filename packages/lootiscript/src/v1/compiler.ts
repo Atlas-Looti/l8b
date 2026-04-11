@@ -1185,6 +1185,8 @@ export class Compiler {
 		}
 		this.routine.optimize();
 		this.routine.resolveLabels();
+		// Store source text for hot reload change detection
+		this.routine.source = (func as any).source;
 		this.count += this.routine.opcodes.length;
 		r = this.routine;
 		// console.info r.toString()

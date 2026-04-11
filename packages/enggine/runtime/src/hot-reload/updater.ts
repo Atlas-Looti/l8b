@@ -65,8 +65,8 @@ export class SourceUpdater {
 
 			// Re-run init() function if it was modified during hot reload
 			// This allows reinitialization without full page refresh
-			if ((this.vm.runner as any)?.getFunctionSource) {
-				const init = (this.vm.runner as any).getFunctionSource("init");
+			if (this.vm.runner?.getFunctionSource) {
+				const init = this.vm.runner.getFunctionSource("init");
 				if (init && init !== this.previousInit && reinit) {
 					this.previousInit = init;
 					this.vm.call("init");

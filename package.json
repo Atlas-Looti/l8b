@@ -8,7 +8,6 @@
 		"packages/**/*",
 		"scripts/**/*",
 		"apps/**/*",
-		"docs-e2e",
 		"!**/dist/**",
 		"!**/next/**",
 		"!**/l8b/**",

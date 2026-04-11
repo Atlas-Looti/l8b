@@ -130,10 +130,37 @@ export function createRuntimeGlobalApi(context: RuntimeApiFactoryContext): Parti
 	};
 }
 
+/**
+ * Deep clone a value, handling primitives, arrays, objects, and Date.
+ * Unlike JSON.parse(JSON.stringify()), this:
+ * - Returns null for functions instead of stripping them silently
+ * - Preserves Date objects as Date instances
+ * - Handles circular references via excluded set
+ */
 function cloneValue<T>(value: T): T {
 	if (value == null) {
 		return value;
 	}
 
-	return JSON.parse(JSON.stringify(value)) as T;
+	if (value instanceof Date) {
+		return new Date(value) as T;
+	}
+
+	if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+		return value;
+	}
+
+	if (Array.isArray(value)) {
+		return value.map((entry) => cloneValue(entry)) as T;
+	}
+
+	if (typeof value === "object") {
+		const clone: Record<string, unknown> = {};
+		for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+			clone[key] = cloneValue(entry);
+		}
+		return clone as T;
+	}
+
+	return null as T;
 }

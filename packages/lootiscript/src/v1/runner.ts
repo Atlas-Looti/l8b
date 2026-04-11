@@ -375,6 +375,20 @@ export class Runner {
 		return Program.toString(obj);
 	}
 
+	/**
+	 * Get the source text of a compiled function by name.
+	 *
+	 * Used by hot reload to detect when init() has changed and needs re-execution.
+	 * Returns undefined if the function doesn't exist in the global scope.
+	 */
+	getFunctionSource(name: string): string | undefined {
+		const fn = this.l8bvm.context.global[name];
+		if (fn instanceof Routine) {
+			return fn.source;
+		}
+		return undefined;
+	}
+
 	process(thread: Thread, time_limit: number): any {
 		let processor: Processor;
 		processor = thread.processor;

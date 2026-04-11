@@ -226,6 +226,8 @@ export class Routine {
 	as_function?: Function;
 	object?: any;
 	callback?: Function | null;
+	/** Source text of the function, used for hot reload change detection */
+	source?: string;
 
 	/**
 	 * Inline caches mapped by opcode index
@@ -253,11 +255,13 @@ export class Routine {
 
 	clone(): Routine {
 		const r = new Routine(this.num_args);
-		r.opcodes = this.opcodes;
-		r.arg1 = this.arg1;
-		r.ref = this.ref;
+		// Deep clone arrays to prevent shared mutations between clones
+		r.opcodes = [...this.opcodes];
+		r.arg1 = [...this.arg1];
+		r.ref = [...this.ref];
 		r.locals_size = this.locals_size;
 		r.uses_arguments = this.uses_arguments;
+		r.source = this.source;
 		// Inline caches are not cloned - each routine instance starts with
 		// fresh caches to avoid polluting new instances with stale cache data
 		return r;

@@ -342,20 +342,15 @@ export class Processor {
 			r,
 			rc,
 			ref,
-			// ref1, // unused
-			// ref10, // unused
-			ref11,
-			ref12,
-			// ref13, // unused
-			ref14,
 			ref2,
 			ref3,
-			// ref4, // unused
 			ref5,
 			ref6,
-			// ref7, // unused
 			ref8,
 			ref9,
+			ref11,
+			ref12,
+			ref14,
 			res,
 			restore_op_index,
 			routine,
