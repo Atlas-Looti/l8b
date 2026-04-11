@@ -49,7 +49,7 @@ import {
 } from "./processor-operators";
 // Re-export runtime types so existing imports from "./processor" keep working.
 export type { RuntimeClass, RuntimeContext, RuntimeGlobal, RuntimeValue } from "./processor-types";
-import type { RuntimeContext, RuntimeGlobal, RuntimeValue } from "./processor-types";
+import type { RuntimeContext, RuntimeGlobal, RuntimeValue, Runner } from "./processor-types";
 import { Routine } from "./routine";
 
 /**
@@ -92,7 +92,7 @@ export class Processor {
 	// Avoids allocating a new array per call — just reset length
 	private _argv: any[] = [];
 
-	constructor(runner: any) {
+	constructor(runner: Runner) {
 		this.runner = runner;
 		this.locals = [];
 		this.stack = [];

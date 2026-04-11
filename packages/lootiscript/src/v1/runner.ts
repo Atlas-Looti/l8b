@@ -224,18 +224,6 @@ export class Runner {
 
 		this.l8bvm.context.global.print = this.l8bvm.context.meta.print;
 		this.l8bvm.context.global.random = new Random(0);
-		this.l8bvm.context.global.Function = {
-			bind: function (this: any, obj: any) {
-				let rc: Routine;
-				if (this instanceof Routine) {
-					rc = this.clone();
-					(rc as any).object = obj;
-					return rc;
-				} else {
-					return this;
-				}
-			},
-		} as any;
 		// Inject standard library into global scope for LootiScript code
 		// Provides Math, JSON, List, and String utility functions
 		this.l8bvm.context.global.Math = MathLib;
