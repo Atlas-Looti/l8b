@@ -26,6 +26,7 @@ coverage
 
 # Vercel
 .vercel
+/graphify-out/cache
 
 # Build Outputs
 .next/
