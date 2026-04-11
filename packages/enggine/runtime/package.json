@@ -1,48 +1,48 @@
 {
-	"name": "@al8b/runtime",
-	"version": "0.1.13",
-	"sideEffects": false,
-	"files": [
-		"dist/**/*",
-		"README.md",
-		"package.json"
-	],
-	"scripts": {
-		"build": "tsup",
-		"clean": "bun --bun ../../../scripts/clean-package.mjs dist",
-		"test": "vitest run --passWithNoTests"
-	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"dependencies": {
-		"@al8b/vm": "workspace:*",
-		"@al8b/io": "workspace:*",
-		"@al8b/screen": "workspace:*",
-		"@al8b/audio": "workspace:*",
-		"@al8b/input": "workspace:*",
-		"@al8b/time": "workspace:*",
-		"@al8b/sprites": "workspace:*",
-		"@al8b/image": "workspace:*",
-		"@al8b/map": "workspace:*",
-		"@al8b/player": "workspace:*",
-		"@al8b/palette": "workspace:*"
-	},
-	"keywords": [
-		"runtime",
-		"game-engine",
-		"game-loop",
-		"vm"
-	],
-	"publishConfig": {
-		"access": "public"
-	}
+  "name": "@al8b/runtime",
+  "version": "0.1.14",
+  "sideEffects": false,
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "bun --bun ../../../scripts/clean-package.mjs dist",
+    "test": "vitest run --passWithNoTests"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@al8b/vm": "workspace:*",
+    "@al8b/io": "workspace:*",
+    "@al8b/screen": "workspace:*",
+    "@al8b/audio": "workspace:*",
+    "@al8b/input": "workspace:*",
+    "@al8b/time": "workspace:*",
+    "@al8b/sprites": "workspace:*",
+    "@al8b/image": "workspace:*",
+    "@al8b/map": "workspace:*",
+    "@al8b/player": "workspace:*",
+    "@al8b/palette": "workspace:*"
+  },
+  "keywords": [
+    "runtime",
+    "game-engine",
+    "game-loop",
+    "vm"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

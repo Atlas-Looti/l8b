@@ -1,5 +1,4 @@
 import { AudioCore } from "@al8b/audio";
-import { PlayerService } from "@al8b/player";
 import { Screen } from "@al8b/screen";
 import { StatePlayer, TimeMachine, type StateSnapshot, type TimeMachineCommand } from "@al8b/time";
 import { L8BVM } from "@al8b/vm";
@@ -21,7 +20,7 @@ import { DebugLogger } from "./debug-logger";
 import { reportError, reportWarnings } from "./error-handler";
 import { RuntimeAssetsRegistry } from "./assets-registry";
 import { createRuntimeGlobalApi, createRuntimeMeta } from "./api-factory";
-import type { RuntimeServiceFactory } from "./service-interfaces";
+import type { RuntimeServiceFactory, IPlayerService } from "./service-interfaces";
 import { DefaultRuntimeServiceFactory } from "./default-factory";
 
 export interface RuntimeController {
@@ -29,7 +28,7 @@ export interface RuntimeController {
 	readonly audio: AudioCore;
 	readonly input: InputManager;
 	readonly system: System;
-	readonly playerService: PlayerService;
+	readonly playerService: IPlayerService;
 	readonly vm: L8BVM | null;
 	readonly timeMachine: TimeMachine | null;
 	readonly sprites: Record<string, any>;
@@ -77,7 +76,7 @@ export class RuntimeControllerImpl implements RuntimeController {
 	public readonly audio: AudioCore;
 	public readonly input: InputManager;
 	public readonly system: System;
-	public readonly playerService: PlayerService;
+	public readonly playerService: IPlayerService;
 	public vm: L8BVM | null = null;
 	public timeMachine: TimeMachine | null = null;
 
@@ -112,7 +111,7 @@ export class RuntimeControllerImpl implements RuntimeController {
 			setUpdateRate: (rate: number) => {
 				this.system.getAPI().update_rate = rate;
 			},
-		}) as unknown as PlayerService;
+		}) as unknown as IPlayerService;
 		this.assetLoader = this.factory.createAssetLoader(
 			options.url || "",
 			options.resources || {},

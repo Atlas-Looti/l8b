@@ -19,18 +19,7 @@ vi.mock("@al8b/audio", () => ({
 	},
 }));
 
-vi.mock("@al8b/player", () => ({
-	PlayerService: class {
-		constructor(private delegate: Record<string, (...args: any[]) => any>) {}
-		getInterface() {
-			return {
-				pause: () => this.delegate.pause(),
-				resume: () => this.delegate.resume(),
-				postMessage: (message: unknown) => this.delegate.postMessage(message),
-			};
-		}
-	},
-}));
+// PlayerService is now inline in default-factory - no mock needed
 
 vi.mock("@al8b/screen", () => ({
 	Screen: class {

@@ -8,7 +8,6 @@
  */
 
 import { AudioCore } from "@al8b/audio";
-import { PlayerService } from "@al8b/player";
 import { Screen } from "@al8b/screen";
 import { StatePlayer } from "@al8b/time";
 import { AssetLoader } from "../assets";
@@ -16,10 +15,7 @@ import { InputManager } from "../input";
 import { RuntimeAssetsRegistry } from "./assets-registry";
 import { DebugLogger } from "./debug-logger";
 import { System } from "../system";
-import type {
-	RuntimeServiceFactory,
-	IInputManager,
-} from "./service-interfaces";
+import type { RuntimeServiceFactory, IPlayerService, IInputManager } from "./service-interfaces";
 import type { Resources } from "../types/assets";
 import type { RuntimeListener } from "../types";
 
@@ -62,18 +58,18 @@ export const DefaultRuntimeServiceFactory: RuntimeServiceFactory = {
 		return new SystemClass();
 	},
 
-	createPlayerService: (opts) => {
-		const PlayerServiceClass = PlayerService as unknown as {
-			new (opts: {
-				pause: () => void;
-				resume: () => void;
-				postMessage: (m: unknown) => void;
-				getFps: () => number;
-				getUpdateRate: () => number;
-				setUpdateRate: (r: number) => void;
-			}): import("./service-interfaces").IPlayerService;
+	createPlayerService: (opts): IPlayerService => {
+		let _fps = 60;
+		let _updateRate = 60;
+		return {
+			pause: opts.pause,
+			resume: opts.resume,
+			postMessage: opts.postMessage,
+			getFps: () => _fps,
+			getUpdateRate: () => _updateRate,
+			setUpdateRate: (r: number) => { _updateRate = r; },
+			getInterface: () => ({ fps: _fps, update_rate: _updateRate }),
 		};
-		return new PlayerServiceClass(opts);
 	},
 
 	createAssetLoader: (url, resources, audio, listener) => {

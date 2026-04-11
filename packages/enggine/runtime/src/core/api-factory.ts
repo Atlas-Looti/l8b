@@ -13,7 +13,7 @@ import type {
 	RuntimeSnapshotMeta,
 } from "../types";
 import { ObjectPool } from "../utils/object-pool";
-import type { PlayerService } from "@al8b/player";
+import type { IPlayerService } from "./service-interfaces";
 import type { RuntimeAssetsRegistry } from "./assets-registry";
 import type { Screen } from "@al8b/screen";
 import type { AudioCore } from "@al8b/audio";
@@ -26,7 +26,7 @@ export interface RuntimeApiFactoryContext {
 	audio: AudioCore;
 	input: InputManager;
 	system: System;
-	playerService: PlayerService;
+	playerService: IPlayerService;
 	assets: RuntimeAssetsRegistry;
 	bridge?: RuntimeBridge;
 	getVM: () => L8BVM | null;

@@ -1,27 +1,27 @@
 {
-	"name": "@al8b/io",
-	"version": "0.1.13",
-	"description": "IO and Storage utilities for L8B Engine",
-	"type": "module",
-	"files": [
-		"dist/**/*",
-		"package.json",
-		"README.md"
-	],
-	"exports": {
-		".": "./dist/index.js"
-	},
-	"scripts": {
-		"build": "tsup",
-		"clean": "bun --bun ../../../scripts/clean-package.mjs dist",
-		"test": "vitest run --passWithNoTests",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"tsup": "^8.0.0",
-		"typescript": "^5.9.3"
-	},
-	"publishConfig": {
-		"access": "public"
-	}
+  "name": "@al8b/io",
+  "version": "0.1.14",
+  "description": "IO and Storage utilities for L8B Engine",
+  "type": "module",
+  "files": [
+    "dist/**/*",
+    "package.json",
+    "README.md"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "bun --bun ../../../scripts/clean-package.mjs dist",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
