@@ -15,8 +15,16 @@
  * @module lootiscript/processor
  */
 
-// Inline type stub for @al8b/diagnostics
-type CallFrame = { fn?: string; ip?: number; line?: number; functionName?: string; file?: string; column?: number; source?: string };
+// Stack trace frame for error reporting
+interface StackTraceFrame {
+	fn?: string;
+	ip?: number;
+	line?: number;
+	functionName?: string;
+	file?: string;
+	column?: number;
+	source?: string;
+}
 import {
 	routineAsFunction as _routineAsFunction,
 	routineAsApplicableFunction as _routineAsApplicableFunction,
@@ -57,7 +65,7 @@ export class Processor {
 	locals: any[];
 	stack: any[];
 	call_stack: any[];
-	call_stack_frames: CallFrame[]; // NEW: Stack trace frames
+	call_stack_frames: StackTraceFrame[];
 	log: boolean;
 	time_limit: number;
 	done: boolean;
@@ -161,9 +169,9 @@ export class Processor {
 	 * Reconstructs the call stack for error reporting.
 	 * Converts internal CallFrame objects into a readable list.
 	 *
-	 * @returns {CallFrame[]} Array of stack frames (most recent first)
+	 * @returns {StackTraceFrame[]} Array of stack frames (most recent first)
 	 */
-	generateStackTrace(): CallFrame[] {
+	generateStackTrace(): StackTraceFrame[] {
 		return [...this.call_stack_frames].reverse();
 	}
 
@@ -597,17 +605,20 @@ export class Processor {
 
 					if (v == null) {
 						v = 0;
-						if (!routine.ref[op_index].nowarning) {
-							routine.ref[op_index].nowarning = true;
+						const ref = routine.ref[op_index];
+						if (ref && !ref.nowarning) {
+							ref.nowarning = true;
 							if (!Array.isArray(obj)) {
-								token = routine.ref[op_index].token;
-								id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
-								context.warnings.using_undefined_variable[id] = {
-									file: token.tokenizer.filename,
-									line: token.line,
-									column: token.column,
-									expression: name,
-								};
+								const token = ref.token;
+								if (token) {
+									id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+									context.warnings.using_undefined_variable[id] = {
+										file: token.tokenizer.filename,
+										line: token.line,
+										column: token.column,
+										expression: name,
+									};
+								}
 							}
 						}
 					}
@@ -885,17 +896,20 @@ export class Processor {
 					}
 					if (v == null) {
 						v = 0;
-						if (!routine.ref[op_index].nowarning) {
-							routine.ref[op_index].nowarning = true;
+						const ref = routine.ref[op_index];
+						if (ref && !ref.nowarning) {
+							ref.nowarning = true;
 							if (!Array.isArray(obj)) {
-								token = routine.ref[op_index].token;
-								id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
-								context.warnings.using_undefined_variable[id] = {
-									file: token.tokenizer.filename,
-									line: token.line,
-									column: token.column,
-									expression: name,
-								};
+								const token = ref.token;
+								if (token) {
+									id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+									context.warnings.using_undefined_variable[id] = {
+										file: token.tokenizer.filename,
+										line: token.line,
+										column: token.column,
+										expression: name,
+									};
+								}
 							}
 						}
 					}
@@ -1755,17 +1769,20 @@ export class Processor {
 
 					if (v == null) {
 						v = 0;
-						if (!routine.ref[op_index].nowarning) {
-							routine.ref[op_index].nowarning = true;
+						const ref = routine.ref[op_index];
+						if (ref && !ref.nowarning) {
+							ref.nowarning = true;
 							if (!Array.isArray(obj)) {
-								token = routine.ref[op_index].token;
-								id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
-								context.warnings.using_undefined_variable[id] = {
-									file: token.tokenizer.filename,
-									line: token.line,
-									column: token.column,
-									expression: name,
-								};
+								const token = ref.token;
+								if (token) {
+									id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+									context.warnings.using_undefined_variable[id] = {
+										file: token.tokenizer.filename,
+										line: token.line,
+										column: token.column,
+										expression: name,
+									};
+								}
 							}
 						}
 					}
