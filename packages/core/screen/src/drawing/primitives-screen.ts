@@ -1,4 +1,3 @@
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { BaseScreen } from "../core/base-screen";
 
 /**
@@ -8,13 +7,13 @@ export class PrimitiveScreen extends BaseScreen {
 	fillRect(x: number, y: number, w: number, h: number, color?: string | number): void {
 		// Validate drawing context
 		if (!this.context) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7092, {});
+			this.runtime?.listener?.reportError?.({ code: "E7092", message: "Drawing context not available", data: {} });
 			return;
 		}
 
 		// Validate drawing parameters
 		if (!isFinite(x) || !isFinite(y) || !isFinite(w) || !isFinite(h) || w <= 0 || h <= 0) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7093, { error: `Invalid parameters: x=${x}, y=${y}, w=${w}, h=${h}` });
+			this.runtime?.listener?.reportError?.({ code: "E7093", message: "Invalid draw parameters", data: { error: `Invalid parameters: x=${x}, y=${y}, w=${w}, h=${h}` } });
 			return;
 		}
 

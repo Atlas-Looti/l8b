@@ -12,7 +12,7 @@
 	"access": "public",
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["fish", "hubs", "dino-runer", "draw", "hello", "scenes-routing"],
+	"ignore": [],
 	"privatePackages": {
 		"skipCI": false
 	}

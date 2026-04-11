@@ -2,7 +2,6 @@
  * Palette - Color palette management
  */
 
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import type { ColorHex, ColorRGB, PaletteData } from "../types";
 
 /** Matches a valid 6-digit hex color string, e.g. "#1A2B3C" */
@@ -25,7 +24,7 @@ export class Palette {
 		if ("colors" in options && Array.isArray(options.colors)) {
 			// Validate palette format to ensure all colors are valid hex strings
 			if (!this.validatePaletteFormat(options.colors)) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: "invalid color array" });
+				this.runtime?.listener?.reportError?.({ code: "E7072", message: "Invalid palette format", data: { format: "invalid color array" } });
 				this.colors = [];
 				this.name = "Invalid";
 			} else {
@@ -55,7 +54,7 @@ export class Palette {
 	get(index: number): ColorHex {
 		// Validate color index is a finite, non-negative number
 		if (!isFinite(index) || index < 0) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7073, { index, maxIndex: this.colors.length - 1 });
+			this.runtime?.listener?.reportError?.({ code: "E7073", message: "Invalid color index", data: { index, maxIndex: this.colors.length - 1 } });
 			return "#000000";
 		}
 
@@ -107,13 +106,13 @@ export class Palette {
 	set(index: number, color: ColorHex): void {
 		// Validate color index is a finite, non-negative number
 		if (!isFinite(index) || index < 0) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7073, { index, maxIndex: this.colors.length - 1 });
+			this.runtime?.listener?.reportError?.({ code: "E7073", message: "Invalid color index", data: { index, maxIndex: this.colors.length - 1 } });
 			return;
 		}
 
 		// Validate color format matches hex pattern (#RRGGBB)
 		if (!HEX_COLOR_REGEX.test(color)) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: color });
+			this.runtime?.listener?.reportError?.({ code: "E7072", message: "Invalid color format", data: { format: color } });
 			return;
 		}
 
@@ -149,7 +148,7 @@ export class Palette {
 	setPalette(colors: ColorHex[]): void {
 		// Validate palette format to ensure all colors are valid hex strings
 		if (!this.validatePaletteFormat(colors)) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7072, { format: "invalid color array" });
+			this.runtime?.listener?.reportError?.({ code: "E7072", message: "Invalid palette format", data: { format: "invalid color array" } });
 			return;
 		}
 

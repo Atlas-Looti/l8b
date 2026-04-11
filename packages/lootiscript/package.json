@@ -28,7 +28,6 @@
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"@al8b/diagnostics": "workspace:*",
 		"@al8b/stdlib": "workspace:*"
 	},
 	"keywords": [

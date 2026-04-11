@@ -2,38 +2,21 @@
  * Error Handler - Error formatting and reporting for the runtime
  */
 
-import { createDiagnostic, formatForBrowser } from "@al8b/diagnostics";
 import type { RuntimeListener } from "../types";
 import type { L8BVM } from "@al8b/vm";
 
 /**
- * Format error message with diagnostic information
+ * Format error message
  */
 export function formatRuntimeError(error: any): any {
 	if (error.code || error.context || error.suggestions) {
 		return error;
 	}
 
-	const code = error.code || "E2005";
-	const diagnostic = createDiagnostic(code, {
-		file: error.file,
-		line: error.line,
-		column: error.column,
-		context: error.context,
-		suggestions: error.suggestions,
-		related: error.related,
-		stackTrace: error.stackTrace,
-		data: {
-			error: error.error || error.message,
-		},
-	});
-
-	const formattedMessage = formatForBrowser(diagnostic);
-
 	return {
 		...error,
-		...diagnostic,
-		formatted: formattedMessage,
+		code: error.code || "E2005",
+		formatted: error.message || String(error),
 	};
 }
 

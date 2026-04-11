@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { convertSceneDefinition, createRuntimeMeta } from "../src/core/api-factory";
+import { createRuntimeMeta } from "../src/core/api-factory";
 
 describe("createRuntimeMeta", () => {
 	it("routes print output to the runtime listener", () => {
@@ -12,7 +12,6 @@ describe("createRuntimeMeta", () => {
 			input: {} as any,
 			system: {} as any,
 			playerService: {} as any,
-			sceneManager: {} as any,
 			assets: {} as any,
 			getVM: () => null,
 		});
@@ -20,17 +19,5 @@ describe("createRuntimeMeta", () => {
 		meta.print?.("hello");
 
 		expect(log).toHaveBeenCalledWith("hello");
-	});
-});
-
-describe("convertSceneDefinition", () => {
-	it("returns definition unchanged when VM is not ready", () => {
-		const log = vi.fn();
-		const definition = { setup: { enabled: true } };
-
-		const result = convertSceneDefinition(definition, null, { log });
-
-		expect(result).toBe(definition);
-		expect(log).toHaveBeenCalled();
 	});
 });

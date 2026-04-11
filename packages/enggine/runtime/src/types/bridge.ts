@@ -44,10 +44,6 @@ export interface RuntimeSnapshot {
 	version: 1;
 	global: StateSnapshot;
 	session: RuntimeSessionSnapshot | null;
-	router: {
-		path: string;
-		sceneName: string | null;
-	};
 	system: {
 		updateRate: number;
 	};

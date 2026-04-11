@@ -2,7 +2,6 @@
  * Sprite rendering for Screen class
  */
 
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import type { TileMap as Map } from "@al8b/map";
 import type { Sprite } from "@al8b/sprites";
 
@@ -60,7 +59,7 @@ export class SpriteScreen extends PrimitiveScreen {
 
 			// Report sprite not found error
 			if (!spriteObj) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7004, { spriteName });
+				this.runtime?.listener?.reportError?.({ code: "E7004", message: "Sprite not found", data: { spriteName } });
 				return null;
 			}
 
@@ -74,7 +73,7 @@ export class SpriteScreen extends PrimitiveScreen {
 		// Validate sprite object
 		if (!sprite || !(sprite as Sprite).ready) {
 			const spriteName = typeof sprite === "string" ? sprite : "unknown";
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7005, { spriteName });
+			this.runtime?.listener?.reportError?.({ code: "E7005", message: "Sprite not ready", data: { spriteName } });
 			return null;
 		}
 

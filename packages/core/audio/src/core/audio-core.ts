@@ -3,7 +3,6 @@
  * Manages audio context, beeper, and sound/music playback
  */
 
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { Beeper } from "../devices/beeper";
 import { AUDIO_WORKLET_CODE } from "./audio-worklet";
 
@@ -90,7 +89,7 @@ export class AudioCore {
 			const soundName = sound.replace(/\//g, "-");
 			const s = this.runtime.sounds[soundName];
 			if (!s) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7013, { soundName });
+				this.runtime?.listener?.reportError?.({ code: "E7013", message: "Sound not found", data: { soundName } });
 				return 0;
 			}
 			return s.play(volume * this.masterVolume, pitch, pan, loopit);
@@ -106,7 +105,7 @@ export class AudioCore {
 			const musicName = music.replace(/\//g, "-");
 			const m = this.runtime.music[musicName];
 			if (!m) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7014, { musicName });
+				this.runtime?.listener?.reportError?.({ code: "E7014", message: "Music not found", data: { musicName } });
 				return 0;
 			}
 			return m.play(volume * this.masterVolume, loopit);
@@ -183,7 +182,7 @@ export class AudioCore {
 
 			this.flushBuffer();
 		} catch (e) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7012, { error: String(e) });
+			this.runtime?.listener?.reportError?.({ code: "E7012", message: "Audio worklet error", data: { error: String(e) } });
 		}
 	}
 
@@ -292,7 +291,7 @@ export class AudioCore {
 			try {
 				p.stop();
 			} catch (err) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7016, { error: String(err) });
+				this.runtime?.listener?.reportError?.({ code: "E7016", message: "Audio error", data: { error: String(err) } });
 			}
 		}
 		this.playing = [];

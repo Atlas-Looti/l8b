@@ -1,4 +1,3 @@
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { GamepadInput } from "../devices/gamepad";
 import { KeyboardInput } from "../devices/keyboard";
 import { MouseInput } from "../devices/mouse";
@@ -36,7 +35,7 @@ export class Input {
 	public getKeyboard(): KeyboardState {
 		// Validate keyboard state exists before returning
 		if (!this.keyboard || !this.keyboard.state) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7052, { error: "Keyboard state not available" });
+			this.runtime?.listener?.reportError?.({ code: "E7052", message: "Keyboard state not available", data: { error: "Keyboard state not available" } });
 			// Return empty state as fallback to prevent crashes
 			return {} as KeyboardState;
 		}
@@ -46,7 +45,7 @@ export class Input {
 	public getMouse(): MouseState {
 		// Validate mouse state exists before returning
 		if (!this.mouse || !this.mouse.state) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7052, { error: "Mouse state not available" });
+			this.runtime?.listener?.reportError?.({ code: "E7052", message: "Mouse state not available", data: { error: "Mouse state not available" } });
 			// Return empty state as fallback to prevent crashes
 			return {} as MouseState;
 		}
@@ -56,7 +55,7 @@ export class Input {
 	public getTouch(): TouchState {
 		// Validate touch state exists before returning
 		if (!this.touch || !this.touch.state) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7052, { error: "Touch state not available" });
+			this.runtime?.listener?.reportError?.({ code: "E7052", message: "Touch state not available", data: { error: "Touch state not available" } });
 			// Return empty state as fallback to prevent crashes
 			return {} as TouchState;
 		}
@@ -66,7 +65,7 @@ export class Input {
 	public getGamepad(): GamepadInput {
 		// Check if gamepad API is available in the browser
 		if (!this.gamepad || !navigator.getGamepads) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7051, { device: "gamepad" });
+			this.runtime?.listener?.reportError?.({ code: "E7051", message: "Gamepad API not available", data: { device: "gamepad" } });
 		}
 		return this.gamepad;
 	}

@@ -25,9 +25,7 @@
 			"require": "./dist/index.js"
 		}
 	},
-	"dependencies": {
-		"@al8b/diagnostics": "workspace:*"
-	},
+	"dependencies": {},
 	"keywords": [
 		"audio"
 	],

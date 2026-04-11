@@ -23,7 +23,6 @@
 		}
 	},
 	"dependencies": {
-		"@al8b/diagnostics": "workspace:*",
 		"@al8b/image": "workspace:*"
 	},
 	"keywords": [

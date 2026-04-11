@@ -2,7 +2,6 @@
  * Sound - Sound effect playback
  * Handles loading and playing audio buffers
  */
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 
 export class Sound {
 	public ready: number = 0;
@@ -40,16 +39,20 @@ export class Sound {
 					this.ready = 1;
 				},
 				(err: any) => {
-					reportRuntimeError(this.audio?.runtime?.listener, APIErrorCode.E7016, {
-						error: `Audio decoding failed: ${String(err)}`,
+					this.audio?.runtime?.listener?.reportError?.({
+						code: "E7016",
+						message: "Audio decoding failed",
+						data: { error: `Audio decoding failed: ${String(err)}` },
 					});
 				},
 			);
 		};
 
 		request.onerror = () => {
-			reportRuntimeError(this.audio?.runtime?.listener, APIErrorCode.E7016, {
-				error: `Failed to load sound: ${url}`,
+			this.audio?.runtime?.listener?.reportError?.({
+				code: "E7016",
+				message: "Failed to load sound",
+				data: { error: `Failed to load sound: ${url}` },
 			});
 		};
 

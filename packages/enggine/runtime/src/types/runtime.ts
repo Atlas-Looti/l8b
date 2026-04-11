@@ -2,10 +2,22 @@
  * Runtime type definitions
  */
 
-import type { CompiledModuleArtifact, SerializedRoutineData } from "@al8b/framework-shared";
 import type { ErrorInfo } from "@al8b/vm";
 import type { Resources } from "./assets";
 import type { RuntimeBridge, RuntimeSessionSnapshot } from "./bridge";
+
+/**
+ * Compiled routine artifact from the LootiScript compiler
+ */
+export interface CompiledModuleArtifact {
+	format: "l8b-compiled-routine";
+	routine: SerializedRoutineData;
+}
+
+/**
+ * Serialized routine data
+ */
+export type SerializedRoutineData = unknown;
 
 export type { ErrorInfo, Resources };
 

@@ -1,6 +1,5 @@
 import { Palette } from "@al8b/palette";
-import type { SceneDefinition, SceneManager } from "@al8b/scene";
-import { type GlobalAPI, type L8BVM, type MetaFunctions, Random, Routine } from "@al8b/vm";
+import { type GlobalAPI, type L8BVM, type MetaFunctions, Random } from "@al8b/vm";
 import { Image, Sound, Sprite, TileMap } from "../assets";
 import type { InputManager } from "../input";
 import type {
@@ -28,7 +27,6 @@ export interface RuntimeApiFactoryContext {
 	input: InputManager;
 	system: System;
 	playerService: PlayerService;
-	sceneManager: SceneManager;
 	assets: RuntimeAssetsRegistry;
 	bridge?: RuntimeBridge;
 	getVM: () => L8BVM | null;
@@ -122,12 +120,6 @@ export function createRuntimeGlobalApi(context: RuntimeApiFactoryContext): Parti
 		session,
 		memory,
 		system: context.system.getAPI(),
-		scene: (name: string, definition: unknown) => {
-			const convertedDefinition = convertSceneDefinition(asSceneDefinition(definition), context.getVM(), context.listener);
-			context.sceneManager.registerScene(name, convertedDefinition);
-		},
-		route: (path: string, sceneName: string) => context.sceneManager.registerRoute(path, sceneName),
-		router: context.sceneManager.router.getInterface(),
 		Image,
 		Sprite,
 		TileMap,
@@ -136,45 +128,6 @@ export function createRuntimeGlobalApi(context: RuntimeApiFactoryContext): Parti
 		Random,
 		ObjectPool,
 	};
-}
-
-export function convertSceneDefinition(
-	definition: SceneDefinition,
-	vm: L8BVM | null,
-	listener: RuntimeListener,
-): SceneDefinition {
-	if (!vm?.runner?.main_thread?.processor) {
-		listener.log?.("[RuntimeController] VM not ready for scene conversion. Scene functions may not work correctly.");
-		return definition;
-	}
-
-	const processor = vm.runner.main_thread.processor;
-	const context = vm.context;
-	const converted: Record<string, unknown> = {};
-
-	for (const [key, value] of Object.entries(definition)) {
-		if (value instanceof Routine) {
-			converted[key] = processor.routineAsFunction(value, context);
-			continue;
-		}
-
-		if (value && typeof value === "object" && !Array.isArray(value)) {
-			converted[key] = convertSceneDefinition(value, vm, listener);
-			continue;
-		}
-
-		converted[key] = value;
-	}
-
-	return converted as SceneDefinition;
-}
-
-function asSceneDefinition(definition: unknown): SceneDefinition {
-	if (!definition || typeof definition !== "object" || Array.isArray(definition)) {
-		throw new Error("Scene definition must be an object.");
-	}
-
-	return definition as SceneDefinition;
 }
 
 function cloneValue<T>(value: T): T {

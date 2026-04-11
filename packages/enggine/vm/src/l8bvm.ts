@@ -14,7 +14,6 @@
  * @module vm
  */
 
-import type { CompiledModuleArtifact, SerializedRoutineData } from "@al8b/framework-shared";
 import { StorageService } from "@al8b/io";
 import { Routine, Runner } from "@al8b/lootiscript";
 import { createVMContext } from "./context";
@@ -195,6 +194,21 @@ export class L8BVM {
 		return this.runner.toString(value);
 	}
 }
+
+// Inline types stub for @al8b/framework-shared
+interface CompiledModuleArtifact {
+	format: "l8b-compiled-routine";
+	routine: SerializedRoutineData;
+}
+type SerializedRoutineData = {
+	num_args: number;
+	ops: number[];
+	args: any[];
+	import_refs: any[];
+	import_values: any[];
+	import_self: number;
+	locals_size?: number;
+};
 
 function normalizeSerializedRoutine(routineData: CompiledModuleArtifact | SerializedRoutineData): SerializedRoutineData {
 	if (isCompiledModuleArtifact(routineData)) {

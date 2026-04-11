@@ -2,8 +2,6 @@
  * Storage service - localStorage wrapper with automatic serialization
  */
 
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
-
 export class StorageService {
 	private namespace: string;
 	private cache: Map<string, any> = new Map();
@@ -27,7 +25,7 @@ export class StorageService {
 	get(name: string): any {
 		// Validate storage key
 		if (!name || typeof name !== "string" || name.trim() === "") {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7063, { key: String(name) });
+			this.runtime?.listener?.reportError?.({ code: "E7063", message: `Invalid storage key: ${name}` });
 			return null;
 		}
 
@@ -47,7 +45,7 @@ export class StorageService {
 					return parsed;
 				}
 			} catch (err: any) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7062, { error: `Get operation failed: ${String(err)}` });
+				this.runtime?.listener?.reportError?.({ code: "E7062", message: `Get operation failed: ${String(err)}` });
 			}
 		}
 
@@ -60,7 +58,7 @@ export class StorageService {
 	set(name: string, value: any): void {
 		// Validate storage key
 		if (!name || typeof name !== "string" || name.trim() === "") {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7063, { key: String(name) });
+			this.runtime?.listener?.reportError?.({ code: "E7063", message: `Invalid storage key: ${name}` });
 			return;
 		}
 
@@ -105,9 +103,9 @@ export class StorageService {
 			} catch (err: any) {
 				// Check for quota exceeded error
 				if (err.name === "QuotaExceededError" || err.code === 22) {
-					reportRuntimeError(this.runtime?.listener, APIErrorCode.E7061, {});
+					this.runtime?.listener?.reportError?.({ code: "E7061", message: "Storage quota exceeded" });
 				} else {
-					reportRuntimeError(this.runtime?.listener, APIErrorCode.E7062, { error: `Set operation failed: ${String(err)}` });
+					this.runtime?.listener?.reportError?.({ code: "E7062", message: `Set operation failed: ${String(err)}` });
 				}
 			}
 		}
@@ -129,7 +127,7 @@ export class StorageService {
 	 */
 	delete(name: string): void {
 		if (!name || typeof name !== "string" || name.trim() === "") {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7063, { key: String(name) });
+			this.runtime?.listener?.reportError?.({ code: "E7063", message: `Invalid storage key: ${name}` });
 			return;
 		}
 
@@ -142,9 +140,7 @@ export class StorageService {
 			try {
 				localStorage.removeItem(`${this.namespace}.${name}`);
 			} catch (err: any) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7062, {
-					error: `Delete operation failed: ${String(err)}`,
-				});
+				this.runtime?.listener?.reportError?.({ code: "E7062", message: `Delete operation failed: ${String(err)}` });
 			}
 		}
 	}

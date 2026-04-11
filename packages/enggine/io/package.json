@@ -17,9 +17,6 @@
 		"test": "vitest run --passWithNoTests",
 		"typecheck": "tsc --noEmit"
 	},
-	"dependencies": {
-		"@al8b/diagnostics": "workspace:*"
-	},
 	"devDependencies": {
 		"tsup": "^8.0.0",
 		"typescript": "^5.9.3"

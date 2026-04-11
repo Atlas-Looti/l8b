@@ -15,7 +15,8 @@
  * @module lootiscript/processor
  */
 
-import type { CallFrame } from "@al8b/diagnostics";
+// Inline type stub for @al8b/diagnostics
+type CallFrame = { fn?: string; ip?: number; line?: number; functionName?: string; file?: string; column?: number; source?: string };
 import {
 	routineAsFunction as _routineAsFunction,
 	routineAsApplicableFunction as _routineAsApplicableFunction,

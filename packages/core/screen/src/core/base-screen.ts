@@ -1,4 +1,3 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser, reportRuntimeError } from "@al8b/diagnostics";
 import { ZBuffer } from "../tri";
 import type { ScreenInterface, ScreenOptions } from "../types";
 
@@ -133,11 +132,10 @@ export class BaseScreen {
 			alpha: false,
 		});
 		if (!ctx) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7001);
-			const formatted = formatForBrowser(diagnostic);
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7001, {});
+			const message = "Failed to get 2D rendering context";
+			this.runtime?.listener?.reportError?.({ code: "E7001", message, data: {} });
 
-			throw new Error(formatted);
+			throw new Error(message);
 		}
 
 		if (ctx !== this.context) {
@@ -209,7 +207,7 @@ export class BaseScreen {
 				/^(red|green|blue|yellow|cyan|magenta|black|white|gray|grey|orange|pink|purple|brown|transparent)$/i.test(color);
 
 			if (!isValidColor) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7003, { color });
+				this.runtime?.listener?.reportError?.({ code: "E7003", message: "Invalid color", data: { color } });
 				return;
 			}
 
@@ -230,7 +228,7 @@ export class BaseScreen {
 		const blend = this.blending[blending || "normal"];
 
 		if (!blend) {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7007, { blendMode: blending });
+			this.runtime?.listener?.reportError?.({ code: "E7007", message: "Invalid blend mode", data: { blendMode: blending } });
 			// Fallback to normal blend mode
 			this.context.globalCompositeOperation = "source-over";
 			return;
@@ -279,10 +277,10 @@ export class BaseScreen {
 		this.font_load_requested[font] = true;
 		try {
 			document.fonts?.load?.(`16pt ${font}`).catch(() => {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7006, { font });
+				this.runtime?.listener?.reportError?.({ code: "E7006", message: "Font loading failed", data: { font } });
 			});
 		} catch {
-			reportRuntimeError(this.runtime?.listener, APIErrorCode.E7006, { font });
+			this.runtime?.listener?.reportError?.({ code: "E7006", message: "Font loading failed", data: { font } });
 		}
 	}
 
@@ -416,7 +414,7 @@ export class BaseScreen {
 		if (width && height) {
 			// Validate dimensions
 			if (width <= 0 || height <= 0 || !isFinite(width) || !isFinite(height)) {
-				reportRuntimeError(this.runtime?.listener, APIErrorCode.E7002, { width, height });
+				this.runtime?.listener?.reportError?.({ code: "E7002", message: "Invalid resize dimensions", data: { width, height } });
 				return;
 			}
 

@@ -32,54 +32,6 @@ vi.mock("@al8b/player", () => ({
 	},
 }));
 
-vi.mock("@al8b/scene", () => ({
-	SceneManager: class {
-		activeSceneName: string | null = null;
-		activeScene: Record<string, unknown> | null = null;
-		registry = {
-			scenes: new Map<string, Record<string, unknown>>(),
-			register: (name: string, definition: Record<string, unknown>) => {
-				this.registry.scenes.set(name, definition);
-			},
-			getNames: () => Array.from(this.registry.scenes.keys()),
-			clear: () => this.registry.scenes.clear(),
-		};
-		routeManager = {
-			clear: vi.fn(),
-			register: vi.fn(),
-		};
-		routerState = { path: "/", sceneName: null as string | null };
-		router = {
-			init: vi.fn(),
-			replace: vi.fn((path: string) => {
-				this.routerState.path = path;
-			}),
-			getState: () => ({ ...this.routerState }),
-			getInterface: () => ({}),
-		};
-		registerScene(name: string, definition: Record<string, unknown>) {
-			this.registry.register(name, definition);
-		}
-		registerRoute(path: string, sceneName: string) {
-			this.routeManager.register(path, sceneName);
-			this.routerState.path = path;
-			this.routerState.sceneName = sceneName;
-		}
-		setActiveScene(name: string) {
-			this.activeSceneName = name;
-			this.activeScene = this.registry.scenes.get(name) || null;
-		}
-		hasActiveScene() {
-			return this.activeScene != null;
-		}
-		getCurrentSceneName() {
-			return this.activeSceneName;
-		}
-		update() {}
-		draw() {}
-	},
-}));
-
 vi.mock("@al8b/screen", () => ({
 	Screen: class {
 		public canvas: any;

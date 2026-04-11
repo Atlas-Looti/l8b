@@ -2,7 +2,6 @@
  * TileMap - Tile-based map implementation with sprite rendering support.
  */
 
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@al8b/diagnostics";
 import type { Sprite } from "@al8b/sprites";
 import type { MapData, ParsedTile, SpriteDictionary } from "../data/types";
 import { drawTile, ensureCanvas, queueAnimatedTile, type RenderState, renderAnimatedTiles } from "../drawing/renderer";
@@ -56,14 +55,7 @@ export class TileMap {
 	) {
 		// Validate map dimensions to ensure positive, finite values
 		if (width <= 0 || height <= 0 || !isFinite(width) || !isFinite(height)) {
-			const diagnostic = createDiagnostic(APIErrorCode.E7034, {
-				data: {
-					width,
-					height,
-				},
-			});
-			const formatted = formatForBrowser(diagnostic);
-			throw new Error(formatted);
+			throw new Error(`Invalid map dimensions: width=${width}, height=${height}`);
 		}
 
 		this.width = width;

@@ -7,7 +7,6 @@
  * - Manage state
  */
 
-import { APIErrorCode, reportRuntimeError } from "@al8b/diagnostics";
 import { DEFAULT_LOOP_BUFFER_FRAMES, DEFAULT_RECORD_BUFFER_FRAMES } from "../constants";
 import { StatePlayer } from "../playback";
 import { StateRecorder } from "../recording";
@@ -92,7 +91,7 @@ export class TimeMachine {
 
 			this.sendStatus();
 		} catch (err) {
-			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7082, { error: String(err) });
+			(this.runtime as any)?.listener?.reportError?.({ code: "E7082", message: "Time machine step error", data: { error: String(err) } });
 		}
 	}
 
@@ -148,7 +147,7 @@ export class TimeMachine {
 			this.sendStatus();
 		} catch (err) {
 			this.recording = false;
-			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7083, { error: String(err) });
+			(this.runtime as any)?.listener?.reportError?.({ code: "E7083", message: "Time machine recording error", data: { error: String(err) } });
 		}
 	}
 
@@ -164,7 +163,7 @@ export class TimeMachine {
 			this.recording = false;
 			this.sendStatus();
 		} catch (err) {
-			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7083, { error: String(err) });
+			(this.runtime as any)?.listener?.reportError?.({ code: "E7083", message: "Time machine recording error", data: { error: String(err) } });
 		}
 	}
 
@@ -202,7 +201,7 @@ export class TimeMachine {
 	private setReplayPosition(position: number): void {
 		// Validate time value is finite and non-negative
 		if (!isFinite(position) || position < 0) {
-			reportRuntimeError((this.runtime as any)?.listener, APIErrorCode.E7081, { value: String(position) });
+			(this.runtime as any)?.listener?.reportError?.({ code: "E7081", message: "Invalid replay position", data: { value: String(position) } });
 			return;
 		}
 

@@ -1,4 +1,3 @@
-import { APIErrorCode, createDiagnostic, formatForBrowser } from "@al8b/diagnostics";
 import type { Sprite } from "@al8b/sprites";
 import type { AnimatedTile, ParsedTile } from "../data/types";
 
@@ -26,9 +25,8 @@ export const ensureCanvas = (
 	}
 	const ctx = state.canvas.getContext("2d");
 	if (!ctx) {
-		const diagnostic = createDiagnostic(APIErrorCode.E7031);
-		const formatted = formatForBrowser(diagnostic);
-		throw new Error(formatted);
+		const message = "Failed to get 2D rendering context for tile canvas";
+		throw new Error(message);
 	}
 	ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
 	state.animated = [];

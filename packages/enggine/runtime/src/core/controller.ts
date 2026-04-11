@@ -1,6 +1,5 @@
 import { AudioCore } from "@al8b/audio";
 import { PlayerService } from "@al8b/player";
-import { SceneManager } from "@al8b/scene";
 import { Screen } from "@al8b/screen";
 import { StatePlayer, TimeMachine, type StateSnapshot, type TimeMachineCommand } from "@al8b/time";
 import { L8BVM } from "@al8b/vm";
@@ -29,7 +28,6 @@ export interface RuntimeController {
 	readonly input: InputManager;
 	readonly system: System;
 	readonly playerService: PlayerService;
-	readonly sceneManager: SceneManager;
 	readonly vm: L8BVM | null;
 	readonly timeMachine: TimeMachine | null;
 	readonly sprites: Record<string, any>;
@@ -78,7 +76,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 	public readonly input: InputManager;
 	public readonly system: System;
 	public readonly playerService: PlayerService;
-	public readonly sceneManager: SceneManager;
 	public vm: L8BVM | null = null;
 	public timeMachine: TimeMachine | null = null;
 
@@ -108,7 +105,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 				this.system.getAPI().update_rate = rate;
 			},
 		});
-		this.sceneManager = new SceneManager();
 		this.assetLoader = new AssetLoader(options.url || "", options.resources || {}, this.audio, this.listener);
 
 		this.logStep("RuntimeController constructed", {
@@ -218,15 +214,10 @@ export class RuntimeControllerImpl implements RuntimeController {
 
 	exportSnapshot(): RuntimeSnapshot {
 		const global = this.vm?.context?.global;
-		const routerState = this.sceneManager.router.getState();
 		return {
 			version: 1,
 			global: global ? serializeGlobalSnapshot(global) : {},
 			session: this.getSession(),
-			router: {
-				path: routerState.path,
-				sceneName: this.sceneManager.getCurrentSceneName(),
-			},
 			system: {
 				updateRate: this.system.getAPI().update_rate,
 			},
@@ -244,12 +235,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 
 		if (snapshot.session) {
 			this.sessionSnapshot = cloneSnapshot(snapshot.session);
-		}
-
-		if (snapshot.router.path) {
-			this.sceneManager.router.replace(snapshot.router.path);
-		} else if (snapshot.router.sceneName) {
-			this.sceneManager.setActiveScene(snapshot.router.sceneName);
 		}
 	}
 
@@ -316,7 +301,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 			input: this.input,
 			system: this.system,
 			playerService: this.playerService,
-			sceneManager: this.sceneManager,
 			assets: this.assetRegistry,
 			bridge: this.options.bridge,
 			getVM: () => this.vm,
@@ -351,7 +335,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 		});
 
 		this.loadPrograms();
-		this.initializeScenesAndRouter();
 
 		this.emitBridgeEvent("runtime.started", {});
 	}
@@ -400,24 +383,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 			});
 			this.logStep("vm: init() error", { message: err?.message || String(err) });
 		}
-	}
-
-	private initializeScenesAndRouter(): void {
-		const registeredScenes = this.sceneManager.registry.getNames();
-		this.logStep("router: initializing", {
-			registeredScenes: registeredScenes.length,
-			sceneNames: registeredScenes,
-		});
-		this.sceneManager.router.init();
-		const activeScene = this.sceneManager.hasActiveScene()
-			? (this.sceneManager as any).getCurrentSceneName?.() || "unknown"
-			: null;
-		const routerState = this.sceneManager.router.getState();
-		this.logStep("router: initialized", {
-			activeScene: activeScene || "none",
-			path: routerState.path,
-			hasActiveScene: this.sceneManager.hasActiveScene(),
-		});
 	}
 
 	private startGameLoop(): void {
@@ -477,12 +442,8 @@ export class RuntimeControllerImpl implements RuntimeController {
 		}
 
 		try {
-			if (this.sceneManager.hasActiveScene()) {
-				this.sceneManager.update();
-			} else {
-				this.vm.call("update");
-				this.vm.runner.tick();
-			}
+			this.vm.call("update");
+			this.vm.runner.tick();
 
 			if (this.vm.error_info) {
 				const err: any = Object.assign({}, this.vm.error_info);
@@ -505,12 +466,8 @@ export class RuntimeControllerImpl implements RuntimeController {
 			this.screen.initDraw();
 			this.screen.updateInterface();
 
-			if (this.sceneManager.hasActiveScene()) {
-				this.sceneManager.draw();
-			} else {
-				this.vm.call("draw");
-				this.vm.runner.tick();
-			}
+			this.vm.call("draw");
+			this.vm.runner.tick();
 
 			reportWarnings(this.vm, this.listener);
 
@@ -726,8 +683,6 @@ export class RuntimeControllerImpl implements RuntimeController {
 		this.frameCount = 0;
 		this.lastUpdateRate = -1;
 		this.isStopped = false;
-		this.sceneManager.registry.clear();
-		this.sceneManager.routeManager.clear();
 	}
 
 	private logStep(message: string, payload?: unknown): void {
@@ -823,8 +778,6 @@ function isRuntimeSnapshot(value: unknown): value is RuntimeSnapshot {
 	if (!isRecord(value)) return false;
 	if (value.version !== 1) return false;
 	if (!isRecord(value.global)) return false;
-	// Ensure router and session are present (can be null but not undefined)
-	if (!("router" in value)) return false;
 	if (!("session" in value)) return false;
 	return true;
 }

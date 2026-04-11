@@ -4,7 +4,14 @@
  * Transforms tokens into an Abstract Syntax Tree (AST).
  */
 
-import { SyntaxErrorCode as ErrorCode } from "@al8b/diagnostics";
+// Inline enum stub for @al8b/diagnostics
+const SyntaxErrorCode = {
+	E1001: "E1001",
+	E1002: "E1002",
+	E1004: "E1004",
+} as const;
+const ErrorCode = SyntaxErrorCode;
+
 import {
 	After,
 	Assignment,
