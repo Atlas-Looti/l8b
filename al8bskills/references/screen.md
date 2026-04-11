@@ -2,19 +2,38 @@
 
 All drawing is done from LootiScript inside the `draw()` function. The `screen` global is available everywhere.
 
+## Coordinate System
+
+```
+(0,0) ──────────────────► x  (screen.width)
+  │
+  │      all draw calls use pixel coordinates
+  │      origin = top-left corner of canvas
+  │      x increases → right
+  │      y increases ↓ down
+  │
+  ▼ y  (screen.height)
+```
+
+- Units are **pixels**
+- `x=0, y=0` is the **top-left** corner
+- `x=screen.width, y=screen.height` is the **bottom-right** corner
+- Things drawn **later** in `draw()` appear **on top** (painter's model)
+- When using a camera, wrap world-space draws in `camera.begin(cam)` / `camera.end(cam)` — anything outside that block stays in screen space (HUD, UI)
+
 ## Canvas Info
 
 ```lua
-screen.width    -- canvas width in pixels (read-only)
-screen.height   -- canvas height in pixels (read-only)
+screen.width    // canvas width in pixels (read-only)
+screen.height   // canvas height in pixels (read-only)
 ```
 
 ## Clear
 
 ```lua
-screen.clear()                 -- clear to black
-screen.clear("#1a1a2e")        -- clear with hex color
-screen.clear(20, 30, 40)       -- clear with RGB  (not standard — use setColor first)
+screen.clear()                 // clear to black
+screen.clear("#1a1a2e")        // clear with hex color
+screen.clear(20, 30, 40)       // clear with RGB  (not standard — use setColor first)
 ```
 
 ## State Setters
@@ -22,29 +41,32 @@ screen.clear(20, 30, 40)       -- clear with RGB  (not standard — use setColor
 These affect all subsequent draw calls until changed.
 
 ```lua
-screen.setColor("#ff6600")        -- hex color string
-screen.setColor(0xff6600)         -- hex as number
-screen.setAlpha(0.5)              -- opacity 0.0–1.0 (default 1)
-screen.setLineWidth(2)            -- stroke width in pixels (default 1)
-screen.setLineDash({ 6, 3 })      -- dashed lines: [dash, gap, dash, gap, ...]
-screen.setLineDash(nil)           -- solid lines
+screen.setColor("#ff6600")        // hex color string
+screen.setColor(0xff6600)         // hex as number
+screen.setAlpha(0.5)              // opacity 0.0–1.0 (default 1)
+screen.setLineWidth(2)            // stroke width in pixels (default 1)
+screen.setLineDash({ 6, 3 })      // dashed lines: [dash, gap, dash, gap, ...]
+screen.setLineDash(nil)           // solid lines
 
--- Font
-screen.setFont("monospace")       -- CSS font family name
-screen.loadFont("pixel.ttf")      -- load a custom font from assets
-screen.isFontReady("pixel.ttf")   -- 1 if ready, 0 if loading
+// Font
+screen.setFont("monospace")       // CSS font family name
+screen.loadFont("pixel.ttf")      // load a custom font from assets
+screen.isFontReady("pixel.ttf")   // 1 if ready, 0 if loading
 
--- Blend modes
-screen.setBlending("source-over") -- normal (default)
+// Blend modes
+screen.setBlending("source-over") // normal (default)
 screen.setBlending("multiply")
 screen.setBlending("screen")
 screen.setBlending("overlay")
-screen.setBlending("lighter")     -- additive
-screen.setBlending("destination-out") -- erase mode
+screen.setBlending("lighter")     // additive
+screen.setBlending("destination-out") // erase mode
 
--- Gradients (replace current color until next setColor)
+// Gradients (replace current color until next setColor)
 screen.setLinearGradient(x1, y1, x2, y2, "#color1", "#color2")
 screen.setRadialGradient(cx, cy, radius, "#color1", "#color2")
+
+// Pixel-art mode: disable anti-aliasing (call once in init)
+screen.setPixelated(1)   // 1 = crisp pixels (pixel-art), 0 = smooth (default)
 ```
 
 ## Transform
@@ -69,14 +91,14 @@ screen.setRotation(angle)        -- rotate canvas (radians)
 ## Rectangles
 
 ```lua
-screen.fillRect(x, y, w, h)             -- filled rectangle (uses current color)
-screen.fillRect(x, y, w, h, "#color")   -- with explicit color
-screen.drawRect(x, y, w, h)             -- outline rectangle
+screen.fillRect(x, y, w, h)             // filled rectangle (uses current color)
+screen.fillRect(x, y, w, h, "#color")   // with explicit color
+screen.drawRect(x, y, w, h)             // outline rectangle
 screen.drawRect(x, y, w, h, "#color")
 
-screen.fillRoundRect(x, y, w, h, r)     -- filled rounded rectangle (r = corner radius)
+screen.fillRoundRect(x, y, w, h, r)     // filled rounded rectangle (r = corner radius)
 screen.fillRoundRect(x, y, w, h, r, "#color")
-screen.drawRoundRect(x, y, w, h, r)     -- outline rounded rectangle
+screen.drawRoundRect(x, y, w, h, r)     // outline rounded rectangle
 ```
 
 ## Circles & Ellipses

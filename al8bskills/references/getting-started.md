@@ -31,21 +31,21 @@ npm install @al8b/runtime-realtime    # WebSocket / multiplayer
 ```lua
 local x = 200
 local y = 150
-local speed = 150   -- px per second
+local speed = 150   // px per second
 
-function init()
+init = function()
     print("Game ready!")
 end
 
-function update()
-    local dt = system.dt / 1000   -- convert ms to seconds
+update = function()
+    local dt = system.dt / 1000   // convert ms to seconds
     if keyboard.down("arrowleft")  then x = x - speed * dt end
     if keyboard.down("arrowright") then x = x + speed * dt end
     if keyboard.down("arrowup")    then y = y - speed * dt end
     if keyboard.down("arrowdown")  then y = y + speed * dt end
 end
 
-function draw()
+draw = function()
     screen.clear("#1a1a2e")
     screen.fillRect(x - 8, y - 8, 16, 16, "#4488ff")
 end
@@ -109,16 +109,16 @@ createRuntime({
 **2. Use in LootiScript** (key = filename without extension)
 
 ```lua
-function init()
-    -- Assets are guaranteed loaded before init() is called
+init = function()
+    // Assets are guaranteed loaded before init() is called
 end
 
-function draw()
+draw = function()
     screen.drawSprite(sprites["player"], player.x, player.y, 32, 32)
     screen.drawMap(maps["level1"], 0, 0, 400, 300)
 end
 
-function update()
+update = function()
     if keyboard.pressed("space") then
         audio.play(sounds["jump"])
     end
@@ -170,9 +170,15 @@ await runtime.start();
 **In LootiScript:**
 
 ```lua
-function on_level_complete()
-    host.emit("level_complete", { level = current_level, time = elapsed_ms })
-    host.request("scores.save", { score = score, level = current_level }, function(res)
+on_level_complete = function()
+    host.emit("level_complete", object
+        level = current_level
+        time = elapsed_ms
+    end)
+    host.request("scores.save", object
+        score = score
+        level = current_level
+    end, function(res)
         if res.ok then show_saved_badge() end
     end)
 end
@@ -339,7 +345,7 @@ createRuntime({
 ```
 
 ```lua
--- In LootiScript (all values are strings)
+// In LootiScript (all values are strings)
 if env.DEBUG == "true" then
     show_debug_overlay()
 end
@@ -367,3 +373,24 @@ createRuntime({
 ```
 
 Pre-compiled games start faster (no compile step) and keep your source code private.
+
+---
+
+## Troubleshooting
+
+**Canvas shows nothing**
+- Missing `await runtime.start()` — the game won't run until `start()` resolves
+- Canvas element not found — verify `document.getElementById("game")` returns the right element before calling `createRuntime`
+
+**Assets fail to load (404 errors)**
+- Wrong `url` base path — open DevTools Network tab and check which URL is being requested
+- The `url` option is the base path; asset filenames in `resources` are appended to it: `url + "/" + file`
+
+**Game loop not running / blank screen after load**
+- Add a `reportError` callback to catch compile and runtime errors:
+  ```ts
+  listener: {
+    reportError: ({ type, error }) => console.error(`[${type}]`, error),
+  }
+  ```
+- A LootiScript syntax error in `init()`, `update()`, or `draw()` silently stops the loop without this callback

@@ -44,6 +44,12 @@ if (import.meta.hot) {
 }
 ```
 
+## Limitations
+
+- **Game systems are not reset** — physics bodies, tweens, FSM states, particles, and event listeners created before the hot reload persist. If `init()` creates them, use `reinit: true` and guard against double-creation.
+- **`reinit: true` re-runs `init()`** — if your `init()` spawns physics bodies or entities without clearing them first, you'll end up with duplicates. Add a cleanup step at the top of `init()` or check whether the body already exists.
+- **Assets cannot be hot-reloaded** — sprite, sound, music, and map files require a full page refresh to pick up changes. Only `.ls` source files can be swapped at runtime.
+
 ## Multiple Source Files
 
 Games can have multiple `.ls` files. Each file is loaded independently. Hot reload each by its original key:

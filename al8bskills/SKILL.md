@@ -210,30 +210,30 @@ export function GameCanvas({ onScore }: { onScore: (n: number) => void }) {
 Every game must define three functions:
 
 ```lua
-function init()
-    -- Called once, after all assets are loaded
-    -- Set up game state, spawn initial entities
+init = function()
+    // Called once, after all assets are loaded
+    // Set up game state, spawn initial entities
 end
 
-function update()
-    -- Called every frame (default 60 fps)
-    -- system.dt = smoothed ms since last frame
-    -- Move with: x = x + speed * (system.dt / 1000)
+update = function()
+    // Called every frame (default 60 fps)
+    // system.dt = smoothed ms since last frame
+    // Move with: x = x + speed * (system.dt / 1000)
 end
 
-function draw()
-    -- Called every frame
-    -- All screen.* draw calls go here
-    -- camera.begin(cam) / camera.end(cam) for world-space drawing
+draw = function()
+    // Called every frame
+    // All screen.* draw calls go here
+    // camera.begin(cam) / camera.end(cam) for world-space drawing
 end
 ```
 
 The game talks back to the host app via:
 
 ```lua
-host.emit("score_updated", { score = 1000 })    -- fires listener.onHostEmit
-host.request("save_score", { score = 1000 }, function(res)
-    if res.ok then show_saved() end             -- fires bridge.request
+host.emit("score_updated", object score = 1000 end)    // fires listener.onHostEmit
+host.request("save_score", object score = 1000 end, function(res)
+    if res.ok then show_saved() end             // fires bridge.request
 end)
 ```
 

@@ -5,30 +5,30 @@ Synchronous and deferred pub/sub event system. No setup required — available i
 ## API
 
 ```lua
--- Subscribe — returns a numeric handle
+// Subscribe — returns a numeric handle
 local h = events.on("player_died", function(payload)
     lives = lives - 1
 end)
 
--- Subscribe once — auto-removes after first fire
+// Subscribe once — auto-removes after first fire
 events.once("level_complete", function(payload)
     show_victory_screen(payload.level)
 end)
 
--- Emit immediately (synchronous — fires all listeners before returning)
-events.emit("enemy_hit", { id = eid, damage = 10 })
-events.emit("coin_collected")   -- payload is optional
+// Emit immediately (synchronous — fires all listeners before returning)
+events.emit("enemy_hit", object id = eid  damage = 10 end)
+events.emit("coin_collected")   // payload is optional
 
--- Emit deferred — queued and fires after update() completes this frame
-events.defer("explosion", { x = px, y = py })
+// Emit deferred — queued and fires after update() completes this frame
+events.defer("explosion", object x = px  y = py end)
 
--- Unsubscribe by handle
+// Unsubscribe by handle
 events.off(h)
 
--- Remove all listeners for one event
+// Remove all listeners for one event
 events.clear("player_died")
 
--- Remove ALL listeners for ALL events
+// Remove ALL listeners for ALL events
 events.clear()
 ```
 
@@ -49,26 +49,26 @@ If `defer` is called during the flush phase itself (from a deferred callback), i
 ### Decoupled system communication
 
 ```lua
--- Enemy module: fires event, doesn't know who's listening
-function enemy_take_damage(id, amount)
+// Enemy module: fires event, doesn't know who's listening
+enemy_take_damage = function(id, amount)
     hp[id] = hp[id] - amount
     if hp[id] <= 0 then
-        events.emit("enemy_died", { id = id, x = ex[id], y = ey[id], score = 100 })
+        events.emit("enemy_died", object id = id  x = ex[id]  y = ey[id]  score = 100 end)
         remove_enemy(id)
     end
 end
 
--- Score module: reacts without coupling to enemy code
+// Score module: reacts without coupling to enemy code
 events.on("enemy_died", function(e)
     score = score + e.score
 end)
 
--- Particle module: reacts independently
+// Particle module: reacts independently
 events.on("enemy_died", function(e)
     particles.burst(e.x, e.y, 20, burst_cfg)
 end)
 
--- Sound module: reacts independently
+// Sound module: reacts independently
 events.on("enemy_died", function(e)
     audio.play(sounds["enemy_die"])
 end)
@@ -79,18 +79,18 @@ end)
 Only listen while in a specific state:
 
 ```lua
-local combat_listeners = {}
+local combat_listeners = []
 
-function enter_combat()
+enter_combat = function()
     table.insert(combat_listeners, events.on("player_hit", on_player_hit))
     table.insert(combat_listeners, events.on("enemy_died", on_enemy_died))
 end
 
-function exit_combat()
-    for _, h in ipairs(combat_listeners) do
+exit_combat = function()
+    for h in combat_listeners
         events.off(h)
     end
-    combat_listeners = {}
+    combat_listeners = []
 end
 ```
 
@@ -111,28 +111,28 @@ end)
 Collect changes during `update()`, apply at end of frame:
 
 ```lua
-function update()
-    -- Lots of collision checks that might trigger same event
-    for _, enemy in ipairs(enemies) do
+update = function()
+    // Lots of collision checks that might trigger same event
+    for enemy in enemies
         if check_hit(player, enemy) then
-            events.defer("damage_player", { amount = enemy.damage })
+            events.defer("damage_player", object amount = enemy.damage end)
         end
     end
 end
 
--- Only fires once per frame even if triggered many times
+// Only fires once per frame even if triggered many times
 local damage_this_frame = 0
 events.on("damage_player", function(e)
     damage_this_frame = damage_this_frame + e.amount
 end)
--- Process damage_this_frame in a single place
+// Process damage_this_frame in a single place
 ```
 
 ### Global event log (debug)
 
 ```lua
 local all_handler = events.on("*", function(payload)
-    -- Note: "*" is a literal event name, not a wildcard
-    -- For debugging, emit a "debug" event from code you want to trace
+    // Note: "*" is a literal event name, not a wildcard
+    // For debugging, emit a "debug" event from code you want to trace
 end)
 ```
