@@ -76,18 +76,18 @@ Use the `version` field to bust the browser cache when assets change:
 ## Accessing Assets in LootiScript
 
 ```lua
--- Sprites
+// Sprites
 screen.drawSprite(sprites["player"], x, y)
 screen.drawSprite(sprites["player"], x, y, 32, 32)
 
--- Tilemaps
+// Tilemaps
 screen.drawMap(maps["level1"], 0, 0, 400, 400)
 
--- Audio
+// Audio
 audio.play(sounds["jump"])
 music.play(music["theme"])
 
--- Generic assets (JSON is auto-parsed to a LootiScript table)
+// Generic assets (JSON is auto-parsed to a LootiScript table)
 local cfg = assets["config"]
 print(cfg.difficulty)
 print(cfg.max_enemies)

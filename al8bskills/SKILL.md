@@ -270,6 +270,7 @@ Backend?
 
 ```
 LootiScript?
+├── Language syntax (vars, functions, objects, loops) → references/lootiscript-syntax.md
 ├── Lifecycle (init/update/draw) → references/lootiscript-globals.md#lifecycle
 ├── Drawing → references/screen.md
 ├── Keyboard / mouse / touch / gamepad → references/input.md
@@ -353,6 +354,7 @@ Hot reload?
 | [references/http-bridge.md](./references/http-bridge.md) | `createHttpBridge`, `BridgeBuilder` fluent API |
 | [references/realtime.md](./references/realtime.md) | `createWebSocketBridge`, `createRealtimeBridge`, `composeBridge` |
 | [references/listener.md](./references/listener.md) | `RuntimeListener` — `onReady`, `onHostEmit`, `onAssetProgress`, `reportError` |
+| [references/lootiscript-syntax.md](./references/lootiscript-syntax.md) | LootiScript language syntax — variables, functions, objects, loops, classes, time operators |
 | [references/lootiscript-globals.md](./references/lootiscript-globals.md) | All LootiScript built-in globals — overview with links |
 | [references/screen.md](./references/screen.md) | Complete drawing API — 40+ methods |
 | [references/input.md](./references/input.md) | Keyboard, mouse, touch, gamepad — all key names and patterns |

@@ -28,8 +28,8 @@ await runtime.importSnapshot(snapshot);
 ## LootiScript API
 
 ```lua
--- Save (delegates to bridge.saveSnapshot)
-memory.save({ slot = "auto" }, function(res)
+// Save (delegates to bridge.saveSnapshot)
+memory.save(object slot = "auto" end, function(res)
     if res.ok then
         print("Game saved!")
     else
@@ -37,20 +37,20 @@ memory.save({ slot = "auto" }, function(res)
     end
 end)
 
--- Load (delegates to bridge.loadSnapshot + restores state)
-memory.load({ slot = "slot1" }, function(res)
+// Load (delegates to bridge.loadSnapshot + restores state)
+memory.load(object slot = "slot1" end, function(res)
     if res.ok then
         print("Game loaded!")
     end
 end)
 
--- Export/import as LootiScript tables (in-memory, no bridge needed)
+// Export/import as LootiScript tables (in-memory, no bridge needed)
 local snap = memory.export()
 memory.import(snap)
 
--- Full restart, wipes all global state
+// Full restart, wipes all global state
 memory.reset()
-memory.reset({ preserveStorage = true })   -- keep localStorage
+memory.reset(object preserveStorage = true end)   // keep localStorage
 ```
 
 ## Wiring Save/Load to the Bridge
@@ -112,9 +112,9 @@ interface RuntimeSnapshotMeta {
 ## Runtime Reset Options
 
 ```lua
-memory.reset({
-    preserveStorage = true,   -- keep localStorage (default: false)
-})
+memory.reset(object
+    preserveStorage = true   // keep localStorage (default: false)
+end)
 ```
 
 ```ts

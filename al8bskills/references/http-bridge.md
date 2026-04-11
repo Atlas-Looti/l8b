@@ -69,7 +69,7 @@ const bridge = createHttpBridge({
 ### LootiScript side
 
 ```lua
-host.request("user.getProfile", { id = session.user().id }, function(res)
+host.request("user.getProfile", object id = session.user().id end, function(res)
     if res.ok then
         print("Hello " + res.displayName)
     else

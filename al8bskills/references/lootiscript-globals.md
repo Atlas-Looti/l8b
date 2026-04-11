@@ -2,6 +2,8 @@
 
 All globals are available in every `.ls` file automatically — no imports needed.
 
+→ **New to LootiScript?** Read [lootiscript-syntax.md](./lootiscript-syntax.md) first — it covers variables, functions, objects, loops, classes, and how LootiScript differs from Lua.
+
 ---
 
 ## Lifecycle
