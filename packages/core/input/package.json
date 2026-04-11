@@ -1,6 +1,6 @@
 {
 	"name": "@al8b/input",
-	"version": "0.1.12",
+	"version": "0.1.13",
 	"sideEffects": false,
 	"files": [
 		"dist/**/*",
