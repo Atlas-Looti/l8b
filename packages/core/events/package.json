@@ -1,6 +1,6 @@
 {
     "name": "@al8b/events",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "sideEffects": false,
     "files": [
         "dist/**/*",

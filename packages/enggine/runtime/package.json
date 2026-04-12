@@ -1,6 +1,6 @@
 {
   "name": "@al8b/runtime",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "sideEffects": false,
   "files": [
     "dist/**/*",

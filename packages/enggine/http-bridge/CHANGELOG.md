@@ -1,0 +1,8 @@
+# @al8b/http-bridge
+
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @al8b/runtime@0.1.15
